@@ -1,0 +1,92 @@
+---
+import { Image } from "astro:assets";
+import logoMark from "@/assets/brand/logo-mark.png";
+
+interface Props {
+  inverted?: boolean;
+  compact?: boolean;
+}
+
+const { inverted = false, compact = false } = Astro.props;
+---
+
+<a
+  class:list={["brand", { "brand--inverted": inverted, "brand--compact": compact }]}
+  href="/"
+  aria-label="Montessori Allgäu – Startseite"
+>
+  <span class="brand__type">
+    <span class="brand__name">Montessori Allgäu</span>
+    <span class="brand__descriptor">Kindergarten & Schule</span>
+  </span>
+  <Image class="brand__mark" src={logoMark} alt="" width={42} height={42} loading="eager" />
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: var(--forest);
+    text-decoration: none;
+  }
+
+  .brand:hover {
+    text-decoration: none;
+  }
+
+  .brand__type {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand__name {
+    font-family: var(--serif);
+    font-size: 1.38rem;
+    font-weight: 480;
+    line-height: 1;
+    letter-spacing: -0.025em;
+  }
+
+  .brand__descriptor {
+    margin-top: 0.24rem;
+    color: var(--forest-muted);
+    font-size: 0.58rem;
+    font-weight: 650;
+    letter-spacing: 0.035em;
+    line-height: 1;
+  }
+
+  .brand__mark {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .brand--inverted {
+    color: var(--white);
+  }
+
+  .brand--inverted .brand__descriptor {
+    color: rgb(255 253 250 / 0.7);
+  }
+
+  .brand--compact .brand__name {
+    font-size: 1.1rem;
+  }
+
+  .brand--compact .brand__mark {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  @media (max-width: 480px) {
+    .brand__name {
+      font-size: 1.05rem;
+    }
+
+    .brand__mark {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+</style>

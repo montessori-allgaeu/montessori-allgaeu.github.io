@@ -1,0 +1,130 @@
+---
+import { Download } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+
+const sections = [
+  {
+    title: "Schule",
+    files: [
+      {
+        title: "Infoheft Schule",
+        meta: "Stand 2025 · PDF · 187 KB",
+        href: "/downloads/infoheft-schule-2025.pdf",
+      },
+      {
+        title: "Pädagogisches Schulkonzept",
+        meta: "PDF · 175 KB",
+        href: "/downloads/paedagogisches-schulkonzept.pdf",
+      },
+      {
+        title: "Monte-ABC",
+        meta: "Stand März 2025 · PDF · 555 KB",
+        href: "/downloads/monte-abc-2025.pdf",
+      },
+      {
+        title: "Spielregeln der Montessorischule",
+        meta: "Stand 2019 · PDF · 264 KB",
+        href: "/downloads/spielregeln-schule-2019.pdf",
+      },
+      {
+        title: "Freiraum zur Entfaltung",
+        meta: "PDF · 44 KB",
+        href: "/downloads/freiraum-zur-entfaltung.pdf",
+      },
+    ],
+  },
+  {
+    title: "Kindergarten",
+    files: [
+      {
+        title: "Konzeption Kindergarten",
+        meta: "Stand November 2020 · PDF · 2,2 MB",
+        href: "/downloads/konzeption-kindergarten-2020.pdf",
+      },
+      {
+        title: "Anmeldeantrag Kindergarten",
+        meta: "PDF · 158 KB",
+        href: "/downloads/anmeldeantrag-kindergarten.pdf",
+      },
+    ],
+  },
+  {
+    title: "Aufnahme & Verein",
+    files: [
+      {
+        title: "Absichtserklärung Schule",
+        meta: "inkl. Datenschutzhinweisen · PDF · 183 KB",
+        href: "/downloads/absichtserklaerung-schule.pdf",
+      },
+      {
+        title: "Beitrittserklärung Monte e.V.",
+        meta: "PDF · 244 KB",
+        href: "/downloads/beitrittserklaerung-verein.pdf",
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Downloads"
+  description="Infohefte, pädagogische Konzepte, Aufnahmeunterlagen, Monte-ABC und Vereinsunterlagen der Montessori Allgäu als PDF."
+>
+  <PageIntro
+    eyebrow="Downloads"
+    title="Unterlagen zum Nachlesen."
+    intro="Hier findet ihr pädagogische Konzepte, Aufnahmeunterlagen und Informationen für Familien. Der jeweilige Stand steht direkt beim Dokument – ältere Inhalte werden schrittweise überarbeitet."
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        sections.map((section) => (
+          <section
+            class="download-section"
+            aria-labelledby={`download-${section.title.toLowerCase().replaceAll(" ", "-")}`}
+          >
+            <p class="eyebrow">Dokumente</p>
+            <h2 id={`download-${section.title.toLowerCase().replaceAll(" ", "-")}`}>
+              {section.title}
+            </h2>
+            <div class="download-list">
+              {section.files.map((file) => (
+                <a class="download-row" href={file.href}>
+                  <div>
+                    <h3>{file.title}</h3>
+                    <p>{file.meta}</p>
+                  </div>
+                  <Download size={22} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTASection
+    title="Ein Dokument fehlt oder ist unklar?"
+    text="Meldet euch beim Schulbüro. Rechtlich verbindlich sind die jeweils aktuell unterzeichneten Verträge und Vereinbarungen."
+    primaryHref="/kontakt/"
+    primaryLabel="Kontakt"
+  />
+</BaseLayout>
+
+<style>
+  .download-section + .download-section {
+    margin-top: clamp(5rem, 10vw, 9rem);
+  }
+
+  .download-section > h2 {
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+  }
+
+  .download-row :global(svg) {
+    color: var(--terracotta);
+  }
+</style>

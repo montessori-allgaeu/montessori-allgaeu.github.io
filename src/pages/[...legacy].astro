@@ -1,0 +1,47 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { legacyRedirects } from "@/data/legacy";
+
+export function getStaticPaths() {
+  return Object.entries(legacyRedirects).map(([legacy, destination]) => ({
+    params: { legacy },
+    props: { destination },
+  }));
+}
+
+interface Props {
+  destination: string;
+}
+
+const { destination } = Astro.props;
+---
+
+<BaseLayout
+  title="Seite umgezogen"
+  description="Diese Seite ist auf der neuen Website der Montessori Allgäu umgezogen."
+  noindex
+>
+  <Fragment slot="head">
+    <meta http-equiv="refresh" content={`0; url=${destination}`} />
+  </Fragment>
+  <section class="redirect-page">
+    <div class="container container--reading">
+      <p class="eyebrow">Seite umgezogen</p>
+      <h1>Hier geht es weiter.</h1>
+      <p>Die gesuchte Information hat einen neuen Platz.</p>
+      <a class="button" href={destination}>Neue Seite öffnen</a>
+    </div>
+  </section>
+  <script is:inline define:vars={{ destination }}>
+    window.location.replace(destination);
+  </script>
+</BaseLayout>
+
+<style>
+  .redirect-page {
+    display: flex;
+    min-height: 65svh;
+    align-items: center;
+    padding-block: 5rem;
+  }
+</style>

@@ -1,0 +1,159 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+import preparedImage from "@/assets/images/editorial/prepared.webp";
+import materialsImage from "@/assets/images/editorial/materials.webp";
+---
+
+<BaseLayout
+  title="Montessori"
+  description="Wie wir Montessori leben: Orientierung am Kind, selbstbestimmtes Lernen, vorbereitete Umgebung, klare Grenzen und Leistung aus eigenem Antrieb."
+>
+  <PageIntro
+    eyebrow="Unser pädagogischer Ansatz"
+    title="Das Kind führt. Wir bereiten den Raum."
+    intro="Montessori bedeutet für uns, Kinder genau zu beobachten, ihrer Eigenaktivität zu vertrauen und ihnen eine Umgebung zu geben, in der sie sicher und selbstständig wachsen können."
+  >
+    <TextLink href="/kennenlernen/haeufige-fragen/" label="Passt Montessori zu uns?" />
+  </PageIntro>
+
+  <ImageSplit
+    image={preparedImage}
+    alt="Kinder arbeiten selbstständig in einer vorbereiteten Lernumgebung"
+    position="center 45%"
+  >
+    <p class="eyebrow">Vorbereitete Umgebung</p>
+    <h2>Freiheit braucht einen verlässlichen Rahmen.</h2>
+    <p>
+      Materialien sind sichtbar, zugänglich und sinnvoll geordnet. Die Kinder wissen, wo sie
+      arbeiten können und welche Grenzen für alle gelten. Innerhalb dieses Rahmens treffen sie echte
+      Entscheidungen: Woran arbeite ich? Mit wem? Wie lange?
+    </p>
+    <p>
+      Unsere Pädagog:innen beobachten, geben Einführungen und Impulse, helfen bei Hindernissen und
+      greifen ein, wenn Sicherheit oder die Freiheit anderer berührt sind.
+    </p>
+  </ImageSplit>
+
+  <section class="section section--light">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Was Kinder erleben"
+        title="Lernen, das von innen kommt."
+        text="Wir wollen nicht, dass Kinder für Noten, Lob oder aus Angst vor Konsequenzen arbeiten. Wir wollen, dass sie ihre Interessen, Fähigkeiten und ihren eigenen Willen kennenlernen."
+      />
+      <div class="numbered-points">
+        <article class="numbered-point">
+          <span class="numbered-point__number">01</span>
+          <h3>Eigenes Tempo</h3>
+          <p>
+            Kinder dürfen Zeit brauchen – und schnell vorangehen. Wir bremsen anspruchsvolles Lernen
+            ebenso wenig, wie wir Entwicklung künstlich beschleunigen.
+          </p>
+        </article>
+        <article class="numbered-point">
+          <span class="numbered-point__number">02</span>
+          <h3>Innere Referenz</h3>
+          <p>
+            Kinder lernen wahrzunehmen, was sie interessiert, was sie schon können und was ihr
+            nächster Schritt ist – ohne sich ständig im Urteil anderer zu suchen.
+          </p>
+        </article>
+        <article class="numbered-point">
+          <span class="numbered-point__number">03</span>
+          <h3>Verantwortung</h3>
+          <p>
+            Freiheit endet dort, wo Sicherheit und Freiheit anderer beginnen. Regeln und Grenzen
+            machen selbstbestimmtes Handeln erst möglich.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote-band">
+    <div class="container">
+      <blockquote>„Hilf mir, es selbst zu tun.“</blockquote>
+      <cite>Maria Montessori</cite>
+    </div>
+  </section>
+
+  <ImageSplit
+    image={materialsImage}
+    alt="Geordnete Montessori-Materialien in einem hellen Lernraum"
+    reverse
+    light
+    position="center"
+  >
+    <p class="eyebrow">Leistung ohne Leistungsdruck</p>
+    <h2>Wir mögen Leistung – wenn sie dem Kind gehört.</h2>
+    <p>
+      Wenn ein Kind sich vertieft, etwas wirklich verstehen will und aus eigenem Antrieb viel
+      erreicht, unterstützen wir das mit Freude. Leistung ist bei uns kein Mittel für Anerkennung,
+      Angst oder Beschämung. Fehler sind Rückmeldung: Wir beobachten, lernen und probieren erneut.
+    </p>
+    <p>
+      Deshalb arbeiten wir ohne Belohnung und Bestrafung als pädagogisches Steuerungsprinzip. Unsere
+      Führung ist warm, aufmerksam und gleichzeitig klar begrenzt.
+    </p>
+  </ImageSplit>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Bereit für eine offene Zukunft</p>
+        <h2>Wissen verändert sich. Der innere Kompass bleibt.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          In einer Welt mit künstlicher Intelligenz wird verfügbares Wissen immer weniger zum
+          knappen Gut. Umso wichtiger wird, dass junge Menschen wissen, was sie wollen, sich Neues
+          erschließen, urteilen, kommunizieren und mit anderen gestalten können.
+        </p>
+        <p>
+          Genau das üben Kinder bei uns jeden Tag: Interesse wahrnehmen, einen nächsten Schritt
+          wählen, Rückmeldung nutzen, Konflikte klären und Verantwortung übernehmen. Nicht als
+          Zukunftsfach, sondern als Art zu lernen und zu leben.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--terracotta">
+    <div class="container grid-3">
+      <article>
+        <p class="eyebrow">Nicht</p>
+        <h3>Freiheit ohne Struktur</h3>
+        <p>
+          Kinder müssen arbeiten und sich beteiligen. Wir begleiten, erinnern und setzen Grenzen.
+        </p>
+      </article>
+      <article>
+        <p class="eyebrow">Nicht</p>
+        <h3>Regelschule in anderer Sprache</h3>
+        <p>Montessori ist kein Material-Zusatz zu Druck, Taktung und äußerer Steuerung.</p>
+      </article>
+      <article>
+        <p class="eyebrow">Sondern</p>
+        <h3>Vertrauen mit Verantwortung</h3>
+        <p>
+          Das Kind führt seine Entwicklung – begleitet von Erwachsenen, die aufmerksam und klar
+          sind.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <CTASection
+    title="Montessori lässt sich nicht nur erklären."
+    text="Am besten versteht ihr unsere Pädagogik, wenn ihr die Monte erlebt, Fragen stellt und prüft, ob dieser Weg wirklich zu eurer Familie passt."
+    primaryHref="/kennenlernen/"
+    primaryLabel="Monte kennenlernen"
+    secondaryHref="/kindergarten-schule/"
+    secondaryLabel="Kindergarten & Schule"
+  />
+</BaseLayout>

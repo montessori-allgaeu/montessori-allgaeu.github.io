@@ -1,0 +1,174 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CTASection from "@/components/CTASection.astro";
+import { jobs } from "@/data/jobs";
+import careersImage from "@/assets/images/editorial/careers.webp";
+import communityImage from "@/assets/images/editorial/community.webp";
+---
+
+<BaseLayout
+  title="Arbeiten bei uns"
+  description="Arbeiten in der Montessori Allgäu: echte Montessori-Pädagogik, Freiheit innerhalb klarer Prinzipien, ein warmes lernendes Team und aktuelle Stellenangebote."
+>
+  <PageIntro
+    eyebrow="Arbeiten bei uns"
+    title="Pädagogik, hinter der du stehen kannst."
+    intro="Wir suchen keine Menschen, die einfach irgendeinen Arbeitsplatz brauchen. Wir suchen Pädagog:innen, denen Montessori wichtig ist und die Kinder warm, klar und auf Augenhöhe begleiten wollen."
+  >
+    <a class="button" href="#offene-stellen">Offene Stellen</a>
+  </PageIntro>
+
+  <ImageSplit
+    image={careersImage}
+    alt="Eine Pädagogin begleitet ein Kind aufmerksam beim Lernen"
+    position="center 42%"
+  >
+    <p class="eyebrow">Dein pädagogischer Raum</p>
+    <h2>Viel Freiheit. Klare gemeinsame Grundlage.</h2>
+    <p>
+      Innerhalb unserer Pädagogik, der Verantwortung für die Kinder und unserer Prinzipien hast du
+      echten Gestaltungsspielraum. Du beobachtest, setzt Impulse, entwickelst Lernumgebungen und
+      bringst deine Stärken ein – ohne dich in einem starren System zu verlieren.
+    </p>
+    <p>
+      Freiheit bedeutet auch Verantwortung: Wir sprechen Konflikte früh an, geben konkrete
+      Rückmeldung und erwarten, dass wir gemeinsam lernen statt Probleme zu vermeiden.
+    </p>
+  </ImageSplit>
+
+  <section class="section section--light">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Was dich erwartet"
+        title="Ein kleines System mit echten Beziehungen."
+      />
+      <div class="grid-4 work-benefits">
+        <article>
+          <span>01</span><h3>Team mit über 30 Menschen</h3><p>
+            Kindergarten, Schule und Organisation arbeiten eng und persönlich zusammen.
+          </p>
+        </article>
+        <article>
+          <span>02</span><h3>Bezahltes Montessori-Diplom</h3><p>
+            Wir unterstützen fundierte Qualifizierung, weil Haltung und Handwerk zusammengehören.
+          </p>
+        </article>
+        <article>
+          <span>03</span><h3>Fortbildungen & Onboarding</h3><p>
+            Du sollst nicht alles bereits können. Du sollst offen sein, wirklich zu lernen.
+          </p>
+        </article>
+        <article>
+          <span>04</span><h3>Warme, direkte Kultur</h3><p>
+            Wir halten Menschen im Kern für gut und sprechen trotzdem klar über Wirkung und Grenzen.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section honesty-section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Ehrlich vorab</p>
+        <h2>Wir bieten nicht alles. Aber das Wesentliche sehr bewusst.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Unsere Gehälter liegen in der Regel unter dem staatlichen Niveau und unser Gebäude ist
+          älter. Das sagen wir nicht klein.
+        </p>
+        <p>
+          Wir investieren unsere begrenzten Mittel unter anderem in kleinere Lerngruppen und mehr
+          pädagogische Präsenz. Das macht den Alltag kinderorientierter, aber finanziell nicht
+          automatisch attraktiver. Wer zu uns kommt, sollte genau wissen, weshalb diese Pädagogik
+          den Unterschied macht.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <ImageSplit
+    image={communityImage}
+    alt="Pädagoginnen und Kinder sitzen in einem gemeinsamen Kreis"
+    reverse
+    light
+    position="center 44%"
+  >
+    <p class="eyebrow">Unser Fit</p>
+    <h2>Du passt zu uns, wenn du neugierig und klar bleibst.</h2>
+    <ul class="editorial-list">
+      <li>Du willst Montessori leben – nicht nur Material benutzen.</li>
+      <li>Du kannst Freiheit geben und gleichzeitig liebevoll Grenzen halten.</li>
+      <li>Du sprichst Spannungen früh an und kannst Feedback hören.</li>
+      <li>Du beobachtest Wirkung und bist bereit, deine Arbeit zu verändern.</li>
+      <li>Du möchtest gemeinsam Verantwortung tragen, statt dich im System zu verstecken.</li>
+    </ul>
+  </ImageSplit>
+
+  <section class="section" id="offene-stellen">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Offene Stellen</p>
+        <h2>Wo du gerade gebraucht wirst.</h2>
+      </div>
+      <div class="job-list">
+        {
+          jobs.map((job) => (
+            <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
+              <h3>{job.title}</h3>
+              <p>
+                {job.area}
+                <br />
+                {job.schedule}
+              </p>
+              <ArrowRight size={24} aria-hidden="true" />
+            </a>
+          ))
+        }
+      </div>
+      <div class="button-row">
+        <a class="button button--outline" href="/arbeiten-bei-uns/stellen/"
+          >Alle Stellen & Initiativkontakt</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Erst kennenlernen, dann entscheiden."
+    text="Hospitationen und unverbindliche Kennenlerngespräche sind möglich. Schreib uns, welche Rolle dich interessiert und weshalb Montessori für dich wichtig ist."
+    primaryHref="mailto:info@montessori-allgaeu.de?subject=Kennenlernen%20als%20P%C3%A4dagog%3Ain"
+    primaryLabel="Kennenlerngespräch anfragen"
+    secondaryHref="/gemeinschaft/prinzipien/"
+    secondaryLabel="Prinzipien lesen"
+  />
+</BaseLayout>
+
+<style>
+  .work-benefits article {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .work-benefits span {
+    display: block;
+    margin-bottom: 2.5rem;
+    color: var(--terracotta);
+    font-family: var(--serif);
+    font-size: 1.35rem;
+  }
+
+  .work-benefits h3 {
+    font-size: 1.65rem;
+  }
+
+  .honesty-section {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+</style>

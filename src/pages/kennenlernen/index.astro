@@ -1,0 +1,117 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import HubLink from "@/components/HubLink.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+import communityImage from "@/assets/images/editorial/community.webp";
+---
+
+<BaseLayout
+  title="Monte kennenlernen"
+  description="Lernt die Montessori Allgäu ehrlich kennen: unsere Haltung, den Aufnahmeprozess für Kindergarten und Schule, Kosten und die Frage, ob wir zueinander passen."
+>
+  <PageIntro
+    eyebrow="Monte kennenlernen"
+    title="Nicht jede gute Schule passt zu jeder Familie."
+    intro="Der Aufnahmeweg ist keine Bewerbung um den besten Eindruck. Er ist ein gegenseitiges Kennenlernen: Ihr sollt klar verstehen, wie wir arbeiten – und wir wollen sehen, ob Kind, Familie und Monte gemeinsam wachsen können."
+  />
+
+  <section class="section">
+    <div class="container grid-2 fit-columns">
+      <article>
+        <p class="eyebrow">Das passt zu uns</p>
+        <h2>Ihr vertraut Entwicklung.</h2>
+        <ul class="editorial-list">
+          <li>Ihr wollt bewusst zu Montessori – nicht nur weg von einer Regelschule.</li>
+          <li>Ihr traut eurem Kind zu, Interessen und ein eigenes Tempo zu entwickeln.</li>
+          <li>
+            Ihr könnt aushalten, dass der Weg nicht über Noten, Druck oder eine fixe Regelschulzeit
+            gesteuert wird.
+          </li>
+          <li>Ihr seid bereit, offen zu sprechen, Rückmeldung anzunehmen und aktiv mitzumachen.</li>
+        </ul>
+      </article>
+      <article>
+        <p class="eyebrow">Das passt eher nicht</p>
+        <h2>Ihr wollt das Ergebnis vorgeben.</h2>
+        <ul class="editorial-list">
+          <li>
+            Gute Noten, ein bestimmter Abschlusszeitpunkt oder ein vorgezeichneter Karriereweg
+            stehen über dem Tempo des Kindes.
+          </li>
+          <li>Freiheit versteht ihr als Service ohne Regeln, Mitarbeit oder Verantwortung.</li>
+          <li>
+            Ihr erwartet, dass Pädagog:innen ein Kind mit Druck, Belohnung oder Bestrafung steuern.
+          </li>
+          <li>Ihr möchtet Schule abgeben, statt Teil der Gemeinschaft zu werden.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <ImageSplit
+    image={communityImage}
+    alt="Familien und Pädagoginnen begegnen sich in der Monte"
+    reverse
+    light
+    position="center 42%"
+  >
+    <p class="eyebrow">Euer erster Eindruck</p>
+    <h2>Erlebt erst die Haltung. Entscheidet dann.</h2>
+    <p>
+      Infoabend, Tag der offenen Tür, Hospitation und persönliche Gespräche machen Montessori
+      konkret. Ihr erlebt, wie Erwachsene begleiten, wie Freiheit und Grenzen zusammengehören und
+      welche Rolle Eltern in unserer Gemeinschaft haben.
+    </p>
+    <TextLink href="/termine/" label="Aktuelle Termine" />
+  </ImageSplit>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Alle Informationen</p>
+        <h2>Euer Weg in die Monte.</h2>
+      </div>
+      <div class="hub-links">
+        <HubLink
+          href="/kennenlernen/aufnahme-kindergarten/"
+          title="Aufnahme Kindergarten"
+          description="Kennenlernen, Aufnahmebogen, Hospitation und persönliche Entscheidung – mit Blick auf den langfristigen Weg in der Monte."
+        />
+        <HubLink
+          href="/kennenlernen/aufnahme-schule/"
+          title="Aufnahme Schule"
+          description="Der Ablauf für die Einschulung in Klasse 1. Quereinstiege werden nur in begründeten Einzelfällen geprüft."
+        />
+        <HubLink
+          href="/kennenlernen/kosten/"
+          title="Kosten & Mitarbeit"
+          description="Schulgeld, Kindergartenbeitrag, Elterneinlage, Vereinsbeitrag und die verbindliche Mitarbeit transparent erklärt."
+        />
+        <HubLink
+          href="/kennenlernen/haeufige-fragen/"
+          title="Häufige Fragen"
+          description="Von Noten und Abschlüssen über Grenzen bis zur Frage, was passiert, wenn ein Kind nicht arbeiten möchte."
+        />
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Ihr müsst noch nicht sicher sein. Aber neugierig und ehrlich."
+    text="Schaut euch die nächsten Termine an oder meldet euch beim Kindergarten beziehungsweise Schulbüro. Wir klären gemeinsam, welcher nächste Schritt sinnvoll ist."
+    primaryHref="/termine/"
+    primaryLabel="Termine ansehen"
+    secondaryHref="/kontakt/"
+    secondaryLabel="Kontakt aufnehmen"
+  />
+</BaseLayout>
+
+<style>
+  .fit-columns article {
+    padding-top: 2rem;
+    border-top: 2px solid var(--terracotta);
+  }
+</style>

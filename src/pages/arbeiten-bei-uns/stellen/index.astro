@@ -1,0 +1,66 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import { jobs } from "@/data/jobs";
+---
+
+<BaseLayout
+  title="Offene Stellen"
+  description="Aktuelle Stellenangebote bei Montessori Allgäu für Lehrkräfte, pädagogische Fachkräfte, Erzieher:innen, Fachlehrkräfte und Bundesfreiwilligendienst."
+>
+  <PageIntro
+    eyebrow="Offene Stellen"
+    title="Deine Arbeit soll Kindern wirklich dienen."
+    intro="Hier findest du die Rollen, für die wir aktuell Menschen suchen. Wichtiger als eine perfekte Selbstdarstellung ist uns, dass deine Haltung, Qualifikation und Motivation ehrlich zu unserer Arbeit passen."
+  />
+
+  <section class="section">
+    <div class="container job-list">
+      {
+        jobs.map((job) => (
+          <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
+            <h2>{job.title}</h2>
+            <p>
+              {job.area}
+              <br />
+              {job.schedule}
+            </p>
+            <ArrowRight size={26} aria-hidden="true" />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div><p class="eyebrow">Initiativ</p><h2>Deine Rolle fehlt?</h2></div>
+      <div>
+        <p class="lead">
+          Wenn du qualifiziert bist, Montessori wirklich leben willst und glaubst, dass du unsere
+          Arbeit besser machst, möchten wir trotzdem von dir hören.
+        </p>
+        <p>
+          Schreib kurz, was du beitragen möchtest, welche Erfahrung du mitbringst und weshalb gerade
+          diese Pädagogik für dich wichtig ist.
+        </p>
+        <a
+          class="button button--outline"
+          href="mailto:info@montessori-allgaeu.de?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u"
+          >Initiativkontakt aufnehmen</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Noch nicht bewerben – erst erleben?"
+    text="Ein unverbindliches Gespräch oder eine Hospitation kann der ehrlichste erste Schritt sein."
+    primaryHref="mailto:info@montessori-allgaeu.de?subject=Hospitation%20oder%20Kennenlerngespr%C3%A4ch"
+    primaryLabel="Hospitation anfragen"
+    secondaryHref="/arbeiten-bei-uns/"
+    secondaryLabel="Arbeitskultur kennenlernen"
+  />
+</BaseLayout>

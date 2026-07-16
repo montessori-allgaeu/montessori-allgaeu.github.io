@@ -1,0 +1,103 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+
+const faqs = [
+  {
+    question: "Woran merken wir, ob Montessori zu unserer Familie passt?",
+    answer:
+      "Wenn ihr eurem Kind zutraut, ein eigenes Tempo und eigene Interessen zu entwickeln; wenn ihr Montessori bewusst wollt und nicht nur eine Alternative zur Regelschule sucht; und wenn ihr bereit seid, Unsicherheit ohne Druck auf das Kind zu klären. Wichtig ist außerdem, dass ihr euch als aktiven Teil der Gemeinschaft versteht.",
+  },
+  {
+    question: "Dürfen Kinder bei euch einfach machen, was sie wollen?",
+    answer:
+      "Nein. Freiheit besteht innerhalb einer vorbereiteten Umgebung mit klaren Grenzen. Kinder müssen sich beteiligen und arbeiten. Sie dürfen aber – alters- und entwicklungsangemessen – wählen, woran, wie lange und mit wem sie arbeiten. Wir greifen ein, wenn Sicherheit, Respekt oder die Freiheit anderer berührt sind.",
+  },
+  {
+    question: "Was passiert, wenn ein Kind nicht arbeiten will?",
+    answer:
+      "Wir schauen zuerst genau hin: Fehlt Sicherheit, Beziehung, Orientierung, Fähigkeit, Interesse oder passende Herausforderung? Pädagog:innen geben Impulse, begrenzen Ausweichen und vereinbaren konkrete nächste Schritte. Selbstbestimmung bedeutet nicht, ein Kind sich selbst zu überlassen.",
+  },
+  {
+    question: "Lehnt ihr Leistung ab?",
+    answer:
+      "Nein. Wir freuen uns über konzentrierte, anspruchsvolle Leistung – besonders, wenn sie aus eigenem Antrieb entsteht. Wir machen Leistung aber nicht zum Wertmaßstab eines Kindes und steuern sie nicht über Angst, Scham, Belohnung oder ständigen Vergleich.",
+  },
+  {
+    question: "Gibt es Noten und welche Abschlüsse sind möglich?",
+    answer:
+      "Im Alltag stehen Beobachtung, Lernentwicklung und konkrete Rückmeldung im Vordergrund. Für anerkannte Abschlüsse gelten staatliche Anforderungen. Möglich sind je nach individuellem Weg der erfolgreiche oder qualifizierende Mittelschulabschluss und der mittlere Schulabschluss über eine kooperierende staatliche Schule. Eine bestimmte Note oder Regelschulzeit ist nicht unser oberster Maßstab.",
+  },
+  {
+    question: "Ist die Monte auch für sehr schnelle oder besonders interessierte Kinder geeignet?",
+    answer:
+      "Ja. Das eigene Tempo kann langsam oder sehr schnell sein. Kinder, die vertieft, früh oder auf hohem Niveau arbeiten wollen, sollen nicht auf das Tempo einer ganzen Klasse warten müssen. Entscheidend ist, dass sie schrittweise selbstständig mit ihrer Freiheit umgehen können.",
+  },
+  {
+    question: "Seid ihr eine Förderschule?",
+    answer:
+      "Nein. Wir sind eine allgemeinbildende Montessori-Schule und kein spezialisiertes Förderzentrum. Kinder mit zusätzlichem Unterstützungsbedarf können Teil unserer Gemeinschaft sein, wenn ihre Bedürfnisse und die Sicherheit und Entwicklung der gesamten Lerngruppe mit den verfügbaren fachlichen und personellen Ressourcen gut begleitet werden können. Das prüfen wir sorgfältig im Einzelfall.",
+  },
+  {
+    question: "Warum ist Elternmitarbeit verpflichtend?",
+    answer:
+      "Weil die Monte als Verein von Familien getragen wird. Mitarbeit macht Angebote finanziell möglich und prägt die Kultur: Eltern bringen Fähigkeiten ein, übernehmen Verantwortung und kennen die Gemeinschaft, in der ihr Kind viele Jahre lebt. Schule ist bei uns kein Ort, an dem ein Kind nur abgegeben wird.",
+  },
+  {
+    question: "Wechselt mein Kind aus dem Kindergarten automatisch in die Schule?",
+    answer:
+      "Der langfristige Wechsel ist unsere klare gemeinsame Absicht und ein wichtiger Grund, weshalb wir Kindergartenfamilien aufnehmen. Eine rechtlich automatische Garantie ist er nicht. Entwicklung, Gruppensituation und der fortbestehende Fit werden gemeinsam betrachtet.",
+  },
+  {
+    question: "Nehmt ihr Kinder als Quereinsteiger:innen auf?",
+    answer:
+      "Nur in einzelnen, begründeten Situationen. Ein Wechselwunsch wegen Problemen an einer anderen Schule reicht nicht aus. Wir prüfen freie Kapazität, Gruppensituation, Arbeitsweise des Kindes und vor allem, ob die gesamte Familie unsere Pädagogik bewusst mitträgt.",
+  },
+  {
+    question: "Wie geht ihr mit Konflikten und Regelverletzungen um?",
+    answer:
+      "Wir sprechen früh, konkret und ohne Beschämung. Wir schützen Betroffene, setzen klare Grenzen und schauen auf Wirkung, Bedürfnisse und Verantwortung. Es geht nicht um Schuldige oder Strafe, sondern um Sicherheit, Reparatur und Lernen. Bei wiederholter Gefährdung handeln wir konsequent.",
+  },
+  {
+    question: "Müssen Eltern Montessori schon vollständig kennen?",
+    answer:
+      "Nein. Neugier und Lernbereitschaft sind wichtiger als Vorwissen. Ihr solltet aber bereit sein, euch ernsthaft mit Montessori auseinanderzusetzen, eigene Schul- und Leistungserfahrungen zu reflektieren und Fragen oder Ängste offen anzusprechen.",
+  },
+];
+---
+
+<BaseLayout
+  title="Häufige Fragen"
+  description="Klare Antworten zu Montessori Allgäu: Freiheit und Grenzen, Leistung, Noten, Abschlüsse, Aufnahme, Quereinstieg, Förderbedarf und Elternmitarbeit."
+>
+  <PageIntro
+    eyebrow="Häufige Fragen"
+    title="Klarheit ist Teil von Vertrauen."
+    intro="Montessori wird leicht mit grenzenloser Freiheit, weniger Anspruch oder einer Ausweichschule verwechselt. Hier sagen wir offen, wie wir es meinen – und was ihr von uns erwarten könnt."
+  />
+
+  <section class="section">
+    <div class="container container--reading faq-list">
+      {
+        faqs.map((faq, index) => (
+          <details open={index === 0}>
+            <summary>{faq.question}</summary>
+            <div class="faq-list__answer">
+              <p>{faq.answer}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTASection
+    title="Eure Frage fehlt?"
+    text="Schreibt uns, was für eure Entscheidung noch unklar ist. Gute Fragen helfen nicht nur euch – sie helfen auch uns, transparenter zu werden."
+    primaryHref="/kontakt/"
+    primaryLabel="Kontakt aufnehmen"
+    secondaryHref="/kennenlernen/"
+    secondaryLabel="Zurück zum Kennenlernen"
+  />
+</BaseLayout>

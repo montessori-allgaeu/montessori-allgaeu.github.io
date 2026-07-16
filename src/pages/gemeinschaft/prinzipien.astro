@@ -1,0 +1,158 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import { principles } from "@/data/site";
+---
+
+<BaseLayout
+  title="Unsere Prinzipien"
+  description="Die vier Entscheidungsprinzipien der Montessori Allgäu: Montessori leben, Kind im Mittelpunkt, Konflikte annehmen und gemeinsam lernen – mit klarem Ist und Ist nicht."
+>
+  <PageIntro
+    eyebrow="Gemeinschaft · Prinzipien"
+    title="So treffen wir Entscheidungen."
+    intro="Unsere Prinzipien gelten für alle Menschen mit Aufgaben und Verantwortung – über alle fünf Säulen hinweg. Sie bestimmen unser Handeln und machen sichtbar, woran wir uns selbst und einander erinnern."
+  >
+    <span class="beta-badge">Beta · beschlossen, gelebt und in Weiterentwicklung</span>
+  </PageIntro>
+
+  <section class="section section--compact">
+    <div class="container container--reading principles-intro">
+      <p class="lead">
+        Die Prinzipien bestimmen unser Handeln. Wir alle sind dafür verantwortlich, die Prinzipien
+        zu wahren. Alles, was wir tun, muss mit den Prinzipien im Einklang stehen.
+      </p>
+      <p>Wir wahren sie, indem wir uns selbst und andere immer wieder an sie erinnern.</p>
+    </div>
+  </section>
+
+  <section class="section principle-section">
+    <div class="container principle-grid">
+      {
+        principles.map((principle) => (
+          <article class="principle-card">
+            <span class="principle-card__number">#{principle.number.replace(/^0/, "")}</span>
+            <h2>{principle.title}</h2>
+            <div class="principle-columns">
+              <div>
+                <h3>Was es ist</h3>
+                <ul>
+                  {principle.is.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3>Was es nicht ist</h3>
+                <ul>
+                  {principle.isNot.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Prinzipien anwenden</p>
+        <h2>Keine Wertewand. Eine Hilfe für den nächsten Schritt.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Prinzipien sind keine Werte, die beschreiben, was uns wichtig ist. Sie helfen uns, in
+          einer konkreten Situation zu entscheiden, was wir als Nächstes tun.
+        </p>
+        <p>
+          Nicht jedes Prinzip muss gleich stark sprechen. Manchmal weist ein einziges Prinzip die
+          Richtung, manchmal sind es mehrere.
+        </p>
+        <p>
+          Prinzipien treffen die Entscheidung oft nicht sofort abschließend, sondern deuten uns klar
+          auf den nächsten Schritt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--reading">
+      <p class="eyebrow">Ein Musterbeispiel</p>
+      <h2>Sorge vor den Abschlussprüfungen</h2>
+      <p class="lead">
+        Wenn die Tertia näher rückt, wächst bei manchen Eltern die Sorge: Schafft mein Kind die
+        Prüfung, eine gute Note und den Abschluss in der üblichen Zeit?
+      </p>
+      <div class="prose">
+        <h3>Was sagen die Prinzipien?</h3>
+        <p>
+          <strong>#1 Montessori leben</strong> weist die Richtung: Angst vor einer Prüfung ist kein Grund,
+          unsere Pädagogik schrittweise durch mehr Regelschule zu ersetzen. Montessori bedeutet dabei
+          nicht, Leistung abzulehnen. Schnelles, vertieftes und anspruchsvolles Lernen fördern wir konsequent.
+        </p>
+        <p>
+          <strong>#2 Kind im Mittelpunkt</strong> heißt, Tempo, Fähigkeiten, Bedürfnisse und Ziele des
+          jungen Menschen ernst zu nehmen. Eine gute Note ist willkommen, aber nicht der oberste Maßstab.
+        </p>
+        <p>
+          <strong>#3 Konflikte annehmen</strong> und <strong>#4 Gemeinsam lernen</strong> helfen uns,
+          Sorgen weder abzuwerten noch ihnen automatisch zu folgen. Wir machen Lernstand und Anforderungen
+          transparent, beobachten die Wirkung und passen gezielt an.
+        </p>
+        <h3>Mögliche nächste Schritte</h3>
+        <p>
+          Die Klasse wechselt nicht pauschal zu Arbeitsblättern und Frontalunterricht. Stattdessen
+          klären wir mit dem jungen Menschen und den Eltern Ziel, Kompetenzen und konkrete Lücken.
+          Daraus entstehen individuelle Lernziele und – wenn sinnvoll – eine gezielte Vorbereitung
+          auf Prüfungsformate, die Montessori ergänzt statt ersetzt.
+        </p>
+      </div>
+      <div class="button-row">
+        <a
+          class="button button--outline"
+          href="https://docs.google.com/document/d/1dAD0VGA0Y4vw9a6cyX-QLYcuti-vKgGgbkVNVyUF1qc/edit"
+          target="_blank"
+          rel="noreferrer">Arbeitsdokument mit allen Beispielen öffnen</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    eyebrow="Lebende Prinzipien"
+    title="Beschlossen heißt nicht fertig."
+    text="Wir leben diese Beta-Version bereits und entwickeln sie aus Erfahrung weiter. Änderungen sollen nicht leise passieren, sondern nachvollziehbar und mit Blick auf ihre Wirkung."
+    primaryHref="/gemeinschaft/"
+    primaryLabel="Zur Gemeinschaft"
+    secondaryHref="/kontakt/"
+    secondaryLabel="Rückfrage stellen"
+  />
+</BaseLayout>
+
+<style>
+  .beta-badge {
+    display: inline-flex;
+    margin-top: 1rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--terracotta);
+    color: var(--terracotta-dark);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .principles-intro {
+    text-align: center;
+  }
+
+  .principle-section {
+    padding-top: 0;
+  }
+</style>

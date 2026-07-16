@@ -1,0 +1,20 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  label?: string;
+}
+
+const { href, title, description, label = "Mehr erfahren" } = Astro.props;
+---
+
+<a class="hub-link" href={href}>
+  <div>
+    <h2>{title}</h2>
+    <p>{description}</p>
+  </div>
+  <span class="hub-link__meta">{label}<ArrowRight size={18} aria-hidden="true" /></span>
+</a>

@@ -1,0 +1,193 @@
+---
+import { Menu, X } from "@lucide/astro";
+import Brand from "./Brand.astro";
+import { mainNavigation } from "@/data/site";
+
+const path = Astro.url.pathname;
+const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <Brand />
+    <nav class="desktop-nav" aria-label="Hauptnavigation">
+      {
+        mainNavigation.map((item) => (
+          <a
+            class:list={{ active: active(item.href) }}
+            href={item.href}
+            aria-current={active(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+    <a class="button header-cta" href="/kennenlernen/">Monte kennenlernen</a>
+    <details class="mobile-menu">
+      <summary aria-label="Navigation öffnen">
+        <Menu class="mobile-menu__open" size={24} aria-hidden="true" />
+        <X class="mobile-menu__close" size={24} aria-hidden="true" />
+      </summary>
+      <nav aria-label="Mobile Navigation">
+        {
+          mainNavigation.map((item) => (
+            <a
+              class:list={{ active: active(item.href) }}
+              href={item.href}
+              aria-current={active(item.href) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <a class="button" href="/kennenlernen/">Monte kennenlernen</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    height: var(--header-height);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: blur(16px);
+  }
+
+  .site-header__inner {
+    display: grid;
+    width: min(calc(100% - 3rem), 1440px);
+    height: 100%;
+    margin-inline: auto;
+    grid-template-columns: auto 1fr auto;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+  }
+
+  .desktop-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: clamp(1.1rem, 2.2vw, 2.4rem);
+  }
+
+  .desktop-nav a {
+    position: relative;
+    padding: 0.5rem 0;
+    color: var(--forest-soft);
+    font-size: 0.76rem;
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .desktop-nav a::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: var(--terracotta);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 160ms ease;
+  }
+
+  .desktop-nav a:hover::after,
+  .desktop-nav a.active::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .header-cta {
+    min-height: 44px;
+    padding-inline: 1.15rem;
+    font-size: 0.78rem;
+  }
+
+  .mobile-menu {
+    display: none;
+  }
+
+  .mobile-menu summary {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border: 1px solid var(--line-strong);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-menu__close,
+  .mobile-menu[open] .mobile-menu__open {
+    display: none;
+  }
+
+  .mobile-menu[open] .mobile-menu__close {
+    display: block;
+  }
+
+  .mobile-menu nav {
+    position: fixed;
+    top: var(--header-height);
+    right: 0;
+    left: 0;
+    display: flex;
+    min-height: calc(100dvh - var(--header-height));
+    flex-direction: column;
+    gap: 0;
+    padding: 1.2rem 1.5rem 3rem;
+    background: var(--paper);
+  }
+
+  .mobile-menu nav > a:not(.button) {
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    text-decoration: none;
+  }
+
+  .mobile-menu nav > a.active:not(.button) {
+    color: var(--terracotta);
+  }
+
+  .mobile-menu nav .button {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 1180px) {
+    .desktop-nav {
+      display: none;
+    }
+
+    .site-header__inner {
+      grid-template-columns: 1fr auto auto;
+    }
+
+    .mobile-menu {
+      display: block;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header__inner {
+      width: calc(100% - 2rem);
+      grid-template-columns: 1fr auto;
+      gap: 0.8rem;
+    }
+
+    .header-cta {
+      display: none;
+    }
+  }
+</style>

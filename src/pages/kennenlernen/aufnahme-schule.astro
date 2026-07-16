@@ -1,0 +1,138 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+---
+
+<BaseLayout
+  title="Aufnahme Schule"
+  description="Der Aufnahmeprozess für die 1. Klasse der Montessori-Schule Allgäu: Infoabend, Absichtserklärung, Hospitation, Kennenlernen und Entscheidung."
+>
+  <PageIntro
+    eyebrow="Aufnahme Schule"
+    title="Einschulung ist eine gemeinsame Entscheidung."
+    intro="Wir nehmen vor allem Kinder für die 1. Klasse auf. Dabei schauen wir auf das einzelne Kind, die Familie, die Lerngruppe und darauf, ob unsere Montessori-Pädagogik wirklich gewollt ist."
+  >
+    <TextLink
+      href="/downloads/absichtserklaerung-schule.pdf"
+      label="Absichtserklärung herunterladen"
+    />
+  </PageIntro>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Einschulung im nächsten Schuljahr</p>
+        <h2>Neue Termine folgen.</h2>
+        <div class="notice">
+          <p>
+            Der veröffentlichte Aufnahmezyklus 2026/27 ist abgeschlossen. Termine und Fristen für
+            die nächste Einschulung stellen wir hier ein, sobald sie verbindlich beschlossen sind.
+          </p>
+        </div>
+      </div>
+      <div>
+        <p class="lead">
+          Die Teilnahme an einem Infoabend ist Voraussetzung für eine mögliche Aufnahme. Dort erlebt
+          ihr nicht nur den Ablauf, sondern vor allem unsere pädagogische Haltung.
+        </p>
+        <div class="button-row">
+          <a class="button" href="/termine/">Termine ansehen</a>
+          <a class="button button--outline" href="mailto:info@montessori-allgaeu.de"
+            >Schulbüro kontaktieren</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Der Ablauf</p>
+        <h2>Vom ersten Eindruck zur Aufnahme.</h2>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <div>
+            <h3>Tag der offenen Tür oder Infoabend</h3><p>
+              Ihr lernt Montessori-Arbeit, Schulalltag, Abschlusswege, Elternrolle und unseren
+              Aufnahmeprozess kennen. Der Infoabend ist verbindlicher Teil des Wegs.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Absichtserklärung</h3><p>
+              Innerhalb der veröffentlichten Frist reicht ihr eure Unterlagen im Schulbüro ein.
+              Bitte beschreibt ehrlich, weshalb ihr Montessori wollt.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Sichtung</h3><p>
+              Wir prüfen verfügbare Plätze und ob eine Fortsetzung des Aufnahmeprozesses sinnvoll
+              erscheint.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Hospitation der Eltern</h3><p>
+              Ihr erlebt den Unterricht und sprecht persönlich mit uns über eure Beobachtungen,
+              Erwartungen und Fragen.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Kennenlernnachmittag für Kinder</h3><p>
+              Auch euer Kind soll uns erleben und sich ein eigenes Bild machen können. Wir
+              beobachten, wie es sich im Rahmen bewegt und in Kontakt kommt.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Entscheidung</h3><p>
+              Wir entscheiden mit Blick auf Kind, Familie, Lerngruppe, Kapazität und pädagogischen
+              Fit und melden uns zum angekündigten Termin.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Quereinstieg</p>
+        <h2>Kein regulärer Aufnahmeweg.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Wechsel in höhere Klassen bewerben wir nicht aktiv und prüfen sie nur in einzelnen,
+          begründeten Situationen.
+        </p>
+        <p>
+          Ein Wechsel allein wegen Schwierigkeiten an einer anderen Schule ist noch kein
+          Montessori-Fit. Entscheidend sind freie Kapazität, Gruppensituation, die eigenständige
+          Arbeitsweise des Kindes und eine bewusste Entscheidung der gesamten Familie für unsere
+          Pädagogik.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Wisst ihr, worauf ihr euch einlasst?"
+    text="Die häufigen Fragen klären offen, wie wir mit Noten, Tempo, Leistung, Grenzen und Elternmitarbeit umgehen."
+    primaryHref="/kennenlernen/haeufige-fragen/"
+    primaryLabel="Häufige Fragen lesen"
+    secondaryHref="/kontakt/"
+    secondaryLabel="Schulbüro kontaktieren"
+  />
+</BaseLayout>

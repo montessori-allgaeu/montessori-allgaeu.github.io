@@ -1,0 +1,94 @@
+---
+import { Mail, MapPin, Phone } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import { site } from "@/data/site";
+---
+
+<BaseLayout
+  title="Kontakt"
+  description="Kontakt zu Montessori-Schule und Kindergarten Allgäu in Oberstaufen/Kalzhofen: E-Mail, Telefon, Anschrift, Büro- und Öffnungszeiten."
+>
+  <PageIntro
+    eyebrow="Kontakt"
+    title="Wir freuen uns, von euch zu hören."
+    intro="Für Aufnahme, Alltag und Schule hilft das Schulbüro weiter. Fragen zum Kindergarten gehen direkt an die Kindergartenleitung."
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <article class="contact-panel">
+        <p class="eyebrow">Schule</p>
+        <h2>Schulbüro</h2>
+        <address>{site.address.street}<br />{site.address.city}</address>
+        <p>
+          <a href={`mailto:${site.email}`}><Mail size={18} aria-hidden="true" />{site.email}</a>
+        </p>
+        <p>
+          <a href={`tel:${site.phone}`}><Phone size={18} aria-hidden="true" />{site.phoneDisplay}</a
+          >
+        </p>
+        <h3>Öffnungszeiten</h3>
+        <ul class="editorial-list">
+          <li>Montag: 7:30–16:30 Uhr</li>
+          <li>Dienstag: 7:30–15:30 Uhr</li>
+          <li>Mittwoch: 7:30–16:30 Uhr</li>
+          <li>Donnerstag: 7:30–13:30 Uhr</li>
+          <li>Freitag: nicht besetzt</li>
+        </ul>
+      </article>
+      <article class="contact-panel">
+        <p class="eyebrow">Kindergarten</p>
+        <h2>Kindergartenleitung</h2>
+        <address>{site.address.street}<br />{site.address.city}</address>
+        <p>
+          <a href={`mailto:${site.kindergartenEmail}`}
+            ><Mail size={18} aria-hidden="true" />{site.kindergartenEmail}</a
+          >
+        </p>
+        <p>
+          <a href={`tel:${site.kindergartenPhone}`}
+            ><Phone size={18} aria-hidden="true" />{site.kindergartenPhoneDisplay}</a
+          >
+        </p>
+        <h3>Öffnungszeiten</h3>
+        <ul class="editorial-list">
+          <li>Montag, Mittwoch, Freitag: 7:30–13:00 Uhr</li>
+          <li>Dienstag und Donnerstag: 7:30–16:00 Uhr</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Anfahrt</p>
+        <h2>In Kalzhofen bei Oberstaufen.</h2>
+        <p class="lead">Kindergarten und Schule liegen gemeinsam in der Klosterstraße 8.</p>
+        <a
+          class="button button--outline"
+          href="https://www.openstreetmap.org/search?query=Klosterstra%C3%9Fe%208%2C%2087534%20Oberstaufen"
+          target="_blank"
+          rel="noreferrer"><MapPin size={18} aria-hidden="true" />Route auf OpenStreetMap öffnen</a
+        >
+      </div>
+      <div>
+        <p class="eyebrow">Datenschutzfreundlich</p>
+        <h3>Keine eingebettete Karte, kein Kontaktformular.</h3>
+        <p>
+          Die Karte öffnet sich erst, wenn ihr den externen Link anklickt. Beim Kontakt per E-Mail
+          werden die von euch übermittelten Angaben zur Bearbeitung eurer Anfrage verwendet.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-panel p a {
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+</style>

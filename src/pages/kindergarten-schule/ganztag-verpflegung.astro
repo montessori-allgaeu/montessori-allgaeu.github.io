@@ -1,0 +1,82 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import CTASection from "@/components/CTASection.astro";
+import outdoorsImage from "@/assets/images/editorial/outdoors.webp";
+import roomImage from "@/assets/images/editorial/room.webp";
+---
+
+<BaseLayout
+  title="Ganztag & Verpflegung"
+  description="Offene Ganztagsschule und frisches Mittagessen an der Montessori-Schule Allgäu: ein verlässlicher Rahmen mit Zeit für Beziehung, Bewegung und Projekte."
+>
+  <PageIntro
+    eyebrow="Ganztag & Verpflegung"
+    title="Ein ganzer Tag darf sich auch ganz anfühlen."
+    intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unser Ganztag ist deshalb mehr als Betreuung."
+  />
+
+  <ImageSplit image={outdoorsImage} alt="Kinder spielen gemeinsam draußen" position="center 42%">
+    <p class="eyebrow">Offene Ganztagsschule</p>
+    <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
+    <p>
+      Die offene Ganztagsschule bietet an Schultagen von Montag bis Donnerstag einen verlässlichen
+      Nachmittagsrahmen. Kinder essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und
+      werden von vertrauten Erwachsenen begleitet.
+    </p>
+    <p>
+      Konkrete Buchungszeiten, Plätze und aktuelle Konditionen besprecht ihr mit dem Schulbüro. Für
+      Kinder im offenen Ganztag ist das gemeinsame Mittagessen verbindlicher Teil des Angebots.
+    </p>
+  </ImageSplit>
+
+  <ImageSplit
+    image={roomImage}
+    alt="Heller Raum der Montessori-Schule"
+    reverse
+    light
+    position="center"
+  >
+    <p class="eyebrow">Mittagessen</p>
+    <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
+    <p>
+      Montags bis donnerstags liefert „La Cucina“ aus Röthenbach ein frisch zubereitetes
+      Mittagessen. Wo möglich, werden regionale und saisonale Zutaten verwendet. Auch Kinder
+      außerhalb des Ganztags und Menschen aus der Monte-Gemeinschaft können sich nach Voranmeldung
+      beteiligen.
+    </p>
+    <p><strong>Aktueller Richtwert:</strong> 5 Euro pro Essen und Kind.</p>
+    <p class="small muted">
+      Preise und Abläufe können sich ändern. Den verbindlichen Stand erfahrt ihr im Schulbüro.
+    </p>
+  </ImageSplit>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Gemeinschaft</p>
+        <h2>Auch Essen ist ein Lernort.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Tisch decken, warten, teilen, probieren, Grenzen spüren, aufräumen: Ein gemeinsames Essen
+          ist voller kleiner Momente von Selbstständigkeit und Verbindung.
+        </p>
+        <p>
+          Der regelmäßige Pausenverkauf wird von Schüler:innen mit Unterstützung aus der
+          Elternschaft organisiert. Der Erlös kommt den Klassen für gemeinsame Projekte zugute.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Fragen zu Ganztag oder Essen?"
+    text="Das Schulbüro hilft euch bei Buchungszeiten, Verfügbarkeit und dem aktuellen organisatorischen Rahmen weiter."
+    primaryHref="/kontakt/"
+    primaryLabel="Schulbüro kontaktieren"
+    secondaryHref="/kennenlernen/kosten/"
+    secondaryLabel="Kosten ansehen"
+  />
+</BaseLayout>

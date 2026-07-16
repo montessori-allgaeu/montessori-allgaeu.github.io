@@ -1,0 +1,135 @@
+---
+import { CalendarDays, Clock, MapPin } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+---
+
+<BaseLayout
+  title="Termine"
+  description="Aktuelle Termine der Montessori Allgäu: Kennenlernveranstaltungen, Infoabende, Tage der offenen Tür und Termine der Monte-Gemeinschaft."
+>
+  <PageIntro
+    eyebrow="Termine"
+    title="Die Monte erleben."
+    intro="Hier findet ihr öffentliche Kennenlerntermine und ausgewählte Veranstaltungen der Gemeinschaft. Verbindliche Aufnahmefristen veröffentlichen wir zusätzlich auf den jeweiligen Aufnahmeseiten."
+  />
+
+  <section class="section">
+    <div class="container">
+      <article class="event">
+        <div class="event__date"><span>30</span><small>Juli<br />2026</small></div>
+        <div class="event__content">
+          <p class="eyebrow">Monte-Gemeinschaft & Freunde</p>
+          <h2>Sommerfest</h2>
+          <p>
+            Wir feiern den Abschluss des Schuljahres mit allen Monte-Familien und Freund:innen
+            unserer Gemeinschaft.
+          </p>
+          <ul class="event__meta">
+            <li>
+              <CalendarDays size={17} aria-hidden="true" /><time datetime="2026-07-30"
+                >Donnerstag, 30. Juli 2026</time
+              >
+            </li>
+            <li><Clock size={17} aria-hidden="true" />Uhrzeit über die interne Einladung</li>
+            <li><MapPin size={17} aria-hidden="true" />Montessori Allgäu, Klosterstraße 8</li>
+          </ul>
+        </div>
+      </article>
+
+      <div class="empty-state">
+        <p class="eyebrow">Kennenlerntermine</p>
+        <h2>Neue Termine folgen.</h2>
+        <p class="lead">
+          Infoabende, Tag der offenen Tür und Fristen für den nächsten Aufnahmezyklus
+          veröffentlichen wir, sobald sie verbindlich feststehen.
+        </p>
+        <div class="button-row">
+          <a class="button button--outline" href="/kennenlernen/aufnahme-kindergarten/"
+            >Aufnahme Kindergarten</a
+          >
+          <a class="button button--outline" href="/kennenlernen/aufnahme-schule/">Aufnahme Schule</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Keinen passenden Termin gefunden?"
+    text="Für konkrete Aufnahmefragen erreicht ihr den Kindergarten und das Schulbüro direkt per E-Mail oder Telefon."
+    primaryHref="/kontakt/"
+    primaryLabel="Kontakt"
+    secondaryHref="/kennenlernen/"
+    secondaryLabel="Kennenlernweg"
+  />
+</BaseLayout>
+
+<style>
+  .event {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    padding: clamp(2rem, 5vw, 4rem) 0;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .event__date {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    color: var(--terracotta);
+  }
+
+  .event__date span {
+    font-family: var(--serif);
+    font-size: 5rem;
+    line-height: 0.85;
+  }
+
+  .event__date small {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .event__content h2 {
+    font-size: clamp(2.6rem, 5vw, 4.5rem);
+  }
+
+  .event__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .event__meta li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: var(--forest-muted);
+    font-size: 0.8rem;
+  }
+
+  .event__meta svg {
+    color: var(--terracotta);
+  }
+
+  .empty-state {
+    max-width: 55rem;
+    margin-top: clamp(5rem, 10vw, 9rem);
+  }
+
+  @media (max-width: 620px) {
+    .event {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

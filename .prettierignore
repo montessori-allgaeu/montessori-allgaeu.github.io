@@ -1,0 +1,5 @@
+dist
+.astro
+.npm-cache
+node_modules
+public/downloads

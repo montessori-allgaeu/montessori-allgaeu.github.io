@@ -1,0 +1,162 @@
+---
+import { ArrowLeft, Check } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CTASection from "@/components/CTASection.astro";
+import { jobs, type Job } from "@/data/jobs";
+
+export function getStaticPaths() {
+  return jobs.map((job) => ({ params: { slug: job.slug }, props: { job } }));
+}
+
+interface Props {
+  job: Job;
+}
+
+const { job } = Astro.props;
+const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
+---
+
+<BaseLayout title={job.title} description={`${job.title} bei Montessori Allgäu: ${job.intro}`}>
+  <section class="job-hero">
+    <div class="container">
+      <a class="text-link job-back" href="/arbeiten-bei-uns/stellen/"
+        ><ArrowLeft size={16} aria-hidden="true" />Alle Stellen</a
+      >
+      <p class="eyebrow">{job.area}</p>
+      <h1>{job.title}</h1>
+      <div class="job-hero__meta">
+        <p class="lead">{job.intro}</p>
+        <span>{job.schedule}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2 job-content">
+      <div>
+        <p class="eyebrow">Deine Aufgabe</p>
+        <h2>Was du bei uns gestaltest.</h2>
+        <ul class="job-checks">
+          {
+            job.responsibilities.map((item) => (
+              <li>
+                <Check size={19} aria-hidden="true" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Dein Profil</p>
+        <h2>Was du mitbringst.</h2>
+        <ul class="job-checks">
+          {
+            job.profile.map((item) => (
+              <li>
+                <Check size={19} aria-hidden="true" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Wir bieten</p><h2>Freiheit, Qualifizierung und ein Team, das lernt.</h2>
+      </div>
+      <div>
+        <ul class="editorial-list">
+          <li>Gestaltungsspielraum innerhalb klarer pädagogischer Prinzipien</li>
+          <li>Ein Team mit mehr als 30 Kolleg:innen</li>
+          <li>Bezahltes Montessori-Diplom nach Vereinbarung</li>
+          <li>Fortbildungen und strukturiertes Onboarding</li>
+          <li>Eine warme, direkte Kultur mit früher Konfliktklärung</li>
+        </ul>
+        <p class="small muted">
+          Vergütung, Stundenumfang, Starttermin und konkrete Voraussetzungen klären wir im
+          persönlichen Gespräch.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    eyebrow="Interesse?"
+    title="Zeig uns, warum Montessori für dich wichtig ist."
+    text="Schick uns deinen Lebenslauf und ein paar ehrliche Sätze zu deiner Motivation. Alternativ kannst du zuerst ein unverbindliches Kennenlernen anfragen."
+    primaryHref={`mailto:info@montessori-allgaeu.de?subject=${mailSubject}`}
+    primaryLabel="Per E-Mail bewerben"
+    secondaryHref={`mailto:info@montessori-allgaeu.de?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
+    secondaryLabel="Erst kennenlernen"
+  />
+</BaseLayout>
+
+<style>
+  .job-hero {
+    padding: clamp(4rem, 8vw, 8rem) 0 clamp(4rem, 7vw, 7rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .job-back {
+    margin-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .job-hero h1 {
+    max-width: 64rem;
+  }
+
+  .job-hero__meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3rem;
+    align-items: end;
+  }
+
+  .job-hero__meta span {
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--line-strong);
+    color: var(--forest-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .job-content h2 {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+  }
+
+  .job-checks {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .job-checks li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--forest-soft);
+  }
+
+  .job-checks svg {
+    margin-top: 0.3rem;
+    color: var(--terracotta);
+  }
+
+  @media (max-width: 700px) {
+    .job-hero__meta {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .job-hero__meta span {
+      width: fit-content;
+    }
+  }
+</style>

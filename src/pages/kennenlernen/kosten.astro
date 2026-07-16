@@ -1,0 +1,170 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+---
+
+<BaseLayout
+  title="Kosten & Mitarbeit"
+  description="Transparente Übersicht über Schulgeld, Kindergartenbeiträge, Elterneinlage, Vereinsbeitrag und verbindliche Elternarbeitsstunden der Montessori Allgäu."
+>
+  <PageIntro
+    eyebrow="Kosten & Mitarbeit"
+    title="Private Bildung, gemeinsam getragen."
+    intro="Als freie, gemeinnützige Einrichtung erhalten wir öffentliche Zuschüsse, müssen aber einen wesentlichen Teil selbst tragen. Familien beteiligen sich finanziell und mit verbindlicher Mitarbeit."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="notice cost-note">
+        <p>
+          <strong>Stand: Juli 2026.</strong> Diese Übersicht dient der Orientierung. Verbindlich sind
+          immer der aktuelle Betreuungs-, Schul- und Vereinsvertrag. Bitte lasst euch die Beträge vor
+          Vertragsabschluss bestätigen.
+        </p>
+      </div>
+
+      <div class="cost-section grid-2">
+        <div>
+          <p class="eyebrow">Schule</p>
+          <h2>Monatliches Schulgeld</h2>
+          <p>Das Schulgeld wird in zwölf Monatsraten pro Schuljahr erhoben.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Kind in der Familie</th><th>pro Monat</th></tr></thead>
+            <tbody>
+              <tr><td>1. Kind</td><td><strong>270 €</strong></td></tr>
+              <tr><td>2. Kind</td><td><strong>220 €</strong></td></tr>
+              <tr><td>3. Kind</td><td><strong>150 €</strong></td></tr>
+              <tr><td>Jedes weitere Kind</td><td><strong>115 €</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="cost-section grid-2">
+        <div>
+          <p class="eyebrow">Kindergarten</p>
+          <h2>Monatlicher Elternbeitrag</h2>
+          <p>Der Beitrag richtet sich nach der täglich gebuchten Betreuungszeit.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Buchungszeit</th><th>pro Monat</th></tr></thead>
+            <tbody>
+              <tr><td>4 bis unter 5 Stunden</td><td><strong>190 €</strong></td></tr>
+              <tr><td>5 bis unter 6 Stunden</td><td><strong>202,50 €</strong></td></tr>
+              <tr><td>6 bis unter 7 Stunden</td><td><strong>215 €</strong></td></tr>
+              <tr><td>7 bis unter 8 Stunden</td><td><strong>227,50 €</strong></td></tr>
+              <tr><td>8 bis unter 9 Stunden</td><td><strong>240 €</strong></td></tr>
+            </tbody>
+          </table>
+          <p class="small muted">
+            Je nach Förderanspruch kann der staatliche Beitragszuschuss für Kindergartenkinder
+            berücksichtigt werden. Das klärt der Kindergarten mit euch im Einzelfall.
+          </p>
+        </div>
+      </div>
+
+      <div class="cost-section grid-2">
+        <div>
+          <p class="eyebrow">Gemeinsame Grundlage</p>
+          <h2>Elterneinlage</h2>
+          <p>
+            Die zinslose Einlage stärkt Liquidität und Ausstattung. Sie wird nach dem Ausscheiden
+            nach den vertraglichen Regeln zurückgezahlt.
+          </p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Kind in der Familie</th><th>Einmalige Einlage</th></tr></thead>
+            <tbody>
+              <tr><td>1. Kind</td><td><strong>2.500 €</strong></td></tr>
+              <tr><td>2. Kind</td><td><strong>1.500 €</strong></td></tr>
+              <tr><td>3. Kind</td><td><strong>1.000 €</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Mitmachschule</p>
+        <h2>Zeit ist Teil des Beitrags.</h2>
+        <p class="lead">
+          Elternarbeit hält Beiträge bezahlbarer – und macht aus einer Einrichtung eine echte
+          Gemeinschaft.
+        </p>
+      </div>
+      <div class="grid-3">
+        <article>
+          <p class="eyebrow">Schule</p>
+          <h3>50 Stunden</h3>
+          <p>pro Familie und Schuljahr; für Alleinerziehende 25 Stunden.</p>
+        </article>
+        <article>
+          <p class="eyebrow">Kindergarten</p>
+          <h3>25 Stunden</h3>
+          <p>pro Familie und Kindergartenjahr; für Alleinerziehende 12,5 Stunden.</p>
+        </article>
+        <article>
+          <p class="eyebrow">Nicht geleistete Zeit</p>
+          <h3>25 € / Stunde</h3>
+          <p>werden nach den jeweils gültigen Vertragsregeln in Rechnung gestellt.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Verein</p>
+        <h2>Mitgliedschaft gehört dazu.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Eltern werden Mitglied im gemeinnützigen Trägerverein und tragen die Monte damit auch
+          demokratisch.
+        </p>
+        <ul class="editorial-list">
+          <li>Familienmitgliedschaft: 50 € pro Jahr</li>
+          <li>Einzelmitgliedschaft: 40 € pro Jahr</li>
+          <li>Alleinerziehende: 30 € pro Jahr</li>
+        </ul>
+        <p>
+          Mittagessen, Ausflüge, Reisen oder besondere Materialien können zusätzlich berechnet
+          werden.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Kosten sollen vor der Entscheidung klar sein."
+    text="Wenn eine Zahl für eure Situation unklar ist, fragt bitte früh nach. Wir möchten, dass eine Zusage auf vollständiger und realistischer Information beruht."
+    primaryHref="/kontakt/"
+    primaryLabel="Frage an uns stellen"
+    secondaryHref="/downloads/"
+    secondaryLabel="Verträge & Unterlagen"
+  />
+</BaseLayout>
+
+<style>
+  .cost-note {
+    margin-bottom: clamp(4rem, 8vw, 8rem);
+  }
+
+  .cost-section {
+    padding: clamp(4rem, 8vw, 8rem) 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .cost-section:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+</style>

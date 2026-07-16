@@ -1,0 +1,14 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a class="text-link" href={href}
+  >{label}<ArrowRight size={16} stroke-width={1.8} aria-hidden="true" /></a
+>

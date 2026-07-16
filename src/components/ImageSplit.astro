@@ -1,0 +1,44 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  reverse?: boolean;
+  light?: boolean;
+  compact?: boolean;
+  position?: string;
+  widths?: number[];
+}
+
+const {
+  image,
+  alt,
+  reverse = false,
+  light = false,
+  compact = false,
+  position = "center",
+  widths = [640, 960, 1280],
+} = Astro.props;
+---
+
+<section
+  class:list={[
+    "split",
+    { "split--reverse": reverse, "split--light": light, "split--compact": compact },
+  ]}
+>
+  <div class="split__content">
+    <div class="split__content-inner"><slot /></div>
+  </div>
+  <div class="split__media">
+    <Image
+      src={image}
+      alt={alt}
+      widths={widths}
+      sizes="(max-width: 840px) 100vw, 50vw"
+      style={`object-position:${position}`}
+    />
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Seite nicht gefunden"
+  description="Diese Seite wurde nicht gefunden. Zurück zur Montessori Allgäu."
+  noindex
+>
+  <section class="not-found">
+    <div class="container">
+      <p class="eyebrow">404 · Seite nicht gefunden</p>
+      <h1>Vielleicht ist der nächste Schritt ein anderer.</h1>
+      <p class="lead">Die gesuchte Seite gibt es nicht mehr oder ihre Adresse hat sich geändert.</p>
+      <div class="button-row">
+        <a class="button" href="/">Zur Startseite</a>
+        <a class="button button--outline" href="/kontakt/">Kontakt</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    min-height: 70svh;
+    align-items: center;
+    padding-block: 5rem;
+  }
+
+  .not-found h1 {
+    max-width: 64rem;
+  }
+</style>

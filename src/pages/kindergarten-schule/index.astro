@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import HubLink from "@/components/HubLink.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+import continuumImage from "@/assets/images/editorial/continuum.webp";
+import schoolImage from "@/assets/images/editorial/school.webp";
+---
+
+<BaseLayout
+  title="Kindergarten & Schule"
+  description="Eine Monte vom Kindergarten bis zur 10. Klasse: Montessori-Kindergarten mit Naturpädagogik und jahrgangsgemischte Schule in Oberstaufen."
+>
+  <PageIntro
+    eyebrow="Vom Kindergarten bis zur 10. Klasse"
+    title="Eine Umgebung, in der Beziehung wachsen darf."
+    intro="Kindergarten und Schule sind zwei Angebote – und ein gemeinsamer Weg. Kinder erleben vertraute Haltungen, echte Übergänge und eine Gemeinschaft, die sie über viele Jahre kennt."
+  />
+
+  <div class="image-frame image-frame--wide hub-image">
+    <Image
+      src={continuumImage}
+      alt="Kinder arbeiten gemeinsam in der Montessori-Lernumgebung"
+      widths={[768, 1200, 1600]}
+      sizes="100vw"
+    />
+  </div>
+
+  <section class="section section--compact">
+    <div class="container stat-row">
+      <div class="stat">
+        <span class="stat__value">2</span><span class="stat__label"
+          >Waldtage pro Woche im Kindergarten</span
+        >
+      </div>
+      <div class="stat">
+        <span class="stat__value">1–10</span><span class="stat__label"
+          >Jahrgangsstufen an unserer Schule</span
+        >
+      </div>
+      <div class="stat">
+        <span class="stat__value">3</span><span class="stat__label"
+          >Lernstufen: Primaria, Sekundaria, Tertia</span
+        >
+      </div>
+      <div class="stat">
+        <span class="stat__value">1</span><span class="stat__label"
+          >Gemeinsame Monte-Gemeinschaft</span
+        >
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container hub-links">
+      <HubLink
+        href="/kindergarten-schule/kindergarten/"
+        title="Kindergarten"
+        description="Montessori- und Naturpädagogik, warme Begleitung und zwei feste Waldtage – für Kinder, die die Welt selbsttätig entdecken wollen."
+        label="Kindergarten entdecken"
+      />
+      <HubLink
+        href="/kindergarten-schule/schule/"
+        title="Schule"
+        description="Jahrgangsgemischtes Lernen vom Schuleinstieg bis zum Abschluss – im eigenen Tempo, mit fachlichem Anspruch und echter Verantwortung."
+        label="Schule entdecken"
+      />
+      <HubLink
+        href="/kindergarten-schule/ganztag-verpflegung/"
+        title="Ganztag & Verpflegung"
+        description="Verlässliche Nachmittage, frisches Mittagessen und Zeit für gemeinsames Leben, Projekte, Bewegung und Erholung."
+        label="Tagesrahmen ansehen"
+      />
+      <HubLink
+        href="/kennenlernen/"
+        title="Aufnahme & Kennenlernen"
+        description="Der Einstieg beginnt mit einem ehrlichen gegenseitigen Kennenlernen – damit Kind, Familie und Monte zueinander passen."
+        label="Nächste Schritte"
+      />
+    </div>
+  </section>
+
+  <ImageSplit
+    image={schoolImage}
+    alt="Schülerinnen lernen gemeinsam an einem Tisch"
+    reverse
+    light
+    position="center 42%"
+  >
+    <p class="eyebrow">Kontinuität statt Bruch</p>
+    <h2>Der Übergang in die Schule beginnt lange vor dem ersten Schultag.</h2>
+    <p>
+      Familien, die sich für unseren Kindergarten entscheiden, entscheiden sich im besten Fall für
+      den gesamten Weg in der Monte. Die Pädagogik, die Sprache und die Haltung bleiben vertraut.
+      Das Kind wechselt den Rahmen, nicht die Grundidee.
+    </p>
+    <p>
+      Deshalb sprechen wir früh über Erwartungen: Noten, eine bestimmte Regelschulzeit oder ein von
+      Erwachsenen vorgegebener Karriereweg stehen bei uns nicht über der Entwicklung des Kindes.
+    </p>
+    <TextLink href="/kennenlernen/haeufige-fragen/" label="Passt dieser Weg zu uns?" />
+  </ImageSplit>
+
+  <CTASection
+    title="Euer Weg kann im Kindergarten oder in Klasse 1 beginnen."
+    text="Lernt unsere Haltung, den Alltag und den Aufnahmeweg kennen. Quereinstiege prüfen wir nur im Einzelfall und bewerben sie nicht aktiv."
+    primaryHref="/kennenlernen/"
+    primaryLabel="Kennenlernen starten"
+    secondaryHref="/kennenlernen/kosten/"
+    secondaryLabel="Kosten ansehen"
+  />
+</BaseLayout>
+
+<style>
+  .hub-image {
+    max-height: 720px;
+  }
+
+  .hub-image :global(img) {
+    object-position: center 44%;
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+---
+
+<BaseLayout
+  title="Aufnahme Kindergarten"
+  description="Der Aufnahmeprozess für den Montessori-Kindergarten Allgäu: Kennenlernen, Aufnahmebogen, Hospitation und gemeinsame Entscheidung."
+>
+  <PageIntro
+    eyebrow="Aufnahme Kindergarten"
+    title="Ankommen beginnt mit Kennenlernen."
+    intro="Wir vergeben nur wenige neue Plätze pro Jahr. Entscheidend ist nicht, wer sich am besten präsentiert, sondern ob unsere Pädagogik, das Kind und die Familie gut zusammenpassen."
+  >
+    <TextLink
+      href="/downloads/anmeldeantrag-kindergarten.pdf"
+      label="Aufnahmebogen herunterladen"
+    />
+  </PageIntro>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Der nächste Aufnahmezyklus</p>
+        <h2>Neue Termine folgen.</h2>
+        <div class="notice">
+          <p>
+            Die Fristen und Kennenlerntermine für das nächste Kindergartenjahr veröffentlichen wir
+            hier, sobald sie verbindlich feststehen. Bitte reicht aktuell keine Unterlagen für einen
+            noch nicht eröffneten Aufnahmezyklus ein.
+          </p>
+        </div>
+      </div>
+      <div>
+        <p class="lead">
+          Ihr könnt euch schon jetzt mit unserer Haltung, dem langfristigen Weg in die Schule und
+          den Kosten vertraut machen.
+        </p>
+        <div class="button-row">
+          <a class="button" href="/termine/">Termine ansehen</a>
+          <a class="button button--outline" href="mailto:kindergarten@montessori-allgaeu.de"
+            >Kindergarten kontaktieren</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Der Ablauf</p>
+        <h2>Fünf Schritte zum gemeinsamen Ja.</h2>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <div>
+            <h3>Haltung kennenlernen</h3><p>
+              Lest, wie wir Montessori und Naturpädagogik leben und weshalb wir Kindergarten und
+              Schule als einen gemeinsamen Weg verstehen.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Monte erleben</h3><p>
+              Kommt zum Tag der offenen Tür oder zu einem angekündigten Kennenlernformat. Eure
+              Fragen sind ausdrücklich willkommen.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Aufnahmebogen einreichen</h3><p>
+              Wenn der Aufnahmezyklus geöffnet ist, sendet ihr den ausgefüllten Bogen fristgerecht
+              per E-Mail oder Post an den Kindergarten.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Hospitation und Gespräch</h3><p>
+              Ausgewählte Familien laden wir mit ihrem Kind ein. Ihr erlebt unseren Alltag und wir
+              lernen einander persönlich kennen.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <div>
+            <h3>Entscheidung</h3><p>
+              Wir betrachten verfügbare Plätze, Gruppenzusammensetzung und pädagogischen Fit. Die
+              Entscheidung teilen wir euch zu dem angekündigten Zeitpunkt mit.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Wichtig</p>
+        <h2>Der Kindergarten ist keine isolierte Station.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Wir wünschen uns, dass Kinder nach dem Kindergarten in unsere Schule wechseln und
+          möglichst bis zur 10. Klasse Teil der Monte bleiben.
+        </p>
+        <p>
+          Das ist keine automatische Garantie für einen Schulplatz, aber eine klare gemeinsame
+          Absicht. Bitte prüft deshalb schon vor der Kindergartenaufnahme, ob auch unsere Schule,
+          die Elternmitarbeit und unsere Haltung zu Leistung und Abschlüssen zu euch passen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Noch eine konkrete Frage?"
+    text="Unsere Kindergartenleitung hilft euch gern beim organisatorischen nächsten Schritt. Für ein gutes Gespräch lohnt es sich, vorher die häufigen Fragen und Kosten anzusehen."
+    primaryHref="mailto:kindergarten@montessori-allgaeu.de"
+    primaryLabel="E-Mail an den Kindergarten"
+    secondaryHref="/kennenlernen/haeufige-fragen/"
+    secondaryLabel="Häufige Fragen"
+  />
+</BaseLayout>

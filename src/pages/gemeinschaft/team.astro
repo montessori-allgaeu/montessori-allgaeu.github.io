@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import { team, teamGroups } from "@/data/team";
+---
+
+<BaseLayout
+  title="Unser Team"
+  description="Das pädagogische Team der Montessori Allgäu: Leitung, Kindergarten, Primaria, Sekundaria, Tertia sowie Fach- und Förderteam."
+>
+  <PageIntro
+    eyebrow="Unser Team"
+    title="Menschen, die genau hinsehen."
+    intro="Mehr als 30 Menschen arbeiten in Kindergarten, Schule, Ganztag und Organisation. Was uns verbindet: Kinder ernst nehmen, Montessori leben und als Team weiterlernen."
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        teamGroups.map((group) => {
+          const members = team.filter((member) => member.group === group);
+          return (
+            <section
+              class="team-group"
+              aria-labelledby={`team-${group.toLowerCase().replaceAll(" ", "-")}`}
+            >
+              <p class="eyebrow">Team</p>
+              <h2 id={`team-${group.toLowerCase().replaceAll(" ", "-")}`}>{group}</h2>
+              <div class="team-grid">
+                {members.map((member) => (
+                  <article class="team-card">
+                    <div class="team-card__image">
+                      {member.image && (
+                        <Image
+                          src={member.image}
+                          alt={`Porträt von ${member.name}`}
+                          widths={[300, 480, 640]}
+                          sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
+                        />
+                      )}
+                    </div>
+                    <h3>{member.name}</h3>
+                    <p>{member.role}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <CTASection
+    title="Vielleicht fehlt hier bald noch jemand: du."
+    text="Wir suchen Menschen, die nicht irgendeinen pädagogischen Arbeitsplatz wollen, sondern Montessori wirklich vertreten und mit uns weiterentwickeln möchten."
+    primaryHref="/arbeiten-bei-uns/stellen/"
+    primaryLabel="Offene Stellen"
+    secondaryHref="/arbeiten-bei-uns/"
+    secondaryLabel="Unsere Arbeitskultur"
+  />
+</BaseLayout>

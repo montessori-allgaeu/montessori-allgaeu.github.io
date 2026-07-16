@@ -1,0 +1,124 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CTASection from "@/components/CTASection.astro";
+import kindergartenImage from "@/assets/images/editorial/kindergarten.webp";
+import natureImage from "@/assets/images/editorial/nature.webp";
+import playgroundImage from "@/assets/images/editorial/playground.webp";
+---
+
+<BaseLayout
+  title="Montessori-Kindergarten"
+  description="Unser Montessori-Kindergarten in Oberstaufen verbindet warme, kindorientierte Begleitung mit Montessori- und Naturpädagogik sowie zwei Waldtagen pro Woche."
+>
+  <PageIntro
+    eyebrow="Montessori-Kindergarten"
+    title="Geborgen ankommen. Selbstständig werden."
+    intro="Kinder brauchen Beziehung, bevor sie sich öffnen und entdecken können. Deshalb verbinden wir Montessori mit feinfühliger, moderner Entwicklungsbegleitung und viel Zeit in der Natur."
+  />
+
+  <ImageSplit
+    image={kindergartenImage}
+    alt="Ein Kindergartenkind arbeitet konzentriert am Tisch"
+    position="center 38%"
+  >
+    <p class="eyebrow">Wärme und Eigenaktivität</p>
+    <h2>Wir lassen Kinder nicht allein, um sie selbstständig zu machen.</h2>
+    <p>
+      Ein Kind darf zuerst ankommen, Verbindung aufnehmen und Sicherheit finden. Unsere
+      Pädagog:innen beobachten aufmerksam, bieten Nähe an und respektieren Signale und Grenzen. Aus
+      dieser Sicherheit heraus kann das Kind selbst aktiv werden.
+    </p>
+    <p>
+      Wir übernehmen nicht unreflektiert jede historische Aussage Maria Montessoris. Was wir tun,
+      muss dem Kind heute dienen und sich an aktueller Entwicklungskenntnis messen lassen.
+    </p>
+  </ImageSplit>
+
+  <section class="section section--light">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Unser Alltag"
+        title="Montessori im Haus. Natur als zweiter Lernraum."
+        text="Die vorbereitete Umgebung gibt Orientierung. Die Natur schenkt Bewegung, Sinneserfahrung, Risiko, Staunen und echte Begegnung mit der Welt."
+      />
+      <div class="grid-3">
+        <article>
+          <p class="eyebrow">Im Gruppenraum</p>
+          <h3>Selbst wählen und vertiefen</h3>
+          <p>
+            Kinder finden zugängliche Materialien, klare Abläufe und Zeit, eine Tätigkeit wirklich
+            zu Ende zu bringen.
+          </p>
+        </article>
+        <article>
+          <p class="eyebrow">Zweimal pro Woche</p>
+          <h3>Waldtage</h3>
+          <p>
+            Wir gehen bei fast jedem Wetter hinaus. Der Wald ist kein Ausflug, sondern ein fester
+            Teil unserer Pädagogik.
+          </p>
+        </article>
+        <article>
+          <p class="eyebrow">In Beziehung</p>
+          <h3>Konflikte begleiten</h3>
+          <p>
+            Wir beschämen und bestrafen nicht. Wir schützen Grenzen, benennen Wirkung und helfen
+            Kindern, wieder in Verbindung zu kommen.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <ImageSplit
+    image={natureImage}
+    alt="Kindergartenkinder wandern gemeinsam durch eine Wiese"
+    reverse
+    position="center 46%"
+  >
+    <p class="eyebrow">Naturpädagogik</p>
+    <h2>Draußen wird die Welt unmittelbar.</h2>
+    <p>
+      Ein steiler Weg, nasse Erde, ein Käfer, ein schwerer Ast: In der Natur erleben Kinder
+      Selbstwirksamkeit, Zusammenarbeit und ihre eigenen Grenzen mit allen Sinnen. Wir schaffen
+      einen sicheren Rahmen, ohne jede Herausforderung vorwegzunehmen.
+    </p>
+  </ImageSplit>
+
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div class="image-frame image-frame--landscape">
+        <img
+          src={playgroundImage.src}
+          alt="Außenbereich des Montessori-Kindergartens"
+          loading="lazy"
+        />
+      </div>
+      <div>
+        <p class="eyebrow">Rahmen</p>
+        <h2>Öffnungszeiten</h2>
+        <p class="lead">Aktuell ist unser Kindergarten an fünf Tagen geöffnet.</p>
+        <ul class="editorial-list">
+          <li><strong>Montag, Mittwoch und Freitag:</strong> 7:30–13:00 Uhr</li>
+          <li><strong>Dienstag und Donnerstag:</strong> 7:30–16:00 Uhr</li>
+        </ul>
+        <p class="small muted">
+          Buchungszeiten und Beiträge findet ihr auf der Kostenseite. Änderungen geben wir dort
+          transparent bekannt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Der Kindergarten ist der Anfang eines gemeinsamen Weges."
+    text="Wenn ihr euch für unseren Kindergarten interessiert, lernt bitte auch die Schule und unsere gemeinsame Haltung kennen. Wir wünschen uns Familien, die die Monte langfristig wählen."
+    primaryHref="/kennenlernen/aufnahme-kindergarten/"
+    primaryLabel="Aufnahme Kindergarten"
+    secondaryHref="/kindergarten-schule/schule/"
+    secondaryLabel="Weiter zur Schule"
+  />
+</BaseLayout>

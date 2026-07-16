@@ -1,0 +1,126 @@
+---
+import { HeartHandshake } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import CTASection from "@/components/CTASection.astro";
+import governanceImage from "@/assets/images/editorial/governance.webp";
+---
+
+<BaseLayout
+  title="Spenden"
+  description="Unterstützt die gemeinnützige Montessori Allgäu mit einer Spende für vorbereitete Lernumgebungen, pädagogische Qualität und nachhaltige Entwicklung."
+>
+  <PageIntro
+    eyebrow="Spenden"
+    title="Gute Lernräume entstehen nicht von allein."
+    intro="Als gemeinnützige, freie Einrichtung investieren wir in Menschen, Materialien und Räume, die Kinder wirklich unterstützen. Spenden machen Entwicklungen möglich, die aus laufenden Mitteln allein nicht zu tragen wären."
+  />
+
+  <ImageSplit
+    image={governanceImage}
+    alt="Kinder und Erwachsene der Monte-Gemeinschaft bei einer gemeinsamen Aktion"
+    position="center 45%"
+  >
+    <p class="eyebrow">Wofür eure Hilfe wirkt</p>
+    <h2>Qualität vor Wachstum.</h2>
+    <p>
+      Wir wollen nicht groß werden um des Wachstums willen. Wir wollen pädagogisch besser, räumlich
+      verlässlicher und als Gemeinschaft stabiler werden. Spenden fließen deshalb in vorbereitete
+      Umgebungen, Montessori-Material, Räume, Qualifizierung und konkrete Entwicklungsprojekte.
+    </p>
+    <p>Für zweckgebundene oder größere Spenden sprecht bitte vorab mit der Geschäftsführung.</p>
+  </ImageSplit>
+
+  <section class="section section--light">
+    <div class="container donation-grid">
+      <div>
+        <HeartHandshake size={42} stroke-width={1.4} aria-hidden="true" />
+        <p class="eyebrow">Spendenkonto</p>
+        <h2>Jeder Beitrag zählt.</h2>
+      </div>
+      <dl>
+        <div><dt>Empfänger</dt><dd>Monte e.V.</dd></div>
+        <div><dt>Bank</dt><dd>Sparkasse Allgäu</dd></div>
+        <div><dt>IBAN</dt><dd>DE93 7335 0000 0610 6672 48</dd></div>
+        <div><dt>BIC</dt><dd>BYLADEM1ALG</dd></div>
+        <div><dt>Verwendungszweck</dt><dd>Spende Montessori Allgäu</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <div><p class="eyebrow">Spendenbescheinigung</p><h2>Gemeinnützig unterstützen.</h2></div>
+      <div>
+        <p class="lead">
+          Der Monte e.V. ist gemeinnützig. Für eine Zuwendungsbestätigung benötigen wir euren Namen
+          und eure Anschrift.
+        </p>
+        <p>
+          Schickt die Angaben mit Betrag und Überweisungsdatum an <a
+            href="mailto:info@montessori-allgaeu.de?subject=Spendenbescheinigung"
+            >info@montessori-allgaeu.de</a
+          >. Wir melden uns, falls noch etwas fehlt.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Lieber Zeit oder Verantwortung geben?"
+    text="Auch Mitgliedschaft, Elternarbeit und fachliche Unterstützung tragen die Monte. Sprecht uns an, wenn ihr euch auf andere Weise einbringen möchtet."
+    primaryHref="/gemeinschaft/traeger-verein/"
+    primaryLabel="Mitglied werden"
+    secondaryHref="/kontakt/"
+    secondaryLabel="Kontakt"
+  />
+</BaseLayout>
+
+<style>
+  .donation-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(3rem, 8vw, 8rem);
+    align-items: start;
+  }
+
+  .donation-grid svg {
+    margin-bottom: 2rem;
+    color: var(--terracotta);
+  }
+
+  .donation-grid dl {
+    margin: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .donation-grid dl div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .donation-grid dt {
+    color: var(--forest-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .donation-grid dd {
+    margin: 0;
+    color: var(--forest);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 700px) {
+    .donation-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

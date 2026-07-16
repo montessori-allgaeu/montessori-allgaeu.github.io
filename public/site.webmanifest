@@ -1,0 +1,15 @@
+{
+  "name": "Montessori Allgäu – Kindergarten & Schule",
+  "short_name": "Montessori Allgäu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f1ec",
+  "theme_color": "#1d2b1e",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

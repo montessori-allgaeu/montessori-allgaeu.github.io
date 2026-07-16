@@ -1,0 +1,169 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import HubLink from "@/components/HubLink.astro";
+import ImageSplit from "@/components/ImageSplit.astro";
+import CTASection from "@/components/CTASection.astro";
+import governanceImage from "@/assets/images/editorial/governance.webp";
+---
+
+<BaseLayout
+  title="Gemeinschaft"
+  description="Die Monte-Gemeinschaft: fünf tragende Säulen, verbindliche Entscheidungsprinzipien, ein engagiertes Team und ein gemeinnütziger Elternverein."
+>
+  <PageIntro
+    eyebrow="Gemeinschaft"
+    title="Die Monte gehört den Menschen, die sie tragen."
+    intro="Eltern, Kinder, Pädagog:innen, Leitung, Verwaltung und Vorstand übernehmen unterschiedliche Verantwortung – und gestalten gemeinsam einen Ort, der kleiner, direkter und menschlicher ist als ein anonymes System."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">Unser Organisationsmodell</p>
+        <h2>Fünf Säulen. Eine gemeinsame Verantwortung.</h2>
+      </div>
+      <div class="grid-5 pillars">
+        <article><span>01</span><h3>Verein & Vorstand</h3></article>
+        <article><span>02</span><h3>Eltern & Elternbeirat</h3></article>
+        <article><span>03</span><h3>Schüler:innen & Schülersprecher</h3></article>
+        <article><span>04</span><h3>Pädagogisches Team & Leitungen</h3></article>
+        <article><span>05</span><h3>Verwaltung & Geschäftsführung</h3></article>
+      </div>
+      <p class="pillars-note">
+        Keine Säule kann alles allein tragen. Zuständigkeiten schaffen Klarheit; Zusammenarbeit
+        schafft die Monte.
+      </p>
+    </div>
+  </section>
+
+  <ImageSplit
+    image={governanceImage}
+    alt="Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion"
+    reverse
+    light
+    position="center 42%"
+  >
+    <p class="eyebrow">Entscheidungen</p>
+    <h2>Unsere Prinzipien gelten über alle Säulen hinweg.</h2>
+    <p>
+      Sie sind keine Montessori-Leitsätze und keine Liste schöner Werte. Sie helfen Menschen mit
+      Aufgaben und Verantwortung zu entscheiden, was als Nächstes zu tun ist – im Elternbeirat
+      ebenso wie im Vorstand, in der Leitung, im pädagogischen Team oder bei den
+      Schülersprecher:innen.
+    </p>
+    <a class="button button--outline" href="/gemeinschaft/prinzipien/">Prinzipien lesen</a>
+  </ImageSplit>
+
+  <section class="section">
+    <div class="container hub-links">
+      <HubLink
+        href="/gemeinschaft/prinzipien/"
+        title="Unsere Prinzipien"
+        description="Vier konkrete Entscheidungshilfen: Montessori leben, Kind im Mittelpunkt, Konflikte annehmen und gemeinsam lernen."
+      />
+      <HubLink
+        href="/gemeinschaft/team/"
+        title="Unser Team"
+        description="Mehr als 30 Menschen begleiten Kinder, leiten Gruppen, gestalten Lernumgebungen und halten den Alltag zusammen."
+      />
+      <HubLink
+        href="/gemeinschaft/traeger-verein/"
+        title="Träger & Verein"
+        description="Eltern sind Mitglieder, wählen den Vorstand und tragen die gemeinnützige Organisation demokratisch mit."
+      />
+      <HubLink
+        href="/arbeiten-bei-uns/"
+        title="Teil des Teams werden"
+        description="Für Pädagog:innen, die Montessori ernst nehmen und Wärme, Klarheit, Freiheit und gemeinsames Lernen suchen."
+      />
+    </div>
+  </section>
+
+  <CTASection
+    title="Gemeinschaft heißt mitmachen."
+    text="Elternarbeit ist verbindlich, Verantwortung wird geteilt und Konflikte werden nicht unter den Teppich gekehrt. Wer sich darauf einlässt, erlebt Schule als echten gemeinsamen Ort."
+    primaryHref="/gemeinschaft/traeger-verein/"
+    primaryLabel="Träger & Verein"
+    secondaryHref="/kennenlernen/kosten/"
+    secondaryLabel="Mitarbeit & Kosten"
+  />
+</BaseLayout>
+
+<style>
+  .grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pillars article {
+    min-height: 15rem;
+    padding: 2rem 1.4rem;
+    border-left: 1px solid var(--line);
+  }
+
+  .pillars article:first-child {
+    border-left: 0;
+  }
+
+  .pillars span {
+    display: block;
+    margin-bottom: 3rem;
+    color: var(--terracotta);
+    font-family: var(--serif);
+    font-size: 1.35rem;
+  }
+
+  .pillars h3 {
+    font-size: 1.55rem;
+  }
+
+  .pillars-note {
+    max-width: 50rem;
+    margin: 2rem auto 0;
+    text-align: center;
+  }
+
+  @media (max-width: 980px) {
+    .grid-5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pillars article {
+      min-height: 11rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .pillars article:nth-child(odd) {
+      border-left: 0;
+    }
+
+    .pillars article:first-child,
+    .pillars article:nth-child(2) {
+      border-top: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .grid-5 {
+      grid-template-columns: 1fr;
+    }
+
+    .pillars article,
+    .pillars article:nth-child(2) {
+      min-height: 0;
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .pillars article:first-child {
+      border-top: 0;
+    }
+
+    .pillars span {
+      margin-bottom: 1.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  text: string;
+  primaryHref: string;
+  primaryLabel: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}
+
+const {
+  eyebrow = "Der nächste Schritt",
+  title,
+  text,
+  primaryHref,
+  primaryLabel,
+  secondaryHref,
+  secondaryLabel,
+} = Astro.props;
+---
+
+<section class="section section--forest">
+  <div class="container grid-2">
+    <div>
+      <p class="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+    </div>
+    <div>
+      <p class="lead">{text}</p>
+      <div class="button-row">
+        <a class="button button--light" href={primaryHref}>{primaryLabel}</a>
+        {
+          secondaryHref && secondaryLabel && (
+            <a class="button button--outline footer-outline" href={secondaryHref}>
+              {secondaryLabel}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .footer-outline {
+    border-color: rgb(255 253 250 / 0.7);
+    color: var(--white);
+  }
+
+  .footer-outline:hover {
+    border-color: var(--white);
+    color: var(--forest);
+    background: var(--white);
+  }
+</style>
