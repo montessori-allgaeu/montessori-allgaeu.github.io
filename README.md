@@ -2,6 +2,10 @@
 
 Statische Website für Montessori-Kindergarten und Schule Allgäu. Gebaut mit Astro und für GitHub Pages vorbereitet.
 
+## Strategische Grundlage
+
+Die bestätigte Positionierung, Zielgruppenlogik, Content-Architektur und Designrichtung stehen in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md). Hinweise für zukünftige Agenten und Mitwirkende stehen in [`AGENTS.md`](AGENTS.md).
+
 ## Lokal starten
 
 ```sh
@@ -32,8 +36,10 @@ npm run test:e2e
 - Alte Weiterleitungen: `src/data/legacy.ts`
 - Termine: `src/pages/termine.astro`
 - Downloads: `public/downloads/`
+- Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
+- Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Die Seite verwendet kein CMS, keine Analyse und keine Formulare. Änderungen werden im Repository vorgenommen und nach einem Push auf `main` automatisch veröffentlicht.
+Die Seite verwendet kein CMS, keine Analyse und keine Formulare. Änderungen werden im Repository vorgenommen und nach einem Push auf `main` automatisch veröffentlicht, sobald die Qualitätschecks erfolgreich abgeschlossen sind.
 
 ## Veröffentlichung über GitHub Pages
 

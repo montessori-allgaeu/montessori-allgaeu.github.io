@@ -9,6 +9,7 @@
   --forest-muted: #687064;
   --terracotta: #b85b2d;
   --terracotta-dark: #98431c;
+  --terracotta-text: var(--terracotta-dark);
   --ochre: #d7a24b;
   --line: #d8d0c6;
   --line-strong: #bcb3a8;
@@ -199,7 +200,7 @@ strong {
 
 .eyebrow {
   margin-bottom: 1rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -292,7 +293,7 @@ strong {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
@@ -339,7 +340,9 @@ strong {
 .split__content {
   display: flex;
   align-items: center;
-  padding: clamp(3rem, 6vw, 6rem) max(1.5rem, calc((100vw - var(--container)) / 2));
+  padding-block: clamp(3rem, 6vw, 6rem);
+  padding-inline-start: max(1.5rem, calc((100vw - var(--container)) / 2));
+  padding-inline-end: clamp(1.5rem, 4vw, 4rem);
 }
 
 .split--compact {
@@ -376,6 +379,7 @@ strong {
 
 .split--reverse .split__content {
   order: 2;
+  padding-inline: clamp(1.5rem, 4vw, 4rem) max(1.5rem, calc((100vw - var(--container)) / 2));
 }
 
 .split--reverse .split__media {
@@ -453,7 +457,7 @@ strong {
 .numbered-point__number {
   display: block;
   margin-bottom: 1rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-family: var(--serif);
   font-size: 1.45rem;
 }
@@ -576,7 +580,7 @@ strong {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -626,7 +630,7 @@ strong {
 .stat__value {
   display: block;
   margin-bottom: 0.4rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-family: var(--serif);
   font-size: clamp(2.5rem, 4vw, 4rem);
   line-height: 1;
@@ -691,7 +695,7 @@ strong {
 }
 
 .step::before {
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-family: var(--serif);
   font-size: 1.5rem;
   content: "0" counter(steps);
@@ -736,7 +740,7 @@ strong {
   position: absolute;
   top: 1.75rem;
   right: 0;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-family: var(--sans);
   font-size: 1.3rem;
   content: "+";
@@ -797,7 +801,7 @@ td {
 .principle-card__number {
   display: block;
   margin-bottom: 2rem;
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   font-family: var(--serif);
   font-size: 1.4rem;
 }
@@ -895,7 +899,7 @@ td {
 }
 
 .job-row svg {
-  color: var(--terracotta);
+  color: var(--terracotta-text);
   transition: transform 160ms ease;
 }
 
