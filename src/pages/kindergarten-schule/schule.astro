@@ -4,9 +4,9 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
-import schoolImage from "@/assets/images/editorial/school.webp";
-import classImage from "@/assets/images/editorial/class.webp";
-import roomImage from "@/assets/images/editorial/room.webp";
+import schoolImage from "@/assets/images/generated/school-freiarbeit.webp";
+import classImage from "@/assets/images/generated/school-next-step.webp";
+import roomImage from "@/assets/images/generated/school-class-council.webp";
 ---
 
 <BaseLayout
@@ -21,7 +21,7 @@ import roomImage from "@/assets/images/editorial/room.webp";
 
   <ImageSplit
     image={schoolImage}
-    alt="Schülerinnen arbeiten gemeinsam an einem Tisch"
+    alt="Kinder arbeiten selbstständig und begleitet in einer jahrgangsgemischten Lerngruppe"
     position="center 42%"
   >
     <p class="eyebrow">Freiarbeit und Fachlichkeit</p>
@@ -76,7 +76,7 @@ import roomImage from "@/assets/images/editorial/room.webp";
 
   <ImageSplit
     image={classImage}
-    alt="Kinder arbeiten in einer jahrgangsgemischten Lerngruppe"
+    alt="Zwei Jugendliche besprechen mit einem Pädagogen ihr Projekt und ihre nächsten Schritte"
     reverse
     position="center 40%"
   >
@@ -116,7 +116,7 @@ import roomImage from "@/assets/images/editorial/room.webp";
       <div class="image-frame image-frame--landscape">
         <img
           src={roomImage.src}
-          alt="Vorbereiteter Klassenraum der Montessori-Schule"
+          alt="Kinder, Jugendliche und Pädagoginnen beraten sich in einem gemeinsamen Kreis"
           loading="lazy"
         />
       </div>

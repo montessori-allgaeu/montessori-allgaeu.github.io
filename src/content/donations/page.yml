@@ -1,0 +1,61 @@
+seo:
+  title: Spenden & unterstützen
+  description: Unterstützt die gemeinnützige Montessori Allgäu mit einer Spende für vorbereitete Lernumgebungen, pädagogische Qualität und eine stabile Entwicklung.
+homepage:
+  eyebrow: Monte unterstützen
+  title: Kinder brauchen Menschen, die Möglichkeiten eröffnen.
+  text: Spenden helfen uns, Lernumgebungen, Materialien und pädagogische Qualität über den laufenden Rahmen hinaus weiterzuentwickeln.
+  label: Spenden & unterstützen
+hero:
+  eyebrow: Spenden & unterstützen
+  title: Gemeinsam Kindern Möglichkeiten eröffnen.
+  intro: Als gemeinnützige, freie Einrichtung investieren wir in Menschen, Materialien und Räume, die Kinder wirklich unterstützen. Spenden machen Entwicklungen möglich, die aus laufenden Mitteln allein nicht zu tragen wären.
+impact:
+  eyebrow: Was eure Hilfe möglich macht
+  title: Qualität vor Wachstum.
+  imageAlt: Kinder und Erwachsene bauen gemeinsam ein Materialregal auf und sortieren Montessori-Materialien ein
+  paragraphs:
+    - Wir wollen nicht groß werden um des Wachstums willen. Wir wollen pädagogisch besser, räumlich verlässlicher und als Gemeinschaft stabiler werden.
+    - Spenden ermöglichen Verbesserungen, die der laufende Haushalt allein nicht tragen kann. Sie fließen in vorbereitete Lernumgebungen, pädagogische Qualität und konkrete Entwicklungsprojekte.
+projects:
+  eyebrow: Aktuelle Förderschwerpunkte
+  title: Hier kann Unterstützung konkret wirken.
+  intro: Diese Schwerpunkte werden von der Monte laufend aktualisiert. Für zweckgebundene oder größere Spenden klären wir gemeinsam, wo die Unterstützung sinnvoll eingesetzt werden kann.
+  items:
+    - title: Montessori-Materialien
+      description: Materialien ergänzen und erneuern, damit Kinder selbstständig, konzentriert und auf ihrem jeweiligen Niveau arbeiten können.
+    - title: Lernräume
+      description: Innen- und Außenräume so weiterentwickeln, dass sie Orientierung, Bewegung, Begegnung und vertieftes Lernen ermöglichen.
+    - title: Pädagogische Qualität
+      description: Fortbildungen und Qualifizierung unterstützen, damit Montessori im Alltag warm, klar und fachlich anspruchsvoll gelebt wird.
+directDonation:
+  eyebrow: Direkt spenden
+  title: Jeder Beitrag zählt.
+  intro: Mit einer Überweisung unterstützt ihr die gemeinnützige Arbeit des Monte e.V. unmittelbar.
+  account:
+    recipient: Monte e.V.
+    bank: Sparkasse Allgäu
+    iban: DE93 7335 0000 0610 6672 48
+    bic: BYLADEM1ALG
+    purpose: Spende Montessori Allgäu
+  note: Für zweckgebundene oder größere Spenden sprecht bitte vorab mit der Geschäftsführung.
+company:
+  eyebrow: Firmen & Förderpartner
+  title: Als Unternehmen gezielt etwas bewegen.
+  text: Unternehmen, Stiftungen und größere Förderpersonen können einzelne Vorhaben oder die langfristige Entwicklung der Monte unterstützen.
+  detail: Sprecht uns für Projektspenden sowie passende Sach- oder Leistungsspenden persönlich an. Gemeinsam klären wir Bedarf, Einsatz und eine verlässliche Abwicklung.
+  buttonLabel: Unterstützung besprechen
+  emailSubject: Unterstützung durch Unternehmen
+receipt:
+  eyebrow: Spendenbescheinigung
+  title: Gemeinnützig unterstützen.
+  intro: Der Monte e.V. ist gemeinnützig. Für eine Zuwendungsbestätigung benötigen wir euren Namen und eure Anschrift.
+  instruction: Schickt uns die Angaben zusammen mit Betrag und Überweisungsdatum. Wir melden uns, falls noch etwas fehlt.
+  buttonLabel: Angaben per E-Mail senden
+  emailSubject: Spendenbescheinigung
+otherSupport:
+  eyebrow: Auch ohne Überweisung
+  title: Lieber Zeit, Wissen oder Verantwortung geben?
+  text: Auch Mitgliedschaft und passende fachliche oder praktische Unterstützung tragen die Monte. Sprecht uns an, wenn ihr euch auf andere Weise einbringen möchtet.
+  primaryLabel: Mitglied werden
+  secondaryLabel: Kontakt aufnehmen

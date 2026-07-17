@@ -6,8 +6,8 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
-import careersImage from "@/assets/images/editorial/careers.webp";
-import communityImage from "@/assets/images/editorial/community.webp";
+import careersImage from "@/assets/images/generated/careers-pedagogical-space.webp";
+import communityImage from "@/assets/images/generated/careers-team-reflection.webp";
 
 const jobs = await getJobs();
 const { contact } = await getWebsiteSettings();
@@ -27,7 +27,7 @@ const { contact } = await getWebsiteSettings();
 
   <ImageSplit
     image={careersImage}
-    alt="Eine Pädagogin begleitet ein Kind aufmerksam beim Lernen"
+    alt="Eine Pädagogin bereitet aufmerksam die Montessori-Lernumgebung vor"
     position="center 42%"
   >
     <p class="eyebrow">Dein pädagogischer Raum</p>
@@ -97,7 +97,7 @@ const { contact } = await getWebsiteSettings();
 
   <ImageSplit
     image={communityImage}
-    alt="Pädagoginnen und Kinder sitzen in einem gemeinsamen Kreis"
+    alt="Vier Pädagoginnen reflektieren gemeinsam eine Beobachtung aus dem Schulalltag"
     reverse
     light
     position="center 44%"

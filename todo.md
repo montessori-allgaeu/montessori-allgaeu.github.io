@@ -9,6 +9,11 @@ aktualisiert werden.
 
 - [ ] Alle Website-Texte vollständig prüfen: fachliche Richtigkeit, Verständlichkeit, Rechtschreibung,
       einheitliche Begriffe, strategische Passung und respektvolle Formulierungen.
+- [ ] Authentische Zitate von Kindern, Pädagog:innen und Eltern sammeln und passend in die Website
+      einbauen; vor der Veröffentlichung Wortlaut, Kontext, Namensnennung und Einwilligung klären.
+- [ ] Für den Schulbereich unter der inhaltlichen Klammer „Montessori – wie wir arbeiten“ konkrete
+      Konzepte vorstellen: unter anderem den Erdkinderplan, die angebotenen Praktika mit Zeitpunkt,
+      Jahrgangsstufe und pädagogischem Ziel sowie den konkreten Ablauf und Rahmen der Freiarbeit.
 - [ ] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten sowie
       Kosten für Mittagessen mit den aktuell gültigen Verträgen abgleichen.
 - [ ] Die derzeit auf der Website ausgewiesenen Kindergarten-Grundbeiträge von 190 bis 240 Euro mit
@@ -28,7 +33,8 @@ aktualisiert werden.
 - [ ] Öffentliche Termine regelmäßig prüfen und abgelaufene Veranstaltungen zeitnah entfernen.
 - [ ] Aktive Stellenangebote, Beschäftigungsumfänge und Bewerbungsadresse bestätigen.
 - [ ] Teamnamen, Rollen, Leitungsfunktionen, Vorstand, Aufsichtsbehörden und Kontaktdaten bestätigen.
-- [ ] Spendenkonto sowie Ablauf und Zuständigkeit für Zuwendungsbestätigungen bestätigen.
+- [ ] Spendenkonto, aktuelle Förderschwerpunkte, Ansprechpartner sowie Ablauf und Zuständigkeit für
+      Zuwendungsbestätigungen und größere beziehungsweise unternehmerische Unterstützung bestätigen.
 - [ ] Impressum, Datenschutzerklärung und Datenschutzhinweise in Aufnahmeunterlagen rechtlich prüfen
       lassen.
 - [ ] Die wichtigsten alten Jimdo-Adressen gegen echte Bestandslinks und Suchergebnisse prüfen und
@@ -36,6 +42,12 @@ aktualisiert werden.
 
 ## Fotos und Gestaltung
 
+- [x] Die 22 redaktionellen Foto-Slots übergangsweise mit einer konsistenten KI-generierten
+      Bildserie besetzen. Die Motive zeigen ausschließlich fiktive Personen und Räume; die echten
+      Team-Porträts bleiben unverändert.
+- [ ] Vor einer öffentlichen Veröffentlichung festlegen, wie die KI-generierten Übergangsbilder
+      transparent kenntlich gemacht werden. Sie dürfen nicht als dokumentarische Aufnahmen realer
+      Kinder, Mitarbeitender oder Räume der Montessori Allgäu ausgegeben werden.
 - [ ] Ein professionelles Fotoshooting planen, das konzentrierte Arbeit, Beziehungen, Materialien und
       echte Situationen in Kindergarten und Schule authentisch zeigt.
 - [ ] Die derzeitigen Fotos schrittweise durch die neuen Aufnahmen ersetzen und dabei Zuschnitt,

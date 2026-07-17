@@ -4,11 +4,14 @@ import { ArrowRight } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import TextLink from "@/components/TextLink.astro";
-import heroImage from "@/assets/images/editorial/hero.webp";
-import continuumImage from "@/assets/images/editorial/continuum.webp";
-import freedomImage from "@/assets/images/editorial/freedom.webp";
-import communityImage from "@/assets/images/editorial/community.webp";
-import careersImage from "@/assets/images/editorial/careers.webp";
+import { getDonationPage } from "@/data/content";
+import heroImage from "@/assets/images/generated/home-hero.webp";
+import continuumImage from "@/assets/images/generated/home-continuum.webp";
+import freedomImage from "@/assets/images/generated/home-freedom.webp";
+import communityImage from "@/assets/images/generated/home-community.webp";
+import careersImage from "@/assets/images/generated/home-careers.webp";
+
+const donations = await getDonationPage();
 ---
 
 <BaseLayout
@@ -35,7 +38,7 @@ import careersImage from "@/assets/images/editorial/careers.webp";
     <div class="home-hero__media">
       <Image
         src={heroImage}
-        alt="Ein Schüler arbeitet konzentriert mit Montessori-Material"
+        alt="Ein Kind arbeitet konzentriert mit Montessori-Material"
         widths={[640, 960, 1280]}
         sizes="(max-width: 840px) 100vw, 50vw"
         loading="eager"
@@ -81,7 +84,7 @@ import careersImage from "@/assets/images/editorial/careers.webp";
 
   <ImageSplit
     image={continuumImage}
-    alt="Kinder lernen gemeinsam mit Montessori-Material"
+    alt="Kinder unterschiedlichen Alters bauen gemeinsam an einem Holzprojekt"
     compact
     position="center 38%"
   >
@@ -101,7 +104,7 @@ import careersImage from "@/assets/images/editorial/careers.webp";
 
   <ImageSplit
     image={freedomImage}
-    alt="Ein Kind lernt gemeinsam mit einer Pädagogin"
+    alt="Eine Pädagogin bietet einem Kind zwei Montessori-Aktivitäten zur Auswahl an"
     reverse
     light
     compact
@@ -159,7 +162,7 @@ import careersImage from "@/assets/images/editorial/careers.webp";
 
   <ImageSplit
     image={communityImage}
-    alt="Kindergartenkinder und Pädagoginnen sitzen gemeinsam im Kreis"
+    alt="Kinder, Eltern und Pädagoginnen bepflanzen gemeinsam ein Hochbeet"
     light
     compact
     position="center 44%"
@@ -176,7 +179,7 @@ import careersImage from "@/assets/images/editorial/careers.webp";
 
   <ImageSplit
     image={careersImage}
-    alt="Eine Pädagogin begleitet ein Kind beim Lernen"
+    alt="Eine Pädagogin beobachtet ein Kind aufmerksam bei seiner Arbeit"
     reverse
     compact
     position="center 42%"
@@ -190,6 +193,19 @@ import careersImage from "@/assets/images/editorial/careers.webp";
     </p>
     <TextLink href="/arbeiten-bei-uns/" label="Arbeiten bei uns" />
   </ImageSplit>
+
+  <section class="section section--light section--compact">
+    <div class="container grid-2 home-support">
+      <div>
+        <p class="eyebrow">{donations.homepage.eyebrow}</p>
+        <h2>{donations.homepage.title}</h2>
+      </div>
+      <div>
+        <p class="lead">{donations.homepage.text}</p>
+        <TextLink href="/spenden/" label={donations.homepage.label} />
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
@@ -262,6 +278,10 @@ import careersImage from "@/assets/images/editorial/careers.webp";
   .home-fit .editorial-card {
     min-height: 0;
     padding: clamp(2rem, 3vw, 2.75rem);
+  }
+
+  .home-support {
+    align-items: center;
   }
 
   .fit-rule {

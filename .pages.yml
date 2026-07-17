@@ -232,6 +232,255 @@ content:
         type: boolean
         default: true
 
+  - name: donations-page
+    label: Spendenseite
+    type: file
+    path: src/content/donations/page.yml
+    format: yaml
+    operations:
+      create: false
+      delete: false
+    fields:
+      - name: seo
+        label: Suchmaschinen und Vorschau
+        type: object
+        required: true
+        fields:
+          - name: title
+            label: Seitentitel
+            type: string
+            required: true
+          - name: description
+            label: Seitenbeschreibung
+            type: text
+            required: true
+      - name: homepage
+        label: Hinweis auf der Startseite
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: text
+            label: Text
+            type: text
+            required: true
+          - name: label
+            label: Linktext
+            type: string
+            required: true
+      - name: hero
+        label: Seiteneinstieg
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Hauptüberschrift
+            type: string
+            required: true
+          - name: intro
+            label: Einleitung
+            type: text
+            required: true
+      - name: impact
+        label: Warum Unterstützung wirkt
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: imageAlt
+            label: Alternativtext des Bildes
+            type: string
+            required: true
+          - name: paragraphs
+            label: Absätze
+            type: text
+            required: true
+            list:
+              min: 1
+      - name: projects
+        label: Aktuelle Förderschwerpunkte
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: intro
+            label: Einleitung
+            type: text
+            required: true
+          - name: items
+            label: Schwerpunkte
+            type: object
+            required: true
+            list:
+              min: 1
+              max: 4
+              collapsible:
+                collapsed: true
+                summary: "{title}"
+            fields:
+              - name: title
+                label: Titel
+                type: string
+                required: true
+              - name: description
+                label: Beschreibung
+                type: text
+                required: true
+      - name: directDonation
+        label: Direkte Spende
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: intro
+            label: Einleitung
+            type: text
+            required: true
+          - name: account
+            label: Spendenkonto
+            type: object
+            required: true
+            fields:
+              - name: recipient
+                label: Empfänger
+                type: string
+                required: true
+              - name: bank
+                label: Bank
+                type: string
+                required: true
+              - name: iban
+                label: IBAN
+                type: string
+                required: true
+              - name: bic
+                label: BIC
+                type: string
+                required: true
+              - name: purpose
+                label: Verwendungszweck
+                type: string
+                required: true
+          - name: note
+            label: Hinweis
+            type: text
+            required: true
+      - name: company
+        label: Firmen und Förderpartner
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: text
+            label: Einleitung
+            type: text
+            required: true
+          - name: detail
+            label: Erläuterung
+            type: text
+            required: true
+          - name: buttonLabel
+            label: Text des E-Mail-Links
+            type: string
+            required: true
+          - name: emailSubject
+            label: Betreff der E-Mail
+            type: string
+            required: true
+      - name: receipt
+        label: Spendenbescheinigung
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: intro
+            label: Einleitung
+            type: text
+            required: true
+          - name: instruction
+            label: Ablauf
+            type: text
+            required: true
+          - name: buttonLabel
+            label: Text des E-Mail-Links
+            type: string
+            required: true
+          - name: emailSubject
+            label: Betreff der E-Mail
+            type: string
+            required: true
+      - name: otherSupport
+        label: Andere Unterstützung
+        type: object
+        required: true
+        fields:
+          - name: eyebrow
+            label: Kleine Überschrift
+            type: string
+            required: true
+          - name: title
+            label: Überschrift
+            type: string
+            required: true
+          - name: text
+            label: Text
+            type: text
+            required: true
+          - name: primaryLabel
+            label: Linktext Mitgliedschaft
+            type: string
+            required: true
+          - name: secondaryLabel
+            label: Linktext Kontakt
+            type: string
+            required: true
+
   - name: website-settings
     label: Kontaktdaten, Zeiten & Kosten
     type: file

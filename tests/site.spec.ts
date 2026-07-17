@@ -8,6 +8,7 @@ const keyPages = [
   "/kennenlernen/",
   "/gemeinschaft/prinzipien/",
   "/arbeiten-bei-uns/",
+  "/spenden/",
   "/kontakt/",
 ];
 
@@ -42,6 +43,9 @@ test("mobile menu exposes the main journeys", async ({ page }) => {
   await expect(
     mobileNavigation.getByRole("link", { name: "Arbeiten bei uns", exact: true }),
   ).toBeVisible();
+  await expect(
+    mobileNavigation.getByRole("link", { name: "Spenden & unterstützen", exact: true }),
+  ).toBeVisible();
 });
 
 test("desktop navigation exposes the matching subpages on hover", async ({ page }, testInfo) => {
@@ -59,7 +63,13 @@ test("desktop navigation exposes the matching subpages on hover", async ({ page 
     mainNavigation.getByRole("link", { name: "Häufige Fragen", exact: true }),
   ).toBeVisible();
 
+  await mainNavigation.getByRole("link", { name: "Gemeinschaft", exact: true }).hover();
+  await expect(
+    mainNavigation.getByRole("link", { name: "Spenden & unterstützen", exact: true }),
+  ).toBeVisible();
+
   await page.goto("/kennenlernen/kosten/");
+  await mainNavigation.getByRole("link", { name: "Kennenlernen", exact: true }).hover();
   await expect(mainNavigation.locator('[aria-current="page"]')).toHaveCount(1);
   await expect(mainNavigation.getByRole("link", { name: "Kosten", exact: true })).toHaveAttribute(
     "aria-current",
@@ -125,6 +135,22 @@ test("editorial content renders from the validated content collections", async (
   await expect(
     page.getByRole("main").getByRole("link", { name: "info@montessori-allgaeu.de" }),
   ).toBeVisible();
+
+  await page.goto("/spenden/");
+  await expect(
+    page.getByRole("heading", { name: "Gemeinsam Kindern Möglichkeiten eröffnen." }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Montessori-Materialien" })).toBeVisible();
+  await expect(page.getByText("DE93 7335 0000 0610 6672 48")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Unterstützung besprechen" })).toHaveAttribute(
+    "href",
+    "mailto:info@montessori-allgaeu.de?subject=Unterst%C3%BCtzung%20durch%20Unternehmen",
+  );
+
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Kinder brauchen Menschen, die Möglichkeiten eröffnen." }),
+  ).toBeVisible();
 });
 
 test("CMS address stays consistent across contact and legal pages", async ({ page }) => {
@@ -161,7 +187,7 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    "https://www.montessori-allgaeu.de/",
+    "https://montessori-allgaeu.de/",
   );
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
     "content",
@@ -169,7 +195,7 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "https://www.montessori-allgaeu.de/social-card-montessori-allgaeu.jpg",
+    "https://montessori-allgaeu.de/social-card-montessori-allgaeu.jpg",
   );
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");

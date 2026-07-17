@@ -1,7 +1,7 @@
 ---
 import { Menu, X } from "@lucide/astro";
 import Brand from "./Brand.astro";
-import { mainNavigation } from "@/data/site";
+import { mainNavigation, supportLink } from "@/data/site";
 
 const path = Astro.url.pathname;
 const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
@@ -56,6 +56,13 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
             </a>
           ))
         }
+        <a
+          class:list={["mobile-menu__support", { active: active(supportLink.href) }]}
+          href={supportLink.href}
+          aria-current={path === supportLink.href ? "page" : undefined}
+        >
+          {supportLink.label}
+        </a>
         <a class="button" href="/kennenlernen/">Monte kennenlernen</a>
       </nav>
     </details>
@@ -239,6 +246,14 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   .mobile-menu nav > a.active:not(.button) {
     color: var(--terracotta-text);
+  }
+
+  .mobile-menu nav > a.mobile-menu__support:not(.button) {
+    color: var(--terracotta-text);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
   }
 
   .mobile-menu nav .button {

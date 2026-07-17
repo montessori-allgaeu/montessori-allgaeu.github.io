@@ -4,8 +4,8 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getWebsiteSettings } from "@/data/content";
-import outdoorsImage from "@/assets/images/editorial/outdoors.webp";
-import roomImage from "@/assets/images/editorial/room.webp";
+import outdoorsImage from "@/assets/images/generated/ganztag-afternoon.webp";
+import mealImage from "@/assets/images/generated/ganztag-meal.webp";
 
 const { meals, openingHours } = await getWebsiteSettings();
 ---
@@ -20,7 +20,11 @@ const { meals, openingHours } = await getWebsiteSettings();
     intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unser Ganztag ist deshalb mehr als Betreuung."
   />
 
-  <ImageSplit image={outdoorsImage} alt="Kinder spielen gemeinsam draußen" position="center 42%">
+  <ImageSplit
+    image={outdoorsImage}
+    alt="Kinder bauen, balancieren und lesen am freien Nachmittag"
+    position="center 42%"
+  >
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
@@ -35,8 +39,8 @@ const { meals, openingHours } = await getWebsiteSettings();
   </ImageSplit>
 
   <ImageSplit
-    image={roomImage}
-    alt="Heller Raum der Montessori-Schule"
+    image={mealImage}
+    alt="Kinder und eine Pädagogin servieren gemeinsam das Mittagessen"
     reverse
     light
     position="center"

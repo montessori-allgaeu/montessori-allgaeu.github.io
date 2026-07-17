@@ -4,6 +4,7 @@ export type Job = CollectionEntry<"jobs">["data"] & { slug: string };
 export type TeamMember = CollectionEntry<"team">["data"];
 export type Event = CollectionEntry<"events">["data"];
 export type Download = CollectionEntry<"downloads">["data"];
+export type DonationPage = CollectionEntry<"donations">["data"];
 export type WebsiteSettings = CollectionEntry<"settings">["data"];
 
 const byOrder = <T extends { order: number }>(a: T, b: T) => a.order - b.order;
@@ -26,6 +27,16 @@ export async function getEvents(): Promise<Event[]> {
 export async function getDownloads(): Promise<Download[]> {
   const entries = await getCollection("downloads", ({ data }) => data.published);
   return entries.map(({ data }) => data).sort(byOrder);
+}
+
+export async function getDonationPage(): Promise<DonationPage> {
+  const entry = await getEntry("donations", "page");
+
+  if (!entry) {
+    throw new Error("Die Inhalte der Spendenseite fehlen: src/content/donations/page.yml");
+  }
+
+  return entry.data;
 }
 
 export async function getWebsiteSettings(): Promise<WebsiteSettings> {

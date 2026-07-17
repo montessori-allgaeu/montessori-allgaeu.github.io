@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { legacyRedirects } from "./src/data/legacy.ts";
 
-const siteUrl = "https://www.montessori-allgaeu.de";
+const siteUrl = "https://montessori-allgaeu.de";
 const legacyPaths = new Set(
   Object.keys(legacyRedirects).map((path) => new URL(`/${path}/`, siteUrl).pathname),
 );

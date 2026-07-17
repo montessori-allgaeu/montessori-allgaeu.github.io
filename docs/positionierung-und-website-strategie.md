@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 16. Juli 2026
+Stand: 17. Juli 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -13,7 +13,7 @@ Wer an Strategie, Text, Informationsarchitektur oder Design arbeitet, liest dies
 
 Die Montessori Allgäu ist eine warme, anspruchsvolle Montessori-Gemeinschaft vom Kindergarten bis zur 10. Klasse. Das Kind steht im Mittelpunkt: Kinder sollen ihren eigenen inneren Kompass kennenlernen, aus eigenem Antrieb handeln und lernen, sich selbst zu vertrauen, statt sich primär an Noten, Lob, Angst oder äußerer Anerkennung auszurichten.
 
-Die Website soll nicht möglichst viele Anfragen erzeugen. Sie soll passende Familien und Pädagog:innen anziehen, unpassende Erwartungen früh und respektvoll klären und die pädagogische sowie organisatorische Qualität der Monte sichtbar machen.
+Die Website soll nicht möglichst viele Anfragen erzeugen. Sie soll passende Familien und Pädagog:innen anziehen, unpassende Erwartungen früh und respektvoll klären und die pädagogische sowie organisatorische Qualität der Monte sichtbar machen. Nachrangig eröffnet sie privaten Unterstützer:innen, Förderpersonen und Unternehmen einen klaren Weg, die gemeinnützige Arbeit gezielt mitzutragen.
 
 Der zentrale Eindruck lautet:
 
@@ -68,7 +68,9 @@ Das Ziel ist, die bestmögliche Montessori-Schule und den bestmöglichen Kinderg
 
 ## Zielgruppen und Priorität
 
-### 1. Potenzielle Eltern und Familien – etwa 60 Prozent
+Die Prozentwerte beschreiben die redaktionelle Aufmerksamkeit der Website, nicht erwartete Besucherzahlen oder Einnahmeanteile.
+
+### 1. Potenzielle Eltern und Familien – etwa 55 Prozent
 
 Die wichtigste Zielgruppe. Die Website soll Vertrauen schaffen, die Pädagogik konkret machen und einen ehrlichen gegenseitigen Fit ermöglichen.
 
@@ -76,11 +78,15 @@ Kindergarten und Schule werden dabei nicht als getrennte Akquisitionswelten betr
 
 Aktuell sind Kindergartenaufnahme und Einschulung in Klasse 1 beide wichtig. Perspektivisch soll die zweite Kindergartengruppe den Übergang in die Schule weiter stärken.
 
-### 2. Potenzielle Pädagog:innen – etwa 30 Prozent
+### 2. Potenzielle Pädagog:innen – etwa 25 Prozent
 
 Gesucht werden insbesondere Erzieher:innen, pädagogische Fachkräfte und Lehrkräfte, die bewusst Montessori leben wollen. Die Website soll die Monte als warmen, klaren, lernenden und fachlich anspruchsvollen Arbeitgeber zeigen.
 
-### 3. Bestehende Familien – etwa 10 Prozent
+### 3. Spender:innen, Unterstützer:innen und Unternehmen – etwa 10 Prozent
+
+Diese Zielgruppe soll verstehen, warum die gemeinnützige Monte zusätzliche Unterstützung benötigt, wofür Beiträge konkret wirken und wie eine private, größere oder unternehmerische Förderung verlässlich abgestimmt werden kann. Sie bleibt deutlich hinter Familien und potenziellen Mitarbeitenden priorisiert.
+
+### 4. Bestehende Familien – etwa 10 Prozent
 
 Sie benötigen verlässliche Informationen, Termine, Downloads, Kontaktdaten und Orientierung über Gemeinschaft, Verein und Prinzipien.
 
@@ -244,6 +250,21 @@ Die Kommunikation soll nicht defensiv sein, sondern einen klaren Tausch sichtbar
 
 Offene Stellen sind der primäre Conversion-Pfad. Initiativkontakt, Hospitation und Kennenlerngespräch bleiben möglich.
 
+## Positionierung für Spender:innen, Unterstützer:innen und Unternehmen
+
+Die Monte kommuniziert ihren Finanzierungsbedarf nicht über Mitleid oder ein diffuses „Wir haben zu wenig Geld“. Im Mittelpunkt steht die Wirkung: Spenden ermöglichen vorbereitete Lernumgebungen, pädagogische Qualität und konkrete Entwicklungen, die der laufende Haushalt allein nicht tragen kann.
+
+Der Unterstützerweg soll:
+
+- aktuelle Förderschwerpunkte konkret und verständlich benennen
+- private Einzel- und regelmäßige Spenden einfach ermöglichen
+- für größere, zweckgebundene oder unternehmerische Unterstützung einen persönlichen Kontakt anbieten
+- passende Sach- oder Leistungsspenden nur nach vorheriger Abstimmung annehmen
+- Gemeinnützigkeit und den Ablauf von Zuwendungsbestätigungen transparent erklären
+- anhand konkreter Beispiele zeigen, was Unterstützung ermöglicht hat
+
+Die Spendenseite ist eine eigenständige Landingpage, aber kein sechster Hauptpunkt der Navigation. Sie wird unter **Gemeinschaft**, über einen ruhigen Hinweis am Ende der Startseite und im Footer erschlossen. Eine eigene Unterseite nur für Unternehmen wird erst sinnvoll, wenn es ein dauerhaftes Partnerschaftsmodell mit klaren Angeboten, Zuständigkeiten und Prozessen gibt.
+
 ## Gewünschte Wirkung der Website
 
 Die Website soll auslösen:
@@ -332,29 +353,29 @@ Die Hauptnavigation ist bestätigt:
 
 ### Seiten und strategische Aufgabe
 
-| Bereich               | Route                                       | Aufgabe                                                                |
-| --------------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
-| Startseite            | `/`                                         | Kerneindruck, Haltung und wichtigste Wege                              |
-| Montessori            | `/montessori/`                              | Pädagogischen Ansatz, Freiheit, Grenzen, Leistung und Zukunft erklären |
-| Kindergarten & Schule | `/kindergarten-schule/`                     | Gemeinsamen Bildungsweg vom Kindergarten bis Klasse 10 zeigen          |
-| Kindergarten          | `/kindergarten-schule/kindergarten/`        | Montessori, Naturpädagogik, Wärme und Waldtage konkretisieren          |
-| Schule                | `/kindergarten-schule/schule/`              | Lernorganisation, Abschlüsse und eigenes Tempo erklären                |
-| Ganztag & Verpflegung | `/kindergarten-schule/ganztag-verpflegung/` | Tagesstruktur und praktische Betreuung erklären                        |
-| Kennenlernen          | `/kennenlernen/`                            | Gegenseitigen Fit offen klären                                         |
-| Aufnahme Kindergarten | `/kennenlernen/aufnahme-kindergarten/`      | Primären Einstieg und langfristigen Monte-Weg erklären                 |
-| Aufnahme Schule       | `/kennenlernen/aufnahme-schule/`            | Einschulung Klasse 1 und begrenzten Quereinstieg erklären              |
-| Kosten                | `/kennenlernen/kosten/`                     | Geld, Einlage, Verein und Mitarbeit transparent machen                 |
-| Häufige Fragen        | `/kennenlernen/haeufige-fragen/`            | Missverständnisse und schwierige Fragen direkt beantworten             |
-| Gemeinschaft          | `/gemeinschaft/`                            | Verein, Mitwirkung, fünf Säulen und Zusammenhalt zeigen                |
-| Prinzipien            | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären       |
-| Team                  | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                      |
-| Träger & Verein       | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären            |
-| Arbeiten bei uns      | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                      |
-| Offene Stellen        | `/arbeiten-bei-uns/stellen/`                | Primärer Recruiting-Conversion-Pfad                                    |
-| Termine               | `/termine/`                                 | Kennenlern- und Gemeinschaftstermine                                   |
-| Downloads             | `/downloads/`                               | Verbindliche und weiterführende Unterlagen                             |
-| Kontakt               | `/kontakt/`                                 | Niedrigschwelliger Kontakt nach Bereich                                |
-| Spenden               | `/spenden/`                                 | Unterstützung der gemeinnützigen Organisation                          |
+| Bereich                | Route                                       | Aufgabe                                                                 |
+| ---------------------- | ------------------------------------------- | ----------------------------------------------------------------------- |
+| Startseite             | `/`                                         | Kerneindruck, Haltung und wichtigste Wege                               |
+| Montessori             | `/montessori/`                              | Pädagogischen Ansatz, Freiheit, Grenzen, Leistung und Zukunft erklären  |
+| Kindergarten & Schule  | `/kindergarten-schule/`                     | Gemeinsamen Bildungsweg vom Kindergarten bis Klasse 10 zeigen           |
+| Kindergarten           | `/kindergarten-schule/kindergarten/`        | Montessori, Naturpädagogik, Wärme und Waldtage konkretisieren           |
+| Schule                 | `/kindergarten-schule/schule/`              | Lernorganisation, Abschlüsse und eigenes Tempo erklären                 |
+| Ganztag & Verpflegung  | `/kindergarten-schule/ganztag-verpflegung/` | Tagesstruktur und praktische Betreuung erklären                         |
+| Kennenlernen           | `/kennenlernen/`                            | Gegenseitigen Fit offen klären                                          |
+| Aufnahme Kindergarten  | `/kennenlernen/aufnahme-kindergarten/`      | Primären Einstieg und langfristigen Monte-Weg erklären                  |
+| Aufnahme Schule        | `/kennenlernen/aufnahme-schule/`            | Einschulung Klasse 1 und begrenzten Quereinstieg erklären               |
+| Kosten                 | `/kennenlernen/kosten/`                     | Geld, Einlage, Verein und Mitarbeit transparent machen                  |
+| Häufige Fragen         | `/kennenlernen/haeufige-fragen/`            | Missverständnisse und schwierige Fragen direkt beantworten              |
+| Gemeinschaft           | `/gemeinschaft/`                            | Verein, Mitwirkung, fünf Säulen und Zusammenhalt zeigen                 |
+| Prinzipien             | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären        |
+| Team                   | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                       |
+| Träger & Verein        | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären             |
+| Arbeiten bei uns       | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                       |
+| Offene Stellen         | `/arbeiten-bei-uns/stellen/`                | Primärer Recruiting-Conversion-Pfad                                     |
+| Termine                | `/termine/`                                 | Kennenlern- und Gemeinschaftstermine                                    |
+| Downloads              | `/downloads/`                               | Verbindliche und weiterführende Unterlagen                              |
+| Kontakt                | `/kontakt/`                                 | Niedrigschwelliger Kontakt nach Bereich                                 |
+| Spenden & unterstützen | `/spenden/`                                 | Private, größere und unternehmerische Unterstützung konkret ermöglichen |
 
 Impressum, Datenschutz, 404-Seite und Weiterleitungen alter Jimdo-Routen gehören zur technischen und rechtlichen Grundlage, nicht zur primären Navigation.
 
@@ -371,6 +392,7 @@ Die Startseite soll nicht alles erklären. Sie soll:
 5. Fit und bewusste Entscheidung ansprechen
 6. Gemeinschaft und Prinzipien korrekt verorten
 7. passende Pädagog:innen zum Arbeitgeberbereich führen
+8. nach den Familien- und Arbeitgeberinhalten ruhig auf Unterstützungsmöglichkeiten hinweisen
 
 ### Ehrlichkeit und Fit
 
@@ -395,7 +417,7 @@ Vor jeder relevanten Veröffentlichung prüfen:
 - offene Stellen und Bewerbungsadresse
 - Teamnamen, Rollen und Fotofreigaben
 - Vorstands- und Behördendaten
-- Spendenkonto
+- Spendenkonto, aktuelle Förderschwerpunkte, Ansprechpartner und Ablauf der Zuwendungsbestätigung
 - Impressum und Datenschutz
 
 Die aktuelle technische Checkliste steht in [`README.md`](../README.md).
@@ -410,7 +432,7 @@ Die aktuelle technische Checkliste steht in [`README.md`](../README.md).
 - keine typische Luxus-Privatschulästhetik
 - keine Positionierung als Förder- oder Therapieschule
 - keine Kopie anderer Montessori-Websites
-- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte
+- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite
 - kein Wachstum als Selbstzweck
 
 ## Erfolgskriterien
@@ -419,17 +441,19 @@ Die wichtigsten gewünschten Ergebnisse sind:
 
 1. mehr passende Anfragen von Familien
 2. mehr, bessere und passendere Bewerbungen von Pädagog:innen
-3. ein deutlich besseres und professionelleres Bild der Monte
+3. mehr passende private und unternehmerische Unterstützung für konkrete Vorhaben
+4. ein deutlich besseres und professionelleres Bild der Monte
 
 Qualitative Signale:
 
 - Familien kommen mit realistischeren Erwartungen in Gespräche.
 - Weniger Gespräche drehen sich um Notendruck, feste Regelzeit oder Schule als reine Dienstleistung.
 - Bewerber:innen beziehen sich konkret auf Montessori, Kindorientierung und die Prinzipien.
+- Unterstützer:innen beziehen sich auf konkrete Förderschwerpunkte und wählen einen passenden Kontaktweg.
 - Bestehende Familien finden Termine, Kosten und Dokumente schneller.
 - Verantwortliche können auf die Prinzipienseite verweisen, statt Grundsatzfragen jedes Mal neu zu erklären.
 
-In V1 gibt es bewusst kein Webtracking. Erfolg wird zunächst über die Qualität der Anfragen, Gespräche und Bewerbungen beurteilt.
+In V1 gibt es bewusst kein Webtracking. Erfolg wird zunächst über die Qualität der Anfragen, Gespräche, Bewerbungen und Unterstützerkontakte beurteilt.
 
 ## Ownership und Pflege
 
@@ -443,6 +467,7 @@ Wichtige Pfade:
 - CMS-Konfiguration: `.pages.yml`
 - Validierung der redaktionellen Daten: `src/content.config.ts`
 - Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Spendenseite einschließlich Förderschwerpunkten und Kontodaten: `src/content/donations/page.yml`
 - Stellen: `src/content/jobs/`
 - Team: `src/content/team/`
 - Termine: `src/content/events/`
@@ -463,11 +488,14 @@ Wichtige Pfade:
 - Designrichtung 1 wurde ausgewählt und für die gesamte Website umgesetzt.
 - Kindergarten und Schule werden als ein Bildungsweg und nicht als getrennte Zielgruppenwelten behandelt.
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
+- Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die Hauptnavigation bleibt unverändert.
+- Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
 - Quereinstieg wird nicht prominent beworben.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.
 - Erste Version sollte schnell live gehen; ein neues Fotoshooting darf später folgen.
 - Die Website ist statisch mit Astro umgesetzt und wird über GitHub Pages veröffentlicht.
+- Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
 - Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
 
 ## Offene beziehungsweise später erneut zu prüfende Entscheidungen
@@ -475,9 +503,9 @@ Wichtige Pfade:
 - endgültige Aufnahmefristen und deren Darstellung
 - dauerhaftes Verfahren für Termine und Aktualisierungen
 - spätere Messung von Anfrage- und Bewerbungsqualität
+- dauerhaftes Verfahren zur Auswahl, Freigabe und Aktualisierung konkreter Förderschwerpunkte
 - Umfang und Art eines professionellen Fotoshootings
 - endgültige rechtliche Prüfung aller Pflichttexte
-- Zeitpunkt und Ablauf der Umstellung von `www.montessori-allgaeu.de`
 - weitere Iteration und Versionierung der Gemeinschaftsprinzipien
 
 ## Regel für zukünftige Iterationen
@@ -489,5 +517,6 @@ Eine Änderung ist strategisch passend, wenn sie mindestens eine der folgenden F
 3. Verkörpert die Gestaltung mehr Wärme, Aufmerksamkeit, Vertrauen und ruhige Professionalität?
 4. Macht die Änderung Verantwortung, Grenzen und Gemeinschaft transparenter?
 5. Hilft sie, Kindergarten und Schule als einen zusammenhängenden Weg zu erleben?
+6. Versteht eine passende Förderperson klarer, was ihre Unterstützung konkret ermöglicht und wie sie verlässlich helfen kann?
 
 Wenn eine Änderung die Seite lediglich moderner, lauter oder conversion-stärker macht, aber diese Fragen nicht besser beantwortet, ist sie wahrscheinlich keine gute Iteration.

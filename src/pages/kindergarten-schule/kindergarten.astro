@@ -5,9 +5,9 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getWebsiteSettings } from "@/data/content";
-import kindergartenImage from "@/assets/images/editorial/kindergarten.webp";
-import natureImage from "@/assets/images/editorial/nature.webp";
-import playgroundImage from "@/assets/images/editorial/playground.webp";
+import kindergartenImage from "@/assets/images/generated/kindergarten-arrival.webp";
+import natureImage from "@/assets/images/generated/kindergarten-nature.webp";
+import playgroundImage from "@/assets/images/generated/kindergarten-outdoor.webp";
 
 const { openingHours } = await getWebsiteSettings();
 ---
@@ -24,7 +24,7 @@ const { openingHours } = await getWebsiteSettings();
 
   <ImageSplit
     image={kindergartenImage}
-    alt="Ein Kindergartenkind arbeitet konzentriert am Tisch"
+    alt="Eine Pädagogin begrüßt ein Kindergartenkind aufmerksam auf Augenhöhe"
     position="center 38%"
   >
     <p class="eyebrow">Wärme und Eigenaktivität</p>
@@ -78,7 +78,7 @@ const { openingHours } = await getWebsiteSettings();
 
   <ImageSplit
     image={natureImage}
-    alt="Kindergartenkinder wandern gemeinsam durch eine Wiese"
+    alt="Kindergartenkinder tragen an einem Waldtag gemeinsam einen schweren Ast"
     reverse
     position="center 46%"
   >
@@ -96,7 +96,7 @@ const { openingHours } = await getWebsiteSettings();
       <div class="image-frame image-frame--landscape">
         <img
           src={playgroundImage.src}
-          alt="Außenbereich des Montessori-Kindergartens"
+          alt="Kinder spielen selbstständig im naturnahen Außenbereich des Kindergartens"
           loading="lazy"
         />
       </div>

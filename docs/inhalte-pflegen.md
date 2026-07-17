@@ -49,7 +49,22 @@ Diese Maske aktualisiert dieselben Angaben überall auf der Website. Dazu gehör
 - Schulgeld, Kindergartenbeiträge und Elterneinlage
 - Elternarbeitsstunden und Vereinsbeiträge
 
-Zeitbezogene Angaben müssen vor dem Speichern anhand der aktuellen Verträge oder verbindlichen Beschlüsse geprüft werden. Rechtliche Formulierungen und grundlegende Seitentexte sind nicht über das CMS editierbar.
+Zeitbezogene Angaben müssen vor dem Speichern anhand der aktuellen Verträge oder verbindlichen Beschlüsse geprüft werden. Rechtliche Formulierungen und grundlegende Seitentexte außerhalb des freigegebenen Spendenbereichs sind nicht über das CMS editierbar.
+
+### Spendenseite
+
+Die Maske **Spendenseite** pflegt den vollständigen sichtbaren Inhalt der Seite sowie den ruhigen Unterstützerhinweis auf der Startseite. Dazu gehören:
+
+- Seitentitel, Seitenbeschreibung, Einstieg und Wirkungsbeschreibung
+- ein bis vier aktuelle Förderschwerpunkte samt Reihenfolge
+- Empfänger, Bank, IBAN, BIC und Verwendungszweck
+- Ansprache von Firmen und größeren Förderpersonen
+- Ablauf und E-Mail-Betreff für Zuwendungsbestätigungen
+- Texte und Linkbeschriftungen für weitere Unterstützung
+
+Layout, Bildauswahl, Navigation und feste Zielseiten bleiben im Code geschützt. Die Kontaktadresse der E-Mail-Links kommt aus **Kontaktdaten, Zeiten und Kosten** und muss deshalb nicht doppelt gepflegt werden.
+
+Vor jeder Änderung der Kontodaten, Förderschwerpunkte oder Bescheinigungsangaben den aktuellen Stand mit Geschäftsführung beziehungsweise Finanzvorstand bestätigen. Nur Vorhaben veröffentlichen, deren Bedarf, Zuständigkeit und Verwendung intern geklärt sind. Bei zweckgebundenen, größeren sowie Sach- oder Leistungsspenden soll die persönliche Abstimmung bestehen bleiben.
 
 ## Ausblenden, Löschen und Wiederherstellen
 
@@ -62,6 +77,7 @@ Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehent
 - CMS-Konfiguration: `.pages.yml`
 - Validierung: `src/content.config.ts`
 - Kontaktdaten, Zeiten und Kosten: `src/content/settings/website.yml`
+- Spendenseite: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Stellen: `src/content/jobs/`
 - Team: `src/content/team/`

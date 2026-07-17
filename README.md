@@ -32,6 +32,7 @@ npm run test:e2e
 
 - Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
 - Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Spendenseite und aktuelle Förderschwerpunkte: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Team: `src/content/team/` und `src/assets/images/team/`
 - Stellenangebote: `src/content/jobs/`
@@ -42,7 +43,7 @@ npm run test:e2e
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte bereit und speichert Änderungen direkt als Git-Commit auf `main`. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
 
 Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
 
@@ -54,7 +55,7 @@ Vor dem ersten Deployment:
 
 1. GitHub-Organisation und Repository anlegen.
 2. Unter **Settings → Pages → Source** „GitHub Actions“ wählen.
-3. Custom Domain in den Pages-Einstellungen auf `www.montessori-allgaeu.de` setzen.
+3. Custom Domain in den Pages-Einstellungen auf `montessori-allgaeu.de` setzen.
 4. Domain in der Organisation verifizieren.
 5. Erst danach DNS umstellen und HTTPS aktivieren.
 
@@ -65,7 +66,7 @@ Geplante Zielkonfiguration:
 - `www` als `CNAME` auf `montessori-allgaeu.github.io`
 - Apex-Domain mit den aktuell von GitHub dokumentierten `A`- und optional `AAAA`-Records
 - Kein Wildcard-DNS
-- Canonical Domain: `www.montessori-allgaeu.de`
+- Canonical Domain: `montessori-allgaeu.de`
 
 GitHub leitet bei korrekt gesetzter Apex- und `www`-Konfiguration automatisch auf die in Pages hinterlegte Canonical Domain um. DNS-Werte immer unmittelbar vor dem Cutover mit der aktuellen GitHub-Dokumentation abgleichen.
 

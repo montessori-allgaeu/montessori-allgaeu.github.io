@@ -63,6 +63,83 @@ const downloads = defineCollection({
   }),
 });
 
+const donations = defineCollection({
+  loader: glob({ pattern: "*.yml", base: "./src/content/donations" }),
+  schema: z.object({
+    seo: z.object({
+      title: z.string().min(1),
+      description: z.string().min(1),
+    }),
+    homepage: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      text: z.string().min(1),
+      label: z.string().min(1),
+    }),
+    hero: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      intro: z.string().min(1),
+    }),
+    impact: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      imageAlt: z.string().min(1),
+      paragraphs: z.array(z.string().min(1)).min(1),
+    }),
+    projects: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      intro: z.string().min(1),
+      items: z
+        .array(
+          z.object({
+            title: z.string().min(1),
+            description: z.string().min(1),
+          }),
+        )
+        .min(1)
+        .max(4),
+    }),
+    directDonation: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      intro: z.string().min(1),
+      account: z.object({
+        recipient: z.string().min(1),
+        bank: z.string().min(1),
+        iban: z.string().min(1),
+        bic: z.string().min(1),
+        purpose: z.string().min(1),
+      }),
+      note: z.string().min(1),
+    }),
+    company: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      text: z.string().min(1),
+      detail: z.string().min(1),
+      buttonLabel: z.string().min(1),
+      emailSubject: z.string().min(1),
+    }),
+    receipt: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      intro: z.string().min(1),
+      instruction: z.string().min(1),
+      buttonLabel: z.string().min(1),
+      emailSubject: z.string().min(1),
+    }),
+    otherSupport: z.object({
+      eyebrow: z.string().min(1),
+      title: z.string().min(1),
+      text: z.string().min(1),
+      primaryLabel: z.string().min(1),
+      secondaryLabel: z.string().min(1),
+    }),
+  }),
+});
+
 const priceTableSchema = z.object({
   intro: z.string().min(1),
   rows: z
@@ -145,4 +222,4 @@ const settings = defineCollection({
   }),
 });
 
-export const collections = { jobs, team, events, downloads, settings };
+export const collections = { jobs, team, events, downloads, donations, settings };

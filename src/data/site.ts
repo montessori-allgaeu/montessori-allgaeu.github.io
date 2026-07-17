@@ -1,7 +1,12 @@
 export const site = {
   name: "Montessori Allgäu",
   descriptor: "Kindergarten & Schule",
-  url: "https://www.montessori-allgaeu.de",
+  url: "https://montessori-allgaeu.de",
+} as const;
+
+export const supportLink = {
+  label: "Spenden & unterstützen",
+  href: "/spenden/",
 } as const;
 
 export const mainNavigation = [
@@ -35,6 +40,7 @@ export const mainNavigation = [
       { label: "Prinzipien", href: "/gemeinschaft/prinzipien/" },
       { label: "Team", href: "/gemeinschaft/team/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
+      supportLink,
     ],
   },
   {
@@ -79,7 +85,7 @@ export const footerNavigation = [
     links: [
       { label: "Arbeiten bei uns", href: "/arbeiten-bei-uns/" },
       { label: "Offene Stellen", href: "/arbeiten-bei-uns/stellen/" },
-      { label: "Spenden", href: "/spenden/" },
+      supportLink,
       { label: "Kontakt", href: "/kontakt/" },
     ],
   },

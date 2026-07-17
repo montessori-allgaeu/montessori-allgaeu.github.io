@@ -1,111 +1,154 @@
 ---
-import { HeartHandshake } from "@lucide/astro";
+import { Building2, HeartHandshake } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
-import { getWebsiteSettings } from "@/data/content";
-import governanceImage from "@/assets/images/editorial/governance.webp";
+import { getDonationPage, getWebsiteSettings } from "@/data/content";
+import donationImpactImage from "@/assets/images/generated/donation-impact.webp";
 
-const { contact } = await getWebsiteSettings();
+const [donations, { contact }] = await Promise.all([getDonationPage(), getWebsiteSettings()]);
+const companyMailto = `mailto:${contact.email}?subject=${encodeURIComponent(donations.company.emailSubject)}`;
+const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(donations.receipt.emailSubject)}`;
 ---
 
-<BaseLayout
-  title="Spenden"
-  description="Unterstützt die gemeinnützige Montessori Allgäu mit einer Spende für vorbereitete Lernumgebungen, pädagogische Qualität und nachhaltige Entwicklung."
->
+<BaseLayout title={donations.seo.title} description={donations.seo.description}>
   <PageIntro
-    eyebrow="Spenden"
-    title="Gute Lernräume entstehen nicht von allein."
-    intro="Als gemeinnützige, freie Einrichtung investieren wir in Menschen, Materialien und Räume, die Kinder wirklich unterstützen. Spenden machen Entwicklungen möglich, die aus laufenden Mitteln allein nicht zu tragen wären."
+    eyebrow={donations.hero.eyebrow}
+    title={donations.hero.title}
+    intro={donations.hero.intro}
   />
 
-  <ImageSplit
-    image={governanceImage}
-    alt="Kinder und Erwachsene der Monte-Gemeinschaft bei einer gemeinsamen Aktion"
-    position="center 45%"
-  >
-    <p class="eyebrow">Wofür eure Hilfe wirkt</p>
-    <h2>Qualität vor Wachstum.</h2>
-    <p>
-      Wir wollen nicht groß werden um des Wachstums willen. Wir wollen pädagogisch besser, räumlich
-      verlässlicher und als Gemeinschaft stabiler werden. Spenden fließen deshalb in vorbereitete
-      Umgebungen, Montessori-Material, Räume, Qualifizierung und konkrete Entwicklungsprojekte.
-    </p>
-    <p>Für zweckgebundene oder größere Spenden sprecht bitte vorab mit der Geschäftsführung.</p>
+  <ImageSplit image={donationImpactImage} alt={donations.impact.imageAlt} position="center 45%">
+    <p class="eyebrow">{donations.impact.eyebrow}</p>
+    <h2>{donations.impact.title}</h2>
+    {donations.impact.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
   </ImageSplit>
 
   <section class="section section--light">
-    <div class="container donation-grid">
-      <div>
-        <HeartHandshake size={42} stroke-width={1.4} aria-hidden="true" />
-        <p class="eyebrow">Spendenkonto</p>
-        <h2>Jeder Beitrag zählt.</h2>
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">{donations.projects.eyebrow}</p>
+        <h2>{donations.projects.title}</h2>
+        <p>{donations.projects.intro}</p>
       </div>
-      <dl>
-        <div><dt>Empfänger</dt><dd>Monte e.V.</dd></div>
-        <div><dt>Bank</dt><dd>Sparkasse Allgäu</dd></div>
-        <div><dt>IBAN</dt><dd>DE93 7335 0000 0610 6672 48</dd></div>
-        <div><dt>BIC</dt><dd>BYLADEM1ALG</dd></div>
-        <div><dt>Verwendungszweck</dt><dd>Spende Montessori Allgäu</dd></div>
-      </dl>
+      <div class="editorial-cards donation-projects">
+        {
+          donations.projects.items.map((project, index) => (
+            <article class="editorial-card">
+              <p class="eyebrow">{String(index + 1).padStart(2, "0")}</p>
+              <h3>{project.title}</h3>
+              <p>{project.description}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <section class="section">
+    <div class="container support-grid">
+      <article class="support-option">
+        <HeartHandshake size={42} stroke-width={1.4} aria-hidden="true" />
+        <p class="eyebrow">{donations.directDonation.eyebrow}</p>
+        <h2>{donations.directDonation.title}</h2>
+        <p>{donations.directDonation.intro}</p>
+        <dl>
+          <div><dt>Empfänger</dt><dd>{donations.directDonation.account.recipient}</dd></div>
+          <div><dt>Bank</dt><dd>{donations.directDonation.account.bank}</dd></div>
+          <div><dt>IBAN</dt><dd>{donations.directDonation.account.iban}</dd></div>
+          <div><dt>BIC</dt><dd>{donations.directDonation.account.bic}</dd></div>
+          <div>
+            <dt>Verwendungszweck</dt><dd>{donations.directDonation.account.purpose}</dd>
+          </div>
+        </dl>
+        <p class="support-note">{donations.directDonation.note}</p>
+      </article>
+
+      <article class="support-option support-option--company">
+        <Building2 size={42} stroke-width={1.4} aria-hidden="true" />
+        <p class="eyebrow">{donations.company.eyebrow}</p>
+        <h2>{donations.company.title}</h2>
+        <p class="lead">{donations.company.text}</p>
+        <p>{donations.company.detail}</p>
+        <a class="button button--outline" href={companyMailto}>{donations.company.buttonLabel}</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section--light">
     <div class="container grid-2">
-      <div><p class="eyebrow">Spendenbescheinigung</p><h2>Gemeinnützig unterstützen.</h2></div>
       <div>
-        <p class="lead">
-          Der Monte e.V. ist gemeinnützig. Für eine Zuwendungsbestätigung benötigen wir euren Namen
-          und eure Anschrift.
-        </p>
-        <p>
-          Schickt die Angaben mit Betrag und Überweisungsdatum an <a
-            href={`mailto:${contact.email}?subject=Spendenbescheinigung`}>{contact.email}</a
-          >. Wir melden uns, falls noch etwas fehlt.
-        </p>
+        <p class="eyebrow">{donations.receipt.eyebrow}</p>
+        <h2>{donations.receipt.title}</h2>
+      </div>
+      <div>
+        <p class="lead">{donations.receipt.intro}</p>
+        <p>{donations.receipt.instruction}</p>
+        <a class="button button--outline" href={receiptMailto}>{donations.receipt.buttonLabel}</a>
       </div>
     </div>
   </section>
 
   <CTASection
-    title="Lieber Zeit oder Verantwortung geben?"
-    text="Auch Mitgliedschaft, Elternarbeit und fachliche Unterstützung tragen die Monte. Sprecht uns an, wenn ihr euch auf andere Weise einbringen möchtet."
-    primaryHref="/gemeinschaft/traeger-verein/"
-    primaryLabel="Mitglied werden"
+    eyebrow={donations.otherSupport.eyebrow}
+    title={donations.otherSupport.title}
+    text={donations.otherSupport.text}
+    primaryHref="/downloads/beitrittserklaerung-verein.pdf"
+    primaryLabel={donations.otherSupport.primaryLabel}
     secondaryHref="/kontakt/"
-    secondaryLabel="Kontakt"
+    secondaryLabel={donations.otherSupport.secondaryLabel}
   />
 </BaseLayout>
 
 <style>
-  .donation-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: clamp(3rem, 8vw, 8rem);
-    align-items: start;
+  .donation-projects {
+    gap: 1px;
+    border: 1px solid var(--line);
+    background: var(--line);
+    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
   }
 
-  .donation-grid svg {
+  .donation-projects .editorial-card {
+    min-height: 18rem;
+    border: 0;
+    background: var(--paper-light);
+  }
+
+  .support-grid {
+    display: grid;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .support-option {
+    padding: clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .support-option + .support-option {
+    border-left: 1px solid var(--line);
+  }
+
+  .support-option > svg {
     margin-bottom: 2rem;
     color: var(--terracotta-text);
   }
 
-  .donation-grid dl {
-    margin: 0;
+  .support-option dl {
+    margin: 2rem 0 0;
     border-top: 1px solid var(--line-strong);
   }
 
-  .donation-grid dl div {
+  .support-option dl div {
     display: grid;
-    grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
-    gap: 1rem;
-    padding: 1.1rem 0;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--line);
+    gap: 1rem;
+    grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
   }
 
-  .donation-grid dt {
+  .support-option dt {
     color: var(--forest-muted);
     font-size: 0.75rem;
     font-weight: 700;
@@ -113,15 +156,36 @@ const { contact } = await getWebsiteSettings();
     text-transform: uppercase;
   }
 
-  .donation-grid dd {
+  .support-option dd {
     margin: 0;
     color: var(--forest);
     font-weight: 600;
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 700px) {
-    .donation-grid {
+  .support-note {
+    margin-top: 1.5rem;
+    color: var(--forest-muted);
+    font-size: 0.9rem;
+  }
+
+  .support-option--company .button {
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 800px) {
+    .support-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .support-option + .support-option {
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .support-option dl div {
       grid-template-columns: 1fr;
     }
   }

@@ -36,6 +36,7 @@ Wichtige Content-Pfade:
 - `.pages.yml`: Redaktionsoberfläche
 - `src/content.config.ts`: Validierung redaktioneller Inhalte
 - `src/content/settings/website.yml`: Kontaktdaten, Öffnungszeiten und Kosten
+- `src/content/donations/page.yml`: Spendenseite und aktuelle Förderschwerpunkte
 - `src/content/jobs/`: Stellenangebote
 - `src/content/team/`: Team und Rollen
 - `src/content/events/`: Termine
@@ -59,7 +60,7 @@ Wichtige Content-Pfade:
 
 - Astro, statischer Output, GitHub Pages.
 - Pages CMS dient als Git-basierte Redaktionsoberfläche; keine CMS-Datenbank, Analyse oder Formulare in V1, sofern nicht ausdrücklich neu entschieden.
-- Canonical Domain: `https://www.montessori-allgaeu.de`.
+- Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
 - Vor Übergabe mindestens ausführen:
 
