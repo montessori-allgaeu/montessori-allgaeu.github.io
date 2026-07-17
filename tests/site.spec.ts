@@ -220,6 +220,11 @@ test("homepage copy remains readable on wide screens", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto("/");
 
+  const heroBox = await page.locator(".home-hero").boundingBox();
+  expect(heroBox).not.toBeNull();
+  expect(heroBox!.height).toBeLessThanOrEqual(781);
+  expect(heroBox!.y + heroBox!.height).toBeLessThanOrEqual(1081);
+
   const heroLead = page.locator(".home-hero .lead");
   const heroLineCount = await heroLead.evaluate((element) => {
     const styles = getComputedStyle(element);
@@ -234,4 +239,18 @@ test("homepage copy remains readable on wide screens", async ({ page }) => {
     .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().width));
   expect(splitContentWidths).not.toHaveLength(0);
   expect(Math.min(...splitContentWidths)).toBeGreaterThanOrEqual(500);
+});
+
+test("homepage hero does not overlap the next section on short desktop viewports", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 850, height: 600 });
+  await page.goto("/");
+
+  const heroContent = await page.locator(".home-hero__content").boundingBox();
+  const nextSection = await page.locator(".home-beliefs").boundingBox();
+
+  expect(heroContent).not.toBeNull();
+  expect(nextSection).not.toBeNull();
+  expect(heroContent!.y + heroContent!.height).toBeLessThanOrEqual(nextSection!.y + 1);
 });

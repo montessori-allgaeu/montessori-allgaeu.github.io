@@ -5,7 +5,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getDonationPage } from "@/data/content";
-import heroImage from "@/assets/images/generated/home-hero.webp";
+import heroImage from "@/assets/images/generated/home-hero-warm.webp";
 import continuumImage from "@/assets/images/generated/home-continuum.webp";
 import freedomImage from "@/assets/images/generated/home-freedom.webp";
 import communityImage from "@/assets/images/generated/home-community.webp";
@@ -212,7 +212,7 @@ const donations = await getDonationPage();
   .home-hero {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    min-height: min(780px, calc(100svh - var(--header-height)));
+    height: clamp(700px, calc(100svh - var(--header-height)), 780px);
   }
 
   .home-hero__content {
@@ -231,7 +231,7 @@ const donations = await getDonationPage();
   }
 
   .home-hero__media {
-    min-height: 620px;
+    min-height: 0;
     overflow: hidden;
     background: var(--line);
   }
@@ -291,6 +291,7 @@ const donations = await getDonationPage();
   @media (max-width: 840px) {
     .home-hero {
       grid-template-columns: 1fr;
+      height: auto;
     }
 
     .home-hero__content {
