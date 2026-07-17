@@ -410,7 +410,7 @@ Die aktuelle technische Checkliste steht in [`README.md`](../README.md).
 - keine typische Luxus-Privatschulästhetik
 - keine Positionierung als Förder- oder Therapieschule
 - keine Kopie anderer Montessori-Websites
-- kein CMS, Analytics-System oder Formularzwang in der aktuellen V1
+- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte
 - kein Wachstum als Selbstzweck
 
 ## Erfolgskriterien
@@ -436,16 +436,20 @@ In V1 gibt es bewusst kein Webtracking. Erfolg wird zunächst über die Qualitä
 - Strategische Erstfassung und Richtung: Executive-Chairman-/CEO-Perspektive des Auftraggebers
 - Operativer Website-Owner nach Erstellung: Nathanael, Geschäftsleiter
 - Änderungen: Nathanael oder der Auftraggeber
-- Inhalte liegen direkt im Repository; es gibt aktuell kein CMS.
+- Inhalte liegen direkt im Repository. Pages CMS bietet Nathanael eine begrenzte Redaktionsoberfläche und speichert Änderungen als Git-Commits auf `main`.
 
 Wichtige Pfade:
 
-- Navigation, Kontaktdaten und Prinzipien: `src/data/site.ts`
-- Stellen: `src/data/jobs.ts`
-- Team: `src/data/team.ts`
-- Termine: `src/pages/termine.astro`
-- Kosten: `src/pages/kennenlernen/kosten.astro`
-- Downloads: `public/downloads/`
+- CMS-Konfiguration: `.pages.yml`
+- Validierung der redaktionellen Daten: `src/content.config.ts`
+- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Stellen: `src/content/jobs/`
+- Team: `src/content/team/`
+- Termine: `src/content/events/`
+- Download-Metadaten: `src/content/downloads/`
+- Teamfotos: `src/assets/images/team/`
+- PDF-Dateien: `public/downloads/`
+- Navigation und Prinzipien: `src/data/site.ts`
 - Weiterleitungen: `src/data/legacy.ts`
 - globale Gestaltung: `src/styles/global.css`
 
@@ -464,6 +468,7 @@ Wichtige Pfade:
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.
 - Erste Version sollte schnell live gehen; ein neues Fotoshooting darf später folgen.
 - Die Website ist statisch mit Astro umgesetzt und wird über GitHub Pages veröffentlicht.
+- Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
 
 ## Offene beziehungsweise später erneut zu prüfende Entscheidungen
 
@@ -471,7 +476,6 @@ Wichtige Pfade:
 - dauerhaftes Verfahren für Termine und Aktualisierungen
 - spätere Messung von Anfrage- und Bewerbungsqualität
 - Umfang und Art eines professionellen Fotoshootings
-- möglicher CMS-Bedarf, wenn die operative Pflege zu aufwendig wird
 - endgültige rechtliche Prüfung aller Pflichttexte
 - Zeitpunkt und Ablauf der Umstellung von `www.montessori-allgaeu.de`
 - weitere Iteration und Versionierung der Gemeinschaftsprinzipien

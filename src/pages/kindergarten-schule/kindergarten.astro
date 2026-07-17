@@ -4,9 +4,12 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getWebsiteSettings } from "@/data/content";
 import kindergartenImage from "@/assets/images/editorial/kindergarten.webp";
 import natureImage from "@/assets/images/editorial/nature.webp";
 import playgroundImage from "@/assets/images/editorial/playground.webp";
+
+const { openingHours } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -100,10 +103,9 @@ import playgroundImage from "@/assets/images/editorial/playground.webp";
       <div>
         <p class="eyebrow">Rahmen</p>
         <h2>Öffnungszeiten</h2>
-        <p class="lead">Aktuell ist unser Kindergarten an fünf Tagen geöffnet.</p>
+        <p class="lead">Unser Kindergarten ist an fünf Tagen geöffnet.</p>
         <ul class="editorial-list">
-          <li><strong>Montag, Mittwoch und Freitag:</strong> 7:30–13:00 Uhr</li>
-          <li><strong>Dienstag und Donnerstag:</strong> 7:30–16:00 Uhr</li>
+          {openingHours.kindergarten.map((hours) => <li>{hours}</li>)}
         </ul>
         <p class="small muted">
           Buchungszeiten und Beiträge findet ihr auf der Kostenseite. Änderungen geben wir dort

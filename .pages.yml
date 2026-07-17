@@ -1,0 +1,539 @@
+media:
+  - name: team-images
+    label: Teamfotos
+    input: src/assets/images/team
+    output: ../../assets/images/team
+    extensions: [jpg, jpeg, png, webp]
+    rename: safe
+  - name: documents
+    label: PDF-Dokumente
+    input: public/downloads
+    output: /downloads
+    extensions: [pdf]
+    rename: safe
+
+content:
+  - name: events
+    label: Termine
+    type: collection
+    path: src/content/events
+    format: yaml
+    filename:
+      template: "{date}-{title}.yml"
+      field: false
+    view:
+      fields: [title, date, category, published]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: asc
+    operations:
+      rename: false
+    fields:
+      - name: title
+        label: Titel
+        type: string
+        required: true
+      - name: category
+        label: Kategorie
+        type: string
+        required: true
+        description: Zum Beispiel „Kennenlernen“ oder „Monte-Gemeinschaft & Freunde“.
+      - name: date
+        label: Datum
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: time
+        label: Uhrzeit
+        type: string
+        required: true
+        description: Freier Text, zum Beispiel „19:00 Uhr“ oder „Uhrzeit über die interne Einladung“.
+      - name: location
+        label: Ort
+        type: string
+        required: true
+      - name: description
+        label: Beschreibung
+        type: text
+        required: true
+      - name: published
+        label: Auf Website anzeigen
+        type: boolean
+        default: true
+
+  - name: jobs
+    label: Stellenangebote
+    type: collection
+    path: src/content/jobs
+    format: yaml
+    filename:
+      template: "{title}.yml"
+      field: false
+    view:
+      fields: [title, area, schedule, published, order]
+      primary: title
+      sort: [order, title]
+      default:
+        sort: order
+        order: asc
+      search: [title, area, schedule]
+    operations:
+      rename: false
+    fields:
+      - name: title
+        label: Stellenbezeichnung
+        type: string
+        required: true
+      - name: area
+        label: Bereich
+        type: string
+        required: true
+      - name: schedule
+        label: Umfang und Start
+        type: string
+        required: true
+      - name: intro
+        label: Einleitung
+        type: text
+        required: true
+      - name: responsibilities
+        label: Aufgaben
+        type: string
+        required: true
+        list:
+          min: 1
+      - name: profile
+        label: Profil
+        type: string
+        required: true
+        list:
+          min: 1
+      - name: order
+        label: Reihenfolge
+        type: number
+        required: true
+        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
+      - name: published
+        label: Auf Website anzeigen
+        type: boolean
+        default: true
+
+  - name: team
+    label: Team
+    type: collection
+    path: src/content/team
+    format: yaml
+    filename:
+      template: "{name}.yml"
+      field: false
+    view:
+      fields: [name, group, role, published, order]
+      primary: name
+      sort: [group, order, name]
+      default:
+        sort: group
+        order: asc
+      search: [name, role, group]
+    operations:
+      rename: false
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: role
+        label: Rolle
+        type: string
+        required: true
+      - name: group
+        label: Bereich
+        type: select
+        required: true
+        options:
+          values:
+            - Leitung
+            - Kindergarten
+            - Primaria
+            - Sekundaria
+            - Tertia
+            - Fach- & Förderteam
+      - name: image
+        label: Porträt
+        type: image
+        options:
+          media: team-images
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: order
+        label: Reihenfolge im Bereich
+        type: number
+        required: true
+        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
+      - name: published
+        label: Auf Website anzeigen
+        type: boolean
+        default: true
+
+  - name: downloads
+    label: Downloads
+    type: collection
+    path: src/content/downloads
+    format: yaml
+    filename:
+      template: "{title}.yml"
+      field: false
+    view:
+      fields: [title, group, meta, published, order]
+      primary: title
+      sort: [group, order, title]
+      default:
+        sort: group
+        order: asc
+      search: [title, group, meta]
+    operations:
+      rename: false
+    fields:
+      - name: title
+        label: Titel
+        type: string
+        required: true
+      - name: meta
+        label: Stand und Dateigröße
+        type: string
+        required: true
+        description: Zum Beispiel „Stand März 2026 · PDF · 555 KB“.
+      - name: file
+        label: PDF-Datei
+        type: file
+        required: true
+        options:
+          media: documents
+          extensions: [pdf]
+          rename: safe
+      - name: group
+        label: Bereich
+        type: select
+        required: true
+        options:
+          values:
+            - Schule
+            - Kindergarten
+            - Aufnahme & Verein
+      - name: order
+        label: Reihenfolge im Bereich
+        type: number
+        required: true
+        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
+      - name: published
+        label: Auf Website anzeigen
+        type: boolean
+        default: true
+
+  - name: website-settings
+    label: Kontaktdaten, Zeiten & Kosten
+    type: file
+    path: src/content/settings/website.yml
+    format: yaml
+    operations:
+      create: false
+      delete: false
+    fields:
+      - name: contact
+        label: Kontaktdaten
+        type: object
+        required: true
+        fields:
+          - name: email
+            label: E-Mail Schulbüro
+            type: string
+            required: true
+          - name: kindergartenEmail
+            label: E-Mail Kindergarten
+            type: string
+            required: true
+          - name: phone
+            label: Telefonnummer Schulbüro für Links
+            type: string
+            required: true
+            description: Internationales Format, zum Beispiel „+49 8386 939210“.
+          - name: phoneDisplay
+            label: Telefonnummer Schulbüro sichtbar
+            type: string
+            required: true
+          - name: kindergartenPhone
+            label: Telefonnummer Kindergarten für Links
+            type: string
+            required: true
+          - name: kindergartenPhoneDisplay
+            label: Telefonnummer Kindergarten sichtbar
+            type: string
+            required: true
+          - name: address
+            label: Anschrift
+            type: object
+            required: true
+            fields:
+              - name: street
+                label: Straße und Hausnummer
+                type: string
+                required: true
+              - name: city
+                label: Vollständige Ortszeile
+                type: string
+                required: true
+              - name: postalCode
+                label: Postleitzahl
+                type: string
+                required: true
+                pattern: "^\\d{5}$"
+              - name: locality
+                label: Ort
+                type: string
+                required: true
+      - name: openingHours
+        label: Öffnungszeiten
+        type: object
+        required: true
+        fields:
+          - name: schoolOffice
+            label: Schulbüro
+            type: string
+            required: true
+            list:
+              min: 1
+          - name: kindergarten
+            label: Kindergarten
+            type: string
+            required: true
+            list:
+              min: 1
+          - name: ganztag
+            label: Ganztag
+            type: string
+            required: true
+            description: Wird im Satz „Die offene Ganztagsschule bietet … einen verlässlichen Nachmittagsrahmen“ eingesetzt.
+      - name: meals
+        label: Mittagessen
+        type: object
+        required: true
+        fields:
+          - name: provider
+            label: Anbieter
+            type: string
+            required: true
+          - name: schedule
+            label: Liefertage
+            type: string
+            required: true
+          - name: price
+            label: Richtpreis
+            type: string
+            required: true
+          - name: note
+            label: Hinweis
+            type: text
+            required: true
+      - name: costs
+        label: Kosten und Mitarbeit
+        type: object
+        required: true
+        fields:
+          - name: validFrom
+            label: Stand
+            type: string
+            required: true
+            description: Zum Beispiel „Juli 2026“.
+          - name: notice
+            label: Verbindlichkeitshinweis
+            type: text
+            required: true
+          - name: schoolFees
+            label: Schulgeld
+            type: object
+            required: true
+            fields:
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: rows
+                label: Beträge
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    collapsed: true
+                    summary: "{label}: {amount}"
+                fields:
+                  - name: label
+                    label: Bezeichnung
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Betrag
+                    type: string
+                    required: true
+          - name: kindergartenFees
+            label: Kindergartenbeiträge
+            type: object
+            required: true
+            fields:
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: rows
+                label: Beträge
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    collapsed: true
+                    summary: "{label}: {amount}"
+                fields:
+                  - name: label
+                    label: Buchungszeit
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Grundbeitrag
+                    type: string
+                    required: true
+                  - name: effectiveAmount
+                    label: Effektiver Beitrag mit Zuschuss
+                    type: string
+                    required: true
+              - name: subsidyAmount
+                label: Monatlicher Beitragszuschuss
+                type: string
+                required: true
+              - name: subsidyNote
+                label: Hinweis zum Beitragszuschuss
+                type: text
+                required: true
+          - name: deposit
+            label: Elterneinlage
+            type: object
+            required: true
+            fields:
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: description
+                label: Rückzahlungshinweis
+                type: text
+                required: true
+              - name: rows
+                label: Beträge
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    collapsed: true
+                    summary: "{label}: {amount}"
+                fields:
+                  - name: label
+                    label: Bezeichnung
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Betrag
+                    type: string
+                    required: true
+          - name: parentWork
+            label: Elternarbeit
+            type: object
+            required: true
+            fields:
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: school
+                label: Schule
+                type: object
+                required: true
+                fields:
+                  - name: label
+                    label: Überschrift
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Stunden
+                    type: string
+                    required: true
+                  - name: detail
+                    label: Erläuterung
+                    type: text
+                    required: true
+              - name: kindergarten
+                label: Kindergarten
+                type: object
+                required: true
+                fields:
+                  - name: label
+                    label: Überschrift
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Stunden
+                    type: string
+                    required: true
+                  - name: detail
+                    label: Erläuterung
+                    type: text
+                    required: true
+              - name: missedHours
+                label: Nicht geleistete Zeit
+                type: object
+                required: true
+                fields:
+                  - name: label
+                    label: Überschrift
+                    type: string
+                    required: true
+                  - name: amount
+                    label: Betrag
+                    type: string
+                    required: true
+                  - name: detail
+                    label: Erläuterung
+                    type: text
+                    required: true
+          - name: membership
+            label: Vereinsmitgliedschaft
+            type: object
+            required: true
+            fields:
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: rows
+                label: Beiträge
+                type: string
+                required: true
+                list:
+                  min: 1
+              - name: additionalNote
+                label: Hinweis zu weiteren Kosten
+                type: text
+                required: true
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "content: add {name}"
+      update: "content: update {name}"
+      delete: "content: remove {name}"
+      rename: "content: rename {oldFilename} to {newFilename}"

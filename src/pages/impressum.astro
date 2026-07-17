@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
+import { getWebsiteSettings } from "@/data/content";
+
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -19,8 +22,8 @@ import PageIntro from "@/components/PageIntro.astro";
       <p>
         Monte-Verein zur Förderung der Montessori-Pädagogik im Grenzgebiet Oberallgäu/Westallgäu und
         Bregenzerwald (Österreich) e.V.<br />
-        Klosterstraße 8<br />
-        87534 Oberstaufen
+        {contact.address.street}<br />
+        {`${contact.address.postalCode} ${contact.address.locality}`}
       </p>
 
       <h3>Vertretungsberechtigter Vorstand</h3>
@@ -28,8 +31,8 @@ import PageIntro from "@/components/PageIntro.astro";
 
       <h3>Kontakt</h3>
       <p>
-        Telefon: <a href="tel:+498386939210">08386 939 210</a><br />
-        E-Mail: <a href="mailto:info@montessori-allgaeu.de">info@montessori-allgaeu.de</a>
+        Telefon: <a href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a><br />
+        E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a>
       </p>
 
       <h3>Registereintrag</h3>
@@ -44,8 +47,8 @@ import PageIntro from "@/components/PageIntro.astro";
       <h2>Verantwortlich für den Inhalt</h2>
       <p>
         Max Sutter<br />
-        Klosterstraße 8<br />
-        87534 Oberstaufen
+        {contact.address.street}<br />
+        {`${contact.address.postalCode} ${contact.address.locality}`}
       </p>
 
       <h2>Haftung für Inhalte und Links</h2>

@@ -5,9 +5,12 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
-import { jobs } from "@/data/jobs";
+import { getJobs, getWebsiteSettings } from "@/data/content";
 import careersImage from "@/assets/images/editorial/careers.webp";
 import communityImage from "@/assets/images/editorial/community.webp";
+
+const jobs = await getJobs();
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -142,7 +145,7 @@ import communityImage from "@/assets/images/editorial/community.webp";
   <CTASection
     title="Erst kennenlernen, dann entscheiden."
     text="Hospitationen und unverbindliche Kennenlerngespräche sind möglich. Schreib uns, welche Rolle dich interessiert und weshalb Montessori für dich wichtig ist."
-    primaryHref="mailto:info@montessori-allgaeu.de?subject=Kennenlernen%20als%20P%C3%A4dagog%3Ain"
+    primaryHref={`mailto:${contact.email}?subject=Kennenlernen%20als%20P%C3%A4dagog%3Ain`}
     primaryLabel="Kennenlerngespräch anfragen"
     secondaryHref="/gemeinschaft/prinzipien/"
     secondaryLabel="Prinzipien lesen"

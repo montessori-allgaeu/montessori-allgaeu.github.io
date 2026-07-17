@@ -2,24 +2,46 @@ export const site = {
   name: "Montessori Allgäu",
   descriptor: "Kindergarten & Schule",
   url: "https://www.montessori-allgaeu.de",
-  email: "info@montessori-allgaeu.de",
-  kindergartenEmail: "kindergarten@montessori-allgaeu.de",
-  phone: "+49 8386 939210",
-  phoneDisplay: "08386 939 210",
-  kindergartenPhone: "+49 8386 939213",
-  kindergartenPhoneDisplay: "08386 939 213",
-  address: {
-    street: "Klosterstraße 8",
-    city: "87534 Oberstaufen / Kalzhofen",
-  },
 } as const;
 
 export const mainNavigation = [
-  { label: "Montessori", href: "/montessori/" },
-  { label: "Kindergarten & Schule", href: "/kindergarten-schule/" },
-  { label: "Kennenlernen", href: "/kennenlernen/" },
-  { label: "Gemeinschaft", href: "/gemeinschaft/" },
-  { label: "Arbeiten bei uns", href: "/arbeiten-bei-uns/" },
+  { label: "Montessori", href: "/montessori/", children: [] },
+  {
+    label: "Kindergarten & Schule",
+    href: "/kindergarten-schule/",
+    children: [
+      { label: "Kindergarten", href: "/kindergarten-schule/kindergarten/" },
+      { label: "Schule", href: "/kindergarten-schule/schule/" },
+      {
+        label: "Ganztag & Verpflegung",
+        href: "/kindergarten-schule/ganztag-verpflegung/",
+      },
+    ],
+  },
+  {
+    label: "Kennenlernen",
+    href: "/kennenlernen/",
+    children: [
+      { label: "Aufnahme Kindergarten", href: "/kennenlernen/aufnahme-kindergarten/" },
+      { label: "Aufnahme Schule", href: "/kennenlernen/aufnahme-schule/" },
+      { label: "Kosten", href: "/kennenlernen/kosten/" },
+      { label: "Häufige Fragen", href: "/kennenlernen/haeufige-fragen/" },
+    ],
+  },
+  {
+    label: "Gemeinschaft",
+    href: "/gemeinschaft/",
+    children: [
+      { label: "Prinzipien", href: "/gemeinschaft/prinzipien/" },
+      { label: "Team", href: "/gemeinschaft/team/" },
+      { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
+    ],
+  },
+  {
+    label: "Arbeiten bei uns",
+    href: "/arbeiten-bei-uns/",
+    children: [{ label: "Offene Stellen", href: "/arbeiten-bei-uns/stellen/" }],
+  },
 ] as const;
 
 export const footerNavigation = [

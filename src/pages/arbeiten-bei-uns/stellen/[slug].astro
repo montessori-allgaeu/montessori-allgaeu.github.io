@@ -2,9 +2,10 @@
 import { ArrowLeft, Check } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import CTASection from "@/components/CTASection.astro";
-import { jobs, type Job } from "@/data/jobs";
+import { getJobs, getWebsiteSettings, type Job } from "@/data/content";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const jobs = await getJobs();
   return jobs.map((job) => ({ params: { slug: job.slug }, props: { job } }));
 }
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const { job } = Astro.props;
+const { contact } = await getWebsiteSettings();
 const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
 ---
 
@@ -89,9 +91,9 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     eyebrow="Interesse?"
     title="Zeig uns, warum Montessori für dich wichtig ist."
     text="Schick uns deinen Lebenslauf und ein paar ehrliche Sätze zu deiner Motivation. Alternativ kannst du zuerst ein unverbindliches Kennenlernen anfragen."
-    primaryHref={`mailto:info@montessori-allgaeu.de?subject=${mailSubject}`}
+    primaryHref={`mailto:${contact.email}?subject=${mailSubject}`}
     primaryLabel="Per E-Mail bewerben"
-    secondaryHref={`mailto:info@montessori-allgaeu.de?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
+    secondaryHref={`mailto:${contact.email}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
     secondaryLabel="Erst kennenlernen"
   />
 </BaseLayout>

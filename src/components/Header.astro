@@ -13,13 +13,28 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     <nav class="desktop-nav" aria-label="Hauptnavigation">
       {
         mainNavigation.map((item) => (
-          <a
-            class:list={{ active: active(item.href) }}
-            href={item.href}
-            aria-current={active(item.href) ? "page" : undefined}
-          >
-            {item.label}
-          </a>
+          <div class="desktop-nav__item">
+            <a
+              class:list={["desktop-nav__link", { active: active(item.href) }]}
+              href={item.href}
+              aria-current={path === item.href ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+            {item.children.length > 0 && (
+              <div class="desktop-nav__submenu">
+                {item.children.map((child) => (
+                  <a
+                    class:list={{ active: path === child.href }}
+                    href={child.href}
+                    aria-current={path === child.href ? "page" : undefined}
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
         ))
       }
     </nav>
@@ -35,7 +50,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
             <a
               class:list={{ active: active(item.href) }}
               href={item.href}
-              aria-current={active(item.href) ? "page" : undefined}
+              aria-current={path === item.href ? "page" : undefined}
             >
               {item.label}
             </a>
@@ -74,17 +89,26 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     gap: clamp(1.1rem, 2.2vw, 2.4rem);
   }
 
-  .desktop-nav a {
+  .desktop-nav__item {
     position: relative;
-    padding: 0.5rem 0;
+  }
+
+  .desktop-nav__link,
+  .desktop-nav__submenu a {
+    position: relative;
     color: var(--forest-soft);
     font-size: 0.76rem;
     font-weight: 650;
     text-decoration: none;
+  }
+
+  .desktop-nav__link {
+    display: block;
+    padding: 0.5rem 0;
     white-space: nowrap;
   }
 
-  .desktop-nav a::after {
+  .desktop-nav__link::after {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -97,10 +121,64 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     transition: transform 160ms ease;
   }
 
-  .desktop-nav a:hover::after,
-  .desktop-nav a.active::after {
+  .desktop-nav__link:hover::after,
+  .desktop-nav__link.active::after {
     transform: scaleX(1);
     transform-origin: left;
+  }
+
+  .desktop-nav__submenu {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    left: -1rem;
+    min-width: 15rem;
+    padding: 0.45rem;
+    border: 1px solid var(--line);
+    background: var(--paper-light);
+    box-shadow: 0 1rem 2.5rem rgb(29 43 30 / 0.12);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-0.35rem);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease,
+      visibility 140ms ease;
+    visibility: hidden;
+  }
+
+  .desktop-nav__submenu::before {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: 0.75rem;
+    content: "";
+  }
+
+  .desktop-nav__item:last-child .desktop-nav__submenu {
+    right: 0;
+    left: auto;
+  }
+
+  .desktop-nav__item:hover .desktop-nav__submenu,
+  .desktop-nav__item:focus-within .desktop-nav__submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  .desktop-nav__submenu a {
+    display: block;
+    padding: 0.75rem 0.8rem;
+    line-height: 1.35;
+  }
+
+  .desktop-nav__submenu a:hover,
+  .desktop-nav__submenu a:focus-visible,
+  .desktop-nav__submenu a.active {
+    background: color-mix(in srgb, var(--terracotta) 9%, transparent);
+    color: var(--terracotta-dark);
   }
 
   .header-cta {
@@ -142,9 +220,11 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     right: 0;
     left: 0;
     display: flex;
-    min-height: calc(100dvh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
     flex-direction: column;
     gap: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 1.2rem 1.5rem 3rem;
     background: var(--paper);
   }

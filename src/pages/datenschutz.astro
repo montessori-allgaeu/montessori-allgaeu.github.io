@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
+import { getWebsiteSettings } from "@/data/content";
+
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -19,9 +22,10 @@ import PageIntro from "@/components/PageIntro.astro";
       <p>
         Monte-Verein zur Förderung der Montessori-Pädagogik im Grenzgebiet Oberallgäu/Westallgäu und
         Bregenzerwald (Österreich) e.V.<br />
-        Klosterstraße 8, 87534 Oberstaufen<br />
-        E-Mail: <a href="mailto:info@montessori-allgaeu.de">info@montessori-allgaeu.de</a><br />
-        Telefon: <a href="tel:+498386939210">08386 939 210</a>
+        {contact.address.street}, {`${contact.address.postalCode} ${contact.address.locality}`}<br
+        />
+        E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
+        Telefon: <a href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>
       </p>
 
       <h2>2. Hosting über GitHub Pages</h2>

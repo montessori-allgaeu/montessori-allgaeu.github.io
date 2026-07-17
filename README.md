@@ -30,16 +30,21 @@ npm run test:e2e
 
 ## Inhalte pflegen
 
-- Kontaktdaten, Navigation und Prinzipien: `src/data/site.ts`
-- Team: `src/data/team.ts` und `src/assets/images/team/`
-- Stellenangebote: `src/data/jobs.ts`
+- Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
+- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Termine: `src/content/events/`
+- Team: `src/content/team/` und `src/assets/images/team/`
+- Stellenangebote: `src/content/jobs/`
+- Download-Metadaten: `src/content/downloads/`
 - Alte Weiterleitungen: `src/data/legacy.ts`
-- Termine: `src/pages/termine.astro`
 - Downloads: `public/downloads/`
+- Navigation und Prinzipien: `src/data/site.ts`
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Die Seite verwendet kein CMS, keine Analyse und keine Formulare. Änderungen werden im Repository vorgenommen und nach einem Push auf `main` automatisch veröffentlicht, sobald die Qualitätschecks erfolgreich abgeschlossen sind.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte bereit und speichert Änderungen direkt als Git-Commit auf `main`. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+
+Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
 
 ## Veröffentlichung über GitHub Pages
 

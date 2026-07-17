@@ -3,6 +3,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
+import { getWebsiteSettings } from "@/data/content";
+
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -39,7 +42,7 @@ import TextLink from "@/components/TextLink.astro";
         </p>
         <div class="button-row">
           <a class="button" href="/termine/">Termine ansehen</a>
-          <a class="button button--outline" href="mailto:info@montessori-allgaeu.de"
+          <a class="button button--outline" href={`mailto:${contact.email}`}
             >Schulbüro kontaktieren</a
           >
         </div>

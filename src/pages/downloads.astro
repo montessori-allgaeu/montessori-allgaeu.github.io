@@ -3,69 +3,14 @@ import { Download } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getDownloads } from "@/data/content";
 
-const sections = [
-  {
-    title: "Schule",
-    files: [
-      {
-        title: "Infoheft Schule",
-        meta: "Stand 2025 · PDF · 187 KB",
-        href: "/downloads/infoheft-schule-2025.pdf",
-      },
-      {
-        title: "Pädagogisches Schulkonzept",
-        meta: "PDF · 175 KB",
-        href: "/downloads/paedagogisches-schulkonzept.pdf",
-      },
-      {
-        title: "Monte-ABC",
-        meta: "Stand März 2025 · PDF · 555 KB",
-        href: "/downloads/monte-abc-2025.pdf",
-      },
-      {
-        title: "Spielregeln der Montessorischule",
-        meta: "Stand 2019 · PDF · 264 KB",
-        href: "/downloads/spielregeln-schule-2019.pdf",
-      },
-      {
-        title: "Freiraum zur Entfaltung",
-        meta: "PDF · 44 KB",
-        href: "/downloads/freiraum-zur-entfaltung.pdf",
-      },
-    ],
-  },
-  {
-    title: "Kindergarten",
-    files: [
-      {
-        title: "Konzeption Kindergarten",
-        meta: "Stand November 2020 · PDF · 2,2 MB",
-        href: "/downloads/konzeption-kindergarten-2020.pdf",
-      },
-      {
-        title: "Anmeldeantrag Kindergarten",
-        meta: "PDF · 158 KB",
-        href: "/downloads/anmeldeantrag-kindergarten.pdf",
-      },
-    ],
-  },
-  {
-    title: "Aufnahme & Verein",
-    files: [
-      {
-        title: "Absichtserklärung Schule",
-        meta: "inkl. Datenschutzhinweisen · PDF · 183 KB",
-        href: "/downloads/absichtserklaerung-schule.pdf",
-      },
-      {
-        title: "Beitrittserklärung Monte e.V.",
-        meta: "PDF · 244 KB",
-        href: "/downloads/beitrittserklaerung-verein.pdf",
-      },
-    ],
-  },
-];
+const downloads = await getDownloads();
+const sectionTitles = ["Schule", "Kindergarten", "Aufnahme & Verein"] as const;
+const sections = sectionTitles.map((title) => ({
+  title,
+  files: downloads.filter((download) => download.group === title),
+}));
 ---
 
 <BaseLayout
@@ -92,7 +37,7 @@ const sections = [
             </h2>
             <div class="download-list">
               {section.files.map((file) => (
-                <a class="download-row" href={file.href}>
+                <a class="download-row" href={file.file}>
                   <div>
                     <h3>{file.title}</h3>
                     <p>{file.meta}</p>

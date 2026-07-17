@@ -4,7 +4,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getWebsiteSettings } from "@/data/content";
 import governanceImage from "@/assets/images/editorial/governance.webp";
+
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -59,8 +62,7 @@ import governanceImage from "@/assets/images/editorial/governance.webp";
         </p>
         <p>
           Schickt die Angaben mit Betrag und Überweisungsdatum an <a
-            href="mailto:info@montessori-allgaeu.de?subject=Spendenbescheinigung"
-            >info@montessori-allgaeu.de</a
+            href={`mailto:${contact.email}?subject=Spendenbescheinigung`}>{contact.email}</a
           >. Wir melden uns, falls noch etwas fehlt.
         </p>
       </div>

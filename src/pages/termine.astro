@@ -3,6 +3,24 @@ import { CalendarDays, Clock, MapPin } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getEvents } from "@/data/content";
+
+const events = await getEvents();
+const dateFromIso = (date: string) => new Date(`${date}T00:00:00Z`);
+const day = (date: string) =>
+  new Intl.DateTimeFormat("de-DE", { day: "2-digit", timeZone: "UTC" }).format(dateFromIso(date));
+const monthAndYear = (date: string) =>
+  new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" }).format(
+    dateFromIso(date),
+  );
+const fullDate = (date: string) =>
+  new Intl.DateTimeFormat("de-DE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(dateFromIso(date));
 ---
 
 <BaseLayout
@@ -17,26 +35,37 @@ import CTASection from "@/components/CTASection.astro";
 
   <section class="section">
     <div class="container">
-      <article class="event">
-        <div class="event__date"><span>30</span><small>Juli<br />2026</small></div>
-        <div class="event__content">
-          <p class="eyebrow">Monte-Gemeinschaft & Freunde</p>
-          <h2>Sommerfest</h2>
-          <p>
-            Wir feiern den Abschluss des Schuljahres mit allen Monte-Familien und Freund:innen
-            unserer Gemeinschaft.
-          </p>
-          <ul class="event__meta">
-            <li>
-              <CalendarDays size={17} aria-hidden="true" /><time datetime="2026-07-30"
-                >Donnerstag, 30. Juli 2026</time
-              >
-            </li>
-            <li><Clock size={17} aria-hidden="true" />Uhrzeit über die interne Einladung</li>
-            <li><MapPin size={17} aria-hidden="true" />Montessori Allgäu, Klosterstraße 8</li>
-          </ul>
-        </div>
-      </article>
+      {
+        events.map((event) => (
+          <article class="event">
+            <div class="event__date">
+              <>
+                <span>{day(event.date)}</span>
+                <small>{monthAndYear(event.date)}</small>
+              </>
+            </div>
+            <div class="event__content">
+              <p class="eyebrow">{event.category}</p>
+              <h2>{event.title}</h2>
+              <p>{event.description}</p>
+              <ul class="event__meta">
+                <li>
+                  <CalendarDays size={17} aria-hidden="true" />
+                  <time datetime={event.date}>{fullDate(event.date)}</time>
+                </li>
+                <li>
+                  <Clock size={17} aria-hidden="true" />
+                  {event.time}
+                </li>
+                <li>
+                  <MapPin size={17} aria-hidden="true" />
+                  {event.location}
+                </li>
+              </ul>
+            </div>
+          </article>
+        ))
+      }
 
       <div class="empty-state">
         <p class="eyebrow">Kennenlerntermine</p>
@@ -76,6 +105,10 @@ import CTASection from "@/components/CTASection.astro";
     border-bottom: 1px solid var(--line);
   }
 
+  .event + .event {
+    border-top: 0;
+  }
+
   .event__date {
     display: flex;
     gap: 0.8rem;
@@ -94,6 +127,10 @@ import CTASection from "@/components/CTASection.astro";
     font-weight: 700;
     letter-spacing: 0.08em;
     line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .event__date small::first-letter {
     text-transform: uppercase;
   }
 

@@ -3,8 +3,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getWebsiteSettings } from "@/data/content";
 import outdoorsImage from "@/assets/images/editorial/outdoors.webp";
 import roomImage from "@/assets/images/editorial/room.webp";
+
+const { meals, openingHours } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -21,9 +24,9 @@ import roomImage from "@/assets/images/editorial/room.webp";
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
-      Die offene Ganztagsschule bietet an Schultagen von Montag bis Donnerstag einen verlässlichen
-      Nachmittagsrahmen. Kinder essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und
-      werden von vertrauten Erwachsenen begleitet.
+      Die offene Ganztagsschule bietet {openingHours.ganztag} einen verlässlichen Nachmittagsrahmen. Kinder
+      essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und werden von vertrauten Erwachsenen
+      begleitet.
     </p>
     <p>
       Konkrete Buchungszeiten, Plätze und aktuelle Konditionen besprecht ihr mit dem Schulbüro. Für
@@ -41,15 +44,12 @@ import roomImage from "@/assets/images/editorial/room.webp";
     <p class="eyebrow">Mittagessen</p>
     <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
     <p>
-      Montags bis donnerstags liefert „La Cucina“ aus Röthenbach ein frisch zubereitetes
-      Mittagessen. Wo möglich, werden regionale und saisonale Zutaten verwendet. Auch Kinder
-      außerhalb des Ganztags und Menschen aus der Monte-Gemeinschaft können sich nach Voranmeldung
-      beteiligen.
+      {meals.schedule} liefert „{meals.provider}“ ein frisch zubereitetes Mittagessen. Wo möglich,
+      werden regionale und saisonale Zutaten verwendet. Auch Kinder außerhalb des Ganztags und
+      Menschen aus der Monte-Gemeinschaft können sich nach Voranmeldung beteiligen.
     </p>
-    <p><strong>Aktueller Richtwert:</strong> 5 Euro pro Essen und Kind.</p>
-    <p class="small muted">
-      Preise und Abläufe können sich ändern. Den verbindlichen Stand erfahrt ihr im Schulbüro.
-    </p>
+    <p><strong>Aktueller Richtwert:</strong> {meals.price}.</p>
+    <p class="small muted">{meals.note}</p>
   </ImageSplit>
 
   <section class="section">

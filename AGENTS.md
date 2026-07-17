@@ -6,6 +6,10 @@ Vor Änderungen an Positionierung, Informationsarchitektur, Texten, Design oder 
 
 Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppen, Fit-Kriterien, pädagogischen Aussagen, Arbeitgeberpositionierung, Designrichtung und offenen Entscheidungen. Bei Widersprüchen nicht stillschweigend neu interpretieren, sondern die Abweichung sichtbar machen und klären.
 
+Die operativen Nacharbeiten stehen in [`todo.md`](todo.md). Vor inhaltlichen oder technischen
+Folgearbeiten die Liste prüfen und erledigte beziehungsweise neu entdeckte Punkte im selben Change
+aktualisieren.
+
 ## Unverrückbare Leitplanken
 
 - Das Kind und seine eigenständige Entwicklung stehen im Mittelpunkt.
@@ -29,12 +33,16 @@ Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppe
 
 Wichtige Content-Pfade:
 
-- `src/data/site.ts`: Navigation, Kontaktdaten, Prinzipien
-- `src/data/jobs.ts`: Stellenangebote
-- `src/data/team.ts`: Team und Rollen
-- `src/pages/termine.astro`: Termine
-- `src/pages/kennenlernen/kosten.astro`: Beiträge und Elternarbeit
+- `.pages.yml`: Redaktionsoberfläche
+- `src/content.config.ts`: Validierung redaktioneller Inhalte
+- `src/content/settings/website.yml`: Kontaktdaten, Öffnungszeiten und Kosten
+- `src/content/jobs/`: Stellenangebote
+- `src/content/team/`: Team und Rollen
+- `src/content/events/`: Termine
+- `src/content/downloads/`: Download-Metadaten
+- `src/assets/images/team/`: Teamfotos
 - `public/downloads/`: veröffentlichte Dokumente
+- `src/data/site.ts`: Navigation und Prinzipien
 - `src/data/legacy.ts`: alte Weiterleitungen
 
 ## Design
@@ -50,7 +58,7 @@ Wichtige Content-Pfade:
 ## Technik und Veröffentlichung
 
 - Astro, statischer Output, GitHub Pages.
-- Kein CMS, keine Analyse und keine Formulare in V1, sofern nicht ausdrücklich neu entschieden.
+- Pages CMS dient als Git-basierte Redaktionsoberfläche; keine CMS-Datenbank, Analyse oder Formulare in V1, sofern nicht ausdrücklich neu entschieden.
 - Canonical Domain: `https://www.montessori-allgaeu.de`.
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
 - Vor Übergabe mindestens ausführen:
@@ -68,4 +76,5 @@ git diff --check
 - Technische Betriebsinformationen gehören in [`README.md`](README.md).
 - Strategische Entscheidungen gehören in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md).
 - Visuelle Vergleichsergebnisse gehören in [`design-qa.md`](design-qa.md).
+- Offene operative Nacharbeiten gehören in [`todo.md`](todo.md).
 - Wenn eine Änderung Architektur, Content-Ownership oder den Veröffentlichungsweg verändert, die betroffenen Dokumente im selben Change aktualisieren.

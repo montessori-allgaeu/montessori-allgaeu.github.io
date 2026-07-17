@@ -2,7 +2,12 @@
 import { Mail, MapPin, Phone } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
-import { site } from "@/data/site";
+import { getWebsiteSettings } from "@/data/content";
+
+const { contact, openingHours } = await getWebsiteSettings();
+const mapQuery = encodeURIComponent(
+  `${contact.address.street}, ${contact.address.postalCode} ${contact.address.locality}`,
+);
 ---
 
 <BaseLayout
@@ -20,41 +25,39 @@ import { site } from "@/data/site";
       <article class="contact-panel">
         <p class="eyebrow">Schule</p>
         <h2>Schulbüro</h2>
-        <address>{site.address.street}<br />{site.address.city}</address>
+        <address>{contact.address.street}<br />{contact.address.city}</address>
         <p>
-          <a href={`mailto:${site.email}`}><Mail size={18} aria-hidden="true" />{site.email}</a>
+          <a href={`mailto:${contact.email}`}
+            ><Mail size={18} aria-hidden="true" />{contact.email}</a
+          >
         </p>
         <p>
-          <a href={`tel:${site.phone}`}><Phone size={18} aria-hidden="true" />{site.phoneDisplay}</a
+          <a href={`tel:${contact.phone}`}
+            ><Phone size={18} aria-hidden="true" />{contact.phoneDisplay}</a
           >
         </p>
         <h3>Öffnungszeiten</h3>
         <ul class="editorial-list">
-          <li>Montag: 7:30–16:30 Uhr</li>
-          <li>Dienstag: 7:30–15:30 Uhr</li>
-          <li>Mittwoch: 7:30–16:30 Uhr</li>
-          <li>Donnerstag: 7:30–13:30 Uhr</li>
-          <li>Freitag: nicht besetzt</li>
+          {openingHours.schoolOffice.map((hours) => <li>{hours}</li>)}
         </ul>
       </article>
       <article class="contact-panel">
         <p class="eyebrow">Kindergarten</p>
         <h2>Kindergartenleitung</h2>
-        <address>{site.address.street}<br />{site.address.city}</address>
+        <address>{contact.address.street}<br />{contact.address.city}</address>
         <p>
-          <a href={`mailto:${site.kindergartenEmail}`}
-            ><Mail size={18} aria-hidden="true" />{site.kindergartenEmail}</a
+          <a href={`mailto:${contact.kindergartenEmail}`}
+            ><Mail size={18} aria-hidden="true" />{contact.kindergartenEmail}</a
           >
         </p>
         <p>
-          <a href={`tel:${site.kindergartenPhone}`}
-            ><Phone size={18} aria-hidden="true" />{site.kindergartenPhoneDisplay}</a
+          <a href={`tel:${contact.kindergartenPhone}`}
+            ><Phone size={18} aria-hidden="true" />{contact.kindergartenPhoneDisplay}</a
           >
         </p>
         <h3>Öffnungszeiten</h3>
         <ul class="editorial-list">
-          <li>Montag, Mittwoch, Freitag: 7:30–13:00 Uhr</li>
-          <li>Dienstag und Donnerstag: 7:30–16:00 Uhr</li>
+          {openingHours.kindergarten.map((hours) => <li>{hours}</li>)}
         </ul>
       </article>
     </div>
@@ -65,10 +68,12 @@ import { site } from "@/data/site";
       <div>
         <p class="eyebrow">Anfahrt</p>
         <h2>In Kalzhofen bei Oberstaufen.</h2>
-        <p class="lead">Kindergarten und Schule liegen gemeinsam in der Klosterstraße 8.</p>
+        <p class="lead">
+          Kindergarten und Schule liegen gemeinsam in der {contact.address.street}.
+        </p>
         <a
           class="button button--outline"
-          href="https://www.openstreetmap.org/search?query=Klosterstra%C3%9Fe%208%2C%2087534%20Oberstaufen"
+          href={`https://www.openstreetmap.org/search?query=${mapQuery}`}
           target="_blank"
           rel="noreferrer"><MapPin size={18} aria-hidden="true" />Route auf OpenStreetMap öffnen</a
         >

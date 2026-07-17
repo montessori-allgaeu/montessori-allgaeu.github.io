@@ -2,7 +2,8 @@
 
 ## Referenz und Implementierung
 
-- Referenz: `/Users/maxsutter/.codex/generated_images/019f69b7-09fc-7533-b61f-6ffdabddf930/exec-aceecb5e-90ed-4a4d-aaa8-6610b076bb43.png`
+- Referenz und finale Implementierung: `artifacts/design-qa/home-reference-comparison.jpg`
+  (Referenz links, Implementierung rechts)
 - Implementierung: `http://127.0.0.1:4321/`
 - Desktop-Viewport: 1440 × 900 Pixel, Startseite, Standardzustand
 - Mobile-Viewport: 390 × 844 Pixel, Startseite und geöffnetes Navigationsmenü
@@ -18,6 +19,8 @@ Die vollständige Desktopansicht wurde aus lückenlos überlappenden Viewport-Au
 2. Korrektur: Hero-Spalten und Schriftgröße wurden auf den Referenz-Zeilenfall gebracht. Lern-, Fit- und Bild-Text-Abschnitte wurden verdichtet; der Footer wurde kompakter.
 3. Zweiter Vergleich: Die verbleibende Längendifferenz wurde durch kompaktere Startseitenvarianten der Split-Komponente reduziert. Der mobile 6-Pixel-Überlauf auf der Prinzipienseite wurde beseitigt.
 4. Finale Prüfung: Desktop und Mobil ohne defekte Bilder, ohne Konsolenfehler und ohne horizontale Überläufe. Navigation und FAQ-Zustände funktionieren.
+5. Nachprüfung: Lange Stellenbezeichnungen brechen auch auf 320 Pixel breiten Viewports um; das
+   mobile Menü bleibt auf kurzen Hoch- und Querformaten vollständig scrollbar.
 
 ## Befunde
 

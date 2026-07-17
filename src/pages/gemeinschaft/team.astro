@@ -3,7 +3,17 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
-import { team, teamGroups } from "@/data/team";
+import { getTeam } from "@/data/content";
+
+const team = await getTeam();
+const teamGroups = [
+  "Leitung",
+  "Kindergarten",
+  "Primaria",
+  "Sekundaria",
+  "Tertia",
+  "Fach- & Förderteam",
+] as const;
 ---
 
 <BaseLayout

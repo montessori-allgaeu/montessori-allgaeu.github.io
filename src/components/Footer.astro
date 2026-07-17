@@ -1,7 +1,10 @@
 ---
 import { Mail, MapPin, Phone } from "@lucide/astro";
 import Brand from "./Brand.astro";
-import { footerNavigation, site } from "@/data/site";
+import { getWebsiteSettings } from "@/data/content";
+import { footerNavigation } from "@/data/site";
+
+const { contact } = await getWebsiteSettings();
 ---
 
 <footer class="site-footer">
@@ -10,12 +13,14 @@ import { footerNavigation, site } from "@/data/site";
       <Brand inverted />
       <address>
         <span
-          ><MapPin size={16} aria-hidden="true" />{site.address.street}<br />{
-            site.address.city
+          ><MapPin size={16} aria-hidden="true" />{contact.address.street}<br />{
+            contact.address.city
           }</span
         >
-        <a href={`tel:${site.phone}`}><Phone size={16} aria-hidden="true" />{site.phoneDisplay}</a>
-        <a href={`mailto:${site.email}`}><Mail size={16} aria-hidden="true" />{site.email}</a>
+        <a href={`tel:${contact.phone}`}
+          ><Phone size={16} aria-hidden="true" />{contact.phoneDisplay}</a
+        >
+        <a href={`mailto:${contact.email}`}><Mail size={16} aria-hidden="true" />{contact.email}</a>
       </address>
     </div>
     <nav class="site-footer__nav" aria-label="Footer-Navigation">

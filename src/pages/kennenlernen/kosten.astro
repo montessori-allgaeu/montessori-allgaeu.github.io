@@ -2,6 +2,9 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getWebsiteSettings } from "@/data/content";
+
+const { costs } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -18,9 +21,8 @@ import CTASection from "@/components/CTASection.astro";
     <div class="container">
       <div class="notice cost-note">
         <p>
-          <strong>Stand: Juli 2026.</strong> Diese Übersicht dient der Orientierung. Verbindlich sind
-          immer der aktuelle Betreuungs-, Schul- und Vereinsvertrag. Bitte lasst euch die Beträge vor
-          Vertragsabschluss bestätigen.
+          <strong>Stand: {costs.validFrom}.</strong>
+          {costs.notice}
         </p>
       </div>
 
@@ -28,16 +30,24 @@ import CTASection from "@/components/CTASection.astro";
         <div>
           <p class="eyebrow">Schule</p>
           <h2>Monatliches Schulgeld</h2>
-          <p>Das Schulgeld wird in zwölf Monatsraten pro Schuljahr erhoben.</p>
+          <p>{costs.schoolFees.intro}</p>
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Kind in der Familie</th><th>pro Monat</th></tr></thead>
             <tbody>
-              <tr><td>1. Kind</td><td><strong>270 €</strong></td></tr>
-              <tr><td>2. Kind</td><td><strong>220 €</strong></td></tr>
-              <tr><td>3. Kind</td><td><strong>150 €</strong></td></tr>
-              <tr><td>Jedes weitere Kind</td><td><strong>115 €</strong></td></tr>
+              {
+                costs.schoolFees.rows.map((row) => (
+                  <tr>
+                    <>
+                      <td>{row.label}</td>
+                      <td>
+                        <strong>{row.amount}</strong>
+                      </td>
+                    </>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>
@@ -47,22 +57,47 @@ import CTASection from "@/components/CTASection.astro";
         <div>
           <p class="eyebrow">Kindergarten</p>
           <h2>Monatlicher Elternbeitrag</h2>
-          <p>Der Beitrag richtet sich nach der täglich gebuchten Betreuungszeit.</p>
+          <p>{costs.kindergartenFees.intro}</p>
         </div>
         <div class="table-wrap">
+          <div class="kindergarten-subsidy">
+            <div>
+              <p class="eyebrow">Beitragszuschuss Bayern</p>
+              <p class="kindergarten-subsidy__amount">−{costs.kindergartenFees.subsidyAmount}</p>
+            </div>
+            <p>{costs.kindergartenFees.subsidyNote}</p>
+          </div>
           <table>
-            <thead><tr><th>Buchungszeit</th><th>pro Monat</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Buchungszeit</th>
+                <th>Grundbeitrag*</th>
+                <th>Effektiv mit Zuschuss*</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td>4 bis unter 5 Stunden</td><td><strong>190 €</strong></td></tr>
-              <tr><td>5 bis unter 6 Stunden</td><td><strong>202,50 €</strong></td></tr>
-              <tr><td>6 bis unter 7 Stunden</td><td><strong>215 €</strong></td></tr>
-              <tr><td>7 bis unter 8 Stunden</td><td><strong>227,50 €</strong></td></tr>
-              <tr><td>8 bis unter 9 Stunden</td><td><strong>240 €</strong></td></tr>
+              {
+                costs.kindergartenFees.rows.map((row) => (
+                  <tr>
+                    <>
+                      <td>{row.label}</td>
+                      <td>{row.amount}</td>
+                      <td>
+                        <strong>{row.effectiveAmount}</strong>
+                      </td>
+                    </>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
           <p class="small muted">
-            Je nach Förderanspruch kann der staatliche Beitragszuschuss für Kindergartenkinder
-            berücksichtigt werden. Das klärt der Kindergarten mit euch im Einzelfall.
+            * Die Grundbeiträge und damit auch die daraus errechneten effektiven Beiträge werden
+            derzeit überprüft. Bitte lasst euch den für euch gültigen Betrag vor Vertragsabschluss
+            bestätigen.
+            <a href="https://www.stmas.bayern.de/kinderbetreuung/finanzierung/index.php">
+              Aktuelle Informationen zum Beitragszuschuss beim Freistaat Bayern
+            </a>
           </p>
         </div>
       </div>
@@ -71,18 +106,24 @@ import CTASection from "@/components/CTASection.astro";
         <div>
           <p class="eyebrow">Gemeinsame Grundlage</p>
           <h2>Elterneinlage</h2>
-          <p>
-            Die zinslose Einlage stärkt Liquidität und Ausstattung. Sie wird nach dem Ausscheiden
-            nach den vertraglichen Regeln zurückgezahlt.
-          </p>
+          <p>{costs.deposit.intro} {costs.deposit.description}</p>
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Kind in der Familie</th><th>Einmalige Einlage</th></tr></thead>
             <tbody>
-              <tr><td>1. Kind</td><td><strong>2.500 €</strong></td></tr>
-              <tr><td>2. Kind</td><td><strong>1.500 €</strong></td></tr>
-              <tr><td>3. Kind</td><td><strong>1.000 €</strong></td></tr>
+              {
+                costs.deposit.rows.map((row) => (
+                  <tr>
+                    <>
+                      <td>{row.label}</td>
+                      <td>
+                        <strong>{row.amount}</strong>
+                      </td>
+                    </>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>
@@ -96,25 +137,24 @@ import CTASection from "@/components/CTASection.astro";
         <p class="eyebrow">Mitmachschule</p>
         <h2>Zeit ist Teil des Beitrags.</h2>
         <p class="lead">
-          Elternarbeit hält Beiträge bezahlbarer – und macht aus einer Einrichtung eine echte
-          Gemeinschaft.
+          {costs.parentWork.intro}
         </p>
       </div>
       <div class="grid-3">
         <article>
-          <p class="eyebrow">Schule</p>
-          <h3>50 Stunden</h3>
-          <p>pro Familie und Schuljahr; für Alleinerziehende 25 Stunden.</p>
+          <p class="eyebrow">{costs.parentWork.school.label}</p>
+          <h3>{costs.parentWork.school.amount}</h3>
+          <p>{costs.parentWork.school.detail}</p>
         </article>
         <article>
-          <p class="eyebrow">Kindergarten</p>
-          <h3>25 Stunden</h3>
-          <p>pro Familie und Kindergartenjahr; für Alleinerziehende 12,5 Stunden.</p>
+          <p class="eyebrow">{costs.parentWork.kindergarten.label}</p>
+          <h3>{costs.parentWork.kindergarten.amount}</h3>
+          <p>{costs.parentWork.kindergarten.detail}</p>
         </article>
         <article>
-          <p class="eyebrow">Nicht geleistete Zeit</p>
-          <h3>25 € / Stunde</h3>
-          <p>werden nach den jeweils gültigen Vertragsregeln in Rechnung gestellt.</p>
+          <p class="eyebrow">{costs.parentWork.missedHours.label}</p>
+          <h3>{costs.parentWork.missedHours.amount}</h3>
+          <p>{costs.parentWork.missedHours.detail}</p>
         </article>
       </div>
     </div>
@@ -127,19 +167,11 @@ import CTASection from "@/components/CTASection.astro";
         <h2>Mitgliedschaft gehört dazu.</h2>
       </div>
       <div>
-        <p class="lead">
-          Eltern werden Mitglied im gemeinnützigen Trägerverein und tragen die Monte damit auch
-          demokratisch.
-        </p>
+        <p class="lead">{costs.membership.intro}</p>
         <ul class="editorial-list">
-          <li>Familienmitgliedschaft: 50 € pro Jahr</li>
-          <li>Einzelmitgliedschaft: 40 € pro Jahr</li>
-          <li>Alleinerziehende: 30 € pro Jahr</li>
+          {costs.membership.rows.map((row) => <li>{row}</li>)}
         </ul>
-        <p>
-          Mittagessen, Ausflüge, Reisen oder besondere Materialien können zusätzlich berechnet
-          werden.
-        </p>
+        <p>{costs.membership.additionalNote}</p>
       </div>
     </div>
   </section>
@@ -166,5 +198,30 @@ import CTASection from "@/components/CTASection.astro";
 
   .cost-section:last-child {
     border-bottom: 1px solid var(--line);
+  }
+
+  .kindergarten-subsidy {
+    display: grid;
+    padding: 1.4rem 1rem;
+    background: color-mix(in srgb, var(--ochre) 18%, var(--paper-light));
+    gap: 1rem;
+    grid-template-columns: minmax(9rem, 0.65fr) minmax(0, 1.35fr);
+  }
+
+  .kindergarten-subsidy p {
+    margin-bottom: 0;
+  }
+
+  .kindergarten-subsidy__amount {
+    color: var(--forest);
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
+  @media (max-width: 640px) {
+    .kindergarten-subsidy {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

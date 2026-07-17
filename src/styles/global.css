@@ -99,7 +99,9 @@ h4 {
   color: var(--forest);
   font-family: var(--serif);
   font-weight: 450;
+  hyphens: auto;
   line-height: 1.04;
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 

@@ -3,7 +3,10 @@ import { ArrowRight } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
-import { jobs } from "@/data/jobs";
+import { getJobs, getWebsiteSettings } from "@/data/content";
+
+const jobs = await getJobs();
+const { contact } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -48,7 +51,7 @@ import { jobs } from "@/data/jobs";
         </p>
         <a
           class="button button--outline"
-          href="mailto:info@montessori-allgaeu.de?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u"
+          href={`mailto:${contact.email}?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u`}
           >Initiativkontakt aufnehmen</a
         >
       </div>
@@ -58,7 +61,7 @@ import { jobs } from "@/data/jobs";
   <CTASection
     title="Noch nicht bewerben – erst erleben?"
     text="Ein unverbindliches Gespräch oder eine Hospitation kann der ehrlichste erste Schritt sein."
-    primaryHref="mailto:info@montessori-allgaeu.de?subject=Hospitation%20oder%20Kennenlerngespr%C3%A4ch"
+    primaryHref={`mailto:${contact.email}?subject=Hospitation%20oder%20Kennenlerngespr%C3%A4ch`}
     primaryLabel="Hospitation anfragen"
     secondaryHref="/arbeiten-bei-uns/"
     secondaryLabel="Arbeitskultur kennenlernen"
