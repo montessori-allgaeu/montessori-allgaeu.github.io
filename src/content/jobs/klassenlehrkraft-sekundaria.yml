@@ -1,6 +1,7 @@
 title: Klassenlehrkraft Sekundaria
-area: Schule · Klasse 5–7
-schedule: Umfang nach Vereinbarung
+area: Schule
+team: Klasse 5–7
+scope: Umfang nach Vereinbarung
 intro: Du möchtest Jugendliche in einer jahrgangsgemischten Lerngruppe begleiten und Montessori nicht nur benennen, sondern im Alltag leben.
 responsibilities:
   - Lernprozesse beobachten, begleiten und gemeinsam mit dem Klassenteam vorbereiten
@@ -10,5 +11,5 @@ profile:
   - Pädagogische Qualifikation und echte Verbindung zur Montessori-Pädagogik
   - Freude an eigenverantwortlichem Arbeiten im Team
   - Bereitschaft, Feedback anzunehmen und gemeinsam weiterzulernen
-published: true
-order: 10
+status: published
+position: 10

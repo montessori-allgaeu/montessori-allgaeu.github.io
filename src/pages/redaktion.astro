@@ -1,0 +1,91 @@
+---
+import { ExternalLink } from "@lucide/astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+
+const cmsUrl = "https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main";
+---
+
+<BaseLayout
+  title="Website-Inhalte bearbeiten"
+  description="Kurzanleitung für die redaktionelle Pflege der Website von Montessori Allgäu."
+  noindex
+>
+  <PageIntro
+    eyebrow="Redaktion"
+    title="Inhalte sicher aktualisieren."
+    intro="Diese kurze Anleitung führt dich vom Entwurf bis zur veröffentlichten Änderung. Speichere den direkten Einstieg am besten als Favorit „Website-Inhalte bearbeiten“ im Browser."
+  >
+    <a class="button" href={cmsUrl} target="_blank" rel="noreferrer">
+      Pages CMS öffnen <ExternalLink size={18} aria-hidden="true" />
+    </a>
+  </PageIntro>
+
+  <section class="section">
+    <div class="container grid-2 editorial-guide">
+      <div>
+        <p class="eyebrow">Der sichere Ablauf</p>
+        <h2>Erst Entwurf, dann veröffentlichen.</h2>
+      </div>
+      <ol class="editorial-list editorial-guide__steps">
+        <li>Den passenden Bereich öffnen und den Inhalt anlegen oder ändern.</li>
+        <li>Neue Einträge zunächst als <strong>Entwurf – nicht auf Website</strong> speichern.</li>
+        <li>Alle Angaben prüfen.</li>
+        <li>Den Status auf <strong>Veröffentlicht – auf Website</strong> setzen und speichern.</li>
+        <li>Nach dem automatischen Build die Änderung auf der Website kontrollieren.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container grid-3 editorial-guide__rules">
+      <article>
+        <p class="eyebrow">01</p>
+        <h2>Zeitbezogene Fakten prüfen</h2>
+        <p>
+          Termine, Stellen, Kosten, Zeiten, Rollen und Dokumentstände nur aus einer verbindlichen
+          Quelle übernehmen.
+        </p>
+      </article>
+      <article>
+        <p class="eyebrow">02</p>
+        <h2>Medien über Inhalte pflegen</h2>
+        <p>
+          Teamfotos über <strong>Team</strong> und PDFs über <strong>Downloads</strong> auswählen. „Media“
+          ist die gemeinsame Dateiablage.
+        </p>
+      </article>
+      <article>
+        <p class="eyebrow">03</p>
+        <h2>Fehler wieder ausblenden</h2>
+        <p>
+          Bei einem Inhaltsfehler den Status wieder auf <strong>Entwurf</strong> setzen. Gelöschte Dateien
+          kann die technische Betreuung wiederherstellen.
+        </p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .editorial-guide h2 {
+    max-width: 14ch;
+  }
+
+  .editorial-guide__steps {
+    margin: 0;
+  }
+
+  .editorial-guide__steps li {
+    padding-block: 1rem;
+  }
+
+  .editorial-guide__rules article {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .editorial-guide__rules h2 {
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+  }
+</style>

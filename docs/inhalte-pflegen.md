@@ -4,7 +4,7 @@ Pages CMS stellt für die regelmäßig wechselnden Website-Inhalte eine einfache
 
 ## Einmalige Einrichtung
 
-1. Mit einem GitHub-Konto unter [app.pagescms.org](https://app.pagescms.org) anmelden.
+1. Den direkten Favoriten [Website-Inhalte bearbeiten](https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main) öffnen.
 2. Die GitHub-App von Pages CMS ausschließlich für `montessori-allgaeu/montessori-allgaeu.github.io` installieren.
 3. Das Repository und den Branch `main` öffnen. Pages CMS liest die Konfiguration aus `.pages.yml` automatisch ein.
 4. Nathanael in Pages CMS als Redakteur einladen. Redakteure können Inhalte und Medien pflegen, aber weder die CMS-Konfiguration noch andere Codebereiche verwalten.
@@ -16,8 +16,9 @@ Die GitHub-App benötigt Schreibzugriff auf Repository-Inhalte. Vor der Installa
 
 1. Den gewünschten Bereich in Pages CMS öffnen.
 2. Inhalte ändern oder einen neuen Eintrag anlegen.
-3. Pflichtfelder und den Schalter **Auf Website anzeigen** prüfen.
-4. Speichern.
+3. Neue Termine, Stellen, Personen und Downloads zuerst mit dem Status **Entwurf – nicht auf Website** speichern.
+4. Die Angaben prüfen.
+5. Wenn alles stimmt, den Status auf **Veröffentlicht – auf Website** setzen und erneut speichern.
 
 Pages CMS erzeugt dabei einen Git-Commit auf `main`. GitHub Actions prüft und baut die Website. Nur ein erfolgreicher Build wird über GitHub Pages veröffentlicht; bei einem Fehler bleibt die zuvor veröffentlichte Version online.
 
@@ -25,29 +26,32 @@ Pages CMS erzeugt dabei einen Git-Commit auf `main`. GitHub Actions prüft und b
 
 ### Termine
 
-Termine werden nach Datum sortiert. Die Uhrzeit ist absichtlich ein Textfeld und kann auch Angaben wie „Uhrzeit über die interne Einladung“ enthalten. Abgelaufene Termine werden nicht automatisch entfernt; sie müssen ausgeblendet oder gelöscht werden.
+Termine werden nach Datum sortiert. Bei einem neuen Termin bleibt das Datum bewusst leer und die Kategorie wird aus einer festen Liste gewählt. Die Uhrzeit ist absichtlich ein Textfeld und kann auch Angaben wie „Uhrzeit über die interne Einladung“ enthalten. Abgelaufene Termine werden nicht automatisch entfernt; sie müssen auf **Entwurf** gesetzt oder gelöscht werden.
 
 ### Stellenangebote
 
-Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Über **Reihenfolge** wird die Darstellung gesteuert; sinnvoll sind Abstände wie `10`, `20`, `30`.
+Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
 
 ### Team
 
-Teammitglieder werden zuerst nach Bereich und dann nach **Reihenfolge im Bereich** dargestellt. Fotos können als JPG, PNG oder WebP hochgeladen werden; Astro optimiert sie beim Build. Vor der Veröffentlichung müssen Name, Rolle und Fotofreigabe bestätigt sein.
+Teammitglieder werden zuerst nach Bereich und dann nach **Position innerhalb des Bereichs** dargestellt. Fotos können als JPG, PNG oder WebP über das jeweilige Teammitglied ausgewählt werden; Astro optimiert sie beim Build.
 
 ### Downloads
 
-Neue PDFs werden nach `public/downloads/` geladen. Stand und Dateigröße werden als sichtbarer Beschreibungstext manuell gepflegt. Ein ersetztes Dokument sollte einen nachvollziehbaren Dateinamen und einen aktualisierten Stand erhalten.
+Neue PDFs werden im Bereich **Downloads** ausgewählt und nach `public/downloads/` geladen. Nathanael pflegt nur den optionalen Dokumentstand und einen optionalen kurzen Hinweis. `PDF` und die tatsächliche Dateigröße ergänzt die Website beim Build automatisch. Ein ersetztes Dokument sollte einen nachvollziehbaren Dateinamen und einen aktualisierten Stand erhalten.
 
-### Kontaktdaten, Zeiten und Kosten
+### Stammdaten
 
-Diese Maske aktualisiert dieselben Angaben überall auf der Website. Dazu gehören:
+Die früher gemeinsame Großmaske ist in sechs kurze Seiten aufgeteilt:
 
-- E-Mail-Adressen, Telefonnummern und Anschrift
-- Öffnungszeiten von Schulbüro und Kindergarten
-- Ganztags- und Mittagessensangaben
-- Schulgeld, Kindergartenbeiträge und Elterneinlage
-- Elternarbeitsstunden und Vereinsbeiträge
+- **Kontakt & Anschrift**
+- **Öffnungszeiten**
+- **Mittagessen**
+- **Schulgeld**
+- **Kindergartenbeiträge**
+- **Einlage, Elternarbeit & Verein**
+
+Telefonlinks, die vollständige sichtbare Ortszeile sowie Dateityp und Dateigröße von PDFs erzeugt die Website automatisch. Diese Angaben müssen nicht doppelt gepflegt werden.
 
 Zeitbezogene Angaben müssen vor dem Speichern anhand der aktuellen Verträge oder verbindlichen Beschlüsse geprüft werden. Rechtliche Formulierungen und grundlegende Seitentexte außerhalb des freigegebenen Spendenbereichs sind nicht über das CMS editierbar.
 
@@ -68,7 +72,7 @@ Vor jeder Änderung der Kontodaten, Förderschwerpunkte oder Bescheinigungsangab
 
 ## Ausblenden, Löschen und Wiederherstellen
 
-**Auf Website anzeigen** ist der sichere Weg, einen Termin, eine Stelle, eine Person oder einen Download vorübergehend zu entfernen. Löschen entfernt auch die Inhaltsdatei aus dem Repository.
+Der Status **Entwurf – nicht auf Website** ist der sichere Weg, einen Termin, eine Stelle, eine Person oder einen Download vorübergehend zu entfernen. Löschen entfernt auch die Inhaltsdatei aus dem Repository.
 
 Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehentlich veröffentlicht wurde, kann die technische Website-Verantwortung den betreffenden Commit über GitHub zurücksetzen.
 
@@ -76,7 +80,12 @@ Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehent
 
 - CMS-Konfiguration: `.pages.yml`
 - Validierung: `src/content.config.ts`
-- Kontaktdaten, Zeiten und Kosten: `src/content/settings/website.yml`
+- Kontakt & Anschrift: `src/content/settings/contact.yml`
+- Öffnungszeiten: `src/content/settings/opening-hours.yml`
+- Mittagessen: `src/content/settings/meals.yml`
+- Schulgeld: `src/content/settings/school-fees.yml`
+- Kindergartenbeiträge: `src/content/settings/kindergarten-fees.yml`
+- Einlage, Elternarbeit & Verein: `src/content/settings/community-contributions.yml`
 - Spendenseite: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Stellen: `src/content/jobs/`

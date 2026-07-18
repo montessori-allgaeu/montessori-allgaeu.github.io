@@ -26,9 +26,9 @@ const { contact } = await getWebsiteSettings();
           <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
             <h2>{job.title}</h2>
             <p>
-              {job.area}
+              {job.areaLabel}
               <br />
-              {job.schedule}
+              {job.scheduleLabel}
             </p>
             <ArrowRight size={26} aria-hidden="true" />
           </a>

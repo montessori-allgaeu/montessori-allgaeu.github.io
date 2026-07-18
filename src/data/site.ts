@@ -18,7 +18,7 @@ export const mainNavigation = [
       { label: "Kindergarten", href: "/kindergarten-schule/kindergarten/" },
       { label: "Schule", href: "/kindergarten-schule/schule/" },
       {
-        label: "Ganztag & Verpflegung",
+        label: "Ganztagsschule & Verpflegung",
         href: "/kindergarten-schule/ganztag-verpflegung/",
       },
     ],
@@ -37,7 +37,6 @@ export const mainNavigation = [
     label: "Gemeinschaft",
     href: "/gemeinschaft/",
     children: [
-      { label: "Prinzipien", href: "/gemeinschaft/prinzipien/" },
       { label: "Team", href: "/gemeinschaft/team/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       supportLink,
@@ -73,7 +72,6 @@ export const footerNavigation = [
   {
     title: "Gemeinschaft",
     links: [
-      { label: "Unsere Prinzipien", href: "/gemeinschaft/prinzipien/" },
       { label: "Team", href: "/gemeinschaft/team/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Termine", href: "/termine/" },

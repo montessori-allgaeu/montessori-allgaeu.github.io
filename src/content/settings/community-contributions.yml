@@ -1,0 +1,30 @@
+deposit:
+  intro: Die zinslose Einlage stärkt Liquidität und Ausstattung.
+  description: Sie wird nach dem Ausscheiden zurückgezahlt.
+  rows:
+    - label: 1. Kind
+      amount: 2.500 €
+    - label: 2. Kind
+      amount: 1.500 €
+    - label: 3. Kind
+      amount: 1.000 €
+parentWork:
+  intro: Elternarbeit hält Beiträge bezahlbarer – und macht aus einer Einrichtung eine echte Gemeinschaft.
+  school:
+    label: Schule
+    amount: 50 Stunden
+    detail: pro Familie und Schuljahr; für Alleinerziehende 25 Stunden.
+  kindergarten:
+    label: Kindergarten
+    amount: 25 Stunden
+    detail: pro Familie und Kindergartenjahr; für Alleinerziehende 12,5 Stunden.
+  missedHours:
+    label: Nicht geleistete Zeit
+    amount: 25 € / Stunde
+    detail: werden nach den jeweils gültigen Vertragsregeln in Rechnung gestellt.
+membership:
+  intro: Eltern werden Mitglied im gemeinnützigen Trägerverein und tragen die Monte damit auch demokratisch.
+  rows:
+    - "Familienmitgliedschaft: 50 € pro Jahr"
+    - "Einzelmitgliedschaft: 40 € pro Jahr"
+    - "Alleinerziehende: 30 € pro Jahr"

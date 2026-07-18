@@ -123,18 +123,56 @@ test("editorial content renders from the validated content collections", async (
     "href",
     "/downloads/infoheft-schule-2025.pdf",
   );
+  await expect(page.getByRole("link", { name: /Infoheft Schule/ })).toContainText(
+    "Stand 2025 · PDF · 187 KB",
+  );
+  await expect(page.getByRole("link", { name: /Konzeption Kindergarten/ })).toContainText(
+    "Stand November 2020 · PDF · 2,2 MB",
+  );
 
   await page.goto("/kennenlernen/kosten/");
   await expect(page.getByText("202,50 €")).toBeVisible();
   await expect(page.getByText("102,50 €")).toBeVisible();
   await expect(page.getByText("−100 €")).toBeVisible();
   await expect(page.getByRole("heading", { name: "50 Stunden" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Beitrittserklärung herunterladen" }),
+  ).toHaveAttribute("href", "/downloads/beitrittserklaerung-verein.pdf");
+  await expect(page.getByText(/Mittagessen, Ausflüge, Reisen/)).toHaveCount(0);
+
+  await page.goto("/kindergarten-schule/schule/");
+  await expect(
+    page.getByText(/Qualifizierender Abschluss der Mittelschule.*9\. Jahrgangsstufe/),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Mittlerer Schulabschluss an der Mittelschule.*10\. Jahrgangsstufe/),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Erfolgreicher Mittelschulabschluss / Montessori-Abschluss"),
+  ).toHaveCount(0);
 
   await page.goto("/kontakt/");
   await expect(page.getByText("Montag: 7:30–16:30 Uhr")).toBeVisible();
+  await expect(page.getByText("Montag, Mittwoch und Freitag:")).toBeVisible();
+  await expect(page.getByText("07:45 bis 13:00 Uhr").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Schließtage" })).toHaveCount(0);
   await expect(
     page.getByRole("main").getByRole("link", { name: "info@montessori-allgaeu.de" }),
   ).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "08386 939 210" })).toHaveAttribute(
+    "href",
+    "tel:+498386939210",
+  );
+
+  await page.goto("/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/");
+  await expect(page.getByText("Schule · Klasse 5–7")).toBeVisible();
+  await expect(page.getByText("Umfang nach Vereinbarung", { exact: true })).toBeVisible();
+
+  await page.goto("/kindergarten-schule/kindergarten/");
+  await expect(page.getByRole("heading", { name: "Schließtage" })).toBeVisible();
+  await expect(page.getByText("24.12.2026 bis 06.01.2027")).toBeVisible();
+  await expect(page.getByText("02.08.2027 bis 20.08.2027")).toBeVisible();
+  await expect(page.getByText("24.12.2027 bis 07.01.2028")).toHaveCount(0);
 
   await page.goto("/spenden/");
   await expect(
@@ -149,7 +187,7 @@ test("editorial content renders from the validated content collections", async (
 
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Kinder brauchen Menschen, die Möglichkeiten eröffnen." }),
+    page.getByRole("heading", { name: "Kinder brauchen Menschen, die Wege öffnen." }),
   ).toBeVisible();
 });
 
@@ -177,6 +215,19 @@ test("CMS address stays consistent across contact and legal pages", async ({ pag
       `${postalCode} ${addressLocality}`,
     );
   }
+});
+
+test("editorial quick guide links to the exact CMS project and stays out of search", async ({
+  page,
+}) => {
+  await page.goto("/redaktion/");
+
+  await expect(page.getByRole("heading", { name: "Inhalte sicher aktualisieren." })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Pages CMS öffnen/ })).toHaveAttribute(
+    "href",
+    "https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main",
+  );
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
 });
 
 test("homepage exposes complete search and social metadata", async ({ page }) => {
@@ -239,6 +290,51 @@ test("homepage copy remains readable on wide screens", async ({ page }) => {
     .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().width));
   expect(splitContentWidths).not.toHaveLength(0);
   expect(Math.min(...splitContentWidths)).toBeGreaterThanOrEqual(500);
+});
+
+test("homepage belief headings stay on one line at the reviewed desktop width", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1453, height: 881 });
+  await page.goto("/");
+
+  for (const name of ["Selbstbestimmt lernen", "Freiheit gut nutzen"]) {
+    const heading = page.getByRole("heading", { name });
+    const lineCount = await heading.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      return Math.round(
+        element.getBoundingClientRect().height / Number.parseFloat(styles.lineHeight),
+      );
+    });
+
+    expect(lineCount).toBe(1);
+  }
+});
+
+test("frequent questions animate and only one opens at a time", async ({ page }) => {
+  await page.goto("/kennenlernen/haeufige-fragen/");
+
+  const questions = page.locator(".faq-list details");
+  await expect(questions).toHaveCount(12);
+  for (const question of await questions.all()) {
+    await expect(question).not.toHaveAttribute("open", "");
+  }
+
+  await questions.nth(0).locator("summary").click();
+  await expect(questions.nth(0)).toHaveAttribute("open", "");
+  await expect(questions.nth(0)).toHaveAttribute("data-faq-motion", "opening");
+  await expect(questions.nth(0).locator(".faq-list__answer")).toBeVisible();
+  await expect(questions.nth(0)).not.toHaveAttribute("data-faq-motion");
+
+  await questions.nth(1).locator("summary").click();
+  await expect(questions.nth(0)).not.toHaveAttribute("open", "");
+  await expect(questions.nth(1)).toHaveAttribute("open", "");
+});
+
+test("kindergarten admission decision omits the timing sentence", async ({ page }) => {
+  await page.goto("/kennenlernen/aufnahme-kindergarten/");
+
+  await expect(page.getByText("Die Entscheidung teilen wir euch", { exact: false })).toHaveCount(0);
 });
 
 test("homepage hero does not overlap the next section on short desktop viewports", async ({

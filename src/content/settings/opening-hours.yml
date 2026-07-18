@@ -1,0 +1,33 @@
+schoolOffice:
+  - "Montag: 7:30–16:30 Uhr"
+  - "Dienstag: 7:30–15:30 Uhr"
+  - "Mittwoch: 7:30–16:30 Uhr"
+  - "Donnerstag: 7:30–13:30 Uhr"
+  - "Freitag: nicht besetzt"
+kindergarten:
+  - days: Montag, Mittwoch und Freitag
+    hours: 07:45 bis 13:00 Uhr
+    details: []
+  - days: Dienstag
+    hours: 07:45 bis 13:00 Uhr
+    details:
+      - mit Mittagessen bis 14:00 Uhr
+  - days: Donnerstag
+    hours: 07:45 bis 13:00 Uhr
+    details:
+      - mit Mittagessen bis 14:00 Uhr
+      - mit Nachmittag bis 16:00 Uhr
+ganztag: an Schultagen von Montag bis Donnerstag
+kindergartenClosures:
+  schoolYear: 2026/2027
+  intro: Die 30 Schließtage verteilen sich auf die bayerischen Schulferien.
+  periods:
+    - label: Weihnachten
+      dates: 24.12.2026 bis 06.01.2027
+    - label: Ostern
+      dates: 22.03.2027 bis 26.03.2027
+    - label: Pfingsten
+      dates: 17.05.2027 bis 21.05.2027
+    - label: Sommer
+      dates: 02.08.2027 bis 20.08.2027
+  holidayNote: An allen gesetzlichen Feiertagen in Bayern ist der Kindergarten ebenfalls geschlossen.

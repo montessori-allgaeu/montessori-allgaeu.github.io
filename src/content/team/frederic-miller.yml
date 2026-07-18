@@ -2,5 +2,5 @@ name: Frederic Miller
 role: Pädagogisches Team
 group: Fach- & Förderteam
 image: ../../assets/images/team/frederic-miller.webp
-published: true
-order: 60
+status: published
+position: 60

@@ -1,0 +1,12 @@
+validFrom: Juli 2026
+notice: Diese Übersicht dient der Orientierung. Verbindlich sind immer der aktuelle Betreuungs-, Schul- und Vereinsvertrag. Bitte lasst euch die Beträge vor Vertragsabschluss bestätigen.
+intro: Das Schulgeld wird in zwölf Monatsraten pro Schuljahr erhoben.
+rows:
+  - label: 1. Kind
+    amount: 270 €
+  - label: 2. Kind
+    amount: 220 €
+  - label: 3. Kind
+    amount: 150 €
+  - label: Jedes weitere Kind
+    amount: 115 €

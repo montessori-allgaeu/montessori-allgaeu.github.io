@@ -1,6 +1,6 @@
 title: Fachlehrkraft Musik
 area: Schule
-schedule: Teilzeit · Umfang nach Vereinbarung
+scope: Teilzeit
 intro: Du eröffnest Kindern und Jugendlichen einen lebendigen Zugang zu Musik und bringst deine fachliche Handschrift in unsere vorbereitete Umgebung ein.
 responsibilities:
   - Musikalische Lernangebote altersübergreifend planen und begleiten
@@ -10,5 +10,5 @@ profile:
   - Fachliche und pädagogische Qualifikation
   - Eine zugewandte, klare Haltung gegenüber Kindern und Jugendlichen
   - Interesse an Montessori und an gemeinsamer pädagogischer Entwicklung
-published: true
-order: 20
+status: published
+position: 20

@@ -1,0 +1,19 @@
+intro: Der Beitrag richtet sich nach der täglich gebuchten Betreuungszeit.
+rows:
+  - label: 4 bis unter 5 Stunden
+    amount: 190 €
+    effectiveAmount: 90 €
+  - label: 5 bis unter 6 Stunden
+    amount: 202,50 €
+    effectiveAmount: 102,50 €
+  - label: 6 bis unter 7 Stunden
+    amount: 215 €
+    effectiveAmount: 115 €
+  - label: 7 bis unter 8 Stunden
+    amount: 227,50 €
+    effectiveAmount: 127,50 €
+  - label: 8 bis unter 9 Stunden
+    amount: 240 €
+    effectiveAmount: 140 €
+subsidyAmount: 100 €
+subsidyNote: "Stand Juli 2026: Für zuschussberechtigte Kinder reduziert der bayerische Beitragszuschuss den Elternbeitrag automatisch um 100 € pro Monat. Ein Antrag der Eltern ist nicht erforderlich. Der Zuschuss gilt ab 1. September des Jahres, in dem das Kind drei Jahre alt wird, bis zur Einschulung."

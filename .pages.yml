@@ -1,12 +1,12 @@
 media:
   - name: team-images
-    label: Teamfotos
+    label: Teamfotos (über „Team“ auswählen)
     input: src/assets/images/team
     output: ../../assets/images/team
     extensions: [jpg, jpeg, png, webp]
     rename: safe
   - name: documents
-    label: PDF-Dokumente
+    label: PDF-Dateien (über „Downloads“ auswählen)
     input: public/downloads
     output: /downloads
     extensions: [pdf]
@@ -22,7 +22,7 @@ content:
       template: "{date}-{title}.yml"
       field: false
     view:
-      fields: [title, date, category, published]
+      fields: [title, date, category, status]
       primary: title
       sort: [date, title]
       default:
@@ -37,13 +37,21 @@ content:
         required: true
       - name: category
         label: Kategorie
-        type: string
+        type: select
         required: true
-        description: Zum Beispiel „Kennenlernen“ oder „Monte-Gemeinschaft & Freunde“.
+        options:
+          placeholder: Kategorie auswählen
+          values:
+            - Kennenlernen
+            - Informationsabend
+            - Monte-Gemeinschaft & Freunde
+            - Ferien & Schließtage
+            - Sonstiges
       - name: date
         label: Datum
         type: date
         required: true
+        default: ""
         options:
           format: yyyy-MM-dd
       - name: time
@@ -59,10 +67,18 @@ content:
         label: Beschreibung
         type: text
         required: true
-      - name: published
-        label: Auf Website anzeigen
-        type: boolean
-        default: true
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Termine bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
 
   - name: jobs
     label: Stellenangebote
@@ -73,13 +89,13 @@ content:
       template: "{title}.yml"
       field: false
     view:
-      fields: [title, area, schedule, published, order]
+      fields: [title, area, scope, status, position]
       primary: title
-      sort: [order, title]
+      sort: [position, title]
       default:
-        sort: order
+        sort: position
         order: asc
-      search: [title, area, schedule]
+      search: [title, area, team, scope, start]
     operations:
       rename: false
     fields:
@@ -89,12 +105,27 @@ content:
         required: true
       - name: area
         label: Bereich
+        type: select
+        required: true
+        options:
+          placeholder: Bereich auswählen
+          values:
+            - Kindergarten
+            - Schule
+            - Kindergarten oder Schule
+      - name: team
+        label: Team, Lerngruppe oder Klassenstufen
+        type: string
+        description: Optional, zum Beispiel „Klasse 5–7“.
+      - name: scope
+        label: Beschäftigungsumfang
         type: string
         required: true
-      - name: schedule
-        label: Umfang und Start
+        description: Zum Beispiel „Vollzeit oder Teilzeit“, „Teilzeit“ oder „Umfang nach Vereinbarung“.
+      - name: start
+        label: Start
         type: string
-        required: true
+        description: Optional, zum Beispiel „September 2026“ oder „Nach Vereinbarung“.
       - name: intro
         label: Einleitung
         type: text
@@ -111,15 +142,26 @@ content:
         required: true
         list:
           min: 1
-      - name: order
-        label: Reihenfolge
+      - name: position
+        label: Position in der Stellenliste
         type: number
         required: true
-        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
-      - name: published
-        label: Auf Website anzeigen
-        type: boolean
-        default: true
+        default: 50
+        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+        options:
+          min: 1
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Stellen bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
 
   - name: team
     label: Team
@@ -130,9 +172,9 @@ content:
       template: "{name}.yml"
       field: false
     view:
-      fields: [name, group, role, published, order]
+      fields: [name, group, role, status, position]
       primary: name
-      sort: [group, order, name]
+      sort: [group, position, name]
       default:
         sort: group
         order: asc
@@ -167,15 +209,26 @@ content:
           media: team-images
           extensions: [jpg, jpeg, png, webp]
           rename: safe
-      - name: order
-        label: Reihenfolge im Bereich
+      - name: position
+        label: Position innerhalb des Bereichs
         type: number
         required: true
-        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
-      - name: published
-        label: Auf Website anzeigen
-        type: boolean
-        default: true
+        default: 50
+        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+        options:
+          min: 1
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Teammitglieder bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
 
   - name: downloads
     label: Downloads
@@ -186,13 +239,13 @@ content:
       template: "{title}.yml"
       field: false
     view:
-      fields: [title, group, meta, published, order]
+      fields: [title, group, documentDate, status, position]
       primary: title
-      sort: [group, order, title]
+      sort: [group, position, title]
       default:
         sort: group
         order: asc
-      search: [title, group, meta]
+      search: [title, group, documentDate, note]
     operations:
       rename: false
     fields:
@@ -200,11 +253,14 @@ content:
         label: Titel
         type: string
         required: true
-      - name: meta
-        label: Stand und Dateigröße
+      - name: documentDate
+        label: Stand des Dokuments
         type: string
-        required: true
-        description: Zum Beispiel „Stand März 2026 · PDF · 555 KB“.
+        description: Optional, zum Beispiel „März 2026“. „Stand“, Dateityp und Dateigröße ergänzt die Website automatisch.
+      - name: note
+        label: Zusätzlicher kurzer Hinweis
+        type: string
+        description: Optional, zum Beispiel „inkl. Datenschutzhinweisen“.
       - name: file
         label: PDF-Datei
         type: file
@@ -222,15 +278,26 @@ content:
             - Schule
             - Kindergarten
             - Aufnahme & Verein
-      - name: order
-        label: Reihenfolge im Bereich
+      - name: position
+        label: Position innerhalb des Bereichs
         type: number
         required: true
-        description: Niedrigere Zahlen erscheinen zuerst. Empfohlen sind 10, 20, 30 …
-      - name: published
-        label: Auf Website anzeigen
-        type: boolean
-        default: true
+        default: 50
+        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+        options:
+          min: 1
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Downloads bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
 
   - name: donations-page
     label: Spendenseite
@@ -481,19 +548,18 @@ content:
             type: string
             required: true
 
-  - name: website-settings
-    label: Kontaktdaten, Zeiten & Kosten
-    type: file
-    path: src/content/settings/website.yml
-    format: yaml
-    operations:
-      create: false
-      delete: false
-    fields:
-      - name: contact
-        label: Kontaktdaten
-        type: object
-        required: true
+  - name: master-data
+    label: Stammdaten
+    type: group
+    items:
+      - name: contact-settings
+        label: Kontakt & Anschrift
+        type: file
+        path: src/content/settings/contact.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
         fields:
           - name: email
             label: E-Mail Schulbüro
@@ -504,22 +570,15 @@ content:
             type: string
             required: true
           - name: phone
-            label: Telefonnummer Schulbüro für Links
+            label: Telefonnummer Schulbüro
             type: string
             required: true
-            description: Internationales Format, zum Beispiel „+49 8386 939210“.
-          - name: phoneDisplay
-            label: Telefonnummer Schulbüro sichtbar
-            type: string
-            required: true
+            description: So eingeben, wie die Nummer sichtbar sein soll. Den Telefonlink erzeugt die Website automatisch.
           - name: kindergartenPhone
-            label: Telefonnummer Kindergarten für Links
+            label: Telefonnummer Kindergarten
             type: string
             required: true
-          - name: kindergartenPhoneDisplay
-            label: Telefonnummer Kindergarten sichtbar
-            type: string
-            required: true
+            description: So eingeben, wie die Nummer sichtbar sein soll. Den Telefonlink erzeugt die Website automatisch.
           - name: address
             label: Anschrift
             type: object
@@ -527,10 +586,6 @@ content:
             fields:
               - name: street
                 label: Straße und Hausnummer
-                type: string
-                required: true
-              - name: city
-                label: Vollständige Ortszeile
                 type: string
                 required: true
               - name: postalCode
@@ -542,10 +597,19 @@ content:
                 label: Ort
                 type: string
                 required: true
-      - name: openingHours
+              - name: district
+                label: Ortsteil
+                type: string
+                description: Optional, zum Beispiel „Kalzhofen“.
+
+      - name: opening-hours-settings
         label: Öffnungszeiten
-        type: object
-        required: true
+        type: file
+        path: src/content/settings/opening-hours.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
         fields:
           - name: schoolOffice
             label: Schulbüro
@@ -555,19 +619,75 @@ content:
               min: 1
           - name: kindergarten
             label: Kindergarten
-            type: string
+            type: object
             required: true
             list:
               min: 1
+              collapsible:
+                collapsed: true
+                summary: "{days}"
+            fields:
+              - name: days
+                label: Wochentage
+                type: string
+                required: true
+              - name: hours
+                label: Reguläre Öffnungszeit
+                type: string
+                required: true
+              - name: details
+                label: Verlängerte Betreuung
+                type: string
+                list: true
           - name: ganztag
             label: Ganztag
             type: string
             required: true
             description: Wird im Satz „Die offene Ganztagsschule bietet … einen verlässlichen Nachmittagsrahmen“ eingesetzt.
-      - name: meals
+          - name: kindergartenClosures
+            label: Schließzeiten Kindergarten
+            type: object
+            required: true
+            fields:
+              - name: schoolYear
+                label: Kindergartenjahr
+                type: string
+                required: true
+              - name: intro
+                label: Einleitung
+                type: text
+                required: true
+              - name: periods
+                label: Schließzeiten
+                type: object
+                required: true
+                list:
+                  min: 1
+                  collapsible:
+                    collapsed: true
+                    summary: "{label}"
+                fields:
+                  - name: label
+                    label: Ferien
+                    type: string
+                    required: true
+                  - name: dates
+                    label: Zeitraum
+                    type: string
+                    required: true
+              - name: holidayNote
+                label: Hinweis zu Feiertagen
+                type: text
+                required: true
+
+      - name: meal-settings
         label: Mittagessen
-        type: object
-        required: true
+        type: file
+        path: src/content/settings/meals.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
         fields:
           - name: provider
             label: Anbieter
@@ -585,13 +705,18 @@ content:
             label: Hinweis
             type: text
             required: true
-      - name: costs
-        label: Kosten und Mitarbeit
-        type: object
-        required: true
+
+      - name: school-fee-settings
+        label: Schulgeld
+        type: file
+        path: src/content/settings/school-fees.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
         fields:
           - name: validFrom
-            label: Stand
+            label: Stand der gesamten Kostenübersicht
             type: string
             required: true
             description: Zum Beispiel „Juli 2026“.
@@ -599,72 +724,82 @@ content:
             label: Verbindlichkeitshinweis
             type: text
             required: true
-          - name: schoolFees
+          - name: intro
+            label: Einleitung zum Schulgeld
+            type: text
+            required: true
+          - name: rows
             label: Schulgeld
             type: object
             required: true
+            list:
+              min: 1
+              collapsible:
+                collapsed: true
+                summary: "{label}: {amount}"
             fields:
-              - name: intro
-                label: Einleitung
-                type: text
-                required: true
-              - name: rows
-                label: Beträge
-                type: object
-                required: true
-                list:
-                  min: 1
-                  collapsible:
-                    collapsed: true
-                    summary: "{label}: {amount}"
-                fields:
-                  - name: label
-                    label: Bezeichnung
-                    type: string
-                    required: true
-                  - name: amount
-                    label: Betrag
-                    type: string
-                    required: true
-          - name: kindergartenFees
-            label: Kindergartenbeiträge
-            type: object
-            required: true
-            fields:
-              - name: intro
-                label: Einleitung
-                type: text
-                required: true
-              - name: rows
-                label: Beträge
-                type: object
-                required: true
-                list:
-                  min: 1
-                  collapsible:
-                    collapsed: true
-                    summary: "{label}: {amount}"
-                fields:
-                  - name: label
-                    label: Buchungszeit
-                    type: string
-                    required: true
-                  - name: amount
-                    label: Grundbeitrag
-                    type: string
-                    required: true
-                  - name: effectiveAmount
-                    label: Effektiver Beitrag mit Zuschuss
-                    type: string
-                    required: true
-              - name: subsidyAmount
-                label: Monatlicher Beitragszuschuss
+              - name: label
+                label: Bezeichnung
                 type: string
                 required: true
-              - name: subsidyNote
-                label: Hinweis zum Beitragszuschuss
-                type: text
+              - name: amount
+                label: Betrag
+                type: string
                 required: true
+
+      - name: kindergarten-fee-settings
+        label: Kindergartenbeiträge
+        type: file
+        path: src/content/settings/kindergarten-fees.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
+        fields:
+          - name: intro
+            label: Einleitung
+            type: text
+            required: true
+          - name: rows
+            label: Beiträge nach Buchungszeit
+            type: object
+            required: true
+            list:
+              min: 1
+              collapsible:
+                collapsed: true
+                summary: "{label}: {amount}"
+            fields:
+              - name: label
+                label: Buchungszeit
+                type: string
+                required: true
+              - name: amount
+                label: Grundbeitrag
+                type: string
+                required: true
+              - name: effectiveAmount
+                label: Effektiver Beitrag mit Zuschuss
+                type: string
+                required: true
+          - name: subsidyAmount
+            label: Monatlicher Beitragszuschuss
+            type: string
+            required: true
+          - name: subsidyNote
+            label: Hinweis zum Beitragszuschuss
+            type: text
+            required: true
+
+      - name: community-contribution-settings
+        label: Einlage, Elternarbeit & Verein
+        type: file
+        path: src/content/settings/community-contributions.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
+        fields:
           - name: deposit
             label: Elterneinlage
             type: object
@@ -771,10 +906,6 @@ content:
                 required: true
                 list:
                   min: 1
-              - name: additionalNote
-                label: Hinweis zu weiteren Kosten
-                type: text
-                required: true
 
 settings:
   content:

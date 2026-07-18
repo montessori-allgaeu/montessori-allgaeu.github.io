@@ -24,11 +24,11 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
       <a class="text-link job-back" href="/arbeiten-bei-uns/stellen/"
         ><ArrowLeft size={16} aria-hidden="true" />Alle Stellen</a
       >
-      <p class="eyebrow">{job.area}</p>
+      <p class="eyebrow">{job.areaLabel}</p>
       <h1>{job.title}</h1>
       <div class="job-hero__meta">
         <p class="lead">{job.intro}</p>
-        <span>{job.schedule}</span>
+        <span>{job.scheduleLabel}</span>
       </div>
     </div>
   </section>
@@ -110,6 +110,8 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
 
   .job-hero h1 {
     max-width: 64rem;
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   .job-hero__meta {

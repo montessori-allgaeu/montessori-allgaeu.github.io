@@ -2,5 +2,5 @@ name: Elaine Helmle
 role: Pädagogisches Team
 group: Fach- & Förderteam
 image: ../../assets/images/team/elaine-helmle.webp
-published: true
-order: 20
+status: published
+position: 20

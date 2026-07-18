@@ -466,7 +466,7 @@ Wichtige Pfade:
 
 - CMS-Konfiguration: `.pages.yml`
 - Validierung der redaktionellen Daten: `src/content.config.ts`
-- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
 - Spendenseite einschließlich Förderschwerpunkten und Kontodaten: `src/content/donations/page.yml`
 - Stellen: `src/content/jobs/`
 - Team: `src/content/team/`

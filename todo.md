@@ -14,8 +14,10 @@ aktualisiert werden.
 - [ ] Für den Schulbereich unter der inhaltlichen Klammer „Montessori – wie wir arbeiten“ konkrete
       Konzepte vorstellen: unter anderem den Erdkinderplan, die angebotenen Praktika mit Zeitpunkt,
       Jahrgangsstufe und pädagogischem Ziel sowie den konkreten Ablauf und Rahmen der Freiarbeit.
-- [ ] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten sowie
-      Kosten für Mittagessen mit den aktuell gültigen Verträgen abgleichen.
+- [ ] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten der
+      Schule sowie Kosten für Mittagessen mit den aktuell gültigen Verträgen abgleichen.
+- [x] Öffnungszeiten und Schließtage des Kindergartens für das Kindergartenjahr 2026/2027 anhand
+      der am 17. Juli 2026 mitgeteilten Angaben aktualisieren.
 - [ ] Die derzeit auf der Website ausgewiesenen Kindergarten-Grundbeiträge von 190 bis 240 Euro mit
       den aktuell gültigen Verträgen abgleichen und anschließend auch die daraus errechneten
       effektiven Beiträge nach Abzug des bayerischen Beitragszuschusses aktualisieren.
@@ -52,8 +54,8 @@ aktualisiert werden.
       echte Situationen in Kindergarten und Schule authentisch zeigt.
 - [ ] Die derzeitigen Fotos schrittweise durch die neuen Aufnahmen ersetzen und dabei Zuschnitt,
       Auflösung, Lichtstimmung und Alternativtexte gemeinsam prüfen.
-- [ ] Vor jeder Veröffentlichung von Personenfotos die erforderlichen Einwilligungen und den erlaubten
-      Verwendungsumfang bestätigen.
+- [x] Die erforderlichen Einwilligungen und der erlaubte Verwendungsumfang für alle derzeit
+      veröffentlichten Teamfotos sind bestätigt.
 - [ ] Nach dem Fototausch Social-Share-Grafik und dokumentierte Desktop- und Mobilansichten erneuern.
 
 ## Betrieb und Weiterentwicklung
@@ -65,5 +67,11 @@ aktualisiert werden.
 - [ ] Qualität von Familienanfragen und Bewerbungen ohne Webtracking regelmäßig qualitativ auswerten.
 - [x] Pages CMS als begrenzte Git-basierte Redaktionsoberfläche für operative Inhalte einführen; die
       Inhalte bleiben im Repository und werden beim Astro-Build validiert.
+- [x] Die Redaktionsoberfläche für Nathanael vereinfachen: Stammdaten auf sechs kurze Seiten teilen,
+      neue Inhalte als Entwurf anlegen, Auswahlfelder begrenzen und technische Telefon- sowie
+      PDF-Angaben automatisch erzeugen.
 - [ ] Weitere Iterationen der Gemeinschaftsprinzipien nur nach geklärtem Beschlussstand und mit
       nachvollziehbarer Versionierung veröffentlichen.
+- [ ] Nach dem Fünf-Säulen-Treffen im Herbst die Prinzipien-Verlinkungen wieder aktivieren. Die Seite
+      [Unsere Prinzipien](https://montessori-allgaeu.de/gemeinschaft/prinzipien/) ist bereits
+      vorhanden; nur die Verlinkungen in der Website müssen wieder ergänzt werden.

@@ -2,5 +2,5 @@ name: Kerstin Felgenhauer
 role: Pädagogisches Team
 group: Tertia
 image: ../../assets/images/team/kerstin-felgenhauer.webp
-published: true
-order: 10
+status: published
+position: 10

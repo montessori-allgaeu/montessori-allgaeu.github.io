@@ -17,7 +17,7 @@ const faqs = [
   {
     question: "Was passiert, wenn ein Kind nicht arbeiten will?",
     answer:
-      "Wir schauen zuerst genau hin: Fehlt Sicherheit, Beziehung, Orientierung, Fähigkeit, Interesse oder passende Herausforderung? Pädagog:innen geben Impulse, begrenzen Ausweichen und vereinbaren konkrete nächste Schritte. Selbstbestimmung bedeutet nicht, ein Kind sich selbst zu überlassen.",
+      "Wir schauen zuerst genau hin: Fehlt Sicherheit, Beziehung, Orientierung, Fähigkeit, Interesse oder passende Herausforderung? Pädagog:innen geben Impulse, lenken zurück zur Aufgabe und vereinbaren konkrete nächste Schritte. Selbstbestimmung bedeutet nicht, ein Kind sich selbst zu überlassen.",
   },
   {
     question: "Lehnt ihr Leistung ab?",
@@ -27,7 +27,7 @@ const faqs = [
   {
     question: "Gibt es Noten und welche Abschlüsse sind möglich?",
     answer:
-      "Im Alltag stehen Beobachtung, Lernentwicklung und konkrete Rückmeldung im Vordergrund. Für anerkannte Abschlüsse gelten staatliche Anforderungen. Möglich sind je nach individuellem Weg der erfolgreiche oder qualifizierende Mittelschulabschluss und der mittlere Schulabschluss über eine kooperierende staatliche Schule. Nach ihrer Zeit bei uns wechseln viele Jugendliche auf eine weiterführende Schule – zum Beispiel auf die MOS Allgäu, die Montessori-Fachoberschule für Gestaltung in Kempten, oder auf ein Gymnasium. Je nach Schulart, Abschluss und individuellem Weg kann dafür ein Übergangsjahr sinnvoll oder erforderlich sein. Eine bestimmte Note oder Regelschulzeit ist nicht unser oberster Maßstab.",
+      "Im Alltag stehen Beobachtung, Lernentwicklung und konkrete Rückmeldung im Vordergrund. An der Monte können Jugendliche zwei staatlich anerkannte Abschlüsse erwerben: nach der 9. Jahrgangsstufe den qualifizierenden Abschluss der Mittelschule („Quali“) und nach der 10. Jahrgangsstufe den mittleren Schulabschluss an der Mittelschule (oft „Mittlere Reife“ genannt). Die Prüfungen legen sie als externe Bewerber:innen an einer kooperierenden staatlichen Mittelschule ab. Danach stehen verschiedene weiterführende Wege offen, zum Beispiel die Montessori-Fachoberschule für Gestaltung in Kempten oder ein Gymnasium. Je nach Schulart und individuellem Weg kann dafür ein Übergangsjahr sinnvoll oder erforderlich sein. Eine bestimmte Note oder Regelschulzeit ist nicht unser oberster Maßstab.",
   },
   {
     question: "Ist die Monte auch für sehr schnelle oder besonders interessierte Kinder geeignet?",
@@ -47,7 +47,7 @@ const faqs = [
   {
     question: "Wechselt mein Kind aus dem Kindergarten automatisch in die Schule?",
     answer:
-      "Der langfristige Wechsel ist unsere klare gemeinsame Absicht und ein wichtiger Grund, weshalb wir Kindergartenfamilien aufnehmen. Eine rechtlich automatische Garantie ist er nicht. Entwicklung, Gruppensituation und der fortbestehende Fit werden gemeinsam betrachtet.",
+      "Der langfristige Wechsel ist unsere klare gemeinsame Absicht und ein wichtiger Grund, weshalb wir Kindergartenfamilien aufnehmen. Eine rechtlich automatische Garantie ist er nicht. Entwicklung und Gruppensituation sowie die Frage, ob Kind, Familie und Schule weiterhin gut zusammenpassen, werden gemeinsam betrachtet.",
   },
   {
     question: "Nehmt ihr Kinder als Quereinsteiger:innen auf?",
@@ -78,10 +78,10 @@ const faqs = [
   />
 
   <section class="section">
-    <div class="container container--reading faq-list">
+    <div class="container container--reading faq-list" data-faq-list>
       {
-        faqs.map((faq, index) => (
-          <details open={index === 0}>
+        faqs.map((faq) => (
+          <details name="haeufige-fragen">
             <summary>{faq.question}</summary>
             <div class="faq-list__answer">
               <p>{faq.answer}</p>
@@ -100,4 +100,92 @@ const faqs = [
     secondaryHref="/kennenlernen/"
     secondaryLabel="Zurück zum Kennenlernen"
   />
+
+  <script>
+    const faqLists = document.querySelectorAll<HTMLElement>("[data-faq-list]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    for (const faqList of faqLists) {
+      const questions = Array.from(faqList.querySelectorAll<HTMLDetailsElement>("details"));
+      const animations = new WeakMap<HTMLDetailsElement, Animation>();
+      const intendedStates = new WeakMap<HTMLDetailsElement, boolean>();
+
+      const measureHeight = (question: HTMLDetailsElement, open: boolean) => {
+        const previousOpen = question.open;
+        const previousHeight = question.style.height;
+
+        question.style.removeProperty("height");
+        question.open = open;
+        const height = question.getBoundingClientRect().height;
+        question.open = previousOpen;
+        question.style.height = previousHeight;
+
+        return height;
+      };
+
+      const finish = (question: HTMLDetailsElement, open: boolean, animation?: Animation) => {
+        if (animation && animations.get(question) !== animation) return;
+
+        question.open = open;
+        question.style.removeProperty("height");
+        question.style.removeProperty("overflow");
+        question.removeAttribute("data-faq-motion");
+        animations.delete(question);
+      };
+
+      const transition = (question: HTMLDetailsElement, open: boolean) => {
+        const currentHeight = question.getBoundingClientRect().height;
+        animations.get(question)?.cancel();
+        intendedStates.set(question, open);
+
+        if (reducedMotion.matches) {
+          finish(question, open);
+          return;
+        }
+
+        const targetHeight = measureHeight(question, open);
+
+        // Keep the answer rendered while it collapses so both directions can animate.
+        question.open = true;
+        question.style.height = `${currentHeight}px`;
+        question.style.overflow = "hidden";
+        question.dataset.faqMotion = open ? "opening" : "closing";
+
+        const animation = question.animate(
+          { height: [`${currentHeight}px`, `${targetHeight}px`] },
+          { duration: 240, easing: "cubic-bezier(0.4, 0, 0.2, 1)" },
+        );
+
+        animations.set(question, animation);
+        animation.addEventListener("finish", () => finish(question, open, animation), {
+          once: true,
+        });
+      };
+
+      for (const question of questions) {
+        const summary = question.querySelector("summary");
+        if (!summary) continue;
+
+        // The native name keeps the accordion exclusive if JavaScript is unavailable.
+        question.removeAttribute("name");
+        summary.addEventListener("click", (event) => {
+          event.preventDefault();
+          const willOpen = !(intendedStates.get(question) ?? question.open);
+
+          if (willOpen) {
+            for (const otherQuestion of questions) {
+              if (
+                otherQuestion !== question &&
+                (intendedStates.get(otherQuestion) ?? otherQuestion.open)
+              ) {
+                transition(otherQuestion, false);
+              }
+            }
+          }
+
+          transition(question, willOpen);
+        });
+      }
+    }
+  </script>
 </BaseLayout>

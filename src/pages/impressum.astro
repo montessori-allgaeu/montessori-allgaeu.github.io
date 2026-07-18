@@ -31,7 +31,7 @@ const { contact } = await getWebsiteSettings();
 
       <h3>Kontakt</h3>
       <p>
-        Telefon: <a href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a><br />
+        Telefon: <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a><br />
         E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a>
       </p>
 

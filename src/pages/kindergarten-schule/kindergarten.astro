@@ -4,12 +4,13 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
+import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 import kindergartenImage from "@/assets/images/generated/kindergarten-arrival.webp";
 import natureImage from "@/assets/images/generated/kindergarten-nature.webp";
 import playgroundImage from "@/assets/images/generated/kindergarten-outdoor.webp";
 
-const { openingHours } = await getWebsiteSettings();
+const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -18,7 +19,7 @@ const { openingHours } = await getWebsiteSettings();
 >
   <PageIntro
     eyebrow="Montessori-Kindergarten"
-    title="Geborgen ankommen. Selbstständig werden."
+    title="Geborgen wachsen. Selbst entdecken."
     intro="Kinder brauchen Beziehung, bevor sie sich öffnen und entdecken können. Deshalb verbinden wir Montessori mit feinfühliger, moderner Entwicklungsbegleitung und viel Zeit in der Natur."
   />
 
@@ -92,8 +93,8 @@ const { openingHours } = await getWebsiteSettings();
   </ImageSplit>
 
   <section class="section section--light">
-    <div class="container grid-2">
-      <div class="image-frame image-frame--landscape">
+    <div class="container grid-2 kindergarten-schedule">
+      <div class="image-frame image-frame--landscape kindergarten-schedule__image">
         <img
           src={playgroundImage.src}
           alt="Kinder spielen selbstständig im naturnahen Außenbereich des Kindergartens"
@@ -101,16 +102,22 @@ const { openingHours } = await getWebsiteSettings();
         />
       </div>
       <div>
-        <p class="eyebrow">Rahmen</p>
-        <h2>Öffnungszeiten</h2>
-        <p class="lead">Unser Kindergarten ist an fünf Tagen geöffnet.</p>
-        <ul class="editorial-list">
-          {openingHours.kindergarten.map((hours) => <li>{hours}</li>)}
-        </ul>
-        <p class="small muted">
-          Buchungszeiten und Beiträge findet ihr auf der Kostenseite. Änderungen geben wir dort
-          transparent bekannt.
-        </p>
+        <p class="eyebrow">Kindergartenjahr {kindergartenClosures.schoolYear}</p>
+        <h2>Öffnungszeiten &amp; Schließtage</h2>
+        <OpeningHoursList entries={openingHours.kindergarten} />
+        <div class="kindergarten-closures">
+          <p>{kindergartenClosures.intro}</p>
+          <ul class="editorial-list">
+            {
+              kindergartenClosures.periods.map(({ label, dates }) => (
+                <li>
+                  <strong>{label}:</strong> {dates}
+                </li>
+              ))
+            }
+          </ul>
+          <p class="small muted">{kindergartenClosures.holidayNote}</p>
+        </div>
       </div>
     </div>
   </section>
@@ -124,3 +131,19 @@ const { openingHours } = await getWebsiteSettings();
     secondaryLabel="Weiter zur Schule"
   />
 </BaseLayout>
+
+<style>
+  @media (min-width: 841px) {
+    .kindergarten-schedule {
+      align-items: stretch;
+    }
+
+    .kindergarten-schedule__image {
+      aspect-ratio: auto;
+    }
+  }
+
+  .kindergarten-closures {
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+  }
+</style>

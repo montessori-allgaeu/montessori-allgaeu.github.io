@@ -25,7 +25,7 @@ const { contact } = await getWebsiteSettings();
         {contact.address.street}, {`${contact.address.postalCode} ${contact.address.locality}`}<br
         />
         E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
-        Telefon: <a href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>
+        Telefon: <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a>
       </p>
 
       <h2>2. Hosting über GitHub Pages</h2>

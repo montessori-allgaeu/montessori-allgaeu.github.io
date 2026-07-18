@@ -10,10 +10,8 @@ const { eyebrow, title, intro } = Astro.props;
 
 <section class="page-intro">
   <div class="container page-intro__grid">
-    <div>
-      <p class="eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
-    </div>
+    <p class="eyebrow page-intro__eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
     <div class="page-intro__aside">
       <p class="lead">{intro}</p>
       <slot />

@@ -2,5 +2,5 @@ name: Miriam Joseph
 role: Pädagogisches Team
 group: Fach- & Förderteam
 image: ../../assets/images/team/miriam-joseph.webp
-published: true
-order: 30
+status: published
+position: 30

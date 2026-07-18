@@ -1,0 +1,33 @@
+---
+interface OpeningHoursEntry {
+  days: string;
+  hours: string;
+  details: string[];
+}
+
+interface Props {
+  entries: OpeningHoursEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<ul class="editorial-list opening-hours-list">
+  {
+    entries.map(({ days, hours, details }) => (
+      <li>
+        <strong>{days}:</strong> {hours}
+        {details.map((detail) => (
+          <span class="opening-hours-list__detail">– {detail}</span>
+        ))}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .opening-hours-list__detail {
+    display: block;
+    margin-top: 0.25rem;
+  }
+</style>

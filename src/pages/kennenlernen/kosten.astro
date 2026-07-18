@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
 
 const { costs } = await getWebsiteSettings();
@@ -171,14 +172,17 @@ const { costs } = await getWebsiteSettings();
         <ul class="editorial-list">
           {costs.membership.rows.map((row) => <li>{row}</li>)}
         </ul>
-        <p>{costs.membership.additionalNote}</p>
+        <TextLink
+          href="/downloads/beitrittserklaerung-verein.pdf"
+          label="Beitrittserklärung herunterladen"
+        />
       </div>
     </div>
   </section>
 
   <CTASection
     title="Kosten sollen vor der Entscheidung klar sein."
-    text="Wenn eine Zahl für eure Situation unklar ist, fragt bitte früh nach. Wir möchten, dass eine Zusage auf vollständiger und realistischer Information beruht."
+    text="Falls noch etwas unklar ist, meldet euch gerne bei uns. Wir helfen euch weiter."
     primaryHref="/kontakt/"
     primaryLabel="Frage an uns stellen"
     secondaryHref="/downloads/"

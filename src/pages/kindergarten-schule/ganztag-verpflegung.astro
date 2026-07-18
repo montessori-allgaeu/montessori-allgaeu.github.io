@@ -7,7 +7,7 @@ import { getWebsiteSettings } from "@/data/content";
 import outdoorsImage from "@/assets/images/generated/ganztag-afternoon.webp";
 import mealImage from "@/assets/images/generated/ganztag-meal.webp";
 
-const { meals, openingHours } = await getWebsiteSettings();
+const { meals } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -15,9 +15,9 @@ const { meals, openingHours } = await getWebsiteSettings();
   description="Offene Ganztagsschule und frisches Mittagessen an der Montessori-Schule Allgäu: ein verlässlicher Rahmen mit Zeit für Beziehung, Bewegung und Projekte."
 >
   <PageIntro
-    eyebrow="Ganztag & Verpflegung"
+    eyebrow="Ganztagsschule & Verpflegung"
     title="Ein ganzer Tag darf sich auch ganz anfühlen."
-    intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unser Ganztag ist deshalb mehr als Betreuung."
+    intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unsere Ganztagsschule ist deshalb mehr als Betreuung."
   />
 
   <ImageSplit
@@ -28,13 +28,13 @@ const { meals, openingHours } = await getWebsiteSettings();
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
-      Die offene Ganztagsschule bietet {openingHours.ganztag} einen verlässlichen Nachmittagsrahmen. Kinder
-      essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und werden von vertrauten Erwachsenen
-      begleitet.
+      Die offene Ganztagsschule bietet an Schultagen einen verlässlichen Nachmittagsrahmen. Kinder
+      essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und werden von vertrauten
+      Erwachsenen begleitet.
     </p>
     <p>
       Konkrete Buchungszeiten, Plätze und aktuelle Konditionen besprecht ihr mit dem Schulbüro. Für
-      Kinder im offenen Ganztag ist das gemeinsame Mittagessen verbindlicher Teil des Angebots.
+      Kinder in der offenen Ganztagsschule ist das gemeinsame Mittagessen Teil des Angebots.
     </p>
   </ImageSplit>
 
@@ -48,12 +48,9 @@ const { meals, openingHours } = await getWebsiteSettings();
     <p class="eyebrow">Mittagessen</p>
     <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
     <p>
-      {meals.schedule} liefert „{meals.provider}“ ein frisch zubereitetes Mittagessen. Wo möglich,
-      werden regionale und saisonale Zutaten verwendet. Auch Kinder außerhalb des Ganztags und
-      Menschen aus der Monte-Gemeinschaft können sich nach Voranmeldung beteiligen.
+      „{meals.provider}“ liefert ein frisch zubereitetes Mittagessen. Wo möglich, werden regionale
+      und saisonale Zutaten verwendet.
     </p>
-    <p><strong>Aktueller Richtwert:</strong> {meals.price}.</p>
-    <p class="small muted">{meals.note}</p>
   </ImageSplit>
 
   <section class="section">

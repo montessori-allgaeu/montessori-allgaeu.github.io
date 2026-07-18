@@ -1,0 +1,26 @@
+# Website-Inhalte bearbeiten
+
+Direkter Einstieg: [Website-Inhalte bearbeiten](https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main)
+
+Diesen Link im Browser als Favorit speichern und zum Beispiel **Website-Inhalte bearbeiten** nennen.
+
+Die gleiche Kurzanleitung steht nach der Veröffentlichung auch druckfreundlich unter [montessori-allgaeu.de/redaktion/](https://montessori-allgaeu.de/redaktion/).
+
+## Der sichere Ablauf
+
+1. Den passenden Bereich öffnen: Termine, Stellenangebote, Team, Downloads, Spendenseite oder Stammdaten.
+2. Inhalt anlegen oder ändern.
+3. Neue Termine, Stellen, Personen und Downloads zunächst als **Entwurf – nicht auf Website** speichern.
+4. Angaben im Formular prüfen.
+5. Den Status auf **Veröffentlicht – auf Website** setzen und erneut speichern.
+6. Nach dem automatischen Build die Änderung auf [montessori-allgaeu.de](https://montessori-allgaeu.de) kontrollieren.
+
+## Drei wichtige Regeln
+
+- **Erst Entwurf, dann veröffentlichen.** So kann ein unvollständiger Eintrag nicht versehentlich sichtbar werden.
+- **Zeitbezogene Fakten prüfen.** Termine, Stellen, Kosten, Öffnungszeiten, Rollen und Dokumentstände nur aus einer verbindlichen Quelle übernehmen.
+- **Medien über den Inhalt auswählen.** Teamfotos über **Team** und PDFs über **Downloads** pflegen. Die Bereiche unter **Media** sind vor allem die gemeinsame Dateiablage.
+
+## Wenn etwas schiefgeht
+
+Bei einem Inhaltsfehler den Eintrag wieder auf **Entwurf – nicht auf Website** setzen und speichern. Bei einem technischen Fehler oder einer versehentlich gelöschten Datei die technische Website-Verantwortung informieren; jede Änderung bleibt in Git nachvollziehbar und kann wiederhergestellt werden.

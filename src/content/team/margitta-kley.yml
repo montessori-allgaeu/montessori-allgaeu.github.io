@@ -2,5 +2,5 @@ name: Margitta Kley
 role: Pädagogisches Team
 group: Primaria
 image: ../../assets/images/team/margitta-kley.webp
-published: true
-order: 40
+status: published
+position: 40

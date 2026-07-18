@@ -6,6 +6,7 @@ const siteUrl = "https://montessori-allgaeu.de";
 const legacyPaths = new Set(
   Object.keys(legacyRedirects).map((path) => new URL(`/${path}/`, siteUrl).pathname),
 );
+const hiddenPaths = new Set([...legacyPaths, "/redaktion/"]);
 
 export default defineConfig({
   site: siteUrl,
@@ -13,7 +14,7 @@ export default defineConfig({
   trailingSlash: "always",
   integrations: [
     sitemap({
-      filter: (page) => !legacyPaths.has(new URL(page).pathname),
+      filter: (page) => !hiddenPaths.has(new URL(page).pathname),
     }),
   ],
   vite: {

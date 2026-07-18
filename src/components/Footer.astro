@@ -17,8 +17,8 @@ const { contact } = await getWebsiteSettings();
             contact.address.city
           }</span
         >
-        <a href={`tel:${contact.phone}`}
-          ><Phone size={16} aria-hidden="true" />{contact.phoneDisplay}</a
+        <a href={`tel:${contact.phoneHref}`}
+          ><Phone size={16} aria-hidden="true" />{contact.phone}</a
         >
         <a href={`mailto:${contact.email}`}><Mail size={16} aria-hidden="true" />{contact.email}</a>
       </address>

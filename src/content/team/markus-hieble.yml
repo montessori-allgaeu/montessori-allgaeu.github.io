@@ -2,5 +2,5 @@ name: Markus Hieble
 role: Pädagogisches Team
 group: Fach- & Förderteam
 image: ../../assets/images/team/markus-hieble.webp
-published: true
-order: 10
+status: published
+position: 10

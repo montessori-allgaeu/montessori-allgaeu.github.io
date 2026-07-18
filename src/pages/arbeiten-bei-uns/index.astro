@@ -102,7 +102,7 @@ const { contact } = await getWebsiteSettings();
     light
     position="center 44%"
   >
-    <p class="eyebrow">Unser Fit</p>
+    <p class="eyebrow">Wen wir suchen</p>
     <h2>Du passt zu uns, wenn du neugierig und klar bleibst.</h2>
     <ul class="editorial-list">
       <li>Du willst Montessori leben – nicht nur Material benutzen.</li>
@@ -125,9 +125,9 @@ const { contact } = await getWebsiteSettings();
             <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
               <h3>{job.title}</h3>
               <p>
-                {job.area}
+                {job.areaLabel}
                 <br />
-                {job.schedule}
+                {job.scheduleLabel}
               </p>
               <ArrowRight size={24} aria-hidden="true" />
             </a>
@@ -147,8 +147,6 @@ const { contact } = await getWebsiteSettings();
     text="Hospitationen und unverbindliche Kennenlerngespräche sind möglich. Schreib uns, welche Rolle dich interessiert und weshalb Montessori für dich wichtig ist."
     primaryHref={`mailto:${contact.email}?subject=Kennenlernen%20als%20P%C3%A4dagog%3Ain`}
     primaryLabel="Kennenlerngespräch anfragen"
-    secondaryHref="/gemeinschaft/prinzipien/"
-    secondaryLabel="Prinzipien lesen"
   />
 </BaseLayout>
 

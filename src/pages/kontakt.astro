@@ -2,6 +2,7 @@
 import { Mail, MapPin, Phone } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
+import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 
 const { contact, openingHours } = await getWebsiteSettings();
@@ -32,8 +33,8 @@ const mapQuery = encodeURIComponent(
           >
         </p>
         <p>
-          <a href={`tel:${contact.phone}`}
-            ><Phone size={18} aria-hidden="true" />{contact.phoneDisplay}</a
+          <a href={`tel:${contact.phoneHref}`}
+            ><Phone size={18} aria-hidden="true" />{contact.phone}</a
           >
         </p>
         <h3>Öffnungszeiten</h3>
@@ -51,14 +52,12 @@ const mapQuery = encodeURIComponent(
           >
         </p>
         <p>
-          <a href={`tel:${contact.kindergartenPhone}`}
-            ><Phone size={18} aria-hidden="true" />{contact.kindergartenPhoneDisplay}</a
+          <a href={`tel:${contact.kindergartenPhoneHref}`}
+            ><Phone size={18} aria-hidden="true" />{contact.kindergartenPhone}</a
           >
         </p>
         <h3>Öffnungszeiten</h3>
-        <ul class="editorial-list">
-          {openingHours.kindergarten.map((hours) => <li>{hours}</li>)}
-        </ul>
+        <OpeningHoursList entries={openingHours.kindergarten} />
       </article>
     </div>
   </section>

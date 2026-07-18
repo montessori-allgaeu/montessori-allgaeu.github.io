@@ -1,6 +1,6 @@
 title: Pädagogische Fachkraft / Erzieher:in
 area: Kindergarten
-schedule: Vollzeit oder Teilzeit
+scope: Vollzeit oder Teilzeit
 intro: Du willst Kinder aufmerksam, warm und fachlich fundiert begleiten – im Gruppenraum ebenso wie an unseren zwei Waldtagen pro Woche.
 responsibilities:
   - Kinder beobachten, feinfühlig begleiten und ihre Eigenaktivität unterstützen
@@ -10,5 +10,5 @@ profile:
   - Anerkannte Qualifikation als pädagogische Fachkraft
   - Montessorische oder naturpädagogische Erfahrung – oder Lust, sie fundiert aufzubauen
   - Offenes Herz, klare Grenzen und Freude an Reflexion
-published: true
-order: 30
+status: published
+position: 30

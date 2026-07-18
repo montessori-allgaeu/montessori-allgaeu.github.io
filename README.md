@@ -31,7 +31,8 @@ npm run test:e2e
 ## Inhalte pflegen
 
 - Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
-- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/website.yml`
+- Kurzanleitung für Nathanael: [`docs/redaktions-kurzanleitung.md`](docs/redaktions-kurzanleitung.md)
+- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
 - Spendenseite und aktuelle Förderschwerpunkte: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Team: `src/content/team/` und `src/assets/images/team/`
@@ -43,7 +44,7 @@ npm run test:e2e
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Teammitglieder und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
 
 Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
 
