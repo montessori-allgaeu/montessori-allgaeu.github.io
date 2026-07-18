@@ -30,11 +30,11 @@ Termine werden nach Datum sortiert. Bei einem neuen Termin bleibt das Datum bewu
 
 ### Stellenangebote
 
-Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
+Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Einleitung, Hintergrund, Aufgaben, Profil, konkrete Vorteile und die Einladung zur Bewerbung werden je Stelle aus der verbindlichen Anzeige übernommen. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
 
 ### Team
 
-Teammitglieder werden zuerst nach Bereich und dann nach **Position innerhalb des Bereichs** dargestellt. Fotos können als JPG, PNG oder WebP über das jeweilige Teammitglied ausgewählt werden; Astro optimiert sie beim Build.
+Für jedes Teammitglied werden unter **Rollen und Bereiche** ein oder mehrere Einsätze gepflegt. So können Leitungen sowohl im Bereich **Leitung** als auch in ihrer pädagogischen Rolle erscheinen. Primaria und Sekundaria werden zusätzlich in **Klassenleitungen** und **Pädagogische Assistenzen** gegliedert. Die Position wird je Einsatz vergeben; `10` steht weiter oben als `20`. Fotos können als JPG, PNG oder WebP über das jeweilige Teammitglied ausgewählt werden; Astro optimiert sie beim Build. Ohne Foto zeigt die Website vorübergehend die Initialen.
 
 ### Downloads
 

@@ -1,6 +1,7 @@
 name: Christina Fink
-role: Kinderpflegerin
-group: Kindergarten
+assignments:
+  - group: Kindergarten
+    role: Kinderpflegerin
+    position: 30
 image: ../../assets/images/team/christina-fink.webp
 status: published
-position: 20

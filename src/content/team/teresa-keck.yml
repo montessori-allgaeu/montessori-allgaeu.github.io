@@ -1,6 +1,7 @@
 name: Teresa Keck
-role: Pädagogisches Team
-group: Primaria
+assignments:
+  - group: Primaria
+    section: Pädagogische Assistenzen
+    position: 30
 image: ../../assets/images/team/teresa-keck.webp
 status: published
-position: 50

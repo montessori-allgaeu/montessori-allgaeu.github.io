@@ -1,6 +1,6 @@
 name: Nicola Müller
-role: Pädagogisches Team
-group: Tertia
+assignments:
+  - group: Fach- & Förderteam
+    position: 60
 image: ../../assets/images/team/nicola-mueller.webp
 status: published
-position: 30

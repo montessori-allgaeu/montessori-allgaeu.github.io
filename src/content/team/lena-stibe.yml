@@ -1,6 +1,10 @@
 name: Lena Stibe
-role: Kindergartenleitung · Gruppenleitung
-group: Leitung
+assignments:
+  - group: Leitung
+    role: Kindergartenleitung
+    position: 30
+  - group: Kindergarten
+    role: Gruppenleitung
+    position: 10
 image: ../../assets/images/team/lena-stibe.webp
 status: published
-position: 30

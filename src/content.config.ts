@@ -2,10 +2,39 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
-const publicationFields = {
+const publicationStatusField = {
   status: z.enum(["draft", "published"]).default("draft"),
+};
+
+const publicationFields = {
+  ...publicationStatusField,
   position: z.number().int().positive(),
 };
+
+const teamAssignmentFields = {
+  role: z.string().min(1).optional(),
+  position: z.number().int().positive(),
+};
+
+const teamAssignment = z.discriminatedUnion("group", [
+  z.object({
+    group: z.enum(["Primaria", "Sekundaria"]),
+    section: z.enum(["Klassenleitungen", "Pädagogische Assistenzen"]),
+    ...teamAssignmentFields,
+  }),
+  z.object({
+    group: z.enum([
+      "Leitung",
+      "Kindergarten",
+      "Tertia",
+      "Fach- & Förderteam",
+      "Verwaltung",
+      "Vorstand",
+    ]),
+    section: z.never().optional(),
+    ...teamAssignmentFields,
+  }),
+]);
 
 const jobs = defineCollection({
   loader: glob({ pattern: "**/*.yml", base: "./src/content/jobs" }),
@@ -16,8 +45,12 @@ const jobs = defineCollection({
     scope: z.string().min(1),
     start: z.string().min(1).optional(),
     intro: z.string().min(1),
+    about: z.array(z.string().min(1)).min(1),
     responsibilities: z.array(z.string().min(1)).min(1),
     profile: z.array(z.string().min(1)).min(1),
+    benefits: z.array(z.string().min(1)).min(1),
+    closingTitle: z.string().min(1),
+    closingText: z.string().min(1),
     ...publicationFields,
   }),
 });
@@ -27,17 +60,9 @@ const team = defineCollection({
   schema: ({ image }) =>
     z.object({
       name: z.string().min(1),
-      role: z.string().min(1),
-      group: z.enum([
-        "Leitung",
-        "Kindergarten",
-        "Primaria",
-        "Sekundaria",
-        "Tertia",
-        "Fach- & Förderteam",
-      ]),
+      assignments: z.array(teamAssignment).min(1),
       image: image().optional(),
-      ...publicationFields,
+      ...publicationStatusField,
     }),
 });
 

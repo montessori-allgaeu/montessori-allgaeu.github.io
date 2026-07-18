@@ -1,6 +1,7 @@
 name: Hannah Meißner
-role: Auszubildende
-group: Kindergarten
+assignments:
+  - group: Kindergarten
+    role: Erzieherin in Ausbildung
+    position: 40
 image: ../../assets/images/team/hannah-meissner.webp
 status: published
-position: 30

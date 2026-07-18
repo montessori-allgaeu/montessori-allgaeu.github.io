@@ -1,6 +1,11 @@
 name: Stefanie Lorinser Kefer
-role: Stellvertretende pädagogische Schulleitung · Klassenleitung Primaria C
-group: Leitung
+assignments:
+  - group: Leitung
+    role: Stv. Schulleitung
+    position: 20
+  - group: Primaria
+    section: Klassenleitungen
+    role: Primaria C
+    position: 30
 image: ../../assets/images/team/stefanie-lorinser-kefer.webp
 status: published
-position: 20

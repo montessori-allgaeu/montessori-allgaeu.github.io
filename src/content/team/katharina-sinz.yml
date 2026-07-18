@@ -1,6 +1,7 @@
 name: Katharina Sinz
-role: Pädagogisches Team
-group: Sekundaria
+assignments:
+  - group: Sekundaria
+    section: Pädagogische Assistenzen
+    position: 10
 image: ../../assets/images/team/katharina-sinz.webp
 status: published
-position: 30

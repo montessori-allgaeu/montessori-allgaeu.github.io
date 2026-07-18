@@ -1,6 +1,8 @@
 name: Aaron Feßler
-role: Klassenleitung Sekundaria B
-group: Sekundaria
+assignments:
+  - group: Sekundaria
+    section: Klassenleitungen
+    role: Sekundaria B
+    position: 20
 image: ../../assets/images/team/aaron-fessler.webp
 status: published
-position: 20

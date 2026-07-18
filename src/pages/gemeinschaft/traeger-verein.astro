@@ -1,8 +1,28 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
-import CTASection from "@/components/CTASection.astro";
-import TextLink from "@/components/TextLink.astro";
+import { getTeam } from "@/data/content";
+
+const board = (await getTeam())
+  .flatMap((member) =>
+    member.assignments
+      .filter((assignment) => assignment.group === "Vorstand")
+      .map((assignment) => ({ member, assignment })),
+  )
+  .sort(
+    (a, b) =>
+      a.assignment.position - b.assignment.position ||
+      a.member.name.localeCompare(b.member.name, "de"),
+  );
+
+const getInitials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 ---
 
 <BaseLayout
@@ -11,121 +31,391 @@ import TextLink from "@/components/TextLink.astro";
 >
   <PageIntro
     eyebrow="Träger & Verein"
-    title="Die Schule und der Kindergarten sind wir."
+    title="Die Monte sind wir."
     intro="Nicht der Staat, kein Konzern und kein einzelner Eigentümer trägt die Monte. Träger ist ein gemeinnütziger Verein, dessen Mitglieder Verantwortung gemeinsam übernehmen."
   />
 
-  <section class="section">
-    <div class="container grid-2">
-      <div>
-        <p class="eyebrow">Monte e.V.</p>
-        <h2>Eltern tragen die Organisation demokratisch.</h2>
-      </div>
-      <div>
-        <p class="lead">
-          Alle Elternfamilien werden Mitglied im Verein. Die Mitgliederversammlung wählt den
-          Vorstand, entscheidet über grundlegende Fragen und schafft damit eine Nähe, die in einem
-          großen staatlichen System kaum möglich ist.
-        </p>
-        <p>
-          Der vollständige Name lautet „Monte-Verein zur Förderung der Montessori-Pädagogik im
-          Grenzgebiet Oberallgäu/Westallgäu und Bregenzerwald (Österreich) e.V.“ Auch Menschen ohne
-          Kind in der Monte können Mitglied werden und unsere Arbeit unterstützen.
-        </p>
-        <TextLink
-          href="/downloads/beitrittserklaerung-verein.pdf"
-          label="Beitrittserklärung herunterladen"
-        />
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--light">
+  <section class="section section--compact association-section">
     <div class="container">
-      <div class="section-heading">
-        <p class="eyebrow">Fünf Säulen</p>
-        <h2>Verantwortung ist verteilt – nicht diffus.</h2>
+      <div class="grid-2 association-intro">
+        <div>
+          <p class="eyebrow">Monte e.V.</p>
+          <h2>Gemeinnützig getragen. Demokratisch gestaltet.</h2>
+        </div>
+        <div>
+          <p class="lead">
+            Alle Elternfamilien werden Mitglied im Verein. So tragen diejenigen die Organisation,
+            deren Kinder in der Monte lernen und wachsen.
+          </p>
+          <p>
+            Auch Menschen ohne Kind in Kindergarten oder Schule können Mitglied werden und die
+            gemeinnützige Arbeit unterstützen.
+          </p>
+        </div>
       </div>
-      <div class="editorial-cards">
-        <article class="editorial-card">
-          <p class="eyebrow">01</p><h3>Verein & Vorstand</h3><p>
-            Trägt rechtliche, strategische und wirtschaftliche Gesamtverantwortung.
-          </p>
+
+      <div class="numbered-points association-facts" aria-label="Der Monte e.V. in drei Punkten">
+        <article class="numbered-point">
+          <span class="numbered-point__number">01</span>
+          <h3>Gemeinnütziger Träger</h3>
+          <p>Der Verein trägt Kindergarten und Schule – nicht der Staat oder ein Eigentümer.</p>
         </article>
-        <article class="editorial-card">
-          <p class="eyebrow">02</p><h3>Eltern & Elternbeirat</h3><p>
-            Bringen Perspektiven, Mitarbeit und gemeinschaftliche Verantwortung ein.
-          </p>
+        <article class="numbered-point">
+          <span class="numbered-point__number">02</span>
+          <h3>Mitglieder entscheiden</h3>
+          <p>Die Mitgliederversammlung wählt den Vorstand und entscheidet grundlegende Fragen.</p>
         </article>
-        <article class="editorial-card">
-          <p class="eyebrow">03</p><h3>Schüler:innen</h3><p>
-            Gestalten über Klassenrat, Versammlung und Sprecher:innen ihr Lernumfeld mit.
-          </p>
-        </article>
-        <article class="editorial-card">
-          <p class="eyebrow">04</p><h3>Pädagogisches Team</h3><p>
-            Verantwortet Pädagogik, Beobachtung, Begleitung und vorbereitete Umgebung.
-          </p>
-        </article>
-        <article class="editorial-card">
-          <p class="eyebrow">05</p><h3>Verwaltung</h3><p>
-            Sichert gemeinsam mit der Geschäftsführung verlässliche Abläufe und Ressourcen.
-          </p>
+        <article class="numbered-point">
+          <span class="numbered-point__number">03</span>
+          <h3>Eltern gestalten mit</h3>
+          <p>Verantwortung bleibt persönlich, nah und in der Gemeinschaft verankert.</p>
         </article>
       </div>
+
+      <p class="association-name small muted">
+        Vollständiger Name: Monte-Verein zur Förderung der Montessori-Pädagogik im Grenzgebiet
+        Oberallgäu/Westallgäu und Bregenzerwald (Österreich) e.V.
+      </p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container grid-2">
-      <div>
+  <section class="section board-section">
+    <div class="container">
+      <div class="board-heading">
         <p class="eyebrow">Vorstand</p>
-        <h2>Von den Mitgliedern gewählt.</h2>
-      </div>
-      <div>
-        <ul class="editorial-list">
-          <li><strong>Max Sutter</strong> · Vorsitzender</li>
-          <li><strong>Claudia Alton</strong> · stellvertretende Vorsitzende</li>
-          <li><strong>Markus Lempke</strong> · Schriftführer</li>
-          <li><strong>Daniel Hunold</strong> · Finanzvorstand</li>
-        </ul>
-        <p>
-          Den Vorstand erreicht ihr unter <a href="mailto:vorstand@montessori-allgaeu.de"
-            >vorstand@montessori-allgaeu.de</a
-          >.
+        <h2>Ehrenamtlich tätig. Am Ende verantwortlich.</h2>
+        <p class="lead">
+          Der Vorstand trägt die rechtliche, strategische und wirtschaftliche Gesamtverantwortung
+          für den Verein – und damit für Kindergarten und Schule.
         </p>
       </div>
+
+      <div class="responsibility-brief">
+        <article>
+          <p class="eyebrow">Der Vorstand</p>
+          <h3>Gibt Auftrag und Richtung.</h3>
+          <p>
+            Er setzt die Leitungen ein, klärt ihren Auftrag und entscheidet über grundlegende Fragen
+            der langfristigen Entwicklung.
+          </p>
+        </article>
+        <article>
+          <p class="eyebrow">Die Leitungen</p>
+          <h3>Führen den Alltag.</h3>
+          <p>
+            Sie führen Kindergarten und Schule pädagogisch und organisatorisch. Der Vorstand hält
+            Abstand vom Tagesgeschäft und greift nur ein, wenn Sicherheit, Stabilität oder Zukunft
+            der Monte es erfordern.
+          </p>
+        </article>
+      </div>
+
+      <div class="board-members">
+        {
+          board.map(({ member, assignment }) => (
+            <article class="board-member">
+              <div
+                class={`board-member__image${member.image ? "" : " board-member__image--placeholder"}`}
+              >
+                {member.image ? (
+                  <Image
+                    src={member.image}
+                    alt={`Porträt von ${member.name}`}
+                    widths={[300, 480, 640]}
+                    sizes="(max-width: 620px) 50vw, 25vw"
+                  />
+                ) : (
+                  <span class="board-member__initials" aria-hidden="true">
+                    {getInitials(member.name)}
+                  </span>
+                )}
+              </div>
+              <h3>{member.name}</h3>
+              {assignment.role && <p>{assignment.role}</p>}
+            </article>
+          ))
+        }
+      </div>
+      <p class="board-contact">
+        Den ehrenamtlichen Vorstand erreicht ihr unter <a
+          href="mailto:vorstand@montessori-allgaeu.de">vorstand@montessori-allgaeu.de</a
+        >.
+      </p>
     </div>
   </section>
 
-  <section class="section section--terracotta">
-    <div class="container grid-2">
-      <div>
-        <p class="eyebrow">Mitgliedsbeitrag</p><h2>
-          Klein im Betrag. Grundlegend in der Bedeutung.
-        </h2>
+  <section class="section section--light responsibility-section">
+    <div class="container">
+      <div class="grid-2 responsibility-heading">
+        <div>
+          <p class="eyebrow">Zusammenspiel</p>
+          <h2>Verantwortung hat klare Orte.</h2>
+        </div>
+        <p class="lead">
+          Unterschiedliche Gruppen tragen unterschiedliche Aufgaben. Klare Zuständigkeiten schaffen
+          Verlässlichkeit; Austausch und Rückmeldung halten die Monte gemeinsam lernfähig.
+        </p>
       </div>
+
+      <div class="responsibility-map" aria-label="Die fünf Säulen der Monte">
+        <div class="responsibility-map__group">
+          <p class="responsibility-map__label">Verantwortung und Führung</p>
+          <div class="responsibility-map__row responsibility-map__row--primary">
+            <article>
+              <span>01</span>
+              <h3>Verein & Vorstand</h3>
+              <p>Trägt die rechtliche, strategische und wirtschaftliche Gesamtverantwortung.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Pädagogisches Team & Leitungen</h3>
+              <p>Verantwortet Pädagogik, Beobachtung, Begleitung und den Alltag.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Verwaltung & Geschäftsführung</h3>
+              <p>Sichert verlässliche Abläufe, Ressourcen und organisatorische Führung.</p>
+            </article>
+          </div>
+        </div>
+        <div class="responsibility-map__group">
+          <p class="responsibility-map__label">Mitgestaltung und Rückmeldung</p>
+          <div class="responsibility-map__row responsibility-map__row--participation">
+            <article>
+              <span>04</span>
+              <h3>Eltern & Elternbeirat</h3>
+              <p>Bringen Perspektiven, Mitarbeit und gemeinschaftliche Verantwortung ein.</p>
+            </article>
+            <article>
+              <span>05</span>
+              <h3>Schüler:innen</h3>
+              <p>Gestalten über Klassenrat, Versammlung und Sprecher:innen ihr Lernumfeld mit.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--terracotta membership-section">
+    <div class="container grid-2 membership-grid">
       <div>
+        <p class="eyebrow">Mitglied werden</p>
+        <h2>Mittragen beginnt mit der Mitgliedschaft.</h2>
+        <p>
+          Als Mitglied stärkst du die demokratische und gemeinnützige Grundlage der Monte. Darüber
+          hinaus kannst du dich als Elternteil einbringen oder unsere Arbeit mit einer Spende
+          unterstützen.
+        </p>
+      </div>
+      <div class="membership-actions">
+        <p class="membership-actions__label">Jährlicher Mitgliedsbeitrag</p>
         <ul class="editorial-list membership-list">
           <li>Familien: 50 € jährlich</li>
           <li>Einzelpersonen: 40 € jährlich</li>
           <li>Alleinerziehende: 30 € jährlich</li>
         </ul>
+        <div class="button-row">
+          <a class="button button--light" href="/downloads/beitrittserklaerung-verein.pdf">
+            Beitrittserklärung
+          </a>
+          <a class="button membership-button--outline" href="/spenden/">Spenden</a>
+        </div>
       </div>
     </div>
   </section>
-
-  <CTASection
-    title="Du möchtest die Monte unterstützen?"
-    text="Werde Mitglied, bring dich als Elternteil ein oder unterstütze unsere gemeinnützige Arbeit mit einer Spende."
-    primaryHref="/downloads/beitrittserklaerung-verein.pdf"
-    primaryLabel="Mitglied werden"
-    secondaryHref="/spenden/"
-    secondaryLabel="Spenden"
-  />
 </BaseLayout>
 
 <style>
+  .association-section {
+    background: var(--paper-light);
+  }
+
+  .association-intro {
+    padding-bottom: clamp(3rem, 5vw, 4.5rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .association-intro h2 {
+    font-size: clamp(2.35rem, 4.4vw, 4rem);
+  }
+
+  .association-facts {
+    margin-top: 0;
+    padding-top: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .association-facts .numbered-point {
+    padding-bottom: 0;
+  }
+
+  .association-name {
+    max-width: 56rem;
+    margin: clamp(2.5rem, 4vw, 3.5rem) 0 0;
+  }
+
+  .board-heading {
+    max-width: 56rem;
+    margin-bottom: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .board-heading h2 {
+    max-width: 48rem;
+    font-size: clamp(2.75rem, 5vw, 4.75rem);
+  }
+
+  .responsibility-brief {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: clamp(3.5rem, 6vw, 5.5rem);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .responsibility-brief article {
+    padding: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .responsibility-brief article + article {
+    border-left: 1px solid var(--line);
+  }
+
+  .responsibility-brief h3 {
+    font-size: clamp(1.9rem, 3vw, 2.75rem);
+  }
+
+  .responsibility-brief p:last-child {
+    max-width: 32rem;
+    margin-bottom: 0;
+  }
+
+  .board-members {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .board-member__image {
+    aspect-ratio: 3 / 4;
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+    background: var(--line);
+  }
+
+  .board-member__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .board-member__image--placeholder {
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--line) 72%, var(--paper));
+  }
+
+  .board-member__initials {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    color: var(--forest);
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .board-member h3 {
+    margin-bottom: 0.3rem;
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+  }
+
+  .board-member p {
+    margin-bottom: 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .board-contact {
+    margin: 2.5rem 0 0;
+  }
+
+  .responsibility-heading {
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .responsibility-map {
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .responsibility-map__group + .responsibility-map__group {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .responsibility-map__label {
+    margin: 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--terracotta-text);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .responsibility-map__row {
+    display: grid;
+  }
+
+  .responsibility-map__row--primary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .responsibility-map__row--participation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .responsibility-map article {
+    padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1rem, 2.5vw, 2.5rem);
+  }
+
+  .responsibility-map article + article {
+    border-left: 1px solid var(--line);
+  }
+
+  .responsibility-map span {
+    display: block;
+    margin-bottom: 1.5rem;
+    color: var(--terracotta-text);
+    font-family: var(--serif);
+    font-size: 1.25rem;
+  }
+
+  .responsibility-map h3 {
+    font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+  }
+
+  .responsibility-map p {
+    max-width: 28rem;
+    margin-bottom: 0;
+  }
+
+  .membership-grid {
+    align-items: center;
+  }
+
+  .membership-grid > div:first-child > p:last-child {
+    max-width: 34rem;
+    color: rgb(255 253 250 / 0.88);
+  }
+
+  .membership-actions__label {
+    margin-bottom: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
   .membership-list li {
     border-color: rgb(255 253 250 / 0.28);
     color: var(--white);
@@ -133,5 +423,179 @@ import TextLink from "@/components/TextLink.astro";
 
   .membership-list li::before {
     background: var(--white);
+  }
+
+  .membership-button--outline {
+    border-color: rgb(255 253 250 / 0.72);
+    color: var(--white);
+    background: transparent;
+  }
+
+  .membership-button--outline:hover {
+    border-color: var(--white);
+    color: var(--forest);
+    background: var(--white);
+  }
+
+  @media (max-width: 840px) {
+    .responsibility-brief {
+      grid-template-columns: 1fr;
+    }
+
+    .responsibility-brief article {
+      padding-inline: 0;
+    }
+
+    .responsibility-brief article + article {
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .responsibility-map__row--primary {
+      grid-template-columns: 1fr;
+    }
+
+    .responsibility-map__row--participation {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .responsibility-map__row--primary article + article {
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .association-section,
+    .board-section,
+    .responsibility-section,
+    .membership-section {
+      padding-block: 3.5rem;
+    }
+
+    .association-intro {
+      padding-bottom: 2rem;
+    }
+
+    .association-intro h2 {
+      font-size: 2.65rem;
+    }
+
+    .association-facts {
+      padding-top: 1rem;
+    }
+
+    .association-facts .numbered-point {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0 0.75rem;
+      padding: 1.35rem 0;
+    }
+
+    .association-facts .numbered-point__number {
+      grid-row: 1 / 3;
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .association-facts h3 {
+      margin-bottom: 0.4rem;
+      font-size: 1.45rem;
+    }
+
+    .association-facts p {
+      grid-column: 2;
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+
+    .association-name {
+      margin-top: 1.75rem;
+    }
+
+    .board-heading {
+      margin-bottom: 2.25rem;
+    }
+
+    .board-heading h2 {
+      font-size: 2.6rem;
+    }
+
+    .board-heading .lead {
+      font-size: 1.05rem;
+    }
+
+    .responsibility-brief {
+      margin-bottom: 3rem;
+    }
+
+    .responsibility-brief article {
+      padding-block: 1.6rem;
+    }
+
+    .responsibility-brief h3 {
+      font-size: 1.8rem;
+    }
+
+    .board-members {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.7rem 1rem;
+    }
+
+    .board-member h3 {
+      font-size: 1.25rem;
+    }
+
+    .board-member p {
+      font-size: 0.76rem;
+    }
+
+    .board-contact {
+      margin-top: 2rem;
+    }
+
+    .responsibility-heading {
+      margin-bottom: 2.5rem;
+    }
+
+    .responsibility-heading h2 {
+      font-size: 2.6rem;
+    }
+
+    .responsibility-map__row--participation {
+      grid-template-columns: 1fr;
+    }
+
+    .responsibility-map__row--participation article + article {
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .responsibility-map article {
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0 0.75rem;
+      padding: 1.35rem 0;
+    }
+
+    .responsibility-map span {
+      grid-row: 1 / 3;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .responsibility-map h3 {
+      margin-bottom: 0.4rem;
+      font-size: 1.45rem;
+    }
+
+    .responsibility-map article p {
+      grid-column: 2;
+      font-size: 0.9rem;
+    }
+
+    .membership-grid h2 {
+      font-size: 2.7rem;
+    }
   }
 </style>

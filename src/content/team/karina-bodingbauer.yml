@@ -1,6 +1,7 @@
 name: Karina Bodingbauer
-role: Pädagogisches Team
-group: Fach- & Förderteam
+assignments:
+  - group: Fach- & Förderteam
+    role: Sport
+    position: 40
 image: ../../assets/images/team/karina-bodingbauer.webp
 status: published
-position: 40

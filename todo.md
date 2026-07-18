@@ -33,7 +33,9 @@ aktualisiert werden.
 - [ ] Endgültige Aufnahmefristen und Kennenlerntermine für Kindergarten und Schule bestätigen und
       veröffentlichen.
 - [ ] Öffentliche Termine regelmäßig prüfen und abgelaufene Veranstaltungen zeitnah entfernen.
-- [ ] Aktive Stellenangebote, Beschäftigungsumfänge und Bewerbungsadresse bestätigen.
+- [x] Aktive Stellenangebote, Beschäftigungsumfänge und Bewerbungsadresse anhand der am 18. Juli
+      2026 veröffentlichten Anzeigen aktualisieren.
+- [ ] Starttermin der BufDi-Anzeige bestätigen. Die veröffentlichte Vorlage nennt noch den 1. September 2025; bis zur Klärung weist die Website den Start als „Bitte aktuell erfragen“ aus.
 - [ ] Teamnamen, Rollen, Leitungsfunktionen, Vorstand, Aufsichtsbehörden und Kontaktdaten bestätigen.
 - [ ] Spendenkonto, aktuelle Förderschwerpunkte, Ansprechpartner sowie Ablauf und Zuständigkeit für
       Zuwendungsbestätigungen und größere beziehungsweise unternehmerische Unterstützung bestätigen.
@@ -44,16 +46,13 @@ aktualisiert werden.
 
 ## Fotos und Gestaltung
 
-- [x] Die 22 redaktionellen Foto-Slots übergangsweise mit einer konsistenten KI-generierten
-      Bildserie besetzen. Die Motive zeigen ausschließlich fiktive Personen und Räume; die echten
-      Team-Porträts bleiben unverändert.
-- [ ] Vor einer öffentlichen Veröffentlichung festlegen, wie die KI-generierten Übergangsbilder
-      transparent kenntlich gemacht werden. Sie dürfen nicht als dokumentarische Aufnahmen realer
-      Kinder, Mitarbeitender oder Räume der Montessori Allgäu ausgegeben werden.
+- [x] Die 22 redaktionellen Foto-Slots wieder mit den vorhandenen authentischen Aufnahmen der Monte
+      besetzen. Die KI-generierte Übergangsserie wird nicht mehr auf den Inhaltsseiten verwendet;
+      die echten Team-Porträts bleiben unverändert.
 - [ ] Ein professionelles Fotoshooting planen, das konzentrierte Arbeit, Beziehungen, Materialien und
       echte Situationen in Kindergarten und Schule authentisch zeigt.
-- [ ] Die derzeitigen Fotos schrittweise durch die neuen Aufnahmen ersetzen und dabei Zuschnitt,
-      Auflösung, Lichtstimmung und Alternativtexte gemeinsam prüfen.
+- [ ] Die vorhandenen Fotos nach dem Fotoshooting schrittweise durch die neuen Aufnahmen ersetzen
+      und dabei Zuschnitt, Auflösung, Lichtstimmung und Alternativtexte gemeinsam prüfen.
 - [x] Die erforderlichen Einwilligungen und der erlaubte Verwendungsumfang für alle derzeit
       veröffentlichten Teamfotos sind bestätigt.
 - [ ] Nach dem Fototausch Social-Share-Grafik und dokumentierte Desktop- und Mobilansichten erneuern.

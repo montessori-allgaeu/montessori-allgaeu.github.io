@@ -1,6 +1,7 @@
 name: Martina Link
-role: Pädagogisches Team
-group: Sekundaria
+assignments:
+  - group: Sekundaria
+    section: Pädagogische Assistenzen
+    position: 20
 image: ../../assets/images/team/martina-link.webp
 status: published
-position: 40

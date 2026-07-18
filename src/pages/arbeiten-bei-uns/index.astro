@@ -6,8 +6,8 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
-import careersImage from "@/assets/images/generated/careers-pedagogical-space.webp";
-import communityImage from "@/assets/images/generated/careers-team-reflection.webp";
+import careersImage from "@/assets/images/editorial/careers.webp";
+import communityImage from "@/assets/images/editorial/community.webp";
 
 const jobs = await getJobs();
 const { contact } = await getWebsiteSettings();
@@ -27,7 +27,7 @@ const { contact } = await getWebsiteSettings();
 
   <ImageSplit
     image={careersImage}
-    alt="Eine Pädagogin bereitet aufmerksam die Montessori-Lernumgebung vor"
+    alt="Eine Pädagogin begleitet ein Kind aufmerksam beim Lernen"
     position="center 42%"
   >
     <p class="eyebrow">Dein pädagogischer Raum</p>
@@ -83,7 +83,7 @@ const { contact } = await getWebsiteSettings();
       <div>
         <p class="lead">
           Unsere Gehälter liegen in der Regel unter dem staatlichen Niveau und unser Gebäude ist
-          älter. Das sagen wir nicht klein.
+          älter. Das reden wir nicht klein.
         </p>
         <p>
           Wir investieren unsere begrenzten Mittel unter anderem in kleinere Lerngruppen und mehr
@@ -97,7 +97,7 @@ const { contact } = await getWebsiteSettings();
 
   <ImageSplit
     image={communityImage}
-    alt="Vier Pädagoginnen reflektieren gemeinsam eine Beobachtung aus dem Schulalltag"
+    alt="Pädagoginnen und Kinder sitzen in einem gemeinsamen Kreis"
     reverse
     light
     position="center 44%"

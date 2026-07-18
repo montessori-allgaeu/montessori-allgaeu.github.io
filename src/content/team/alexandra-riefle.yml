@@ -1,6 +1,7 @@
 name: Alexandra Riefle
-role: Pädagogisches Team
-group: Primaria
+assignments:
+  - group: Primaria
+    section: Pädagogische Assistenzen
+    position: 10
 image: ../../assets/images/team/alexandra-riefle.webp
 status: published
-position: 20

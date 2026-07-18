@@ -7,18 +7,54 @@ import { getTeam } from "@/data/content";
 
 const team = await getTeam();
 const teamGroups = [
-  "Leitung",
-  "Kindergarten",
-  "Primaria",
-  "Sekundaria",
-  "Tertia",
-  "Fach- & Förderteam",
+  { name: "Leitung", slug: "leitung" },
+  { name: "Kindergarten", slug: "kindergarten" },
+  {
+    name: "Primaria",
+    slug: "primaria",
+    sections: ["Klassenleitungen", "Pädagogische Assistenzen"],
+  },
+  {
+    name: "Sekundaria",
+    slug: "sekundaria",
+    sections: ["Klassenleitungen", "Pädagogische Assistenzen"],
+  },
+  { name: "Tertia", slug: "tertia" },
+  { name: "Fach- & Förderteam", slug: "fach-foerderteam" },
+  { name: "Verwaltung", slug: "verwaltung" },
 ] as const;
+
+type TeamMember = (typeof team)[number];
+type TeamAssignment = TeamMember["assignments"][number];
+type TeamListing = { member: TeamMember; assignment: TeamAssignment };
+
+const byListingPosition = (a: TeamListing, b: TeamListing) =>
+  a.assignment.position - b.assignment.position || a.member.name.localeCompare(b.member.name, "de");
+
+const getListings = (group: string, section?: string): TeamListing[] =>
+  team
+    .flatMap((member) =>
+      member.assignments
+        .filter(
+          (assignment) =>
+            assignment.group === group && (section === undefined || assignment.section === section),
+        )
+        .map((assignment) => ({ member, assignment })),
+    )
+    .sort(byListingPosition);
+
+const getInitials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 ---
 
 <BaseLayout
   title="Unser Team"
-  description="Das pädagogische Team der Montessori Allgäu: Leitung, Kindergarten, Primaria, Sekundaria, Tertia sowie Fach- und Förderteam."
+  description="Das Team der Montessori Allgäu: Leitung, Kindergarten, Primaria, Sekundaria, Tertia, Fach- und Förderteam sowie Verwaltung."
 >
   <PageIntro
     eyebrow="Unser Team"
@@ -30,32 +66,75 @@ const teamGroups = [
     <div class="container">
       {
         teamGroups.map((group) => {
-          const members = team.filter((member) => member.group === group);
+          const groupId = `team-${group.slug}`;
+          const sections = "sections" in group ? group.sections : undefined;
+          const listings = sections ? [] : getListings(group.name);
           return (
-            <section
-              class="team-group"
-              aria-labelledby={`team-${group.toLowerCase().replaceAll(" ", "-")}`}
-            >
+            <section class="team-group" aria-labelledby={groupId}>
               <p class="eyebrow">Team</p>
-              <h2 id={`team-${group.toLowerCase().replaceAll(" ", "-")}`}>{group}</h2>
-              <div class="team-grid">
-                {members.map((member) => (
-                  <article class="team-card">
-                    <div class="team-card__image">
-                      {member.image && (
-                        <Image
-                          src={member.image}
-                          alt={`Porträt von ${member.name}`}
-                          widths={[300, 480, 640]}
-                          sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
-                        />
-                      )}
-                    </div>
-                    <h3>{member.name}</h3>
-                    <p>{member.role}</p>
-                  </article>
-                ))}
-              </div>
+              <h2 id={groupId}>{group.name}</h2>
+              {sections ? (
+                <div class="team-subgroups">
+                  {sections.map((section) => (
+                    <section
+                      class="team-subgroup"
+                      aria-labelledby={`${groupId}-${section === "Klassenleitungen" ? "klassenleitungen" : "assistenzen"}`}
+                    >
+                      <h3
+                        class="team-subgroup__title"
+                        id={`${groupId}-${section === "Klassenleitungen" ? "klassenleitungen" : "assistenzen"}`}
+                      >
+                        {section}
+                      </h3>
+                      <div class="team-grid">
+                        {getListings(group.name, section).map(({ member, assignment }) => (
+                          <article class="team-card">
+                            <div class="team-card__image">
+                              {member.image ? (
+                                <Image
+                                  src={member.image}
+                                  alt={`Porträt von ${member.name}`}
+                                  widths={[300, 480, 640]}
+                                  sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
+                                />
+                              ) : (
+                                <span class="team-card__initials" aria-hidden="true">
+                                  {getInitials(member.name)}
+                                </span>
+                              )}
+                            </div>
+                            <h4>{member.name}</h4>
+                            {assignment.role && <p>{assignment.role}</p>}
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div class="team-grid">
+                  {listings.map(({ member, assignment }) => (
+                    <article class="team-card">
+                      <div class="team-card__image">
+                        {member.image ? (
+                          <Image
+                            src={member.image}
+                            alt={`Porträt von ${member.name}`}
+                            widths={[300, 480, 640]}
+                            sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
+                          />
+                        ) : (
+                          <span class="team-card__initials" aria-hidden="true">
+                            {getInitials(member.name)}
+                          </span>
+                        )}
+                      </div>
+                      <h3>{member.name}</h3>
+                      {assignment.role && <p>{assignment.role}</p>}
+                    </article>
+                  ))}
+                </div>
+              )}
             </section>
           );
         })
@@ -64,7 +143,7 @@ const teamGroups = [
   </section>
 
   <CTASection
-    title="Vielleicht fehlt hier bald noch jemand: du."
+    title="Hast du Interesse, Teil unseres Teams zu werden?"
     text="Wir suchen Menschen, die nicht irgendeinen pädagogischen Arbeitsplatz wollen, sondern Montessori wirklich vertreten und mit uns weiterentwickeln möchten."
     primaryHref="/arbeiten-bei-uns/stellen/"
     primaryLabel="Offene Stellen"

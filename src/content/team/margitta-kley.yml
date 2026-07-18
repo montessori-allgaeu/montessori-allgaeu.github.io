@@ -1,6 +1,7 @@
 name: Margitta Kley
-role: Pädagogisches Team
-group: Primaria
+assignments:
+  - group: Primaria
+    section: Pädagogische Assistenzen
+    position: 20
 image: ../../assets/images/team/margitta-kley.webp
 status: published
-position: 40

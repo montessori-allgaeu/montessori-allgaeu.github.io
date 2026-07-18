@@ -1,15 +1,16 @@
-# KI-generierte Bildserie · Juli 2026
+# Archiv: KI-generierte Bildserie · Juli 2026
 
 ## Status und Verwendung
 
-Die 22 Bilder unter `src/assets/images/generated/` sind eine zeitlich begrenzte Zwischenlösung für
-die redaktionellen Foto-Slots der Website. Sie wurden am 17. Juli 2026 mit dem integrierten
-Imagegen-Werkzeug erzeugt und anschließend als WebP optimiert.
+Die Bilder unter `src/assets/images/generated/` wurden am 17. Juli 2026 als zeitlich begrenzte
+Zwischenlösung für die redaktionellen Foto-Slots der Website erzeugt und anschließend als WebP
+optimiert. Seit dem 18. Juli 2026 werden sie nicht mehr auf den Inhaltsseiten verwendet; dort sind
+wieder die vorhandenen authentischen Aufnahmen der Monte eingebunden. Die Dateien und diese
+Dokumentation bleiben lediglich als internes Produktionsarchiv erhalten.
 
 Alle abgebildeten Personen und Räume sind fiktiv. Die Bilder sind keine dokumentarischen Aufnahmen
-realer Kinder, Mitarbeitender oder Räume der Montessori Allgäu. Vor einer öffentlichen
-Veröffentlichung muss geklärt werden, wie das transparent kenntlich gemacht wird. Die echten
-Team-Porträts wurden nicht verändert.
+realer Kinder, Mitarbeitender oder Räume der Montessori Allgäu. Die echten Team-Porträts wurden
+nicht verändert.
 
 ## Gemeinsame Produktionsvorgabe
 

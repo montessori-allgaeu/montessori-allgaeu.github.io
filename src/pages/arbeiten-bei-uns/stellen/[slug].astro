@@ -33,6 +33,15 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     </div>
   </section>
 
+  <section class="section job-about">
+    <div class="container grid-2">
+      <div><p class="eyebrow">Über uns</p><h2>Ein Ort für eigenständiges Lernen.</h2></div>
+      <div class="job-about__copy">
+        {job.about.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container grid-2 job-content">
       <div>
@@ -69,28 +78,20 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
   <section class="section section--light">
     <div class="container grid-2">
       <div>
-        <p class="eyebrow">Wir bieten</p><h2>Freiheit, Qualifizierung und ein Team, das lernt.</h2>
+        <p class="eyebrow">Wir bieten</p><h2>Was dich bei uns erwartet.</h2>
       </div>
       <div>
         <ul class="editorial-list">
-          <li>Gestaltungsspielraum innerhalb klarer pädagogischer Prinzipien</li>
-          <li>Ein Team mit mehr als 30 Kolleg:innen</li>
-          <li>Bezahltes Montessori-Diplom nach Vereinbarung</li>
-          <li>Fortbildungen und strukturiertes Onboarding</li>
-          <li>Eine warme, direkte Kultur mit früher Konfliktklärung</li>
+          {job.benefits.map((item) => <li>{item}</li>)}
         </ul>
-        <p class="small muted">
-          Vergütung, Stundenumfang, Starttermin und konkrete Voraussetzungen klären wir im
-          persönlichen Gespräch.
-        </p>
       </div>
     </div>
   </section>
 
   <CTASection
     eyebrow="Interesse?"
-    title="Zeig uns, warum Montessori für dich wichtig ist."
-    text="Schick uns deinen Lebenslauf und ein paar ehrliche Sätze zu deiner Motivation. Alternativ kannst du zuerst ein unverbindliches Kennenlernen anfragen."
+    title={job.closingTitle}
+    text={job.closingText}
     primaryHref={`mailto:${contact.email}?subject=${mailSubject}`}
     primaryLabel="Per E-Mail bewerben"
     secondaryHref={`mailto:${contact.email}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
@@ -122,15 +123,17 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
   }
 
   .job-hero__meta span {
-    padding: 0.55rem 0.8rem;
-    border: 1px solid var(--line-strong);
     color: var(--forest-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.875rem;
+    font-weight: 600;
   }
 
   .job-content h2 {
     font-size: clamp(2rem, 4vw, 3.4rem);
+  }
+
+  .job-about__copy p:first-child {
+    margin-top: 0;
   }
 
   .job-checks {
@@ -157,10 +160,6 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     .job-hero__meta {
       grid-template-columns: 1fr;
       gap: 1rem;
-    }
-
-    .job-hero__meta span {
-      width: fit-content;
     }
   }
 </style>

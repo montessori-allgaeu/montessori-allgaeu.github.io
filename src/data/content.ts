@@ -55,9 +55,7 @@ export async function getJobs(): Promise<Job[]> {
 
 export async function getTeam(): Promise<TeamMember[]> {
   const entries = await getCollection("team", ({ data }) => data.status === "published");
-  return entries
-    .map(({ data }) => data)
-    .sort((a, b) => byPosition(a, b) || byGermanText(a.name, b.name));
+  return entries.map(({ data }) => data).sort((a, b) => byGermanText(a.name, b.name));
 }
 
 export async function getEvents(): Promise<Event[]> {

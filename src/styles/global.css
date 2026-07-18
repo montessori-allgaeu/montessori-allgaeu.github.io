@@ -890,6 +890,20 @@ td {
   gap: clamp(1.5rem, 3vw, 2.5rem) 1.5rem;
 }
 
+.team-subgroups {
+  display: grid;
+  gap: clamp(3rem, 5vw, 4.5rem);
+}
+
+.team-subgroup__title {
+  margin-bottom: 1.5rem;
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .team-card__image {
   aspect-ratio: 2 / 3;
   margin-bottom: 1.2rem;
@@ -903,8 +917,22 @@ td {
   object-fit: cover;
 }
 
-.team-card h3 {
+.team-card__initials {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--paper);
+  background: var(--forest);
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.team-card h3,
+.team-card h4 {
   margin-bottom: 0.35rem;
+  font-family: var(--serif);
+  font-weight: 400;
   font-size: 1.5rem;
 }
 
@@ -1158,7 +1186,8 @@ td {
     gap: 2.2rem 1rem;
   }
 
-  .team-card h3 {
+  .team-card h3,
+  .team-card h4 {
     font-size: 1.25rem;
   }
 

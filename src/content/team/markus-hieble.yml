@@ -1,6 +1,7 @@
 name: Markus Hieble
-role: Pädagogisches Team
-group: Fach- & Förderteam
+assignments:
+  - group: Fach- & Förderteam
+    role: Assistenz und Sport
+    position: 10
 image: ../../assets/images/team/markus-hieble.webp
 status: published
-position: 10

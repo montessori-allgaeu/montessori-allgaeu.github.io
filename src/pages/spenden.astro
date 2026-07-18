@@ -5,7 +5,7 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getDonationPage, getWebsiteSettings } from "@/data/content";
-import donationImpactImage from "@/assets/images/generated/donation-impact.webp";
+import governanceImage from "@/assets/images/editorial/governance.webp";
 
 const [donations, { contact }] = await Promise.all([getDonationPage(), getWebsiteSettings()]);
 const companyMailto = `mailto:${contact.email}?subject=${encodeURIComponent(donations.company.emailSubject)}`;
@@ -19,7 +19,7 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
     intro={donations.hero.intro}
   />
 
-  <ImageSplit image={donationImpactImage} alt={donations.impact.imageAlt} position="center 45%">
+  <ImageSplit image={governanceImage} alt={donations.impact.imageAlt} position="center 45%">
     <p class="eyebrow">{donations.impact.eyebrow}</p>
     <h2>{donations.impact.title}</h2>
     {donations.impact.paragraphs.map((paragraph) => <p>{paragraph}</p>)}

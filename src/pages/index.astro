@@ -5,11 +5,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getDonationPage } from "@/data/content";
-import heroImage from "@/assets/images/generated/home-hero-warm.webp";
-import continuumImage from "@/assets/images/generated/home-continuum.webp";
-import freedomImage from "@/assets/images/generated/home-freedom.webp";
-import communityImage from "@/assets/images/generated/home-community.webp";
-import careersImage from "@/assets/images/generated/home-careers.webp";
+import heroImage from "@/assets/images/editorial/hero.webp";
+import continuumImage from "@/assets/images/editorial/continuum.webp";
+import freedomImage from "@/assets/images/editorial/freedom.webp";
+import communityImage from "@/assets/images/editorial/community.webp";
+import careersImage from "@/assets/images/editorial/careers.webp";
 
 const donations = await getDonationPage();
 ---
@@ -38,7 +38,7 @@ const donations = await getDonationPage();
     <div class="home-hero__media">
       <Image
         src={heroImage}
-        alt="Ein Kind arbeitet konzentriert mit Montessori-Material"
+        alt="Ein Schüler arbeitet konzentriert mit Montessori-Material"
         widths={[640, 960, 1280]}
         sizes="(max-width: 840px) 100vw, 50vw"
         loading="eager"
@@ -84,7 +84,7 @@ const donations = await getDonationPage();
 
   <ImageSplit
     image={continuumImage}
-    alt="Kinder unterschiedlichen Alters bauen gemeinsam an einem Holzprojekt"
+    alt="Kinder lernen gemeinsam mit Montessori-Material"
     compact
     position="center 38%"
   >
@@ -104,7 +104,7 @@ const donations = await getDonationPage();
 
   <ImageSplit
     image={freedomImage}
-    alt="Eine Pädagogin bietet einem Kind zwei Montessori-Aktivitäten zur Auswahl an"
+    alt="Ein Kind lernt gemeinsam mit einer Pädagogin"
     reverse
     light
     compact
@@ -162,7 +162,7 @@ const donations = await getDonationPage();
 
   <ImageSplit
     image={communityImage}
-    alt="Kinder, Eltern und Pädagoginnen bepflanzen gemeinsam ein Hochbeet"
+    alt="Kindergartenkinder und Pädagoginnen sitzen gemeinsam im Kreis"
     light
     compact
     position="center 44%"
@@ -178,7 +178,7 @@ const donations = await getDonationPage();
 
   <ImageSplit
     image={careersImage}
-    alt="Eine Pädagogin beobachtet ein Kind aufmerksam bei seiner Arbeit"
+    alt="Eine Pädagogin begleitet ein Kind beim Lernen"
     reverse
     compact
     position="center 42%"

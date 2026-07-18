@@ -130,6 +130,12 @@ content:
         label: Einleitung
         type: text
         required: true
+      - name: about
+        label: Über uns
+        type: text
+        required: true
+        list:
+          min: 1
       - name: responsibilities
         label: Aufgaben
         type: string
@@ -142,6 +148,20 @@ content:
         required: true
         list:
           min: 1
+      - name: benefits
+        label: Das erwartet dich bei uns
+        type: string
+        required: true
+        list:
+          min: 1
+      - name: closingTitle
+        label: Überschrift Bewerbung
+        type: string
+        required: true
+      - name: closingText
+        label: Einladung zur Bewerbung
+        type: text
+        required: true
       - name: position
         label: Position in der Stellenliste
         type: number
@@ -172,13 +192,13 @@ content:
       template: "{name}.yml"
       field: false
     view:
-      fields: [name, group, role, status, position]
+      fields: [name, status]
       primary: name
-      sort: [group, position, name]
+      sort: [name]
       default:
-        sort: group
+        sort: name
         order: asc
-      search: [name, role, group]
+      search: [name]
     operations:
       rename: false
     fields:
@@ -186,22 +206,51 @@ content:
         label: Name
         type: string
         required: true
-      - name: role
-        label: Rolle
-        type: string
+      - name: assignments
+        label: Rollen und Bereiche
+        type: object
         required: true
-      - name: group
-        label: Bereich
-        type: select
-        required: true
-        options:
-          values:
-            - Leitung
-            - Kindergarten
-            - Primaria
-            - Sekundaria
-            - Tertia
-            - Fach- & Förderteam
+        description: Für jede Darstellung auf der Teamseite einen Eintrag anlegen. Leitungen können so zusätzlich in ihrem pädagogischen Bereich erscheinen.
+        list:
+          min: 1
+          collapsible:
+            collapsed: true
+            summary: "{group}: {role}"
+        fields:
+          - name: group
+            label: Bereich
+            type: select
+            required: true
+            options:
+              values:
+                - Leitung
+                - Kindergarten
+                - Primaria
+                - Sekundaria
+                - Tertia
+                - Fach- & Förderteam
+                - Verwaltung
+                - Vorstand
+          - name: section
+            label: Untergruppe
+            type: select
+            description: Für Primaria und Sekundaria verpflichtend auswählen; bei allen anderen Bereichen leer lassen.
+            options:
+              values:
+                - Klassenleitungen
+                - Pädagogische Assistenzen
+          - name: role
+            label: Rolle
+            type: string
+            description: Optional, wenn die Untergruppe die Rolle bereits eindeutig macht.
+          - name: position
+            label: Position innerhalb des Bereichs
+            type: number
+            required: true
+            default: 50
+            description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+            options:
+              min: 1
       - name: image
         label: Porträt
         type: image
@@ -209,14 +258,6 @@ content:
           media: team-images
           extensions: [jpg, jpeg, png, webp]
           rename: safe
-      - name: position
-        label: Position innerhalb des Bereichs
-        type: number
-        required: true
-        default: 50
-        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
-        options:
-          min: 1
       - name: status
         label: Status
         type: select

@@ -1,6 +1,7 @@
 name: Yvonne Jörg
-role: Erzieherin
-group: Kindergarten
+assignments:
+  - group: Kindergarten
+    role: Erzieherin
+    position: 20
 image: ../../assets/images/team/yvonne-joerg.webp
 status: published
-position: 10

@@ -1,6 +1,8 @@
 name: Katharina Maierhofer
-role: Klassenleitung Primaria A
-group: Primaria
+assignments:
+  - group: Primaria
+    section: Klassenleitungen
+    role: Primaria A
+    position: 10
 image: ../../assets/images/team/katharina-maierhofer.webp
 status: published
-position: 10

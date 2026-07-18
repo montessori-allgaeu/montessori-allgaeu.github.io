@@ -1,6 +1,8 @@
 name: Anda Henning
-role: Klassenleitung Primaria B
-group: Primaria
+assignments:
+  - group: Primaria
+    section: Klassenleitungen
+    role: Primaria B
+    position: 20
 image: ../../assets/images/team/anda-henning.webp
 status: published
-position: 30

@@ -1,6 +1,8 @@
 name: Susann Gieseke
-role: Klassenleitung Sekundaria A
-group: Sekundaria
+assignments:
+  - group: Sekundaria
+    section: Klassenleitungen
+    role: Sekundaria A
+    position: 10
 image: ../../assets/images/team/susann-gieseke.webp
 status: published
-position: 10

@@ -1,6 +1,6 @@
 name: Nadine Kierok
-role: Pädagogisches Team
-group: Fach- & Förderteam
+assignments:
+  - group: Fach- & Förderteam
+    position: 50
 image: ../../assets/images/team/nadine-kierok.webp
 status: published
-position: 50

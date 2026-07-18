@@ -6,8 +6,8 @@ import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
-import continuumImage from "@/assets/images/generated/path-panorama.webp";
-import transitionImage from "@/assets/images/generated/path-transition.webp";
+import continuumImage from "@/assets/images/editorial/continuum.webp";
+import schoolImage from "@/assets/images/editorial/school.webp";
 ---
 
 <BaseLayout
@@ -23,7 +23,7 @@ import transitionImage from "@/assets/images/generated/path-transition.webp";
   <div class="image-frame image-frame--wide hub-image">
     <Image
       src={continuumImage}
-      alt="Kinder und Jugendliche verschiedener Altersstufen tragen gemeinsam Projektmaterial"
+      alt="Kinder arbeiten gemeinsam in der Montessori-Lernumgebung"
       widths={[768, 1200, 1600]}
       sizes="100vw"
     />
@@ -82,8 +82,8 @@ import transitionImage from "@/assets/images/generated/path-transition.webp";
   </section>
 
   <ImageSplit
-    image={transitionImage}
-    alt="Ein Schulkind zeigt einem Kindergartenkind eine Montessori-Aktivität"
+    image={schoolImage}
+    alt="Schülerinnen lernen gemeinsam an einem Tisch"
     reverse
     light
     position="center 42%"

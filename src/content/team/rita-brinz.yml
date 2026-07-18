@@ -1,6 +1,6 @@
 name: Rita Brinz
-role: Pädagogisches Team
-group: Tertia
+assignments:
+  - group: Tertia
+    position: 30
 image: ../../assets/images/team/rita-brinz.webp
 status: published
-position: 20

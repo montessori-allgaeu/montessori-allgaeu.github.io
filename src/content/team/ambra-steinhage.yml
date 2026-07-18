@@ -1,6 +1,10 @@
 name: Ambra Steinhage
-role: Pädagogische Schulleitung · Klassenleitung Tertia
-group: Leitung
+assignments:
+  - group: Leitung
+    role: Schulleitung
+    position: 10
+  - group: Tertia
+    role: Klassenleitung
+    position: 10
 image: ../../assets/images/team/ambra-steinhage.webp
 status: published
-position: 10

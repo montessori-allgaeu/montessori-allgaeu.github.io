@@ -12,14 +12,6 @@ const keyPages = [
   "/kontakt/",
 ];
 
-const jobPages = [
-  "/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/",
-  "/arbeiten-bei-uns/stellen/fachlehrkraft-musik/",
-  "/arbeiten-bei-uns/stellen/paedagogische-fachkraft-kindergarten/",
-  "/arbeiten-bei-uns/stellen/paedagogische-fachkraft-kindergarten-teilzeit/",
-  "/arbeiten-bei-uns/stellen/bundesfreiwilligendienst/",
-];
-
 for (const path of keyPages) {
   test(`${path} renders without accessibility violations`, async ({ page }) => {
     await page.goto(path);
@@ -96,27 +88,18 @@ test("mobile menu remains usable on short viewports", async ({ page }) => {
   await expect(finalLink).toBeInViewport();
 });
 
-for (const path of jobPages) {
-  test(`${path} does not overflow on narrow screens`, async ({ page }) => {
-    await page.setViewportSize({ width: 320, height: 568 });
-    await page.goto(path);
-
-    const dimensions = await page.evaluate(() => ({
-      clientWidth: document.documentElement.clientWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-    }));
-    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
-  });
-}
-
 test("editorial content renders from the validated content collections", async ({ page }) => {
   await page.goto("/termine/");
   await expect(page.getByRole("heading", { name: "Sommerfest" })).toBeVisible();
   await expect(page.getByText("Donnerstag, 30. Juli 2026")).toBeVisible();
 
   await page.goto("/gemeinschaft/team/");
-  await expect(page.getByRole("heading", { name: "Ambra Steinhage" })).toBeVisible();
-  await expect(page.getByAltText("Porträt von Ambra Steinhage")).toBeVisible();
+  const leadership = page.getByRole("region", { name: "Leitung", exact: true });
+  const tertia = page.getByRole("region", { name: "Tertia", exact: true });
+  await expect(leadership.getByRole("heading", { name: "Ambra Steinhage" })).toBeVisible();
+  await expect(tertia.getByRole("heading", { name: "Ambra Steinhage" })).toBeVisible();
+  await expect(leadership.getByAltText("Porträt von Ambra Steinhage")).toBeVisible();
+  await expect(tertia.getByAltText("Porträt von Ambra Steinhage")).toBeVisible();
 
   await page.goto("/downloads/");
   await expect(page.getByRole("link", { name: /Infoheft Schule/ })).toHaveAttribute(
@@ -163,10 +146,6 @@ test("editorial content renders from the validated content collections", async (
     "href",
     "tel:+498386939210",
   );
-
-  await page.goto("/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/");
-  await expect(page.getByText("Schule · Klasse 5–7")).toBeVisible();
-  await expect(page.getByText("Umfang nach Vereinbarung", { exact: true })).toBeVisible();
 
   await page.goto("/kindergarten-schule/kindergarten/");
   await expect(page.getByRole("heading", { name: "Schließtage" })).toBeVisible();
