@@ -783,6 +783,10 @@ content:
             label: E-Mail Schulbüro
             type: string
             required: true
+          - name: careersEmail
+            label: E-Mail Bewerbungen und Karriere
+            type: string
+            required: true
           - name: kindergartenEmail
             label: E-Mail Kindergarten
             type: string

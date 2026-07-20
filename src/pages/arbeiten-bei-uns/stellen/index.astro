@@ -51,7 +51,7 @@ const { contact } = await getWebsiteSettings();
         </p>
         <a
           class="button button--outline"
-          href={`mailto:${contact.email}?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u`}
+          href={`mailto:${contact.careersEmail}?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u`}
           >Initiativkontakt aufnehmen</a
         >
       </div>
@@ -61,7 +61,7 @@ const { contact } = await getWebsiteSettings();
   <CTASection
     title="Noch nicht bewerben – erst erleben?"
     text="Ein unverbindliches Gespräch oder eine Hospitation kann der ehrlichste erste Schritt sein."
-    primaryHref={`mailto:${contact.email}?subject=Hospitation%20oder%20Kennenlerngespr%C3%A4ch`}
+    primaryHref={`mailto:${contact.careersEmail}?subject=Hospitation%20oder%20Kennenlerngespr%C3%A4ch`}
     primaryLabel="Hospitation anfragen"
     secondaryHref="/arbeiten-bei-uns/"
     secondaryLabel="Arbeitskultur kennenlernen"

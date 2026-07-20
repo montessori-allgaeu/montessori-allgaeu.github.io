@@ -92,9 +92,9 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     eyebrow="Interesse?"
     title={job.closingTitle}
     text={job.closingText}
-    primaryHref={`mailto:${contact.email}?subject=${mailSubject}`}
+    primaryHref={`mailto:${contact.careersEmail}?subject=${mailSubject}`}
     primaryLabel="Per E-Mail bewerben"
-    secondaryHref={`mailto:${contact.email}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
+    secondaryHref={`mailto:${contact.careersEmail}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
     secondaryLabel="Erst kennenlernen"
   />
 </BaseLayout>

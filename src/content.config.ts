@@ -236,6 +236,7 @@ const contactSettings = defineCollection({
   loader: glob({ pattern: "contact.yml", base: "./src/content/settings" }),
   schema: z.object({
     email: z.email(),
+    careersEmail: z.email(),
     kindergartenEmail: z.email(),
     parentCouncilKindergartenEmail: z.email(),
     parentCouncilSchoolEmail: z.email(),
