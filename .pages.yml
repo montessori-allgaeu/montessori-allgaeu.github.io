@@ -5,6 +5,12 @@ media:
     output: ../../assets/images/team
     extensions: [jpg, jpeg, png, webp]
     rename: safe
+  - name: parent-council-images
+    label: Elternbeiratsfotos (über „Elternbeirat“ auswählen)
+    input: src/assets/images/parent-council
+    output: ../../assets/images/parent-council
+    extensions: [jpg, jpeg, png, webp]
+    rename: safe
   - name: documents
     label: PDF-Dateien (über „Downloads“ auswählen)
     input: public/downloads
@@ -378,6 +384,70 @@ content:
             - name: published
               label: Veröffentlicht – auf Website
 
+  - name: parent-council
+    label: Elternbeirat
+    type: collection
+    path: src/content/parent-council
+    format: yaml
+    filename:
+      template: "{name}.yml"
+      field: false
+    view:
+      fields: [name, area, role, status, position]
+      primary: name
+      sort: [area, position, name]
+      default:
+        sort: area
+        order: asc
+      search: [name, area, role]
+    operations:
+      rename: false
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: area
+        label: Bereich
+        type: select
+        required: true
+        options:
+          placeholder: Bereich auswählen
+          values:
+            - Kindergarten
+            - Schule
+      - name: role
+        label: Rolle
+        type: string
+        description: Optional, zum Beispiel „Vorsitzende“.
+      - name: position
+        label: Position innerhalb des Bereichs
+        type: number
+        required: true
+        default: 50
+        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+        options:
+          min: 1
+      - name: image
+        label: Porträt
+        type: image
+        options:
+          media: parent-council-images
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Mitglieder bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
+
   - name: downloads
     label: Downloads
     type: collection
@@ -715,6 +785,14 @@ content:
             required: true
           - name: kindergartenEmail
             label: E-Mail Kindergarten
+            type: string
+            required: true
+          - name: parentCouncilKindergartenEmail
+            label: E-Mail Elternbeirat Kindergarten
+            type: string
+            required: true
+          - name: parentCouncilSchoolEmail
+            label: E-Mail Elternbeirat Schule
             type: string
             required: true
           - name: phone

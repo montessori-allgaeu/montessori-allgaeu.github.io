@@ -68,6 +68,18 @@ const team = defineCollection({
     }),
 });
 
+const parentCouncil = defineCollection({
+  loader: glob({ pattern: "**/*.yml", base: "./src/content/parent-council" }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string().min(1),
+      area: z.enum(["Kindergarten", "Schule"]),
+      role: z.string().min(1).optional(),
+      image: image().optional(),
+      ...publicationFields,
+    }),
+});
+
 const events = defineCollection({
   loader: glob({ pattern: "**/*.yml", base: "./src/content/events" }),
   schema: z.object({
@@ -225,6 +237,8 @@ const contactSettings = defineCollection({
   schema: z.object({
     email: z.email(),
     kindergartenEmail: z.email(),
+    parentCouncilKindergartenEmail: z.email(),
+    parentCouncilSchoolEmail: z.email(),
     phone: z.string().min(1),
     kindergartenPhone: z.string().min(1),
     address: z.object({
@@ -360,6 +374,7 @@ const communityContributionSettings = defineCollection({
 export const collections = {
   jobs,
   team,
+  parentCouncil,
   events,
   downloads,
   afternoonOffers,

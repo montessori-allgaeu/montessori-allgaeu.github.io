@@ -42,6 +42,10 @@ Für das nächste Schuljahr die neuen Einträge zunächst als Entwurf mit dem ne
 
 Für jedes Teammitglied werden unter **Rollen und Bereiche** ein oder mehrere Einsätze gepflegt. So können Leitungen sowohl im Bereich **Leitung** als auch in ihrer pädagogischen Rolle erscheinen. Primaria und Sekundaria werden zusätzlich in **Klassenleitungen** und **Pädagogische Assistenzen** gegliedert. Die Position wird je Einsatz vergeben; `10` steht weiter oben als `20`. Fotos können als JPG, PNG oder WebP über das jeweilige Teammitglied ausgewählt werden; Astro optimiert sie beim Build. Ohne Foto zeigt die Website vorübergehend die Initialen.
 
+### Elternbeirat
+
+Mitglieder des Elternbeirats werden unabhängig vom pädagogischen Team gepflegt. **Bereich** ordnet eine Person dem Kindergarten oder der Schule zu, **Rolle** bleibt optional. Die Position steuert die Reihenfolge innerhalb des Bereichs; `10` steht weiter oben als `20`. Porträts werden direkt beim jeweiligen Mitglied ausgewählt. Ohne Foto zeigt die Website vorübergehend die Initialen. Die beiden Kontaktadressen stehen unter **Stammdaten → Kontakt & Anschrift**.
+
 ### Downloads
 
 Neue PDFs werden im Bereich **Downloads** ausgewählt und nach `public/downloads/` geladen. Nathanael pflegt nur den optionalen Dokumentstand und einen optionalen kurzen Hinweis. `PDF` und die tatsächliche Dateigröße ergänzt die Website beim Build automatisch. Ein ersetztes Dokument sollte einen nachvollziehbaren Dateinamen und einen aktualisierten Stand erhalten.
@@ -108,6 +112,8 @@ Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehent
 - Stellen: `src/content/jobs/`
 - Nachmittagsangebote: `src/content/afternoon-offers/`
 - Team: `src/content/team/`
+- Elternbeirat: `src/content/parent-council/`
 - Downloads: `src/content/downloads/`
 - Teamfotos: `src/assets/images/team/`
+- Elternbeiratsfotos: `src/assets/images/parent-council/`
 - PDF-Dateien: `public/downloads/`

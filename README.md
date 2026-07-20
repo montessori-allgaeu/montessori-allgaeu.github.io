@@ -33,6 +33,17 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
+Für einen manuellen Mobil-Screenshot Chromium direkt über den vorbereiteten Befehl starten:
+
+```sh
+npm run screenshot:mobile -- --full-page http://127.0.0.1:4321/ /tmp/montessori-mobile.png
+```
+
+Nicht den eigenständigen Playwright-CLI-Schalter `--device "iPhone 13"` verwenden. Dieser wählt
+unabhängig von `--browser chromium` WebKit und kann in einer eingeschränkten macOS-Umgebung schon
+beim Start der Browser-App abbrechen. Die E2E-Projekte in `playwright.config.ts` laufen weiterhin
+auf Chromium.
+
 ## Inhalte pflegen
 
 - Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
@@ -41,6 +52,7 @@ npm run test:e2e
 - Spendenseite und aktuelle Förderschwerpunkte: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Team: `src/content/team/` und `src/assets/images/team/`
+- Elternbeirat: `src/content/parent-council/` und `src/assets/images/parent-council/`
 - Stellenangebote: `src/content/jobs/`
 - Nachmittagsangebote: `src/content/afternoon-offers/`
 - Aktives Schuljahr und Rahmen der Kurswahl: `src/content/settings/afternoon-program.yml`
@@ -53,7 +65,7 @@ npm run test:e2e
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Teammitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Team- und Elternbeiratsmitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
 
 Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
 
@@ -86,7 +98,7 @@ GitHub leitet bei korrekt gesetzter Apex- und `www`-Konfiguration automatisch au
 - Kindergartenstaffel: insbesondere die korrigierte Stufe 5 bis unter 6 Stunden
 - Aktive Stellenangebote und Bewerbungsadresse
 - Aufnahmefristen und öffentliche Termine
-- Teamnamen, Rollen und Einwilligungen für Fotos
+- Team- und Elternbeiratsnamen, Rollen und Einwilligungen für Fotos
 - Vorstand, Aufsichtsbehörden, Impressum und Datenschutzerklärung rechtlich prüfen
 - Spendenkonto und Prozess für Zuwendungsbestätigungen
 - Weiterleitungen der wichtigsten alten Jimdo-Adressen

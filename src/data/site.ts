@@ -38,6 +38,7 @@ export const mainNavigation = [
     href: "/gemeinschaft/",
     children: [
       { label: "Team", href: "/gemeinschaft/team/" },
+      { label: "Elternbeirat", href: "/gemeinschaft/elternbeirat/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
       supportLink,
@@ -74,6 +75,7 @@ export const footerNavigation = [
     title: "Gemeinschaft",
     links: [
       { label: "Team", href: "/gemeinschaft/team/" },
+      { label: "Elternbeirat", href: "/gemeinschaft/elternbeirat/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
       { label: "Termine", href: "/termine/" },

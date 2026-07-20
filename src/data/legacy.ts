@@ -26,7 +26,7 @@ export const legacyRedirects: Record<string, string> = {
   "wir/die-5-säulen": "/gemeinschaft/",
   "wir/team": "/gemeinschaft/team/",
   "wir/vorstand": "/gemeinschaft/traeger-verein/",
-  "wir/elternbeirat": "/gemeinschaft/traeger-verein/",
+  "wir/elternbeirat": "/gemeinschaft/elternbeirat/",
   "wir/schülersprecher": "/gemeinschaft/traeger-verein/",
   träger: "/gemeinschaft/traeger-verein/",
   stellen: "/arbeiten-bei-uns/stellen/",

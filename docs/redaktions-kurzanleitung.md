@@ -8,7 +8,7 @@ Die gleiche Kurzanleitung steht nach der Veröffentlichung auch druckfreundlich 
 
 ## Der sichere Ablauf
 
-1. Den passenden Bereich öffnen: Termine, Stellenangebote, Nachmittagsangebote, Team, Downloads, Spendenseite oder Stammdaten.
+1. Den passenden Bereich öffnen: Termine, Stellenangebote, Nachmittagsangebote, Team, Elternbeirat, Downloads, Spendenseite oder Stammdaten.
 2. Inhalt anlegen oder ändern.
 3. Neue Termine, Stellen, Nachmittagsangebote, Personen und Downloads zunächst als **Entwurf – nicht auf Website** speichern.
 4. Angaben im Formular prüfen.
@@ -21,7 +21,7 @@ Die gleiche Kurzanleitung steht nach der Veröffentlichung auch druckfreundlich 
 - **Zeitbezogene Fakten prüfen.** Termine, Stellen, Kosten, Öffnungszeiten, Rollen und Dokumentstände nur aus einer verbindlichen Quelle übernehmen.
 - **Aufnahmen gemeinsam aktualisieren.** Kindergarten- beziehungsweise Schuljahr und den zugehörigen Anmeldeschluss unter **Stammdaten → Aufnahme Kindergarten** oder **Aufnahme Schule** immer zusammen prüfen und ändern.
 - **Kursjahr erst vollständig vorbereiten.** Neue Nachmittagsangebote mit dem neuen Schuljahr anlegen und prüfen. Das aktive Schuljahr unter **Stammdaten → Ganztag & Kurswahl** erst danach umstellen.
-- **Medien über den Inhalt auswählen.** Teamfotos über **Team** und PDFs über **Downloads** pflegen. Die Bereiche unter **Media** sind vor allem die gemeinsame Dateiablage.
+- **Medien über den Inhalt auswählen.** Porträts über **Team** beziehungsweise **Elternbeirat** und PDFs über **Downloads** pflegen. Die Bereiche unter **Media** sind vor allem die gemeinsame Dateiablage.
 
 ## Wenn etwas schiefgeht
 

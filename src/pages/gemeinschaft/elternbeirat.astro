@@ -1,0 +1,105 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import { getParentCouncil, getWebsiteSettings } from "@/data/content";
+
+const [parentCouncil, { contact }] = await Promise.all([getParentCouncil(), getWebsiteSettings()]);
+const councilGroups = ["Kindergarten", "Schule"] as const;
+
+const getInitials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+---
+
+<BaseLayout
+  title="Elternbeirat"
+  description="Der Elternbeirat der Montessori Allgäu vertritt die Anliegen der Eltern und unterstützt Kindergarten und Schule."
+>
+  <PageIntro
+    eyebrow="Elternbeirat"
+    title="Eltern, die zuhören und mitgestalten."
+    intro="Der Elternbeirat bringt die Perspektiven der Familien ein, vertritt ihre Anliegen und unterstützt Kindergarten und Schule dabei, Gemeinschaft verlässlich zu gestalten."
+  />
+
+  <section class="section section--light council-intro">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Unsere Aufgabe</p>
+        <h2>Zuhören, verbinden, mit anpacken.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Der Elternbeirat ist Ansprechpartner für Eltern und steht regelmäßig mit den anderen
+          Säulen der Monte im Austausch.
+        </p>
+        <p>
+          Bei Beiratssitzungen bringen die Mitglieder Anliegen zusammen, unterstützen die Vertretung
+          an Teamtagen und helfen bei Veranstaltungen und Aktionen. Dabei kann jede Person ihre
+          eigenen Stärken und zeitlichen Möglichkeiten einbringen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {
+        councilGroups.map((group) => {
+          const members = parentCouncil.filter((member) => member.area === group);
+          const groupId = `elternbeirat-${group.toLowerCase()}`;
+
+          return (
+            <section class="team-group" aria-labelledby={groupId}>
+              <p class="eyebrow">Elternbeirat</p>
+              <h2 id={groupId}>{group}</h2>
+              <div class="team-grid">
+                {members.map((member) => (
+                  <article class="team-card">
+                    <div class="team-card__image">
+                      {member.image ? (
+                        <Image
+                          src={member.image}
+                          alt={`Porträt von ${member.name}`}
+                          widths={[300, 480, 640]}
+                          sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
+                        />
+                      ) : (
+                        <span class="team-card__initials" aria-hidden="true">
+                          {getInitials(member.name)}
+                        </span>
+                      )}
+                    </div>
+                    <h3>{member.name}</h3>
+                    {member.role && <p>{member.role}</p>}
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <CTASection
+    eyebrow="Kontakt"
+    title="Was möchtest du mit uns besprechen?"
+    text="Für Anliegen, Ideen und Rückmeldungen erreichst du den Elternbeirat von Kindergarten und Schule direkt per E-Mail."
+    primaryHref={`mailto:${contact.parentCouncilKindergartenEmail}`}
+    primaryLabel="Kindergarten kontaktieren"
+    secondaryHref={`mailto:${contact.parentCouncilSchoolEmail}`}
+    secondaryLabel="Schule kontaktieren"
+  />
+</BaseLayout>
+
+<style>
+  .council-intro h2 {
+    font-size: clamp(2.35rem, 4.4vw, 4rem);
+  }
+</style>

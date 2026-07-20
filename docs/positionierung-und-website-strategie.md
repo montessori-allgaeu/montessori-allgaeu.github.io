@@ -371,6 +371,7 @@ Die Hauptnavigation ist bestätigt:
 | Gemeinschaft           | `/gemeinschaft/`                            | Verein, Mitwirkung, fünf Säulen und Zusammenhalt zeigen                   |
 | Prinzipien             | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären          |
 | Team                   | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                         |
+| Elternbeirat           | `/gemeinschaft/elternbeirat/`               | Elternvertretung, Mitwirkung und direkte Ansprechpersonen zeigen          |
 | Träger & Verein        | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären               |
 | Unsere Geschichte      | `/gemeinschaft/geschichte/`                 | Gründung und ausgewählte Wegmarken bewahren, ohne sie primär zu gewichten |
 | Arbeiten bei uns       | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                         |
@@ -475,9 +476,11 @@ Wichtige Pfade:
 - Spendenseite einschließlich Förderschwerpunkten und Kontodaten: `src/content/donations/page.yml`
 - Stellen: `src/content/jobs/`
 - Team: `src/content/team/`
+- Elternbeirat: `src/content/parent-council/`
 - Termine: `src/content/events/`
 - Download-Metadaten: `src/content/downloads/`
 - Teamfotos: `src/assets/images/team/`
+- Elternbeiratsfotos: `src/assets/images/parent-council/`
 - PDF-Dateien: `public/downloads/`
 - Navigation und Prinzipien: `src/data/site.ts`
 - Weiterleitungen: `src/data/legacy.ts`
@@ -496,6 +499,7 @@ Wichtige Pfade:
 - Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.
 - Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
 - Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
+- Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über Pages CMS gepflegt; die Kontaktadressen liegen zentral in den CMS-Stammdaten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
 - Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.

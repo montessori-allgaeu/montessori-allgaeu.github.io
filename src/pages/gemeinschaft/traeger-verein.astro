@@ -161,17 +161,17 @@ const getInitials = (name: string) =>
         <div class="responsibility-map__group">
           <p class="responsibility-map__label">Verantwortung und Führung</p>
           <div class="responsibility-map__row responsibility-map__row--primary">
-            <article>
+            <article class="responsibility-map__card">
               <span>01</span>
               <h3>Verein & Vorstand</h3>
               <p>Trägt die rechtliche, strategische und wirtschaftliche Gesamtverantwortung.</p>
             </article>
-            <article>
+            <article class="responsibility-map__card">
               <span>02</span>
               <h3>Pädagogisches Team & Leitungen</h3>
               <p>Verantwortet Pädagogik, Beobachtung, Begleitung und den Alltag.</p>
             </article>
-            <article>
+            <article class="responsibility-map__card">
               <span>03</span>
               <h3>Verwaltung & Geschäftsführung</h3>
               <p>Sichert verlässliche Abläufe, Ressourcen und organisatorische Führung.</p>
@@ -181,14 +181,14 @@ const getInitials = (name: string) =>
         <div class="responsibility-map__group">
           <p class="responsibility-map__label">Mitgestaltung und Rückmeldung</p>
           <div class="responsibility-map__row responsibility-map__row--participation">
-            <article>
+            <article class="responsibility-map__card">
               <span>04</span>
               <h3>Eltern & Elternbeirat</h3>
               <p>Bringen Perspektiven, Mitarbeit und gemeinschaftliche Verantwortung ein.</p>
             </article>
-            <article>
+            <article class="responsibility-map__card">
               <span>05</span>
-              <h3>Schüler:innen</h3>
+              <h3>Schüler:innen &amp; Schülersprecher</h3>
               <p>Gestalten über Klassenrat, Versammlung und Sprecher:innen ihr Lernumfeld mit.</p>
             </article>
           </div>
@@ -383,11 +383,11 @@ const getInitials = (name: string) =>
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .responsibility-map article {
+  .responsibility-map__card {
     padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1rem, 2.5vw, 2.5rem);
   }
 
-  .responsibility-map article + article {
+  .responsibility-map__card + .responsibility-map__card {
     border-left: 1px solid var(--line);
   }
 
@@ -486,7 +486,7 @@ const getInitials = (name: string) =>
       grid-template-columns: 1fr 1fr;
     }
 
-    .responsibility-map__row--primary article + article {
+    .responsibility-map__row--primary .responsibility-map__card + .responsibility-map__card {
       border-top: 1px solid var(--line);
       border-left: 0;
     }
@@ -593,12 +593,12 @@ const getInitials = (name: string) =>
       grid-template-columns: 1fr;
     }
 
-    .responsibility-map__row--participation article + article {
+    .responsibility-map__row--participation .responsibility-map__card + .responsibility-map__card {
       border-top: 1px solid var(--line);
       border-left: 0;
     }
 
-    .responsibility-map article {
+    .responsibility-map__card {
       display: grid;
       grid-template-columns: 2rem minmax(0, 1fr);
       gap: 0 0.75rem;
@@ -616,7 +616,7 @@ const getInitials = (name: string) =>
       font-size: 1.45rem;
     }
 
-    .responsibility-map article p {
+    .responsibility-map__card p {
       grid-column: 2;
       font-size: 0.9rem;
     }

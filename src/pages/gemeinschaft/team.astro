@@ -20,7 +20,11 @@ const teamGroups = [
     sections: ["Klassenleitungen", "Pädagogische Assistenzen"],
   },
   { name: "Tertia", slug: "tertia" },
-  { name: "Fach- & Förderteam", slug: "fach-foerderteam" },
+  {
+    name: "Fach- & Förderteam",
+    label: "Weitere pädagogische Mitarbeiter",
+    slug: "fach-foerderteam",
+  },
   { name: "Verwaltung", slug: "verwaltung" },
 ] as const;
 
@@ -72,7 +76,7 @@ const getInitials = (name: string) =>
           return (
             <section class="team-group" aria-labelledby={groupId}>
               <p class="eyebrow">Team</p>
-              <h2 id={groupId}>{group.name}</h2>
+              <h2 id={groupId}>{"label" in group ? group.label : group.name}</h2>
               {sections ? (
                 <div class="team-subgroups">
                   {sections.map((section) => (

@@ -13,6 +13,7 @@ export type Job = RawJob & {
   scheduleLabel: string;
 };
 export type TeamMember = CollectionEntry<"team">["data"];
+export type ParentCouncilMember = CollectionEntry<"parentCouncil">["data"];
 export type Event = CollectionEntry<"events">["data"];
 export type Download = CollectionEntry<"downloads">["data"] & { meta: string };
 export type DonationPage = CollectionEntry<"donations">["data"];
@@ -68,6 +69,16 @@ export async function getJobs(): Promise<Job[]> {
 export async function getTeam(): Promise<TeamMember[]> {
   const entries = await getCollection("team", ({ data }) => data.status === "published");
   return entries.map(({ data }) => data).sort((a, b) => byGermanText(a.name, b.name));
+}
+
+export async function getParentCouncil(): Promise<ParentCouncilMember[]> {
+  const entries = await getCollection("parentCouncil", ({ data }) => data.status === "published");
+  return entries
+    .map(({ data }) => data)
+    .sort(
+      (a, b) =>
+        a.area.localeCompare(b.area, "de") || byPosition(a, b) || byGermanText(a.name, b.name),
+    );
 }
 
 export async function getEvents(): Promise<Event[]> {

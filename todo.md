@@ -47,6 +47,9 @@ aktualisiert werden.
       2026 veröffentlichten Anzeigen aktualisieren.
 - [ ] Starttermin der BufDi-Anzeige bestätigen. Die veröffentlichte Vorlage nennt noch den 1. September 2025; bis zur Klärung weist die Website den Start als „Bitte aktuell erfragen“ aus.
 - [ ] Teamnamen, Rollen, Leitungsfunktionen, Vorstand, Aufsichtsbehörden und Kontaktdaten bestätigen.
+- [x] Den Elternbeirat für Kindergarten und Schule einschließlich vorhandener Porträts und
+      Kontaktadressen auf einer eigenen, über Pages CMS pflegbaren Gemeinschaftsseite
+      veröffentlichen.
 - [x] Die Gründungschronik anhand des Jubiläumshefts um die Gründerinnen und ausgewählte,
       verlässlich dokumentierte Wegmarken von Kindergarten und Schule von 1999 bis 2018 ergänzen.
 - [ ] Spendenkonto, aktuelle Förderschwerpunkte, Ansprechpartner sowie Ablauf und Zuständigkeit für
