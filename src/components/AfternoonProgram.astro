@@ -1,0 +1,395 @@
+---
+import type { AfternoonOffer, AfternoonProgram as AfternoonProgramData } from "@/data/content";
+
+interface Props {
+  program: AfternoonProgramData;
+}
+
+const { program } = Astro.props;
+const weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag"] as const;
+const groups = [
+  {
+    id: "primaria",
+    title: "Primaria",
+    detail: "Klassen 1–4",
+    offers: program.offers.filter(({ gradeFrom, gradeTo }) => gradeFrom <= 4 && gradeTo >= 1),
+  },
+  {
+    id: "sekundaria-tertia",
+    title: "Sekundaria & Tertia",
+    detail: "Klassen 5–10",
+    offers: program.offers.filter(({ gradeFrom, gradeTo }) => gradeFrom <= 10 && gradeTo >= 5),
+  },
+];
+
+const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
+  gradeFrom === gradeTo ? `Klasse ${gradeFrom}` : `Klassen ${gradeFrom}–${gradeTo}`;
+---
+
+<section class="section afternoon-program" id="nachmittagsangebote">
+  <div class="container">
+    <div class="afternoon-program__intro">
+      <p class="eyebrow">Nachmittagsangebote · Schuljahr {program.activeSchoolYear}</p>
+      <h2>Was Kinder am Nachmittag wählen können.</h2>
+      <p class="lead">
+        Die Angebote verbinden Bewegung, Natur, Handwerk, Kreativität und vertiefendes Lernen. So
+        können Kinder eigene Interessen weiterverfolgen, Neues ausprobieren und ihren Nachmittag in
+        einer verlässlichen Gruppe gestalten.
+      </p>
+    </div>
+
+    <div class="afternoon-program__groups" data-program-groups>
+      {
+        groups.map((group) => (
+          <details name="nachmittagsbereich" data-program-group={group.id}>
+            <summary>
+              <span class="afternoon-program__group-title">{group.title}</span>
+              <span class="afternoon-program__group-meta">
+                {group.detail} · {group.offers.length} Angebote
+              </span>
+            </summary>
+
+            <div class="afternoon-program__days">
+              {weekdays.map((weekday) => {
+                const offers = group.offers.filter((offer) => offer.weekday === weekday);
+                if (offers.length === 0) return null;
+
+                const dayId = `${group.id}-${weekday.toLowerCase()}`;
+                return (
+                  <section class="afternoon-day" aria-labelledby={dayId}>
+                    <h3 id={dayId}>{weekday}</h3>
+                    <div class="afternoon-day__offers">
+                      {offers.map((offer) => (
+                        <article class="afternoon-offer" data-afternoon-offer={offer.slug}>
+                          <div>
+                            <p class="afternoon-offer__meta">
+                              {gradeLabel(offer)} · {offer.costLabel}
+                            </p>
+                            <h4>{offer.title}</h4>
+                          </div>
+                          <div class="afternoon-offer__content">
+                            <p>{offer.description}</p>
+                            <p class="afternoon-offer__leaders">
+                              <strong>Begleitung:</strong> {offer.leaders}
+                              {offer.organization && ` · ${offer.organization}`}
+                            </p>
+                            {offer.additionalCostNote && (
+                              <p class="afternoon-offer__note">{offer.additionalCostNote}</p>
+                            )}
+                            {offer.externalUrl && (
+                              <a class="afternoon-offer__link" href={offer.externalUrl}>
+                                Mehr über {offer.organization ?? offer.title}
+                              </a>
+                            )}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const programGroups = document.querySelectorAll<HTMLElement>("[data-program-groups]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const programGroup of programGroups) {
+    const schoolAreas = Array.from(
+      programGroup.querySelectorAll<HTMLDetailsElement>("details[data-program-group]"),
+    );
+    const animations = new WeakMap<HTMLDetailsElement, Animation>();
+    const intendedStates = new WeakMap<HTMLDetailsElement, boolean>();
+
+    const measureHeight = (schoolArea: HTMLDetailsElement, open: boolean) => {
+      const previousOpen = schoolArea.open;
+      const previousHeight = schoolArea.style.height;
+
+      schoolArea.style.removeProperty("height");
+      schoolArea.open = open;
+      const height = schoolArea.getBoundingClientRect().height;
+      schoolArea.open = previousOpen;
+      schoolArea.style.height = previousHeight;
+
+      return height;
+    };
+
+    const finish = (schoolArea: HTMLDetailsElement, open: boolean, animation?: Animation) => {
+      if (animation && animations.get(schoolArea) !== animation) return;
+
+      schoolArea.open = open;
+      schoolArea.style.removeProperty("height");
+      schoolArea.style.removeProperty("overflow");
+      schoolArea.removeAttribute("data-program-motion");
+      animations.delete(schoolArea);
+    };
+
+    const transition = (schoolArea: HTMLDetailsElement, open: boolean) => {
+      const currentHeight = schoolArea.getBoundingClientRect().height;
+      animations.get(schoolArea)?.cancel();
+      intendedStates.set(schoolArea, open);
+
+      if (reducedMotion.matches) {
+        finish(schoolArea, open);
+        return;
+      }
+
+      const targetHeight = measureHeight(schoolArea, open);
+      const heightDifference = Math.abs(targetHeight - currentHeight);
+      const duration = Math.min(520, Math.max(280, heightDifference * 0.12));
+
+      // Keep the course list rendered while it collapses so both directions animate.
+      schoolArea.open = true;
+      schoolArea.style.height = `${currentHeight}px`;
+      schoolArea.style.overflow = "hidden";
+      schoolArea.dataset.programMotion = open ? "opening" : "closing";
+
+      const animation = schoolArea.animate(
+        { height: [`${currentHeight}px`, `${targetHeight}px`] },
+        { duration, easing: "cubic-bezier(0.4, 0, 0.2, 1)" },
+      );
+
+      animations.set(schoolArea, animation);
+      animation.addEventListener("finish", () => finish(schoolArea, open, animation), {
+        once: true,
+      });
+    };
+
+    for (const schoolArea of schoolAreas) {
+      const summary = schoolArea.querySelector("summary");
+      if (!summary) continue;
+
+      // The native name keeps the accordion exclusive if JavaScript is unavailable.
+      schoolArea.removeAttribute("name");
+      summary.addEventListener("click", (event) => {
+        event.preventDefault();
+        const willOpen = !(intendedStates.get(schoolArea) ?? schoolArea.open);
+
+        if (willOpen) {
+          for (const otherSchoolArea of schoolAreas) {
+            if (
+              otherSchoolArea !== schoolArea &&
+              (intendedStates.get(otherSchoolArea) ?? otherSchoolArea.open)
+            ) {
+              transition(otherSchoolArea, false);
+            }
+          }
+        }
+
+        transition(schoolArea, willOpen);
+      });
+    }
+  }
+</script>
+
+<style>
+  .afternoon-program {
+    scroll-margin-top: var(--header-height);
+    background: var(--paper-light);
+  }
+
+  .afternoon-program__intro {
+    max-width: 52rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .afternoon-program__groups {
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .afternoon-program__groups details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .afternoon-program__groups summary {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: center;
+    padding: clamp(1.8rem, 4vw, 2.8rem) 4rem clamp(1.8rem, 4vw, 2.8rem) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .afternoon-program__groups summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .afternoon-program__groups summary::before,
+  .afternoon-program__groups summary::after {
+    position: absolute;
+    top: 50%;
+    right: 0.25rem;
+    width: 1rem;
+    height: 1px;
+    background: var(--terracotta-text);
+    content: "";
+    transform-origin: center;
+  }
+
+  .afternoon-program__groups summary::after {
+    transform: rotate(90deg) scaleX(1);
+    transition: transform 180ms ease;
+  }
+
+  .afternoon-program__groups details[open] summary::after {
+    transform: rotate(90deg) scaleX(0);
+  }
+
+  .afternoon-program__group-title {
+    color: var(--forest);
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 450;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .afternoon-program__group-meta {
+    color: var(--forest-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .afternoon-program__days {
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+
+  .afternoon-program__groups details[data-program-motion="opening"] .afternoon-program__days {
+    animation: program-days-in 360ms ease-out;
+  }
+
+  .afternoon-program__groups details[data-program-motion="closing"] .afternoon-program__days {
+    animation: program-days-out 220ms ease-in;
+  }
+
+  @keyframes program-days-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+  }
+
+  @keyframes program-days-out {
+    to {
+      opacity: 0;
+      transform: translateY(-0.3rem);
+    }
+  }
+
+  .afternoon-day {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.32fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .afternoon-day h3 {
+    margin: 0;
+    color: var(--terracotta-text);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+  }
+
+  .afternoon-offer {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    padding-block: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .afternoon-offer:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .afternoon-offer:last-child {
+    padding-bottom: 0;
+  }
+
+  .afternoon-offer h4 {
+    margin: 0;
+    font-size: clamp(1.55rem, 2.5vw, 2rem);
+    line-height: 1.12;
+  }
+
+  .afternoon-offer__meta {
+    margin-bottom: 0.65rem;
+    color: var(--terracotta-text);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .afternoon-offer__content p {
+    margin-bottom: 0.8rem;
+  }
+
+  .afternoon-offer__content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .afternoon-offer__leaders,
+  .afternoon-offer__note,
+  .afternoon-offer__link {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .afternoon-offer__leaders {
+    color: var(--forest-muted);
+  }
+
+  .afternoon-offer__note {
+    padding-left: 1rem;
+    border-left: 2px solid var(--ochre);
+    color: var(--forest-muted);
+  }
+
+  .afternoon-offer__link {
+    color: var(--terracotta-dark);
+    font-weight: 650;
+  }
+
+  @media (max-width: 840px) {
+    .afternoon-program__groups summary {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+    }
+
+    .afternoon-day,
+    .afternoon-offer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .afternoon-day {
+      gap: 2rem;
+    }
+
+    .afternoon-offer {
+      gap: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .afternoon-program__groups summary::after {
+      transition: none;
+    }
+
+    .afternoon-program__groups details[data-program-motion] .afternoon-program__days {
+      animation: none;
+    }
+  }
+</style>

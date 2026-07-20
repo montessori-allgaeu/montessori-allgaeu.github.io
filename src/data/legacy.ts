@@ -13,6 +13,7 @@ export const legacyRedirects: Record<string, string> = {
   "schule/kosten/überblick": "/kennenlernen/kosten/",
   "schule/kosten/details": "/kennenlernen/kosten/",
   "schule/anmeldung": "/kennenlernen/aufnahme-schule/",
+  "schule/schulgeschichte": "/gemeinschaft/geschichte/",
   "kindergarten-1": "/kindergarten-schule/kindergarten/",
   "kindergarten-1/kindergarten": "/kindergarten-schule/kindergarten/",
   "kindergarten-1/öffnungszeiten": "/kindergarten-schule/kindergarten/",

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatDownloadMeta, formatFileSize, formatGermanPhoneHref } from "./content-utils";
+import {
+  formatDownloadMeta,
+  formatFileSize,
+  formatGermanLongDate,
+  formatGermanPhoneHref,
+} from "./content-utils";
 
 describe("editorial content helpers", () => {
   it("turns a readable German telephone number into a link target", () => {
@@ -11,6 +16,10 @@ describe("editorial content helpers", () => {
   it("formats file sizes for the German download list", () => {
     expect(formatFileSize(187 * 1024)).toBe("187 KB");
     expect(formatFileSize(Math.round(2.2 * 1024 * 1024))).toBe("2,2 MB");
+  });
+
+  it("formats an editorial ISO date as a long German date", () => {
+    expect(formatGermanLongDate("2026-12-31")).toBe("31. Dezember 2026");
   });
 
   it("builds download metadata from editorial facts and the real file", () => {

@@ -1,10 +1,11 @@
 import { getCollection, getEntry, type CollectionEntry } from "astro:content";
 import { stat } from "node:fs/promises";
 import { join } from "node:path";
-import { formatDownloadMeta, formatGermanPhoneHref } from "./content-utils";
+import { formatDownloadMeta, formatGermanLongDate, formatGermanPhoneHref } from "./content-utils";
 
 type RawJob = CollectionEntry<"jobs">["data"];
 type RawContactSettings = CollectionEntry<"contactSettings">["data"];
+type RawAfternoonOffer = CollectionEntry<"afternoonOffers">["data"];
 
 export type Job = RawJob & {
   slug: string;
@@ -15,6 +16,13 @@ export type TeamMember = CollectionEntry<"team">["data"];
 export type Event = CollectionEntry<"events">["data"];
 export type Download = CollectionEntry<"downloads">["data"] & { meta: string };
 export type DonationPage = CollectionEntry<"donations">["data"];
+export type AfternoonOffer = RawAfternoonOffer & {
+  slug: string;
+  costLabel: string;
+};
+export type AfternoonProgram = CollectionEntry<"afternoonProgramSettings">["data"] & {
+  offers: AfternoonOffer[];
+};
 export type WebsiteSettings = {
   contact: RawContactSettings & {
     phoneHref: string;
@@ -23,6 +31,12 @@ export type WebsiteSettings = {
   };
   openingHours: Omit<CollectionEntry<"openingHoursSettings">["data"], "kindergartenClosures">;
   kindergartenClosures: CollectionEntry<"openingHoursSettings">["data"]["kindergartenClosures"];
+  kindergartenAdmission: CollectionEntry<"kindergartenAdmissionSettings">["data"] & {
+    applicationDeadlineLabel: string;
+  };
+  schoolAdmission: CollectionEntry<"schoolAdmissionSettings">["data"] & {
+    applicationDeadlineLabel: string;
+  };
   meals: CollectionEntry<"mealSettings">["data"];
   costs: {
     validFrom: string;
@@ -87,18 +101,73 @@ export async function getDonationPage(): Promise<DonationPage> {
   return entry.data;
 }
 
-export async function getWebsiteSettings(): Promise<WebsiteSettings> {
-  const [contact, openingHours, meals, schoolFees, kindergartenFees, contributions] =
-    await Promise.all([
-      getEntry("contactSettings", "contact"),
-      getEntry("openingHoursSettings", "opening-hours"),
-      getEntry("mealSettings", "meals"),
-      getEntry("schoolFeeSettings", "school-fees"),
-      getEntry("kindergartenFeeSettings", "kindergarten-fees"),
-      getEntry("communityContributionSettings", "community-contributions"),
-    ]);
+export async function getAfternoonProgram(): Promise<AfternoonProgram> {
+  const settings = await getEntry("afternoonProgramSettings", "afternoon-program");
 
-  if (!contact || !openingHours || !meals || !schoolFees || !kindergartenFees || !contributions) {
+  if (!settings) {
+    throw new Error("Die Ganztag-Einstellungen fehlen: src/content/settings/afternoon-program.yml");
+  }
+
+  const weekdayPosition = new Map(
+    ["Montag", "Dienstag", "Mittwoch", "Donnerstag"].map((weekday, index) => [weekday, index]),
+  );
+  const entries = await getCollection(
+    "afternoonOffers",
+    ({ data }) => data.status === "published" && data.schoolYear === settings.data.activeSchoolYear,
+  );
+  const offers = entries
+    .map(({ id, data }) => ({
+      ...data,
+      slug: id,
+      costLabel: data.monthlyFee === 0 ? "Kostenfrei" : `${data.monthlyFee} € pro Monat`,
+    }))
+    .sort(
+      (a, b) =>
+        (weekdayPosition.get(a.weekday) ?? 99) - (weekdayPosition.get(b.weekday) ?? 99) ||
+        byPosition(a, b) ||
+        byGermanText(a.title, b.title),
+    );
+
+  if (offers.length === 0) {
+    throw new Error(
+      `Für das aktive Schuljahr ${settings.data.activeSchoolYear} sind keine Nachmittagsangebote veröffentlicht.`,
+    );
+  }
+
+  return { ...settings.data, offers };
+}
+
+export async function getWebsiteSettings(): Promise<WebsiteSettings> {
+  const [
+    contact,
+    openingHours,
+    meals,
+    kindergartenAdmission,
+    schoolAdmission,
+    schoolFees,
+    kindergartenFees,
+    contributions,
+  ] = await Promise.all([
+    getEntry("contactSettings", "contact"),
+    getEntry("openingHoursSettings", "opening-hours"),
+    getEntry("mealSettings", "meals"),
+    getEntry("kindergartenAdmissionSettings", "kindergarten-admission"),
+    getEntry("schoolAdmissionSettings", "school-admission"),
+    getEntry("schoolFeeSettings", "school-fees"),
+    getEntry("kindergartenFeeSettings", "kindergarten-fees"),
+    getEntry("communityContributionSettings", "community-contributions"),
+  ]);
+
+  if (
+    !contact ||
+    !openingHours ||
+    !meals ||
+    !kindergartenAdmission ||
+    !schoolAdmission ||
+    !schoolFees ||
+    !kindergartenFees ||
+    !contributions
+  ) {
     throw new Error("Mindestens eine Datei unter src/content/settings/ fehlt.");
   }
 
@@ -121,6 +190,16 @@ export async function getWebsiteSettings(): Promise<WebsiteSettings> {
     },
     openingHours: openingHoursData,
     kindergartenClosures,
+    kindergartenAdmission: {
+      ...kindergartenAdmission.data,
+      applicationDeadlineLabel: formatGermanLongDate(
+        kindergartenAdmission.data.applicationDeadline,
+      ),
+    },
+    schoolAdmission: {
+      ...schoolAdmission.data,
+      applicationDeadlineLabel: formatGermanLongDate(schoolAdmission.data.applicationDeadline),
+    },
     meals: meals.data,
     costs: {
       validFrom: schoolFees.data.validFrom,

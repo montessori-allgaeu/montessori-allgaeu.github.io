@@ -15,6 +15,11 @@ npm run dev
 
 Die Website läuft anschließend unter `http://localhost:4321/`.
 
+Der Dev-Server baut den Astro-Content-Cache bei jedem Start neu auf. Nach Änderungen an der
+Inhaltsstruktur oder an `src/content.config.ts` einen bereits laufenden Dev-Server neu starten.
+Falls eine manuelle Aktualisierung nötig ist, steht zusätzlich `npm run content:refresh` zur
+Verfügung.
+
 ## Qualitätschecks
 
 ```sh
@@ -32,11 +37,15 @@ npm run test:e2e
 
 - Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
 - Kurzanleitung für Nathanael: [`docs/redaktions-kurzanleitung.md`](docs/redaktions-kurzanleitung.md)
-- Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
+- Kontaktdaten, Aufnahme, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
 - Spendenseite und aktuelle Förderschwerpunkte: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Team: `src/content/team/` und `src/assets/images/team/`
 - Stellenangebote: `src/content/jobs/`
+- Nachmittagsangebote: `src/content/afternoon-offers/`
+- Aktives Schuljahr und Rahmen der Kurswahl: `src/content/settings/afternoon-program.yml`
+- Kindergartenjahr und Anmeldeschluss: `src/content/settings/kindergarten-admission.yml`
+- Schuljahr und Anmeldeschluss: `src/content/settings/school-admission.yml`
 - Download-Metadaten: `src/content/downloads/`
 - Alte Weiterleitungen: `src/data/legacy.ts`
 - Downloads: `public/downloads/`
@@ -44,7 +53,7 @@ npm run test:e2e
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Teammitglieder und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Teammitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
 
 Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
 

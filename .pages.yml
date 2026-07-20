@@ -86,7 +86,7 @@ content:
     path: src/content/jobs
     format: yaml
     filename:
-      template: "{title}.yml"
+      template: "{schoolYear}-{weekday}-{gradeFrom}-{gradeTo}-{title}.yml"
       field: false
     view:
       fields: [title, area, scope, status, position]
@@ -176,6 +176,113 @@ content:
         required: true
         default: draft
         description: Neue Stellen bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
+        options:
+          values:
+            - name: draft
+              label: Entwurf – nicht auf Website
+            - name: published
+              label: Veröffentlicht – auf Website
+
+  - name: afternoon-offers
+    label: Nachmittagsangebote
+    type: collection
+    path: src/content/afternoon-offers
+    format: yaml
+    filename:
+      template: "{title}.yml"
+      field: false
+    view:
+      fields: [title, schoolYear, weekday, gradeFrom, gradeTo, monthlyFee, status, position]
+      primary: title
+      sort: [weekday, position, title]
+      default:
+        sort: weekday
+        order: asc
+      search: [title, schoolYear, weekday, leaders, organization, description]
+    operations:
+      rename: false
+    fields:
+      - name: title
+        label: Titel
+        type: string
+        required: true
+      - name: schoolYear
+        label: Schuljahr
+        type: string
+        required: true
+        default: 2026/27
+        description: Nur Angebote des unter „Stammdaten → Ganztag & Kurswahl“ aktiven Schuljahrs erscheinen auf der Website.
+        pattern: "^\\d{4}/\\d{2}$"
+      - name: weekday
+        label: Wochentag
+        type: select
+        required: true
+        options:
+          placeholder: Wochentag auswählen
+          values:
+            - Montag
+            - Dienstag
+            - Mittwoch
+            - Donnerstag
+      - name: gradeFrom
+        label: Ab Klasse
+        type: number
+        required: true
+        options:
+          min: 1
+          max: 10
+      - name: gradeTo
+        label: Bis Klasse
+        type: number
+        required: true
+        options:
+          min: 1
+          max: 10
+      - name: leaders
+        label: Begleitung
+        type: string
+        required: true
+        description: Namen so eingeben, wie sie auf der Website erscheinen sollen.
+      - name: organization
+        label: Organisation
+        type: string
+        description: Optional, zum Beispiel „NaNo“.
+      - name: description
+        label: Beschreibung
+        type: text
+        required: true
+        description: Zwei bis vier kurze Sätze. Klassenstufen, Kosten und Begleitung nicht wiederholen.
+      - name: monthlyFee
+        label: Monatlicher Beitrag in Euro
+        type: number
+        required: true
+        default: 0
+        description: 0 bedeutet „Kostenfrei“. Nur ganze Eurobeträge eingeben.
+        options:
+          min: 0
+      - name: additionalCostNote
+        label: Zusätzlicher Kostenhinweis
+        type: text
+        description: Optional, falls zum Beispiel eine Abschlussfahrt zusätzliche Kosten verursacht.
+      - name: externalUrl
+        label: Externer Link
+        type: string
+        description: Optional, vollständige Adresse beginnend mit https://.
+        pattern: "^https://.+"
+      - name: position
+        label: Position innerhalb des Wochentags
+        type: number
+        required: true
+        default: 50
+        description: 10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.
+        options:
+          min: 1
+      - name: status
+        label: Status
+        type: select
+        required: true
+        default: draft
+        description: Neue Angebote bleiben zunächst unsichtbar. Erst nach der Prüfung veröffentlichen.
         options:
           values:
             - name: draft
@@ -736,6 +843,50 @@ content:
                 type: text
                 required: true
 
+      - name: kindergarten-admission-settings
+        label: Aufnahme Kindergarten
+        type: file
+        path: src/content/settings/kindergarten-admission.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
+        fields:
+          - name: schoolYear
+            label: Kindergartenjahr
+            type: string
+            required: true
+            description: Vollständig eingeben, zum Beispiel „2027/2028“.
+            pattern: "^\\d{4}/\\d{4}$"
+          - name: applicationDeadline
+            label: Anmeldeschluss
+            type: date
+            required: true
+            options:
+              format: yyyy-MM-dd
+
+      - name: school-admission-settings
+        label: Aufnahme Schule
+        type: file
+        path: src/content/settings/school-admission.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
+        fields:
+          - name: schoolYear
+            label: Schuljahr
+            type: string
+            required: true
+            description: Kurz eingeben, zum Beispiel „2027/28“.
+            pattern: "^\\d{4}/\\d{2}$"
+          - name: applicationDeadline
+            label: Anmeldeschluss
+            type: date
+            required: true
+            options:
+              format: yyyy-MM-dd
+
       - name: meal-settings
         label: Mittagessen
         type: file
@@ -759,6 +910,44 @@ content:
             required: true
           - name: note
             label: Hinweis
+            type: text
+            required: true
+
+      - name: afternoon-program-settings
+        label: Ganztag & Kurswahl
+        type: file
+        path: src/content/settings/afternoon-program.yml
+        format: yaml
+        operations:
+          create: false
+          delete: false
+        fields:
+          - name: activeSchoolYear
+            label: Aktives Schuljahr
+            type: string
+            required: true
+            description: Nur veröffentlichte Nachmittagsangebote mit diesem Schuljahr erscheinen auf der Website. Erst umstellen, wenn das neue Angebot vollständig vorbereitet ist.
+            pattern: "^\\d{4}/\\d{2}$"
+          - name: minimumAfternoons
+            label: Mindestanzahl Nachmittage
+            type: number
+            required: true
+            options:
+              min: 1
+              max: 4
+          - name: maximumAfternoons
+            label: Höchstanzahl Nachmittage
+            type: number
+            required: true
+            options:
+              min: 1
+              max: 4
+          - name: intro
+            label: Erklärung der Kurswahl
+            type: text
+            required: true
+          - name: secundariaNote
+            label: Hinweis Sekundaria & Tertia
             type: text
             required: true
 

@@ -9,6 +9,15 @@ export function formatGermanPhoneHref(phone: string): string {
   return compact;
 }
 
+export function formatGermanLongDate(date: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
+}
+
 export function formatFileSize(bytes: number): string {
   if (bytes >= 1024 * 1024) {
     const megabytes = bytes / (1024 * 1024);

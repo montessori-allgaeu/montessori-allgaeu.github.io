@@ -1,0 +1,329 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import CTASection from "@/components/CTASection.astro";
+import firstClassImage from "@/assets/images/history/erste-klasse-2001.webp";
+import earlyClassroomImage from "@/assets/images/history/klassenraum-anfangsjahre.webp";
+import renovationImage from "@/assets/images/history/umbau-anfangsjahre.webp";
+
+const milestones = [
+  {
+    year: "2001",
+    title: "17 Stunden vor Schulbeginn kommt das Ja.",
+    text: "Im Kinderheim Kalzhofen sind Räume und eine Lehrerin gefunden. Doch drei Tage vor der geplanten Eröffnung fehlt noch die Genehmigung, während Familien den Klassenraum umbauen. 17 Stunden vor dem Start kommt die vorläufige Erlaubnis; am 11. September beginnt die erste Klasse.",
+  },
+  {
+    year: "2002–2005",
+    title: "Der Weg wächst bis zur 10. Klasse.",
+    text: "Im September 2002 kommt eine zweite Primaria hinzu. 2003 startet die erste Sekundaria, 2004 die zweite. Mit der Genehmigung des M-Zugs im Jahr 2005 kann die Schule ihren Bildungsweg bis zur 10. Klasse weiterentwickeln.",
+  },
+  {
+    year: "2008–2009",
+    title: "Die ersten Jugendlichen machen ihren Abschluss.",
+    text: "Im Juli 2008 bestehen die ersten Schülerinnen und Schüler den Qualifizierenden Hauptschulabschluss. Ein Jahr später folgt der erste Mittlere Bildungsabschluss.",
+  },
+  {
+    year: "2013",
+    title: "Die offene Ganztagsschule startet.",
+    text: "Im September beginnt die offene Ganztagsschule. Neben den Klassen wächst damit auch der gemeinsame Alltag an der Monte.",
+  },
+  {
+    year: "2015",
+    title: "Der Kindergarten kommt hinzu.",
+    text: "Mit der Eröffnung des Montessori-Kindergartens beginnt der gemeinsame Weg nun schon vor der Schulzeit. Kindergarten und Schule wachsen zu einer Monte vom Kindergartenalter bis zur 10. Klasse zusammen.",
+  },
+  {
+    year: "2018",
+    title: "Die Organisation wächst mit.",
+    text: "Im April bekommt die Schule einen Geschäftsleiter. In dieser Rolle werden organisatorische Aufgaben gebündelt, die in den Anfangsjahren auf viele Schultern verteilt waren.",
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Unsere Geschichte"
+  description="Wie aus einer Elterninitiative die Monte entstand und vom Schulstart 2001 zu einer Gemeinschaft vom Kindergarten bis zur 10. Klasse wuchs."
+>
+  <PageIntro
+    eyebrow="Unsere Geschichte"
+    title="Aus einer Idee wurde die Monte."
+    intro="Die Anfänge unserer Schule erzählen von Menschen, die Verantwortung übernommen, gemeinsam Räume geschaffen und trotz vieler Hindernisse weitergemacht haben."
+  />
+
+  <div class="history-hero">
+    <div class="container">
+      <figure>
+        <div class="history-hero__image">
+          <Image
+            src={firstClassImage}
+            alt="Kinder der ersten jahrgangsgemischten Klasse im Herbst 2001 vor dem Schulgebäude"
+            widths={[640, 960, 1440, 1920]}
+            sizes="(max-width: 1280px) calc(100vw - 3rem), 1240px"
+            loading="eager"
+          />
+        </div>
+        <figcaption>Die erste jahrgangsgemischte Klasse im Herbst 2001</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section class="section section--compact history-intro">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Die Anfänge</p>
+        <h2>Eine Schule entsteht nicht allein durch einen Plan.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Im Herbst 1999 trafen sich Martina Kamperhoff, Dagmar Neubronner und Tina Stümpfig in Aach
+          bei Oberstaufen. Nach gemeinsamen Hospitationen an der Aktiven Schule in Kempten stand ihr
+          Entschluss fest: Sie wollten für ihre Kinder eine freie Schule nach Maria Montessori
+          gründen.
+        </p>
+        <p>
+          Im Jahr 2000 gründeten sie gemeinsam mit weiteren Mitstreiter:innen den Monte e.V. Was
+          folgte, war keine geradlinige Gründung: Familien entwickelten ein pädagogisches Konzept,
+          gewannen Menschen auf deutscher und österreichischer Seite, suchten Räume und
+          Pädagog:innen, übernahmen Bürgschaften und verhandelten mit Behörden.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--light" aria-labelledby="milestones-title">
+    <div class="container">
+      <div class="milestones-heading">
+        <p class="eyebrow">2001–2018</p>
+        <h2 id="milestones-title">Was aus dem Anfang gewachsen ist.</h2>
+        <p class="lead">
+          Aus einer ersten Klasse wird Schritt für Schritt eine Gemeinschaft, die Kinder vom
+          Kindergartenalter bis zum Abschluss begleitet.
+        </p>
+      </div>
+
+      <div class="milestones">
+        {
+          milestones.map((milestone) => (
+            <article class="milestone">
+              <p class="milestone__year">{milestone.year}</p>
+              <div>
+                <h3>{milestone.title}</h3>
+                <p>{milestone.text}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section history-community">
+    <div class="container history-community__grid">
+      <div class="history-community__copy">
+        <p class="eyebrow">Von vielen getragen</p>
+        <h2>Gemeinschaft war von Anfang an praktische Arbeit.</h2>
+        <p class="lead">
+          Die Schule konnte beginnen und wachsen, weil Eltern, Pädagog:innen und Unterstützer:innen
+          gemeinsam Verantwortung übernommen haben.
+        </p>
+        <p>
+          Sie renovierten Räume, organisierten Material und Finanzierung und teilten in den ersten
+          Jahren selbst Verwaltung, Telefondienst, Reinigung und pädagogische Unterstützung
+          untereinander auf. Diese Anfangsjahre erklären, warum Verein, Mitwirkung und persönliche
+          Verantwortung bis heute zur Identität der Monte gehören.
+        </p>
+      </div>
+      <div class="history-community__images">
+        <figure>
+          <div class="history-community__image">
+            <Image
+              src={earlyClassroomImage}
+              alt="Kinder und Erwachsene in einem Klassenraum der jungen Montessori-Schule"
+              widths={[480, 720]}
+              sizes="(max-width: 860px) calc(100vw - 3rem), 34vw"
+            />
+          </div>
+          <figcaption>Gemeinsames Lernen in den Anfangsjahren</figcaption>
+        </figure>
+        <figure>
+          <div class="history-community__image">
+            <Image
+              src={renovationImage}
+              alt="Ein Mitglied der Monte-Gemeinschaft bei Umbauarbeiten in den Anfangsjahren"
+              widths={[480, 720]}
+              sizes="(max-width: 860px) calc(100vw - 3rem), 34vw"
+            />
+          </div>
+          <figcaption>Umbauarbeiten für neue Lernräume</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--terracotta history-today">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Bis heute</p>
+        <h2>Der gemeinsame Weg geht weiter.</h2>
+      </div>
+      <div>
+        <p class="lead">
+          Heute bilden Kindergarten und Schule eine gemeinsame Monte vom Kindergartenalter bis zur
+          10. Klasse.
+        </p>
+        <p>
+          Vieles hat sich seit den Anfangsjahren weiterentwickelt. Geblieben ist der Anspruch, eine
+          Umgebung zu schaffen, in der Kinder eigenständig ihren Weg gehen können – getragen von
+          Menschen, die Verantwortung nicht nur benennen, sondern übernehmen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    eyebrow="Gemeinschaft"
+    title="Die Monte wird gemeinsam getragen."
+    text="Eltern, Pädagog:innen, Kinder, Leitung, Verwaltung und Vorstand übernehmen unterschiedliche Aufgaben – und gestalten die Monte miteinander weiter."
+    primaryHref="/gemeinschaft/traeger-verein/"
+    primaryLabel="Träger & Verein"
+    secondaryHref="/gemeinschaft/"
+    secondaryLabel="Gemeinschaft"
+  />
+</BaseLayout>
+
+<style>
+  .history-hero {
+    padding-bottom: clamp(4rem, 7vw, 7rem);
+  }
+
+  .history-hero figure,
+  .history-community figure {
+    margin: 0;
+  }
+
+  .history-hero__image {
+    position: relative;
+    aspect-ratio: 2.1 / 1;
+    overflow: hidden;
+  }
+
+  .history-hero__image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .history-hero figcaption,
+  .history-community figcaption {
+    padding-top: 0.7rem;
+    color: var(--forest-muted);
+    font-size: 0.78rem;
+  }
+
+  .history-intro h2 {
+    max-width: 33rem;
+  }
+
+  .milestones-heading {
+    max-width: 49rem;
+    margin-bottom: clamp(3.5rem, 6vw, 5.5rem);
+  }
+
+  .milestones {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .milestone {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.32fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    padding-block: clamp(2rem, 4vw, 3.5rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .milestone__year {
+    margin: 0;
+    color: var(--terracotta-text);
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+  }
+
+  .milestone h3 {
+    margin-bottom: 0.7rem;
+  }
+
+  .milestone div p {
+    max-width: 48rem;
+    margin-bottom: 0;
+  }
+
+  .history-community__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(3rem, 8vw, 8rem);
+    align-items: center;
+  }
+
+  .history-community__copy h2 {
+    font-size: clamp(2.6rem, 4.8vw, 4.5rem);
+  }
+
+  .history-community__images {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    align-items: start;
+  }
+
+  .history-community__images figure:nth-child(2) {
+    margin-top: clamp(3rem, 7vw, 6rem);
+  }
+
+  .history-community__image {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  .history-community__image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .history-today p:not(.eyebrow) {
+    color: var(--white);
+  }
+
+  @media (max-width: 860px) {
+    .history-community__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .history-hero__image,
+    .history-community__image {
+      aspect-ratio: 4 / 3;
+    }
+
+    .milestone {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .history-community__images {
+      grid-template-columns: 1fr;
+    }
+
+    .history-community__images figure:nth-child(2) {
+      margin-top: 1.5rem;
+    }
+  }
+</style>

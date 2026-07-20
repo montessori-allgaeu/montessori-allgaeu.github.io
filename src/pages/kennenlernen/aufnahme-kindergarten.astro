@@ -5,7 +5,7 @@ import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
 
-const { contact } = await getWebsiteSettings();
+const { contact, kindergartenAdmission } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -26,26 +26,27 @@ const { contact } = await getWebsiteSettings();
   <section class="section">
     <div class="container grid-2">
       <div>
-        <p class="eyebrow">Der nächste Aufnahmezyklus</p>
-        <h2>Neue Termine folgen.</h2>
+        <p class="eyebrow">Kindergartenjahr {kindergartenAdmission.schoolYear}</p>
+        <h2>Jetzt anmelden.</h2>
         <div class="notice">
           <p>
-            Die Fristen und Kennenlerntermine für das nächste Kindergartenjahr veröffentlichen wir
-            hier, sobald sie verbindlich feststehen. Bitte reicht aktuell keine Unterlagen für einen
-            noch nicht eröffneten Aufnahmezyklus ein.
+            Für das Kindergartenjahr {kindergartenAdmission.schoolYear} könnt ihr den ausgefüllten Aufnahmebogen
+            bis zum <time datetime={kindergartenAdmission.applicationDeadline}
+              >{kindergartenAdmission.applicationDeadlineLabel}</time
+            > per E-Mail oder Post an den Kindergarten senden.
           </p>
         </div>
       </div>
       <div>
         <p class="lead">
-          Ihr könnt euch schon jetzt mit unserer Haltung, dem langfristigen Weg in die Schule und
-          den Kosten vertraut machen.
+          Infoabende, Tage der offenen Tür und weitere Möglichkeiten, die Monte persönlich
+          kennenzulernen, veröffentlichen wir auf unserer Terminseite.
         </p>
         <div class="button-row">
-          <a class="button" href="/termine/">Termine ansehen</a>
-          <a class="button button--outline" href={`mailto:${contact.kindergartenEmail}`}
-            >Kindergarten kontaktieren</a
+          <a class="button" href="/downloads/anmeldeantrag-kindergarten.pdf"
+            >Aufnahmebogen herunterladen</a
           >
+          <a class="button button--outline" href="/termine/">Termine ansehen</a>
         </div>
       </div>
     </div>
@@ -55,7 +56,7 @@ const { contact } = await getWebsiteSettings();
     <div class="container">
       <div class="section-heading">
         <p class="eyebrow">Der Ablauf</p>
-        <h2>Fünf Schritte zum gemeinsamen Ja.</h2>
+        <h2>Vier Schritte zum gemeinsamen Ja.</h2>
       </div>
       <ol class="steps">
         <li class="step">
@@ -68,17 +69,11 @@ const { contact } = await getWebsiteSettings();
         </li>
         <li class="step">
           <div>
-            <h3>Monte erleben</h3><p>
-              Kommt zum Tag der offenen Tür oder zu einem angekündigten Kennenlernformat. Eure
-              Fragen sind ausdrücklich willkommen.
-            </p>
-          </div>
-        </li>
-        <li class="step">
-          <div>
             <h3>Aufnahmebogen einreichen</h3><p>
-              Wenn der Aufnahmezyklus geöffnet ist, sendet ihr den ausgefüllten Bogen fristgerecht
-              per E-Mail oder Post an den Kindergarten.
+              Sendet den ausgefüllten Bogen bis zum <time
+                datetime={kindergartenAdmission.applicationDeadline}
+                >{kindergartenAdmission.applicationDeadlineLabel}</time
+              > per E-Mail oder Post an den Kindergarten.
             </p>
           </div>
         </li>

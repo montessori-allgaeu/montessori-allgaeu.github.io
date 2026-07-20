@@ -5,17 +5,17 @@ import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
 
-const { contact } = await getWebsiteSettings();
+const { schoolAdmission } = await getWebsiteSettings();
 ---
 
 <BaseLayout
   title="Aufnahme Schule"
-  description="Der Aufnahmeprozess für die 1. Klasse der Montessori-Schule Allgäu: Infoabend, Absichtserklärung, Hospitation, Kennenlernen und Entscheidung."
+  description="Der Aufnahmeprozess der Montessori-Schule Allgäu: Infoabend, Absichtserklärung, Hospitation, Kennenlernen und gemeinsame Entscheidung."
 >
   <PageIntro
     eyebrow="Aufnahme Schule"
-    title="Einschulung ist eine gemeinsame Entscheidung."
-    intro="Wir nehmen vor allem Kinder für die 1. Klasse auf. Dabei schauen wir auf das einzelne Kind, die Familie, die Lerngruppe und darauf, ob unsere Montessori-Pädagogik wirklich gewollt ist."
+    title="Aufnahme ist eine gemeinsame Entscheidung."
+    intro="Bei jeder Aufnahme schauen wir auf das einzelne Kind, die Familie und die Klassengemeinschaft. Entscheidend ist, ob das Kind und unsere Montessori-Pädagogik gut zueinander passen."
   >
     <TextLink
       href="/downloads/absichtserklaerung-schule.pdf"
@@ -26,25 +26,27 @@ const { contact } = await getWebsiteSettings();
   <section class="section">
     <div class="container grid-2">
       <div>
-        <p class="eyebrow">Einschulung im nächsten Schuljahr</p>
-        <h2>Neue Termine folgen.</h2>
+        <p class="eyebrow">Schuljahr {schoolAdmission.schoolYear}</p>
+        <h2>Jetzt anmelden.</h2>
         <div class="notice">
           <p>
-            Der veröffentlichte Aufnahmezyklus 2026/27 ist abgeschlossen. Termine und Fristen für
-            die nächste Einschulung stellen wir hier ein, sobald sie verbindlich beschlossen sind.
+            Für die Einschulung im Schuljahr {schoolAdmission.schoolYear} könnt ihr die ausgefüllte Absichtserklärung
+            bis zum <time datetime={schoolAdmission.applicationDeadline}
+              >{schoolAdmission.applicationDeadlineLabel}</time
+            > per E-Mail oder Post an das Schulbüro senden.
           </p>
         </div>
       </div>
       <div>
         <p class="lead">
-          Die Teilnahme an einem Infoabend ist Voraussetzung für eine mögliche Aufnahme. Dort erlebt
-          ihr nicht nur den Ablauf, sondern vor allem unsere pädagogische Haltung.
+          Infoabende, Tage der offenen Tür und weitere Möglichkeiten, die Monte persönlich
+          kennenzulernen, veröffentlichen wir auf unserer Terminseite.
         </p>
         <div class="button-row">
-          <a class="button" href="/termine/">Termine ansehen</a>
-          <a class="button button--outline" href={`mailto:${contact.email}`}
-            >Schulbüro kontaktieren</a
+          <a class="button" href="/downloads/absichtserklaerung-schule.pdf"
+            >Absichtserklärung herunterladen</a
           >
+          <a class="button button--outline" href="/termine/">Termine ansehen</a>
         </div>
       </div>
     </div>
@@ -59,7 +61,7 @@ const { contact } = await getWebsiteSettings();
       <ol class="steps">
         <li class="step">
           <div>
-            <h3>Tag der offenen Tür oder Infoabend</h3><p>
+            <h3>Tag der offenen Tür und Infoabend</h3><p>
               Ihr lernt Montessori-Arbeit, Schulalltag, Abschlusswege, Elternrolle und unseren
               Aufnahmeprozess kennen. Der Infoabend ist verbindlicher Teil des Wegs.
             </p>
@@ -100,8 +102,8 @@ const { contact } = await getWebsiteSettings();
           <div>
             <h3>Entscheidung</h3><p>
               Wir entscheiden mit Blick darauf, wie Kind, Familie und unsere Pädagogik
-              zusammenpassen, sowie auf Lerngruppe und freie Kapazität. Zum angekündigten Termin
-              melden wir uns bei euch.
+              zusammenpassen, sowie auf Klassengemeinschaft und freie Kapazität. Zum angekündigten
+              Termin melden wir uns bei euch.
             </p>
           </div>
         </li>
@@ -113,18 +115,18 @@ const { contact } = await getWebsiteSettings();
     <div class="container grid-2">
       <div>
         <p class="eyebrow">Quereinstieg</p>
-        <h2>Kein regulärer Aufnahmeweg.</h2>
+        <h2>Bewusst hin zu Montessori.</h2>
       </div>
       <div>
         <p class="lead">
-          Wechsel in höhere Klassen bewerben wir nicht aktiv und prüfen sie nur in einzelnen,
-          begründeten Situationen.
+          Wenn in höheren Klassen Plätze frei werden, können auch Quereinsteiger:innen Teil unserer
+          Monte werden. Entscheidend ist, dass Kind, Familie, Klassengemeinschaft und unsere
+          Pädagogik gut zusammenpassen.
         </p>
         <p>
-          Ein Wechsel allein wegen Schwierigkeiten an einer anderen Schule ist noch keine
-          ausreichende Grundlage. Entscheidend sind freie Kapazität, Gruppensituation, die
-          eigenständige Arbeitsweise des Kindes und eine bewusste Entscheidung der gesamten Familie
-          für unsere Pädagogik.
+          Schwierigkeiten an der bisherigen Schule schließen eine Aufnahme nicht aus. Sie allein
+          bedeuten aber noch nicht, dass Montessori der passende Weg ist. Entscheidend ist das Ja zu
+          unserer Pädagogik – nicht nur der Wunsch, ein anderes System zu verlassen.
         </p>
       </div>
     </div>

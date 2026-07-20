@@ -39,6 +39,7 @@ export const mainNavigation = [
     children: [
       { label: "Team", href: "/gemeinschaft/team/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
+      { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
       supportLink,
     ],
   },
@@ -74,6 +75,7 @@ export const footerNavigation = [
     links: [
       { label: "Team", href: "/gemeinschaft/team/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
+      { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
       { label: "Termine", href: "/termine/" },
       { label: "Downloads", href: "/downloads/" },
     ],

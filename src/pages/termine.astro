@@ -36,52 +36,47 @@ const fullDate = (date: string) =>
   <section class="section">
     <div class="container">
       {
-        events.map((event) => (
-          <article class="event">
-            <div class="event__date">
-              <>
-                <span>{day(event.date)}</span>
-                <small>{monthAndYear(event.date)}</small>
-              </>
-            </div>
-            <div class="event__content">
-              <p class="eyebrow">{event.category}</p>
-              <h2>{event.title}</h2>
-              <p>{event.description}</p>
-              <ul class="event__meta">
-                <li>
-                  <CalendarDays size={17} aria-hidden="true" />
-                  <time datetime={event.date}>{fullDate(event.date)}</time>
-                </li>
-                <li>
-                  <Clock size={17} aria-hidden="true" />
-                  {event.time}
-                </li>
-                <li>
-                  <MapPin size={17} aria-hidden="true" />
-                  {event.location}
-                </li>
-              </ul>
-            </div>
-          </article>
-        ))
+        events.length > 0 ? (
+          events.map((event) => (
+            <article class="event">
+              <div class="event__date">
+                <>
+                  <span>{day(event.date)}</span>
+                  <small>{monthAndYear(event.date)}</small>
+                </>
+              </div>
+              <div class="event__content">
+                <p class="eyebrow">{event.category}</p>
+                <h2>{event.title}</h2>
+                <p>{event.description}</p>
+                <ul class="event__meta">
+                  <li>
+                    <CalendarDays size={17} aria-hidden="true" />
+                    <time datetime={event.date}>{fullDate(event.date)}</time>
+                  </li>
+                  <li>
+                    <Clock size={17} aria-hidden="true" />
+                    {event.time}
+                  </li>
+                  <li>
+                    <MapPin size={17} aria-hidden="true" />
+                    {event.location}
+                  </li>
+                </ul>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div class="empty-state">
+            <p class="eyebrow">Aktuell keine öffentlichen Termine</p>
+            <h2>Neue Termine folgen.</h2>
+            <p class="lead">
+              Neue Kennenlern- und Gemeinschaftstermine veröffentlichen wir hier, sobald sie
+              verbindlich feststehen.
+            </p>
+          </div>
+        )
       }
-
-      <div class="empty-state">
-        <p class="eyebrow">Kennenlerntermine</p>
-        <h2>Neue Termine folgen.</h2>
-        <p class="lead">
-          Infoabende, Tag der offenen Tür und Fristen für den nächsten Aufnahmezyklus
-          veröffentlichen wir, sobald sie verbindlich feststehen.
-        </p>
-        <div class="button-row">
-          <a class="button button--outline" href="/kennenlernen/aufnahme-kindergarten/"
-            >Aufnahme Kindergarten</a
-          >
-          <a class="button button--outline" href="/kennenlernen/aufnahme-schule/">Aufnahme Schule</a
-          >
-        </div>
-      </div>
     </div>
   </section>
 
@@ -161,7 +156,6 @@ const fullDate = (date: string) =>
 
   .empty-state {
     max-width: 55rem;
-    margin-top: clamp(5rem, 10vw, 9rem);
   }
 
   @media (max-width: 620px) {

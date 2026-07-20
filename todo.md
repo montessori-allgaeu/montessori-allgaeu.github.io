@@ -14,6 +14,11 @@ aktualisiert werden.
 - [ ] Für den Schulbereich unter der inhaltlichen Klammer „Montessori – wie wir arbeiten“ konkrete
       Konzepte vorstellen: unter anderem den Erdkinderplan, die angebotenen Praktika mit Zeitpunkt,
       Jahrgangsstufe und pädagogischem Ziel sowie den konkreten Ablauf und Rahmen der Freiarbeit.
+- [x] Die Nachmittagsangebote für das Schuljahr 2026/27 aus den verbindlichen Übersichten für
+      Primaria sowie Sekundaria und Tertia strukturiert auf der Ganztagsseite veröffentlichen und über
+      Pages CMS pflegbar machen.
+- [ ] Vor jedem Schuljahr Nachmittagsangebote, Klassenstufen, Begleitung, Kosten und den verbindlichen
+      Wahlrahmen anhand der aktuellen Unterlagen prüfen, bevor das aktive Kursjahr umgestellt wird.
 - [x] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten der
       Schule einschließlich der konkreten Dauer des verpflichtenden Nachmittags sowie Kosten für
       Mittagessen mit den aktuell gültigen Verträgen abgleichen.
@@ -31,13 +36,19 @@ aktualisiert werden.
       als Stand Juli 2026 Beiträge von 190 bis 240 Euro aus.
 - [ ] Alle weiteren Downloads auf Aktualität, sichtbaren Versionsstand, Barrierefreiheit und
       Widersprüche zur Website prüfen; insbesondere Dokumente mit Stand 2019, 2020 oder 2025.
-- [ ] Endgültige Aufnahmefristen und Kennenlerntermine für Kindergarten und Schule bestätigen und
-      veröffentlichen.
+- [x] Anmeldung für das Kindergartenjahr 2027/2028 mit Anmeldeschluss 31. Dezember 2026
+      veröffentlichen; keine weiteren Fristen oder festen Kennenlerntermine ankündigen, solange es
+      sie nicht gibt; Kindergartenjahr und Anmeldeschluss gemeinsam über Pages CMS pflegbar halten.
+- [x] Anmeldung für das Schuljahr 2027/28 mit Anmeldeschluss 30. November 2026 veröffentlichen;
+      Schuljahr und Anmeldeschluss gemeinsam über Pages CMS pflegbar halten.
+- [ ] Kennenlerntermine für die Schule bestätigen und veröffentlichen.
 - [ ] Öffentliche Termine regelmäßig prüfen und abgelaufene Veranstaltungen zeitnah entfernen.
 - [x] Aktive Stellenangebote, Beschäftigungsumfänge und Bewerbungsadresse anhand der am 18. Juli
       2026 veröffentlichten Anzeigen aktualisieren.
 - [ ] Starttermin der BufDi-Anzeige bestätigen. Die veröffentlichte Vorlage nennt noch den 1. September 2025; bis zur Klärung weist die Website den Start als „Bitte aktuell erfragen“ aus.
 - [ ] Teamnamen, Rollen, Leitungsfunktionen, Vorstand, Aufsichtsbehörden und Kontaktdaten bestätigen.
+- [x] Die Gründungschronik anhand des Jubiläumshefts um die Gründerinnen und ausgewählte,
+      verlässlich dokumentierte Wegmarken von Kindergarten und Schule von 1999 bis 2018 ergänzen.
 - [ ] Spendenkonto, aktuelle Förderschwerpunkte, Ansprechpartner sowie Ablauf und Zuständigkeit für
       Zuwendungsbestätigungen und größere beziehungsweise unternehmerische Unterstützung bestätigen.
 - [ ] Impressum, Datenschutzerklärung und Datenschutzhinweise in Aufnahmeunterlagen rechtlich prüfen

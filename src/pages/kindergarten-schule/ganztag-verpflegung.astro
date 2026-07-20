@@ -3,11 +3,16 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
-import { getWebsiteSettings } from "@/data/content";
+import TextLink from "@/components/TextLink.astro";
+import AfternoonProgram from "@/components/AfternoonProgram.astro";
+import { getAfternoonProgram, getWebsiteSettings } from "@/data/content";
 import outdoorsImage from "@/assets/images/editorial/outdoors.webp";
 import roomImage from "@/assets/images/editorial/room.webp";
 
-const { meals } = await getWebsiteSettings();
+const [{ meals }, afternoonProgram] = await Promise.all([
+  getWebsiteSettings(),
+  getAfternoonProgram(),
+]);
 ---
 
 <BaseLayout
@@ -24,19 +29,21 @@ const { meals } = await getWebsiteSettings();
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
-      Die offene Ganztagsschule bietet an Schultagen einen verlässlichen Nachmittagsrahmen. Kinder
-      essen gemeinsam, bewegen sich, ruhen aus, verfolgen Projekte und werden von vertrauten
-      Erwachsenen begleitet.
+      Einmal pro Schuljahr meldet ihr euer Kind verbindlich für <strong
+        >{
+          `${afternoonProgram.minimumAfternoons}–${afternoonProgram.maximumAfternoons} Nachmittage`
+        }</strong
+      > von Montag bis Donnerstag an.
     </p>
-    <p>
-      Der verpflichtende Nachmittag in Sekundaria und Tertia gehört zum regulären Schulalltag. Die
-      offene Ganztagsschule bietet darüber hinaus einen buchbaren Nachmittagsrahmen.
-    </p>
-    <p>
-      Konkrete Buchungszeiten, Plätze und aktuelle Konditionen besprecht ihr mit dem Schulbüro. Für
-      Kinder in der offenen Ganztagsschule ist das gemeinsame Mittagessen Teil des Angebots.
-    </p>
+    <p>{afternoonProgram.intro}</p>
+    <p>{afternoonProgram.secundariaNote}</p>
+    <TextLink
+      href="#nachmittagsangebote"
+      label={`Angebote ${afternoonProgram.activeSchoolYear} ansehen`}
+    />
   </ImageSplit>
+
+  <AfternoonProgram program={afternoonProgram} />
 
   <ImageSplit
     image={roomImage}
@@ -73,8 +80,8 @@ const { meals } = await getWebsiteSettings();
   </section>
 
   <CTASection
-    title="Fragen zu Ganztag oder Essen?"
-    text="Das Schulbüro hilft euch bei Buchungszeiten, Verfügbarkeit und dem aktuellen organisatorischen Rahmen weiter."
+    title="Fragen zu Ganztag, Auswahl oder Essen?"
+    text="Das Schulbüro hilft euch bei Buchungszeiten, Verfügbarkeit, Nachmittagsangeboten und dem aktuellen organisatorischen Rahmen weiter."
     primaryHref="/kontakt/"
     primaryLabel="Schulbüro kontaktieren"
     secondaryHref="/kennenlernen/kosten/"

@@ -5,6 +5,7 @@ const keyPages = [
   "/",
   "/montessori/",
   "/kindergarten-schule/",
+  "/kindergarten-schule/ganztag-verpflegung/",
   "/kennenlernen/",
   "/gemeinschaft/prinzipien/",
   "/arbeiten-bei-uns/",
@@ -145,6 +146,9 @@ test("editorial content renders from the validated content collections", async (
   await expect(
     page.getByText(/Der verpflichtende Nachmittag in Sekundaria und Tertia.*regulären Schulalltag/),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Was Kinder am Nachmittag wählen können." }),
+  ).toBeVisible();
 
   await page.goto("/kontakt/");
   await expect(page.getByText("Montag: 7:30–16:30 Uhr")).toBeVisible();
@@ -180,6 +184,45 @@ test("editorial content renders from the validated content collections", async (
   await expect(
     page.getByRole("heading", { name: "Kinder brauchen Menschen, die Wege öffnen." }),
   ).toBeVisible();
+});
+
+test("current afternoon offers reveal only the selected school area", async ({ page }) => {
+  await page.goto("/kindergarten-schule/ganztag-verpflegung/");
+
+  const primaria = page.locator('[data-program-group="primaria"]');
+  const secundariaAndTertia = page.locator('[data-program-group="sekundaria-tertia"]');
+
+  await expect(primaria.locator("summary")).toContainText("Klassen 1–4 · 10 Angebote");
+  await expect(secundariaAndTertia.locator("summary")).toContainText("Klassen 5–10 · 11 Angebote");
+  await expect(primaria).not.toHaveAttribute("open", "");
+  await expect(secundariaAndTertia).not.toHaveAttribute("open", "");
+
+  await primaria.locator("summary").click();
+  await expect(primaria).toHaveAttribute("data-program-motion", "opening");
+  await expect(primaria).toHaveAttribute("open", "");
+  await expect(primaria.locator("[data-afternoon-offer]")).toHaveCount(10);
+  await expect(primaria.getByRole("heading", { name: "Aktiv am Nachmittag" })).toBeVisible();
+  await expect(primaria.getByRole("heading", { name: "Mathe verstehen & anwenden" })).toHaveCount(
+    0,
+  );
+
+  await secundariaAndTertia.locator("summary").click();
+  await expect(primaria).toHaveAttribute("data-program-motion", "closing");
+  await expect(secundariaAndTertia).toHaveAttribute("data-program-motion", "opening");
+  await expect(secundariaAndTertia).toHaveAttribute("open", "");
+  await expect(primaria).not.toHaveAttribute("open", "");
+  await expect(secundariaAndTertia.locator("[data-afternoon-offer]")).toHaveCount(11);
+  await expect(
+    secundariaAndTertia.getByRole("heading", { name: "Mathe verstehen & anwenden" }),
+  ).toBeVisible();
+  await expect(
+    secundariaAndTertia.getByRole("heading", { name: "Die Monte-Werkstatt" }),
+  ).toBeVisible();
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await secundariaAndTertia.locator("summary").click();
+  await expect(secundariaAndTertia).not.toHaveAttribute("data-program-motion", /.+/);
+  await expect(secundariaAndTertia).not.toHaveAttribute("open", "");
 });
 
 test("CMS address stays consistent across contact and legal pages", async ({ page }) => {

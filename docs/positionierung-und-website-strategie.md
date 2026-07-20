@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 17. Juli 2026
+Stand: 20. Juli 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -146,7 +146,9 @@ Die Monte ist keine Förder- oder Therapieschule und soll sich nicht als solche 
 
 ### Quereinstieg
 
-Quereinstiege und Wechsel aufgrund schwieriger Lernsituationen werden nicht aktiv beworben. Die primären Einstiege sind Kindergarten und Klasse 1. Quereinstiege werden nur in begründeten Einzelfällen geprüft.
+Quereinstiege werden nicht prominent beworben, sind aber ein wichtiger Weg, um frei werdende Plätze in höheren Klassen passend zu besetzen. Entscheidend sind verfügbare Kapazität, die Klassengemeinschaft, das konkrete Kind und eine bewusste Entscheidung der Familie für Montessori.
+
+Schwierigkeiten an der bisherigen Schule schließen eine Aufnahme nicht aus. Sie reichen für sich allein aber nicht als Begründung, dass Montessori der passende nächste Weg ist. Die Kommunikation soll deshalb mit offenem Herzen eine klare Grenze setzen: hin zu Montessori und der eigenen Pädagogik entscheiden, nicht lediglich weg von einem anderen System.
 
 ## Kindergarten und Schule als ein Weg
 
@@ -353,29 +355,30 @@ Die Hauptnavigation ist bestätigt:
 
 ### Seiten und strategische Aufgabe
 
-| Bereich                | Route                                       | Aufgabe                                                                 |
-| ---------------------- | ------------------------------------------- | ----------------------------------------------------------------------- |
-| Startseite             | `/`                                         | Kerneindruck, Haltung und wichtigste Wege                               |
-| Montessori             | `/montessori/`                              | Pädagogischen Ansatz, Freiheit, Grenzen, Leistung und Zukunft erklären  |
-| Kindergarten & Schule  | `/kindergarten-schule/`                     | Gemeinsamen Bildungsweg vom Kindergarten bis Klasse 10 zeigen           |
-| Kindergarten           | `/kindergarten-schule/kindergarten/`        | Montessori, Naturpädagogik, Wärme und Waldtage konkretisieren           |
-| Schule                 | `/kindergarten-schule/schule/`              | Lernorganisation, Abschlüsse und eigenes Tempo erklären                 |
-| Ganztag & Verpflegung  | `/kindergarten-schule/ganztag-verpflegung/` | Tagesstruktur und praktische Betreuung erklären                         |
-| Kennenlernen           | `/kennenlernen/`                            | Gegenseitigen Fit offen klären                                          |
-| Aufnahme Kindergarten  | `/kennenlernen/aufnahme-kindergarten/`      | Primären Einstieg und langfristigen Monte-Weg erklären                  |
-| Aufnahme Schule        | `/kennenlernen/aufnahme-schule/`            | Einschulung Klasse 1 und begrenzten Quereinstieg erklären               |
-| Kosten                 | `/kennenlernen/kosten/`                     | Geld, Einlage, Verein und Mitarbeit transparent machen                  |
-| Häufige Fragen         | `/kennenlernen/haeufige-fragen/`            | Missverständnisse und schwierige Fragen direkt beantworten              |
-| Gemeinschaft           | `/gemeinschaft/`                            | Verein, Mitwirkung, fünf Säulen und Zusammenhalt zeigen                 |
-| Prinzipien             | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären        |
-| Team                   | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                       |
-| Träger & Verein        | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären             |
-| Arbeiten bei uns       | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                       |
-| Offene Stellen         | `/arbeiten-bei-uns/stellen/`                | Primärer Recruiting-Conversion-Pfad                                     |
-| Termine                | `/termine/`                                 | Kennenlern- und Gemeinschaftstermine                                    |
-| Downloads              | `/downloads/`                               | Verbindliche und weiterführende Unterlagen                              |
-| Kontakt                | `/kontakt/`                                 | Niedrigschwelliger Kontakt nach Bereich                                 |
-| Spenden & unterstützen | `/spenden/`                                 | Private, größere und unternehmerische Unterstützung konkret ermöglichen |
+| Bereich                | Route                                       | Aufgabe                                                                   |
+| ---------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
+| Startseite             | `/`                                         | Kerneindruck, Haltung und wichtigste Wege                                 |
+| Montessori             | `/montessori/`                              | Pädagogischen Ansatz, Freiheit, Grenzen, Leistung und Zukunft erklären    |
+| Kindergarten & Schule  | `/kindergarten-schule/`                     | Gemeinsamen Bildungsweg vom Kindergarten bis Klasse 10 zeigen             |
+| Kindergarten           | `/kindergarten-schule/kindergarten/`        | Montessori, Naturpädagogik, Wärme und Waldtage konkretisieren             |
+| Schule                 | `/kindergarten-schule/schule/`              | Lernorganisation, Abschlüsse und eigenes Tempo erklären                   |
+| Ganztag & Verpflegung  | `/kindergarten-schule/ganztag-verpflegung/` | Tagesstruktur und praktische Betreuung erklären                           |
+| Kennenlernen           | `/kennenlernen/`                            | Gegenseitigen Fit offen klären                                            |
+| Aufnahme Kindergarten  | `/kennenlernen/aufnahme-kindergarten/`      | Primären Einstieg und langfristigen Monte-Weg erklären                    |
+| Aufnahme Schule        | `/kennenlernen/aufnahme-schule/`            | Einschulung und Quereinstieg mit klarer pädagogischer Passung erklären    |
+| Kosten                 | `/kennenlernen/kosten/`                     | Geld, Einlage, Verein und Mitarbeit transparent machen                    |
+| Häufige Fragen         | `/kennenlernen/haeufige-fragen/`            | Missverständnisse und schwierige Fragen direkt beantworten                |
+| Gemeinschaft           | `/gemeinschaft/`                            | Verein, Mitwirkung, fünf Säulen und Zusammenhalt zeigen                   |
+| Prinzipien             | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären          |
+| Team                   | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                         |
+| Träger & Verein        | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären               |
+| Unsere Geschichte      | `/gemeinschaft/geschichte/`                 | Gründung und ausgewählte Wegmarken bewahren, ohne sie primär zu gewichten |
+| Arbeiten bei uns       | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                         |
+| Offene Stellen         | `/arbeiten-bei-uns/stellen/`                | Primärer Recruiting-Conversion-Pfad                                       |
+| Termine                | `/termine/`                                 | Kennenlern- und Gemeinschaftstermine                                      |
+| Downloads              | `/downloads/`                               | Verbindliche und weiterführende Unterlagen                                |
+| Kontakt                | `/kontakt/`                                 | Niedrigschwelliger Kontakt nach Bereich                                   |
+| Spenden & unterstützen | `/spenden/`                                 | Private, größere und unternehmerische Unterstützung konkret ermöglichen   |
 
 Impressum, Datenschutz, 404-Seite und Weiterleitungen alter Jimdo-Routen gehören zur technischen und rechtlichen Grundlage, nicht zur primären Navigation.
 
@@ -432,7 +435,7 @@ Die aktuelle technische Checkliste steht in [`README.md`](../README.md).
 - keine typische Luxus-Privatschulästhetik
 - keine Positionierung als Förder- oder Therapieschule
 - keine Kopie anderer Montessori-Websites
-- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite
+- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte einschließlich der Nachmittagsangebote und für die freigegebenen Inhalte der Spendenseite
 - kein Wachstum als Selbstzweck
 
 ## Erfolgskriterien
@@ -467,6 +470,8 @@ Wichtige Pfade:
 - CMS-Konfiguration: `.pages.yml`
 - Validierung der redaktionellen Daten: `src/content.config.ts`
 - Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
+- Aktives Schuljahr und Rahmen der Nachmittagswahl: `src/content/settings/afternoon-program.yml`
+- Nachmittagsangebote: `src/content/afternoon-offers/`
 - Spendenseite einschließlich Förderschwerpunkten und Kontodaten: `src/content/donations/page.yml`
 - Stellen: `src/content/jobs/`
 - Team: `src/content/team/`
@@ -488,15 +493,17 @@ Wichtige Pfade:
 - Designrichtung 1 wurde ausgewählt und für die gesamte Website umgesetzt.
 - Kindergarten und Schule werden als ein Bildungsweg und nicht als getrennte Zielgruppenwelten behandelt.
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
-- Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die Hauptnavigation bleibt unverändert.
+- Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.
 - Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
-- Quereinstieg wird nicht prominent beworben.
+- Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
+- Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.
 - Erste Version sollte schnell live gehen; ein neues Fotoshooting darf später folgen.
 - Die Website ist statisch mit Astro umgesetzt und wird über GitHub Pages veröffentlicht.
 - Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
 - Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
+- Die Nachmittagsangebote werden als strukturierte, jahresbezogene CMS-Inhalte gepflegt. Die Website zeigt sie ruhig nach Primaria beziehungsweise Sekundaria und Tertia sowie nach Wochentagen; klassenübergreifende Angebote werden aus einem gemeinsamen Eintrag abgeleitet.
 
 ## Offene beziehungsweise später erneut zu prüfende Entscheidungen
 

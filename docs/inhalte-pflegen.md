@@ -16,7 +16,7 @@ Die GitHub-App benötigt Schreibzugriff auf Repository-Inhalte. Vor der Installa
 
 1. Den gewünschten Bereich in Pages CMS öffnen.
 2. Inhalte ändern oder einen neuen Eintrag anlegen.
-3. Neue Termine, Stellen, Personen und Downloads zuerst mit dem Status **Entwurf – nicht auf Website** speichern.
+3. Neue Termine, Stellen, Nachmittagsangebote, Personen und Downloads zuerst mit dem Status **Entwurf – nicht auf Website** speichern.
 4. Die Angaben prüfen.
 5. Wenn alles stimmt, den Status auf **Veröffentlicht – auf Website** setzen und erneut speichern.
 
@@ -32,6 +32,12 @@ Termine werden nach Datum sortiert. Bei einem neuen Termin bleibt das Datum bewu
 
 Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Einleitung, Hintergrund, Aufgaben, Profil, konkrete Vorteile und die Einladung zur Bewerbung werden je Stelle aus der verbindlichen Anzeige übernommen. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
 
+### Nachmittagsangebote
+
+Jedes unterschiedliche Angebot wird nur einmal angelegt. Wochentag und Klassenstufen steuern die Darstellung automatisch: Ein Angebot für die Klassen 3 bis 6 erscheint sowohl unter **Primaria** als auch unter **Sekundaria & Tertia**. `0` Euro Monatsbeitrag wird auf der Website als **Kostenfrei** ausgegeben. Zusätzliche Kosten, eine beteiligte Organisation und ein externer Link bleiben optional.
+
+Für das nächste Schuljahr die neuen Einträge zunächst als Entwurf mit dem neuen Schuljahr vorbereiten. Nach der inhaltlichen Prüfung die Angebote veröffentlichen und erst anschließend unter **Stammdaten → Ganztag & Kurswahl** das aktive Schuljahr umstellen. So wechselt die sichtbare Übersicht gemeinsam und nicht Kurs für Kurs.
+
 ### Team
 
 Für jedes Teammitglied werden unter **Rollen und Bereiche** ein oder mehrere Einsätze gepflegt. So können Leitungen sowohl im Bereich **Leitung** als auch in ihrer pädagogischen Rolle erscheinen. Primaria und Sekundaria werden zusätzlich in **Klassenleitungen** und **Pädagogische Assistenzen** gegliedert. Die Position wird je Einsatz vergeben; `10` steht weiter oben als `20`. Fotos können als JPG, PNG oder WebP über das jeweilige Teammitglied ausgewählt werden; Astro optimiert sie beim Build. Ohne Foto zeigt die Website vorübergehend die Initialen.
@@ -42,11 +48,14 @@ Neue PDFs werden im Bereich **Downloads** ausgewählt und nach `public/downloads
 
 ### Stammdaten
 
-Die früher gemeinsame Großmaske ist in sechs kurze Seiten aufgeteilt:
+Die früher gemeinsame Großmaske ist in neun kurze Seiten aufgeteilt:
 
 - **Kontakt & Anschrift**
 - **Öffnungszeiten**
+- **Aufnahme Kindergarten**
+- **Aufnahme Schule**
 - **Mittagessen**
+- **Ganztag & Kurswahl**
 - **Schulgeld**
 - **Kindergartenbeiträge**
 - **Einlage, Elternarbeit & Verein**
@@ -54,6 +63,11 @@ Die früher gemeinsame Großmaske ist in sechs kurze Seiten aufgeteilt:
 Telefonlinks, die vollständige sichtbare Ortszeile sowie Dateityp und Dateigröße von PDFs erzeugt die Website automatisch. Diese Angaben müssen nicht doppelt gepflegt werden.
 
 Zeitbezogene Angaben müssen vor dem Speichern anhand der aktuellen Verträge oder verbindlichen Beschlüsse geprüft werden. Rechtliche Formulierungen und grundlegende Seitentexte außerhalb des freigegebenen Spendenbereichs sind nicht über das CMS editierbar.
+
+Unter **Aufnahme Kindergarten** werden das sichtbare Kindergartenjahr und der zugehörige
+Anmeldeschluss gemeinsam gepflegt. Das Datum wird auf der Website automatisch ausgeschrieben.
+Unter **Aufnahme Schule** gilt dasselbe für das sichtbare Schuljahr und den Anmeldeschluss der
+Einschulung.
 
 ### Spendenseite
 
@@ -72,7 +86,7 @@ Vor jeder Änderung der Kontodaten, Förderschwerpunkte oder Bescheinigungsangab
 
 ## Ausblenden, Löschen und Wiederherstellen
 
-Der Status **Entwurf – nicht auf Website** ist der sichere Weg, einen Termin, eine Stelle, eine Person oder einen Download vorübergehend zu entfernen. Löschen entfernt auch die Inhaltsdatei aus dem Repository.
+Der Status **Entwurf – nicht auf Website** ist der sichere Weg, einen Termin, eine Stelle, ein Nachmittagsangebot, eine Person oder einen Download vorübergehend zu entfernen. Löschen entfernt auch die Inhaltsdatei aus dem Repository.
 
 Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehentlich veröffentlicht wurde, kann die technische Website-Verantwortung den betreffenden Commit über GitHub zurücksetzen.
 
@@ -82,13 +96,17 @@ Jede Änderung bleibt in der Git-Historie nachvollziehbar. Falls etwas versehent
 - Validierung: `src/content.config.ts`
 - Kontakt & Anschrift: `src/content/settings/contact.yml`
 - Öffnungszeiten: `src/content/settings/opening-hours.yml`
+- Aufnahme Kindergarten: `src/content/settings/kindergarten-admission.yml`
+- Aufnahme Schule: `src/content/settings/school-admission.yml`
 - Mittagessen: `src/content/settings/meals.yml`
+- Ganztag & Kurswahl: `src/content/settings/afternoon-program.yml`
 - Schulgeld: `src/content/settings/school-fees.yml`
 - Kindergartenbeiträge: `src/content/settings/kindergarten-fees.yml`
 - Einlage, Elternarbeit & Verein: `src/content/settings/community-contributions.yml`
 - Spendenseite: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
 - Stellen: `src/content/jobs/`
+- Nachmittagsangebote: `src/content/afternoon-offers/`
 - Team: `src/content/team/`
 - Downloads: `src/content/downloads/`
 - Teamfotos: `src/assets/images/team/`

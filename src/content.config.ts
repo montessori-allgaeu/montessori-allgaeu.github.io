@@ -11,6 +11,8 @@ const publicationFields = {
   position: z.number().int().positive(),
 };
 
+const schoolYearField = z.string().regex(/^\d{4}\/\d{2}$/, "Format: 2026/27");
+
 const teamAssignmentFields = {
   role: z.string().min(1).optional(),
   position: z.number().int().positive(),
@@ -98,6 +100,29 @@ const downloads = defineCollection({
     group: z.enum(["Schule", "Kindergarten", "Aufnahme & Verein"]),
     ...publicationFields,
   }),
+});
+
+const afternoonOffers = defineCollection({
+  loader: glob({ pattern: "**/*.yml", base: "./src/content/afternoon-offers" }),
+  schema: z
+    .object({
+      title: z.string().min(1),
+      schoolYear: schoolYearField,
+      weekday: z.enum(["Montag", "Dienstag", "Mittwoch", "Donnerstag"]),
+      gradeFrom: z.number().int().min(1).max(10),
+      gradeTo: z.number().int().min(1).max(10),
+      leaders: z.string().min(1),
+      organization: z.string().min(1).optional(),
+      description: z.string().min(1).max(800),
+      monthlyFee: z.number().int().nonnegative(),
+      additionalCostNote: z.string().min(1).optional(),
+      externalUrl: z.url().optional(),
+      ...publicationFields,
+    })
+    .refine(({ gradeFrom, gradeTo }) => gradeFrom <= gradeTo, {
+      message: "Die erste Klassenstufe darf nicht höher als die letzte sein.",
+      path: ["gradeTo"],
+    }),
 });
 
 const donations = defineCollection({
@@ -255,6 +280,38 @@ const mealSettings = defineCollection({
   }),
 });
 
+const kindergartenAdmissionSettings = defineCollection({
+  loader: glob({ pattern: "kindergarten-admission.yml", base: "./src/content/settings" }),
+  schema: z.object({
+    schoolYear: z.string().regex(/^\d{4}\/\d{4}$/, "Format: 2027/2028"),
+    applicationDeadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format: 2026-12-31"),
+  }),
+});
+
+const schoolAdmissionSettings = defineCollection({
+  loader: glob({ pattern: "school-admission.yml", base: "./src/content/settings" }),
+  schema: z.object({
+    schoolYear: schoolYearField,
+    applicationDeadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format: 2026-11-30"),
+  }),
+});
+
+const afternoonProgramSettings = defineCollection({
+  loader: glob({ pattern: "afternoon-program.yml", base: "./src/content/settings" }),
+  schema: z
+    .object({
+      activeSchoolYear: schoolYearField,
+      minimumAfternoons: z.number().int().min(1).max(4),
+      maximumAfternoons: z.number().int().min(1).max(4),
+      intro: z.string().min(1),
+      secundariaNote: z.string().min(1),
+    })
+    .refine(({ minimumAfternoons, maximumAfternoons }) => minimumAfternoons <= maximumAfternoons, {
+      message: "Die Mindestanzahl darf nicht höher als die Höchstanzahl sein.",
+      path: ["maximumAfternoons"],
+    }),
+});
+
 const schoolFeeSettings = defineCollection({
   loader: glob({ pattern: "school-fees.yml", base: "./src/content/settings" }),
   schema: z.object({
@@ -307,10 +364,14 @@ export const collections = {
   team,
   events,
   downloads,
+  afternoonOffers,
   donations,
   contactSettings,
   openingHoursSettings,
   mealSettings,
+  kindergartenAdmissionSettings,
+  schoolAdmissionSettings,
+  afternoonProgramSettings,
   schoolFeeSettings,
   kindergartenFeeSettings,
   communityContributionSettings,
