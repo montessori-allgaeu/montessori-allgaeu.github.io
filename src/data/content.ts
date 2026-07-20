@@ -39,8 +39,6 @@ export type WebsiteSettings = {
   };
   meals: CollectionEntry<"mealSettings">["data"];
   costs: {
-    validFrom: string;
-    notice: string;
     schoolFees: Pick<CollectionEntry<"schoolFeeSettings">["data"], "intro" | "rows">;
     kindergartenFees: CollectionEntry<"kindergartenFeeSettings">["data"];
     deposit: CollectionEntry<"communityContributionSettings">["data"]["deposit"];
@@ -202,8 +200,6 @@ export async function getWebsiteSettings(): Promise<WebsiteSettings> {
     },
     meals: meals.data,
     costs: {
-      validFrom: schoolFees.data.validFrom,
-      notice: schoolFees.data.notice,
       schoolFees: { intro: schoolFees.data.intro, rows: schoolFees.data.rows },
       kindergartenFees: kindergartenFees.data,
       deposit: contributions.data.deposit,

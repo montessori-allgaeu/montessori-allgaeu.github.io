@@ -21,7 +21,7 @@ parentWork:
   missedHours:
     label: Nicht geleistete Zeit
     amount: 25 € / Stunde
-    detail: werden nach den jeweils gültigen Vertragsregeln in Rechnung gestellt.
+    detail: Werden am Ende des Jahres in Rechnung gestellt.
 membership:
   intro: Eltern werden Mitglied im gemeinnützigen Trägerverein und tragen die Monte damit auch demokratisch.
   rows:

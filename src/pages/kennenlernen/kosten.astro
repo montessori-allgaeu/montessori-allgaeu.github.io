@@ -20,13 +20,6 @@ const { costs } = await getWebsiteSettings();
 
   <section class="section">
     <div class="container">
-      <div class="notice cost-note">
-        <p>
-          <strong>Stand: {costs.validFrom}.</strong>
-          {costs.notice}
-        </p>
-      </div>
-
       <div class="cost-section grid-2">
         <div>
           <p class="eyebrow">Schule</p>
@@ -191,13 +184,14 @@ const { costs } = await getWebsiteSettings();
 </BaseLayout>
 
 <style>
-  .cost-note {
-    margin-bottom: clamp(4rem, 8vw, 8rem);
-  }
-
   .cost-section {
     padding: clamp(4rem, 8vw, 8rem) 0;
     border-top: 1px solid var(--line);
+  }
+
+  .cost-section:first-child {
+    padding-top: 0;
+    border-top: 0;
   }
 
   .cost-section:last-child {

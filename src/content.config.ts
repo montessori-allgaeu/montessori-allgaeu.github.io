@@ -315,8 +315,6 @@ const afternoonProgramSettings = defineCollection({
 const schoolFeeSettings = defineCollection({
   loader: glob({ pattern: "school-fees.yml", base: "./src/content/settings" }),
   schema: z.object({
-    validFrom: z.string().min(1),
-    notice: z.string().min(1),
     intro: z.string().min(1),
     rows: priceTableSchema.shape.rows,
   }),

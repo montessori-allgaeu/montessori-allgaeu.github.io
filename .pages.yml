@@ -960,15 +960,6 @@ content:
           create: false
           delete: false
         fields:
-          - name: validFrom
-            label: Stand der gesamten Kostenübersicht
-            type: string
-            required: true
-            description: Zum Beispiel „Juli 2026“.
-          - name: notice
-            label: Verbindlichkeitshinweis
-            type: text
-            required: true
           - name: intro
             label: Einleitung zum Schulgeld
             type: text
