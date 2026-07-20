@@ -41,6 +41,8 @@ export const mainNavigation = [
       { label: "Elternbeirat", href: "/gemeinschaft/elternbeirat/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
+      { label: "Termine", href: "/termine/" },
+      { label: "Downloads", href: "/downloads/" },
       supportLink,
     ],
   },

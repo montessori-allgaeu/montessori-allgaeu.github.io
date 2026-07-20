@@ -7,9 +7,12 @@ test("history page is accessible and discoverable under community", async ({ pag
   if (testInfo.project.name === "mobile") {
     await page.getByLabel("Navigation öffnen").click();
     const mobileNavigation = page.getByRole("navigation", { name: "Mobile Navigation" });
+    const communityGroup = mobileNavigation.locator('[data-mobile-nav-group="/gemeinschaft/"]');
+    await expect(communityGroup).toHaveAttribute("open", "");
+    await expect(communityGroup.locator(":scope > summary")).toContainText("Gemeinschaft");
     await expect(
-      mobileNavigation.getByRole("link", { name: "Gemeinschaft", exact: true }),
-    ).toBeVisible();
+      communityGroup.getByRole("link", { name: "Unsere Geschichte", exact: true }),
+    ).toHaveAttribute("href", "/gemeinschaft/geschichte/");
   } else {
     const mainNavigation = page.getByRole("navigation", { name: "Hauptnavigation" });
     await mainNavigation.getByRole("link", { name: "Gemeinschaft", exact: true }).hover();

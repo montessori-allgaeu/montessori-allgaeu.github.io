@@ -1,5 +1,5 @@
 ---
-import { Menu, X } from "@lucide/astro";
+import { ChevronDown, Menu, X } from "@lucide/astro";
 import Brand from "./Brand.astro";
 import { mainNavigation, supportLink } from "@/data/site";
 
@@ -40,21 +40,57 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     </nav>
     <a class="button header-cta" href="/kennenlernen/">Monte kennenlernen</a>
     <details class="mobile-menu">
-      <summary aria-label="Navigation öffnen">
+      <summary aria-label="Navigation öffnen" aria-expanded="false">
         <Menu class="mobile-menu__open" size={24} aria-hidden="true" />
         <X class="mobile-menu__close" size={24} aria-hidden="true" />
       </summary>
       <nav aria-label="Mobile Navigation">
         {
-          mainNavigation.map((item) => (
-            <a
-              class:list={{ active: active(item.href) }}
-              href={item.href}
-              aria-current={path === item.href ? "page" : undefined}
-            >
-              {item.label}
-            </a>
-          ))
+          mainNavigation.map((item, index) => {
+            const children = item.children.filter((child) => child.href !== supportLink.href);
+
+            if (children.length === 0) {
+              return (
+                <a
+                  class:list={["mobile-menu__direct", { active: active(item.href) }]}
+                  href={item.href}
+                  aria-current={path === item.href ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              );
+            }
+
+            const groupId = `mobile-menu-group-${index}`;
+            const groupActive = active(item.href) || children.some((child) => active(child.href));
+
+            return (
+              <details
+                class="mobile-menu__group"
+                data-mobile-nav-group={item.href}
+                open={groupActive}
+              >
+                <summary aria-controls={groupId} aria-expanded={groupActive ? "true" : "false"}>
+                  <span>{item.label}</span>
+                  <ChevronDown size={21} aria-hidden="true" />
+                </summary>
+                <div class="mobile-menu__children" id={groupId}>
+                  <a
+                    class="mobile-menu__overview"
+                    href={item.href}
+                    aria-current={path === item.href ? "page" : undefined}
+                  >
+                    Überblick
+                  </a>
+                  {children.map((child) => (
+                    <a href={child.href} aria-current={path === child.href ? "page" : undefined}>
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </details>
+            );
+          })
         }
         <a
           class:list={["mobile-menu__support", { active: active(supportLink.href) }]}
@@ -63,6 +99,16 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
         >
           {supportLink.label}
         </a>
+        <div class="mobile-menu__quicklinks">
+          <p>Schnellzugriff</p>
+          <div>
+            <a href="/termine/" aria-current={path === "/termine/" ? "page" : undefined}>Termine</a>
+            <a href="/downloads/" aria-current={path === "/downloads/" ? "page" : undefined}
+              >Downloads</a
+            >
+            <a href="/kontakt/" aria-current={path === "/kontakt/" ? "page" : undefined}>Kontakt</a>
+          </div>
+        </div>
         <a class="button" href="/kennenlernen/">Monte kennenlernen</a>
       </nav>
     </details>
@@ -196,9 +242,12 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   .mobile-menu {
     display: none;
+    width: 46px;
+    max-width: 46px;
+    min-width: 46px;
   }
 
-  .mobile-menu summary {
+  .mobile-menu > summary {
     display: grid;
     width: 46px;
     height: 46px;
@@ -232,32 +281,132 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     gap: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 1.2rem 1.5rem 3rem;
+    padding: 0.7rem 1.5rem 2.5rem;
     background: var(--paper);
   }
 
-  .mobile-menu nav > a:not(.button) {
-    padding: 1.15rem 0;
+  .mobile-menu__direct,
+  .mobile-menu__group > summary {
+    display: flex;
+    min-height: 4.65rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0;
     border-bottom: 1px solid var(--line);
+    color: var(--forest-soft);
     font-family: var(--serif);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 6vw, 1.75rem);
     text-decoration: none;
   }
 
-  .mobile-menu nav > a.active:not(.button) {
+  .mobile-menu__group > summary {
+    width: 100%;
+    height: auto;
+    border-width: 0 0 1px;
+    cursor: pointer;
+    list-style: none;
+    place-items: initial;
+  }
+
+  .mobile-menu__group > summary svg {
+    flex: 0 0 auto;
+    color: var(--terracotta-text);
+    transition: transform 160ms ease;
+  }
+
+  .mobile-menu__group[open] > summary {
+    border-bottom-color: transparent;
     color: var(--terracotta-text);
   }
 
-  .mobile-menu nav > a.mobile-menu__support:not(.button) {
+  .mobile-menu__group[open] > summary svg {
+    transform: rotate(180deg);
+  }
+
+  .mobile-menu__children {
+    display: grid;
+    gap: 0;
+    padding: 0 0 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-menu__children a {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+    color: var(--forest-soft);
+    font-size: 0.92rem;
+    font-weight: 550;
+    text-decoration: none;
+  }
+
+  .mobile-menu__children a:hover,
+  .mobile-menu__children a:focus-visible,
+  .mobile-menu__children a[aria-current="page"] {
+    color: var(--terracotta-text);
+  }
+
+  .mobile-menu__children .mobile-menu__overview {
+    font-weight: 750;
+  }
+
+  .mobile-menu__direct.active {
+    color: var(--terracotta-text);
+  }
+
+  .mobile-menu__support {
+    display: flex;
+    min-height: 3.8rem;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
     color: var(--terracotta-text);
     font-family: var(--sans);
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .mobile-menu__quicklinks {
+    padding-top: 1.35rem;
+  }
+
+  .mobile-menu__quicklinks p {
+    margin: 0 0 0.65rem;
+    color: var(--forest-muted);
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .mobile-menu__quicklinks div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.2rem;
+  }
+
+  .mobile-menu__quicklinks a {
+    min-height: 2.75rem;
+    color: var(--forest-soft);
+    font-size: 0.86rem;
+    font-weight: 650;
+    line-height: 2.75rem;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--terracotta) 55%, transparent);
+    text-underline-offset: 0.28em;
+  }
+
+  .mobile-menu__quicklinks a[aria-current="page"] {
+    color: var(--terracotta-text);
   }
 
   .mobile-menu nav .button {
-    margin-top: 2rem;
+    margin-top: 1.4rem;
+  }
+
+  :global(body.mobile-menu-open) {
+    overflow: hidden;
   }
 
   @media (max-width: 1180px) {
@@ -285,4 +434,69 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
       display: none;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu__group > summary svg {
+      transition: none;
+    }
+  }
 </style>
+
+<script>
+  const mobileMenu = document.querySelector<HTMLDetailsElement>(".mobile-menu");
+
+  if (mobileMenu) {
+    const menuButton = mobileMenu.querySelector<HTMLElement>(":scope > summary");
+    const groups = Array.from(
+      mobileMenu.querySelectorAll<HTMLDetailsElement>(".mobile-menu__group"),
+    );
+    const backgroundElements = [
+      document.querySelector("main"),
+      document.querySelector(".site-footer"),
+      document.querySelector(".site-header .brand"),
+      document.querySelector(".header-cta"),
+    ].filter((element): element is HTMLElement => element instanceof HTMLElement);
+    const mobileBreakpoint = window.matchMedia("(max-width: 1180px)");
+
+    const updateMenuState = () => {
+      const isOpen = mobileMenu.open;
+      menuButton?.setAttribute("aria-expanded", String(isOpen));
+      menuButton?.setAttribute("aria-label", isOpen ? "Navigation schließen" : "Navigation öffnen");
+      document.body.classList.toggle("mobile-menu-open", isOpen);
+      backgroundElements.forEach((element) => element.toggleAttribute("inert", isOpen));
+    };
+
+    const closeMenuAboveMobileBreakpoint = () => {
+      if (!mobileBreakpoint.matches && mobileMenu.open) {
+        mobileMenu.open = false;
+        updateMenuState();
+      }
+    };
+
+    groups.forEach((group) => {
+      const summary = group.querySelector(":scope > summary");
+      const updateGroupState = () => {
+        summary?.setAttribute("aria-expanded", String(group.open));
+
+        if (group.open) {
+          groups.forEach((otherGroup) => {
+            if (otherGroup !== group) otherGroup.open = false;
+          });
+        }
+      };
+
+      group.addEventListener("toggle", updateGroupState);
+      updateGroupState();
+    });
+
+    mobileMenu.addEventListener("toggle", updateMenuState);
+    mobileBreakpoint.addEventListener("change", closeMenuAboveMobileBreakpoint);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && mobileMenu.open) {
+        mobileMenu.open = false;
+        menuButton?.focus();
+      }
+    });
+    updateMenuState();
+  }
+</script>

@@ -51,11 +51,14 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
 
   if (testInfo.project.name === "mobile") {
     await page.getByLabel("Navigation öffnen").click();
+    const communityGroup = page
+      .getByRole("navigation", { name: "Mobile Navigation" })
+      .locator('[data-mobile-nav-group="/gemeinschaft/"]');
+    await expect(communityGroup).toHaveAttribute("open", "");
+    await expect(communityGroup.locator(":scope > summary")).toContainText("Gemeinschaft");
     await expect(
-      page
-        .getByRole("navigation", { name: "Mobile Navigation" })
-        .getByRole("link", { name: "Gemeinschaft", exact: true }),
-    ).toBeVisible();
+      communityGroup.getByRole("link", { name: "Elternbeirat", exact: true }),
+    ).toHaveAttribute("href", "/gemeinschaft/elternbeirat/");
   } else {
     const navigation = page.getByRole("navigation", { name: "Hauptnavigation" });
     await navigation.getByRole("link", { name: "Gemeinschaft", exact: true }).hover();

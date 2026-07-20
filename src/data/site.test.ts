@@ -11,6 +11,13 @@ describe("site content", () => {
     expect(new Set(hrefs).size).toBe(hrefs.length);
   });
 
+  it("links Termine and Downloads from Gemeinschaft", () => {
+    const community = mainNavigation.find((item) => item.href === "/gemeinschaft/");
+    expect(community?.children.map((child) => child.href)).toEqual(
+      expect.arrayContaining(["/termine/", "/downloads/"]),
+    );
+  });
+
   it("publishes all four approved principles", () => {
     expect(principles.map((principle) => principle.title)).toEqual([
       "Montessori leben",

@@ -500,6 +500,7 @@ Wichtige Pfade:
 - Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
 - Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
 - Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über Pages CMS gepflegt; die Kontaktadressen liegen zentral in den CMS-Stammdaten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
+- Termine und Downloads werden im Dropdown unter **Gemeinschaft** sowie weiterhin im Footer erschlossen; die fünf Hauptpunkte der Navigation bleiben unverändert. Mobil öffnen die Hauptbereiche ihre Unterseiten als kompakte Akkordeons. Termine, Downloads und Kontakt bleiben zusätzlich als direkte Schnellzugriffe erreichbar.
 - Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.

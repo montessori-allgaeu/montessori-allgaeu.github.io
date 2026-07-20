@@ -30,15 +30,44 @@ test("mobile menu exposes the main journeys", async ({ page }) => {
   await page.goto("/");
   await page.getByLabel("Navigation öffnen").click();
   const mobileNavigation = page.getByRole("navigation", { name: "Mobile Navigation" });
-  await expect(
-    mobileNavigation.getByRole("link", { name: "Kennenlernen", exact: true }),
-  ).toBeVisible();
-  await expect(
-    mobileNavigation.getByRole("link", { name: "Arbeiten bei uns", exact: true }),
-  ).toBeVisible();
+  const communityGroup = mobileNavigation.locator('[data-mobile-nav-group="/gemeinschaft/"]');
+  const communitySummary = communityGroup.locator(":scope > summary");
+  const quickLinks = mobileNavigation.locator(".mobile-menu__quicklinks");
+
+  await expect(mobileNavigation.getByText("Kennenlernen", { exact: true })).toBeVisible();
+  await expect(mobileNavigation.getByText("Arbeiten bei uns", { exact: true })).toBeVisible();
   await expect(
     mobileNavigation.getByRole("link", { name: "Spenden & unterstützen", exact: true }),
   ).toBeVisible();
+  await expect(quickLinks.getByRole("link", { name: "Termine", exact: true })).toBeVisible();
+  await expect(quickLinks.getByRole("link", { name: "Downloads", exact: true })).toBeVisible();
+  await expect(quickLinks.getByRole("link", { name: "Kontakt", exact: true })).toBeVisible();
+
+  await communitySummary.click();
+  await expect(communityGroup).toHaveAttribute("open", "");
+  await expect(communitySummary).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    communityGroup.getByRole("link", { name: "Elternbeirat", exact: true }),
+  ).toBeVisible();
+  await expect(
+    communityGroup.getByRole("link", { name: "Unsere Geschichte", exact: true }),
+  ).toBeVisible();
+
+  const introductionGroup = mobileNavigation.locator('[data-mobile-nav-group="/kennenlernen/"]');
+  await introductionGroup.locator(":scope > summary").click();
+  await expect(introductionGroup).toHaveAttribute("open", "");
+  await expect(communityGroup).not.toHaveAttribute("open", "");
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByLabel("Navigation öffnen")).toBeFocused();
+
+  await page.goto("/downloads/");
+  await page.getByLabel("Navigation öffnen").click();
+  const activeCommunityGroup = page.locator('[data-mobile-nav-group="/gemeinschaft/"]');
+  await expect(activeCommunityGroup).toHaveAttribute("open", "");
+  await expect(
+    activeCommunityGroup.getByRole("link", { name: "Downloads", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
 });
 
 test("desktop navigation exposes the matching subpages on hover", async ({ page }, testInfo) => {
@@ -60,6 +89,8 @@ test("desktop navigation exposes the matching subpages on hover", async ({ page 
   await expect(
     mainNavigation.getByRole("link", { name: "Spenden & unterstützen", exact: true }),
   ).toBeVisible();
+  await expect(mainNavigation.getByRole("link", { name: "Termine", exact: true })).toBeVisible();
+  await expect(mainNavigation.getByRole("link", { name: "Downloads", exact: true })).toBeVisible();
 
   await page.goto("/kennenlernen/kosten/");
   await mainNavigation.getByRole("link", { name: "Kennenlernen", exact: true }).hover();
@@ -87,6 +118,28 @@ test("mobile menu remains usable on short viewports", async ({ page }) => {
   const finalLink = mobileNavigation.getByRole("link", { name: "Monte kennenlernen" });
   await finalLink.scrollIntoViewIfNeeded();
   await expect(finalLink).toBeInViewport();
+});
+
+test("mobile menu releases the page when switching to desktop", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByLabel("Navigation öffnen").click();
+
+  const mobileMenu = page.locator(".mobile-menu");
+  const body = page.locator("body");
+  const main = page.getByRole("main");
+  await expect(mobileMenu).toHaveAttribute("open", "");
+  await expect(body).toHaveClass(/mobile-menu-open/);
+  await expect(main).toHaveAttribute("inert", "");
+
+  await page.setViewportSize({ width: 1280, height: 844 });
+
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect(body).not.toHaveClass(/mobile-menu-open/);
+  await expect(main).not.toHaveAttribute("inert", "");
+  await expect
+    .poll(() => body.evaluate((element) => getComputedStyle(element).overflow))
+    .not.toBe("hidden");
 });
 
 test("editorial content renders from the validated content collections", async ({ page }) => {
