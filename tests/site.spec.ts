@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { legacyRedirects } from "../src/data/legacy";
 
 const keyPages = [
   "/",
@@ -99,6 +100,29 @@ test("desktop navigation exposes the matching subpages on hover", async ({ page 
     "aria-current",
     "page",
   );
+});
+
+test("community pillars link across their complete cards", async ({ page }) => {
+  await page.goto("/gemeinschaft/");
+  const pillars = page.locator(".pillars");
+
+  await expect(pillars.getByRole("link", { name: "01 Verein & Vorstand" })).toHaveAttribute(
+    "href",
+    "/gemeinschaft/traeger-verein/",
+  );
+  await expect(pillars.getByRole("link", { name: "02 Eltern & Elternbeirat" })).toHaveAttribute(
+    "href",
+    "/gemeinschaft/elternbeirat/",
+  );
+  await expect(
+    pillars.getByRole("link", { name: "04 Pädagogisches Team & Leitungen" }),
+  ).toHaveAttribute("href", "/gemeinschaft/team/");
+  await expect(
+    pillars.getByRole("link", { name: "05 Verwaltung & Geschäftsführung" }),
+  ).toHaveAttribute("href", "/gemeinschaft/team/");
+  await expect(
+    pillars.getByRole("link", { name: "03 Schüler:innen & Schülersprecher" }),
+  ).toHaveCount(0);
 });
 
 test("mobile menu remains usable on short viewports", async ({ page }) => {
@@ -304,6 +328,29 @@ test("CMS address stays consistent across contact and legal pages", async ({ pag
   }
 });
 
+test("impressum mirrors the published board and its joint representation rule", async ({
+  page,
+}) => {
+  await page.goto("/gemeinschaft/traeger-verein/");
+  const boardNames = await page.locator(".board-members .board-member h3").allTextContents();
+
+  await page.goto("/impressum/");
+  const boardHeading = page.getByRole("heading", {
+    name: "Vertretungsberechtigter Vorstand gemäß § 26 BGB",
+  });
+  const imprintBoard = await boardHeading
+    .locator("xpath=following-sibling::ul[1]/li")
+    .allTextContents();
+
+  expect(boardNames.length).toBeGreaterThan(1);
+  expect(imprintBoard.map((entry) => entry.split(",")[0].trim())).toEqual(boardNames);
+  await expect(
+    page.getByText(
+      "Der Verein wird gerichtlich und außergerichtlich durch jeweils zwei Vorstandsmitglieder gemeinsam vertreten.",
+    ),
+  ).toBeVisible();
+});
+
 test("editorial quick guide links to the exact CMS project and stays out of search", async ({
   page,
 }) => {
@@ -315,6 +362,41 @@ test("editorial quick guide links to the exact CMS project and stays out of sear
     "https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main",
   );
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+});
+
+test("legacy pages expose permanent static redirect signals", async ({ request }) => {
+  for (const [source, destination] of Object.entries(legacyRedirects)) {
+    const response = await request.get(`/${source}/`);
+    const html = await response.text();
+    const canonicalUrl = `https://montessori-allgaeu.de${destination}`;
+
+    expect(response.ok(), source).toBe(true);
+    expect(html, source).toContain(`http-equiv="refresh" content="0; url=${destination}"`);
+    expect(html, source).toContain(`rel="canonical" href="${canonicalUrl}"`);
+    expect(html, source).not.toContain('content="noindex, nofollow"');
+  }
+});
+
+test("legacy pages stay out of the current sitemap", async ({ request }) => {
+  const response = await request.get("/sitemap-0.xml");
+  const sitemap = await response.text();
+
+  expect(response.ok()).toBe(true);
+  for (const source of Object.keys(legacyRedirects)) {
+    const legacyUrl = `https://montessori-allgaeu.de/${source}/`;
+
+    expect(sitemap, source).not.toContain(legacyUrl);
+    expect(sitemap, source).not.toContain(encodeURI(legacyUrl));
+  }
+});
+
+test("legacy job links lead to the durable current job overview", async ({ page }) => {
+  await page.goto("/stellen/klassenlehrer-in-sekundaria/");
+
+  await expect(page).toHaveURL(/\/arbeiten-bei-uns\/stellen\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Deine Arbeit soll Kinder auf ihrem eigenen Weg stärken",
+  );
 });
 
 test("homepage exposes complete search and social metadata", async ({ page }) => {

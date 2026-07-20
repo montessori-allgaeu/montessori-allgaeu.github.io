@@ -92,6 +92,19 @@ Geplante Zielkonfiguration:
 
 GitHub leitet bei korrekt gesetzter Apex- und `www`-Konfiguration automatisch auf die in Pages hinterlegte Canonical Domain um. DNS-Werte immer unmittelbar vor dem Cutover mit der aktuellen GitHub-Dokumentation abgleichen.
 
+## Weiterleitungen alter Adressen
+
+In der aktuellen statischen GitHub-Pages-Konfiguration stehen keine individuellen serverseitigen
+301- oder 308-Weiterleitungen zur Verfügung. Deshalb erzeugt Astro für jeden Eintrag in
+`src/data/legacy.ts` eine statische Weiterleitungsseite. Sie verwendet einen sofortigen Meta-Refresh,
+verweist per Canonical auf die Zielseite und leitet im Browser zusätzlich mit `location.replace`
+weiter. [Google interpretiert einen sofortigen Meta-Refresh als permanente
+Weiterleitung](https://developers.google.com/search/docs/crawling-indexing/301-redirects).
+
+Falls später eine vorgeschaltete Redirect-Schicht eingesetzt wird, sollen dieselben Zuordnungen dort
+als serverseitige 301- oder 308-Weiterleitungen abgebildet werden. Die alten Weiterleitungen sollten
+nach dem Domain-Cutover stichprobenartig geprüft und dauerhaft beibehalten werden.
+
 ## Vor dem öffentlichen Launch bestätigen
 
 - Alle Beiträge, Einlagen, Elternarbeitsstunden und Öffnungszeiten
@@ -101,4 +114,4 @@ GitHub leitet bei korrekt gesetzter Apex- und `www`-Konfiguration automatisch au
 - Team- und Elternbeiratsnamen, Rollen und Einwilligungen für Fotos
 - Vorstand, Aufsichtsbehörden, Impressum und Datenschutzerklärung rechtlich prüfen
 - Spendenkonto und Prozess für Zuwendungsbestätigungen
-- Weiterleitungen der wichtigsten alten Jimdo-Adressen
+- Weiterleitungen der alten Jimdo-Adressen nach dem Domain-Cutover stichprobenartig prüfen

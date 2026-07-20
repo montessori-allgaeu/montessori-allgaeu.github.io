@@ -6,10 +6,6 @@ Vor Änderungen an Positionierung, Informationsarchitektur, Texten, Design oder 
 
 Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppen, Fit-Kriterien, pädagogischen Aussagen, Arbeitgeberpositionierung, Designrichtung und offenen Entscheidungen. Bei Widersprüchen nicht stillschweigend neu interpretieren, sondern die Abweichung sichtbar machen und klären.
 
-Die operativen Nacharbeiten stehen in [`todo.md`](todo.md). Vor inhaltlichen oder technischen
-Folgearbeiten die Liste prüfen und erledigte beziehungsweise neu entdeckte Punkte im selben Change
-aktualisieren.
-
 ## Unverrückbare Leitplanken
 
 - Das Kind und seine eigenständige Entwicklung stehen im Mittelpunkt.
@@ -78,5 +74,4 @@ git diff --check
 - Technische Betriebsinformationen gehören in [`README.md`](README.md).
 - Strategische Entscheidungen gehören in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md).
 - Visuelle Vergleichsergebnisse gehören in [`design-qa.md`](design-qa.md).
-- Offene operative Nacharbeiten gehören in [`todo.md`](todo.md).
 - Wenn eine Änderung Architektur, Content-Ownership oder den Veröffentlichungsweg verändert, die betroffenen Dokumente im selben Change aktualisieren.

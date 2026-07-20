@@ -1,0 +1,216 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { Play } from "@lucide/astro";
+
+interface Props {
+  videoId: string;
+  title: string;
+  poster: ImageMetadata;
+  posterAlt: string;
+  duration: string;
+  caption: string;
+}
+
+const { videoId, title, poster, posterAlt, duration, caption } = Astro.props;
+const vimeoUrl = `https://vimeo.com/${videoId}`;
+const playerUrl = `https://player.vimeo.com/video/${videoId}?autoplay=1&dnt=1`;
+const privacyNoteId = `vimeo-privacy-${videoId}`;
+---
+
+<figure class="vimeo-embed">
+  <div
+    class="vimeo-embed__frame"
+    data-vimeo-embed
+    data-vimeo-src={playerUrl}
+    data-vimeo-title={title}
+  >
+    <div class="vimeo-embed__consent" data-vimeo-consent>
+      <Image
+        class="vimeo-embed__poster"
+        src={poster}
+        alt={posterAlt}
+        widths={[640, 960, 1280]}
+        sizes="(max-width: 1270px) calc(100vw - 3rem), 1240px"
+        loading="lazy"
+      />
+      <div class="vimeo-embed__overlay">
+        <div>
+          <p class="vimeo-embed__meta">Video · {duration}</p>
+          <a
+            class="button vimeo-embed__play"
+            href={vimeoUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-vimeo-play
+            aria-describedby={privacyNoteId}
+          >
+            <Play size={19} stroke-width={2} aria-hidden="true" />
+            Vimeo-Video laden
+          </a>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="vimeo-embed__close"
+      data-vimeo-close
+      aria-label="Vimeo-Player schließen und Einwilligung für weitere Datenübertragungen widerrufen"
+      hidden
+    >
+      Player schließen
+    </button>
+  </div>
+  <figcaption class="vimeo-embed__caption">
+    <span>{caption}</span>
+    <span id={privacyNoteId}>
+      Mit dem Laden willigt ihr in die Datenübertragung an Vimeo in den USA und in erforderliche
+      Cookies ein. <a href="/datenschutz/#vimeo-video">Datenschutz</a>
+    </span>
+  </figcaption>
+</figure>
+
+<script>
+  document
+    .querySelectorAll<HTMLElement>("[data-vimeo-embed]:not([data-vimeo-ready])")
+    .forEach((container) => {
+      container.dataset.vimeoReady = "true";
+      const playLink = container.querySelector<HTMLAnchorElement>("[data-vimeo-play]");
+      const consent = container.querySelector<HTMLElement>("[data-vimeo-consent]");
+      const closeButton = container.querySelector<HTMLButtonElement>("[data-vimeo-close]");
+
+      closeButton?.addEventListener("click", () => {
+        container.querySelector("iframe")?.remove();
+        closeButton.hidden = true;
+        if (consent) consent.hidden = false;
+        playLink?.focus();
+      });
+
+      playLink?.addEventListener("click", (event) => {
+        const src = container.dataset.vimeoSrc;
+        const title = container.dataset.vimeoTitle;
+
+        if (!src || !title || !consent || !closeButton || container.querySelector("iframe")) return;
+
+        event.preventDefault();
+        const iframe = document.createElement("iframe");
+        iframe.src = src;
+        iframe.title = title;
+        iframe.allow =
+          "autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share";
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.tabIndex = 0;
+
+        consent.hidden = true;
+        closeButton.hidden = false;
+        container.insertBefore(iframe, closeButton);
+        iframe.focus();
+      });
+    });
+</script>
+
+<style>
+  .vimeo-embed {
+    margin: 0;
+  }
+
+  .vimeo-embed__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--forest);
+  }
+
+  .vimeo-embed__consent,
+  .vimeo-embed__consent :global(picture),
+  .vimeo-embed__poster,
+  .vimeo-embed__frame :global(iframe) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .vimeo-embed__consent[hidden] {
+    display: none;
+  }
+
+  .vimeo-embed__poster {
+    object-fit: cover;
+  }
+
+  .vimeo-embed__frame :global(iframe) {
+    display: block;
+    border: 0;
+  }
+
+  .vimeo-embed__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: clamp(1.25rem, 4vw, 3.5rem);
+    background: linear-gradient(180deg, transparent 42%, rgb(18 28 19 / 0.72) 100%);
+  }
+
+  .vimeo-embed__meta {
+    margin-bottom: 0.7rem;
+    color: var(--white);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .vimeo-embed__play {
+    border-color: var(--white);
+  }
+
+  .vimeo-embed__close {
+    position: absolute;
+    z-index: 1;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    color: var(--white);
+    background: rgb(18 28 19 / 0.88);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .vimeo-embed__close:hover,
+  .vimeo-embed__close:focus-visible {
+    background: var(--forest);
+  }
+
+  .vimeo-embed__close[hidden] {
+    display: none;
+  }
+
+  .vimeo-embed__caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-top: 1rem;
+    color: var(--forest-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .vimeo-embed__caption span:first-child {
+    color: var(--forest-soft);
+    font-weight: 650;
+  }
+
+  .vimeo-embed__caption a {
+    color: var(--terracotta-dark);
+  }
+
+  @media (max-width: 640px) {
+    .vimeo-embed__caption {
+      flex-direction: column;
+    }
+  }
+</style>

@@ -5,10 +5,12 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
+import VimeoEmbed from "@/components/VimeoEmbed.astro";
 import { getWebsiteSettings } from "@/data/content";
 import schoolImage from "@/assets/images/editorial/school.webp";
 import classImage from "@/assets/images/editorial/class.webp";
 import roomImage from "@/assets/images/editorial/room.webp";
+import erdkinderplanPoster from "@/assets/images/editorial/erdkinderplan-bauwagen.jpg";
 
 const { openingHours } = await getWebsiteSettings();
 ---
@@ -75,6 +77,42 @@ const { openingHours } = await getWebsiteSettings();
           </p>
         </article>
       </div>
+    </div>
+  </section>
+
+  <section class="section erdkinderplan" aria-labelledby="erdkinderplan-title">
+    <div class="container">
+      <div class="grid-2 erdkinderplan__intro">
+        <div>
+          <p class="eyebrow">Erdkinderplan · Sekundaria</p>
+          <h2 id="erdkinderplan-title">Mit Kopf, Hand und Verantwortung.</h2>
+        </div>
+        <div>
+          <p class="lead">
+            Jugendliche lernen besonders tief, wenn Wissen mit echten Aufgaben verbunden ist.
+          </p>
+          <p>
+            Maria Montessori beschrieb dafür den Erdkinderplan: ein Lernen, das theoretische
+            Kenntnisse mit praktischer Arbeit, sozialer Verantwortung und gemeinsamer Gestaltung
+            verbindet.
+          </p>
+          <p>
+            Wir greifen diesen Gedanken in konkreten Projekten auf. Die Sekundaria B plante und
+            baute im Schuljahr 2023/24 über ein Jahr einen Bauwagen. Berechnungen, die
+            Auseinandersetzung mit Materialien und die Arbeit mit Werkzeugen führten zu einem
+            Ergebnis, das nur gemeinsam entstehen konnte.
+          </p>
+        </div>
+      </div>
+
+      <VimeoEmbed
+        videoId="988288187"
+        title="Montessorischule Allgäu – Erdkinderplan 2023/24"
+        poster={erdkinderplanPoster}
+        posterAlt="Schülerinnen und Schüler bewegen gemeinsam den alten Anhänger für ihr Bauwagenprojekt"
+        duration="2:48 Minuten"
+        caption="Ein Jahr Erdkinderplan: Die Sekundaria B baut gemeinsam einen Bauwagen."
+      />
     </div>
   </section>
 
@@ -159,5 +197,22 @@ const { openingHours } = await getWebsiteSettings();
 
   .school-times {
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .erdkinderplan {
+    border-block: 1px solid var(--line);
+  }
+
+  .erdkinderplan__intro {
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .erdkinderplan__intro h2 {
+    max-width: 36rem;
+    scroll-margin-top: calc(var(--header-height) + 1rem);
+  }
+
+  .erdkinderplan__intro p:last-child {
+    margin-bottom: 0;
   }
 </style>

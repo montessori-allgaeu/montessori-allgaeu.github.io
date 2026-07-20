@@ -19,7 +19,7 @@ const { destination } = Astro.props;
 <BaseLayout
   title="Seite umgezogen"
   description="Diese Seite ist auf der neuen Website der Montessori Allgäu umgezogen."
-  noindex
+  canonicalPath={destination}
 >
   <Fragment slot="head">
     <meta http-equiv="refresh" content={`0; url=${destination}`} />

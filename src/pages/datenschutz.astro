@@ -8,12 +8,12 @@ const { contact } = await getWebsiteSettings();
 
 <BaseLayout
   title="Datenschutz"
-  description="Datenschutzhinweise der Website Montessori Allgäu zu Hosting über GitHub Pages, Serverprotokollen, E-Mail-Kontakt und Betroffenenrechten."
+  description="Datenschutzhinweise der Website Montessori Allgäu zu Hosting über GitHub Pages, Vimeo, E-Mail-Kontakt und Betroffenenrechten."
 >
   <PageIntro
     eyebrow="Rechtliches"
     title="Datenschutz"
-    intro="Diese Website ist bewusst datensparsam: keine Analyse, keine Werbetracker, keine eingebetteten Karten oder Videos und keine extern geladenen Schriften."
+    intro="Diese Website ist bewusst datensparsam: keine Analyse, keine Werbetracker, keine automatisch geladenen Karten oder Videos und keine extern geladenen Schriften."
   />
 
   <section class="section">
@@ -47,11 +47,12 @@ const { contact } = await getWebsiteSettings();
         >.
       </p>
 
-      <h2>3. Keine Reichweitenmessung und keine Cookies</h2>
+      <h2>3. Keine Reichweitenmessung durch uns</h2>
       <p>
         Wir verwenden keine Analyse- oder Marketingdienste. Die Website setzt nach aktuellem Stand
         keine eigenen Cookies und lädt keine externen Webfonts. Die eingesetzten Schriftdateien und
-        Bilder werden zusammen mit der Website ausgeliefert.
+        Bilder werden zusammen mit der Website ausgeliefert. Der Vimeo-Player wird nur nach eurer
+        ausdrücklichen Aktivierung geladen; Einzelheiten dazu stehen in Abschnitt 5.
       </p>
 
       <h2>4. Kontakt per E-Mail oder Telefon</h2>
@@ -68,21 +69,76 @@ const { contact } = await getWebsiteSettings();
         unverschlüsselt.
       </p>
 
-      <h2>5. Externe Links</h2>
+      <h2 id="vimeo-video">5. Vimeo-Video</h2>
       <p>
-        Externe Dienste wie OpenStreetMap oder Google Docs werden nicht in die Website eingebettet.
-        Erst wenn ihr einen entsprechend gekennzeichneten Link anklickt, verlasst ihr unsere
-        Website. Für die anschließende Datenverarbeitung ist der jeweilige Anbieter verantwortlich.
+        Auf der Schulseite bieten wir ein Video an, das beim Anbieter Vimeo gehostet wird. Vor dem
+        Laden zeigen wir ausschließlich ein Vorschaubild, das von unserer eigenen Website geladen
+        wird. Zu Vimeo wird dabei noch keine Verbindung hergestellt.
+      </p>
+      <p>
+        Erst wenn ihr „Vimeo-Video laden“ auswählt, stellt euer Browser eine Verbindung zu Vimeo und
+        dessen technischen Dienstleistern her. Dabei werden insbesondere eure IP-Adresse, Zeitpunkt,
+        Angaben zu Browser und Gerät, die aufrufende Seite sowie gegebenenfalls bereits in eurem
+        Browser vorhandene Vimeo-Cookies übermittelt. Vimeo kann außerdem die für den sicheren
+        Betrieb des Players erforderlichen Cookies <code>player_clearance</code>,
+        <code>cf_clearance</code>, <code>_cf_bm</code> und <code>_cfuvid</code> setzen.
+      </p>
+      <p>
+        Zweck der Verarbeitung ist die Wiedergabe des ausgewählten Videos und der sichere Betrieb
+        des Players. Mit dem Laden willigt ihr gemäß Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1
+        TDDDG in diese Verarbeitung und den Zugriff auf eure Endeinrichtung ein. Die Einwilligung
+        ist freiwillig und gilt nur für den aktuellen Seitenaufruf. Ihr könnt sie für weitere
+        Datenübertragungen widerrufen, indem ihr „Player schließen“ auswählt oder die Seite neu
+        ladet. Bereits erfolgte Übermittlungen werden dadurch nicht rückgängig gemacht. Die
+        Schulseite bleibt ohne das Video vollständig nutzbar.
+      </p>
+      <p>
+        Wir rufen den Player mit aktiviertem Do-Not-Track-Parameter auf. Laut Vimeo verhindert
+        dieser die Erfassung von Sitzungsdaten und Videostatistiken, nicht aber die Übermittlung
+        bereits vorhandener Vimeo-Cookies. Für den sicheren Betrieb können die genannten Cookies
+        dennoch gesetzt werden: <code>_cf_bm</code> für etwa 30 Minuten, <code>_cfuvid</code> für die
+        Sitzung,
+        <code>player_clearance</code> für etwa sieben Tage und <code>cf_clearance</code> für bis zu ein
+        Jahr. Wir speichern selbst keine Nutzungsdaten aus der Videowiedergabe. Vimeo speichert technische
+        Daten nach den in seiner Datenschutzerklärung beschriebenen Zwecken und gesetzlichen Aufbewahrungspflichten.
+      </p>
+      <p>
+        Anbieter ist Vimeo.com, Inc., 330 West 34th Street, 10th Floor, New York, New York 10001,
+        USA. Vimeo ist nach eigenen Angaben aktiver Teilnehmer am EU-US Data Privacy Framework. Die
+        Übermittlung an den zertifizierten Anbieter erfolgt auf Grundlage des
+        Angemessenheitsbeschlusses der Europäischen Kommission gemäß Art. 45 DSGVO. Weitere
+        Informationen findet ihr in der
+        <a href="https://vimeo.com/privacy" target="_blank" rel="noreferrer">
+          Datenschutzerklärung von Vimeo</a
+        >, in den
+        <a
+          href="https://help.vimeo.com/hc/de/articles/26080940921361-Cookies-des-Vimeo-Players"
+          target="_blank"
+          rel="noreferrer">Hinweisen zu den Player-Cookies</a
+        > und in den
+        <a
+          href="https://help.vimeo.com/hc/en-us/articles/22793873068305-Does-Vimeo-participate-in-the-EU-US-Data-Privacy-Framework-DPF"
+          target="_blank"
+          rel="noreferrer">Hinweisen zum Data Privacy Framework</a
+        >.
       </p>
 
-      <h2>6. Fotos</h2>
+      <h2>6. Externe Links</h2>
+      <p>
+        Weitere externe Dienste wie OpenStreetMap oder Google Docs werden nicht in die Website
+        eingebettet. Erst wenn ihr einen entsprechend gekennzeichneten Link anklickt, verlasst ihr
+        unsere Website. Für die anschließende Datenverarbeitung ist der jeweilige Anbieter
+        verantwortlich.
+      </p>
+
+      <h2>7. Fotos</h2>
       <p>
         Auf dieser Website zeigen wir Fotografien aus dem Alltag und Porträts des Teams. Die
         Veröffentlichung erfolgt auf Grundlage der jeweils vorliegenden Einwilligungen oder einer
         anderen zulässigen Rechtsgrundlage. Einwilligungen können für die Zukunft widerrufen werden.
       </p>
 
-      <h2>7. Eure Rechte</h2>
+      <h2>8. Eure Rechte</h2>
       <p>
         Ihr habt im Rahmen der gesetzlichen Voraussetzungen das Recht auf Auskunft, Berichtigung,
         Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Erteilte
@@ -93,7 +149,7 @@ const { contact } = await getWebsiteSettings();
         regelmäßig das Bayerische Landesamt für Datenschutzaufsicht (BayLDA) zuständig.
       </p>
 
-      <h2>8. Stand dieser Erklärung</h2>
+      <h2>9. Stand dieser Erklärung</h2>
       <p>
         Stand: Juli 2026. Wir passen diese Hinweise an, wenn sich Technik, Dienste oder rechtliche
         Anforderungen ändern.
@@ -101,3 +157,9 @@ const { contact } = await getWebsiteSettings();
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  #vimeo-video {
+    scroll-margin-top: calc(var(--header-height) + 1rem);
+  }
+</style>

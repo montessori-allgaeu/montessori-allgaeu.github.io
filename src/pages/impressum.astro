@@ -1,9 +1,20 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
-import { getWebsiteSettings } from "@/data/content";
+import { getTeam, getWebsiteSettings } from "@/data/content";
 
 const { contact } = await getWebsiteSettings();
+const board = (await getTeam())
+  .flatMap((member) =>
+    member.assignments
+      .filter((assignment) => assignment.group === "Vorstand")
+      .map((assignment) => ({ member, assignment })),
+  )
+  .sort(
+    (a, b) =>
+      a.assignment.position - b.assignment.position ||
+      a.member.name.localeCompare(b.member.name, "de"),
+  );
 ---
 
 <BaseLayout
@@ -26,8 +37,21 @@ const { contact } = await getWebsiteSettings();
         {`${contact.address.postalCode} ${contact.address.locality}`}
       </p>
 
-      <h3>Vertretungsberechtigter Vorstand</h3>
-      <p>Max Sutter, Vorsitzender</p>
+      <h3>Vertretungsberechtigter Vorstand gemäß § 26 BGB</h3>
+      <ul>
+        {
+          board.map(({ member, assignment }) => (
+            <li>
+              {member.name}
+              {assignment.role ? `, ${assignment.role}` : ""}
+            </li>
+          ))
+        }
+      </ul>
+      <p>
+        Der Verein wird gerichtlich und außergerichtlich durch jeweils zwei Vorstandsmitglieder
+        gemeinsam vertreten.
+      </p>
 
       <h3>Kontakt</h3>
       <p>

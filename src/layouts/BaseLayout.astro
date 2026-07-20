@@ -11,6 +11,7 @@ interface Props {
   image?: string;
   imageAlt?: string;
   noindex?: boolean;
+  canonicalPath?: string;
 }
 
 const {
@@ -19,11 +20,12 @@ const {
   image = "/social-card-montessori-allgaeu.jpg",
   imageAlt = "Ein Schüler arbeitet konzentriert mit Montessori-Material; daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
   noindex = false,
+  canonicalPath,
 } = Astro.props;
 const { contact } = await getWebsiteSettings();
 
 const pageTitle = title === site.name ? title : `${title} | ${site.name}`;
-const canonical = new URL(Astro.url.pathname, site.url);
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, site.url);
 const socialImage = new URL(image, site.url);
 const logo = new URL("/favicon.png", site.url);
 const organizationId = new URL("/#organization", site.url);

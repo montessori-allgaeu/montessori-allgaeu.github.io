@@ -30,4 +30,22 @@ describe("site content", () => {
   it("keeps legacy paths unique", () => {
     expect(Object.keys(legacyRedirects).length).toBe(new Set(Object.keys(legacyRedirects)).size);
   });
+
+  it("maps legacy paths directly to canonical internal pages", () => {
+    expect(legacyRedirects).toMatchObject({
+      "montessori/maria-montessori": "/montessori/",
+      "wir/verwaltung": "/gemeinschaft/team/",
+      "kontakt/lage-anfahrt": "/kontakt/",
+      "stellen/klassenlehrer-in-sekundaria": "/arbeiten-bei-uns/stellen/",
+      "galerie/lernen": "/kindergarten-schule/schule/",
+      "2017/10/25/grosse-arbeit-der-9er": "/kindergarten-schule/schule/",
+    });
+
+    for (const [source, destination] of Object.entries(legacyRedirects)) {
+      expect(source).not.toMatch(/^\//);
+      expect(source).not.toMatch(/\/$/);
+      expect(destination).toMatch(/^\/.+\/$|^\/$/);
+      expect(destination).not.toBe(`/${source}/`);
+    }
+  });
 });
