@@ -309,7 +309,7 @@ Bestätigt ist **Designrichtung 1**: eine ruhige, redaktionelle, warme und hochw
 
 - großzügige, aber kontrollierte Weißräume
 - klare redaktionelle Hierarchie
-- große Serifenschriften für emotionale Aussagen
+- große, charakterstarke Display-Schriften für emotionale Aussagen
 - sachliche, gut lesbare Sans-Serif für Navigation und Fließtext
 - echte Bilder aus dem Alltag der Monte
 - abwechselnde Bild-Text-Flächen
@@ -325,8 +325,8 @@ Bestätigt ist **Designrichtung 1**: eine ruhige, redaktionelle, warme und hochw
 - Terrakotta: `#b85b2d`
 - Ocker: `#d7a24b`
 - Linienfarbe: `#d8d0c6`
-- Headline-Schrift: Newsreader
-- Fließtext und UI: Manrope
+- Headline-Schrift: Unica One
+- Fließtext und UI: Krub
 
 ### Bildsprache
 
@@ -494,6 +494,7 @@ Wichtige Pfade:
 - Die Prinzipien wurden ausdrücklich von „Montessori“ nach „Gemeinschaft“ verschoben.
 - Prinzipien werden als Beta gekennzeichnet, aber bereits vollständig und öffentlich gelebt.
 - Designrichtung 1 wurde ausgewählt und für die gesamte Website umgesetzt.
+- Die Typografie folgt dem Corporate Design: Unica One prägt Headlines und ausgewählte Display-Elemente, Krub Fließtext und UI. Beide Schriften werden lokal ausgeliefert.
 - Kindergarten und Schule werden als ein Bildungsweg und nicht als getrennte Zielgruppenwelten behandelt.
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
 - Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.

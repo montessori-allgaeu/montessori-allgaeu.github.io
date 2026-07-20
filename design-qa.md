@@ -21,6 +21,10 @@ Die vollständige Desktopansicht wurde aus lückenlos überlappenden Viewport-Au
 4. Finale Prüfung: Desktop und Mobil ohne defekte Bilder, ohne Konsolenfehler und ohne horizontale Überläufe. Navigation und FAQ-Zustände funktionieren.
 5. Nachprüfung: Lange Stellenbezeichnungen brechen auch auf 320 Pixel breiten Viewports um; das
    mobile Menü bleibt auf kurzen Hoch- und Querformaten vollständig scrollbar.
+6. Typografieprüfung am 21. Juli 2026: Newsreader und Manrope wurden gemäß Corporate-Design-Manual
+   durch Unica One für Headlines und ausgewählte Display-Elemente sowie Krub für Fließtext und UI
+   ersetzt. Startseite, mobile Navigation und eine redaktionelle Innenseite wurden auf Desktop und
+   Mobil ohne horizontale Überläufe geprüft; beide lokal ausgelieferten Schriften werden geladen.
 
 ## Befunde
 

@@ -1,5 +1,8 @@
-@import "@fontsource-variable/newsreader/wght.css";
-@import "@fontsource-variable/manrope/wght.css";
+@import "@fontsource/unica-one/latin-400.css";
+@import "@fontsource/krub/latin-400.css";
+@import "@fontsource/krub/latin-500.css";
+@import "@fontsource/krub/latin-600.css";
+@import "@fontsource/krub/latin-700.css";
 
 :root {
   --paper: #f5f1ec;
@@ -14,8 +17,8 @@
   --line: #d8d0c6;
   --line-strong: #bcb3a8;
   --white: #fffdfa;
-  --serif: "Newsreader Variable", Georgia, serif;
-  --sans: "Manrope Variable", system-ui, sans-serif;
+  --display: "Unica One", "Arial Narrow", sans-serif;
+  --sans: "Krub", system-ui, sans-serif;
   --container: 1240px;
   --reading: 760px;
   --header-height: 88px;
@@ -97,9 +100,9 @@ h2,
 h3,
 h4 {
   color: var(--forest);
-  font-family: var(--serif);
-  font-weight: 450;
-  line-height: 1.04;
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.08;
   text-wrap: balance;
 }
 
@@ -113,19 +116,19 @@ h3 {
 h1 {
   margin-bottom: 1.6rem;
   font-size: clamp(3.15rem, 7vw, 6.6rem);
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
 }
 
 h2 {
   margin-bottom: 1.4rem;
   font-size: clamp(2.35rem, 5vw, 4.5rem);
-  letter-spacing: -0.035em;
+  letter-spacing: 0;
 }
 
 h3 {
   margin-bottom: 0.85rem;
   font-size: clamp(1.65rem, 2.8vw, 2.35rem);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 h4 {
@@ -465,7 +468,7 @@ strong {
   display: block;
   margin-bottom: 1rem;
   color: var(--terracotta-text);
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 1.45rem;
 }
 
@@ -612,11 +615,11 @@ strong {
 .quote-band blockquote {
   max-width: 64rem;
   margin: 0 auto 1.5rem;
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(2.2rem, 5vw, 4.4rem);
-  font-weight: 430;
+  font-weight: 400;
   line-height: 1.08;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .quote-band cite {
@@ -648,7 +651,7 @@ strong {
   display: block;
   margin-bottom: 0.4rem;
   color: var(--terracotta-text);
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(2.5rem, 4vw, 4rem);
   line-height: 1;
 }
@@ -713,7 +716,7 @@ strong {
 
 .step::before {
   color: var(--terracotta-text);
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 1.5rem;
   content: "0" counter(steps);
 }
@@ -743,7 +746,7 @@ strong {
   padding: 1.6rem 3.5rem 1.6rem 0;
   color: var(--forest);
   cursor: pointer;
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(1.35rem, 2.2vw, 1.8rem);
   line-height: 1.25;
   list-style: none;
@@ -847,7 +850,7 @@ td {
   display: block;
   margin-bottom: 2rem;
   color: var(--terracotta-text);
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 1.4rem;
 }
 
@@ -924,14 +927,14 @@ td {
   place-items: center;
   color: var(--paper);
   background: var(--forest);
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .team-card h3,
 .team-card h4 {
   margin-bottom: 0.35rem;
-  font-family: var(--serif);
+  font-family: var(--display);
   font-weight: 400;
   font-size: 1.5rem;
 }
