@@ -6,7 +6,7 @@ import CTASection from "@/components/CTASection.astro";
 import { getDownloads } from "@/data/content";
 
 const downloads = await getDownloads();
-const sectionTitles = ["Schule", "Kindergarten", "Aufnahme & Verein"] as const;
+const sectionTitles = ["Schule", "Kindergarten", "Verein"] as const;
 const sections = sectionTitles.map((title) => ({
   title,
   files: downloads.filter((download) => download.group === title),

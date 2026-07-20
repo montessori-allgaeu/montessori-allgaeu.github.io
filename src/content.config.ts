@@ -109,7 +109,7 @@ const downloads = defineCollection({
       .string()
       .regex(/^\/downloads\/.+\.pdf$/i)
       .refine((file) => !file.split("/").includes(".."), "Ungültiger Download-Pfad."),
-    group: z.enum(["Schule", "Kindergarten", "Aufnahme & Verein"]),
+    group: z.enum(["Schule", "Kindergarten", "Verein"]),
     ...publicationFields,
   }),
 });

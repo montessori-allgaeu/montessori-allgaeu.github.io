@@ -495,7 +495,7 @@ content:
           values:
             - Schule
             - Kindergarten
-            - Aufnahme & Verein
+            - Verein
       - name: position
         label: Position innerhalb des Bereichs
         type: number
