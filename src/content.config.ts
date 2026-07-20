@@ -214,6 +214,10 @@ const contactSettings = defineCollection({
 const openingHoursSettings = defineCollection({
   loader: glob({ pattern: "opening-hours.yml", base: "./src/content/settings" }),
   schema: z.object({
+    school: z.object({
+      primaria: z.string().min(1),
+      secundariaAndTertia: z.string().min(1),
+    }),
     schoolOffice: z.array(z.string().min(1)).min(1),
     kindergarten: z
       .array(

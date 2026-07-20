@@ -1,3 +1,6 @@
+school:
+  primaria: In der Regel von 7:55 bis 12:10 Uhr. Je nach Stundenplan kann der Unterricht an einzelnen Tagen bis 12:55 Uhr dauern.
+  secundariaAndTertia: Von 7:55 bis 12:55 Uhr sowie an einem verpflichtenden Nachmittag pro Woche.
 schoolOffice:
   - "Montag: 7:30–16:30 Uhr"
   - "Dienstag: 7:30–15:30 Uhr"

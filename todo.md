@@ -14,8 +14,9 @@ aktualisiert werden.
 - [ ] Für den Schulbereich unter der inhaltlichen Klammer „Montessori – wie wir arbeiten“ konkrete
       Konzepte vorstellen: unter anderem den Erdkinderplan, die angebotenen Praktika mit Zeitpunkt,
       Jahrgangsstufe und pädagogischem Ziel sowie den konkreten Ablauf und Rahmen der Freiarbeit.
-- [ ] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten der
-      Schule sowie Kosten für Mittagessen mit den aktuell gültigen Verträgen abgleichen.
+- [x] Beiträge, Einlagen, Vereinsbeiträge, Elternarbeitsstunden, Öffnungs- und Betreuungszeiten der
+      Schule einschließlich der konkreten Dauer des verpflichtenden Nachmittags sowie Kosten für
+      Mittagessen mit den aktuell gültigen Verträgen abgleichen.
 - [x] Öffnungszeiten und Schließtage des Kindergartens für das Kindergartenjahr 2026/2027 anhand
       der am 17. Juli 2026 mitgeteilten Angaben aktualisieren.
 - [ ] Die derzeit auf der Website ausgewiesenen Kindergarten-Grundbeiträge von 190 bis 240 Euro mit

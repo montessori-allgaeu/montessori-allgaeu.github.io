@@ -652,6 +652,21 @@ content:
           create: false
           delete: false
         fields:
+          - name: school
+            label: Schulzeiten
+            type: object
+            required: true
+            fields:
+              - name: primaria
+                label: Primaria
+                type: text
+                required: true
+                description: Reguläre Unterrichtszeit und mögliche Abweichung.
+              - name: secundariaAndTertia
+                label: Sekundaria und Tertia
+                type: text
+                required: true
+                description: Reguläre Unterrichtszeit und verpflichtender Nachmittag.
           - name: schoolOffice
             label: Schulbüro
             type: string

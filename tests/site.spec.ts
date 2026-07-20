@@ -133,6 +133,18 @@ test("editorial content renders from the validated content collections", async (
   await expect(
     page.getByText("Erfolgreicher Mittelschulabschluss / Montessori-Abschluss"),
   ).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Schulzeiten" })).toBeVisible();
+  await expect(
+    page.getByText(/In der Regel von 7:55 bis 12:10 Uhr.*einzelnen Tagen bis 12:55 Uhr/),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Von 7:55 bis 12:55 Uhr.*verpflichtenden Nachmittag pro Woche/),
+  ).toBeVisible();
+
+  await page.goto("/kindergarten-schule/ganztag-verpflegung/");
+  await expect(
+    page.getByText(/Der verpflichtende Nachmittag in Sekundaria und Tertia.*regulären Schulalltag/),
+  ).toBeVisible();
 
   await page.goto("/kontakt/");
   await expect(page.getByText("Montag: 7:30–16:30 Uhr")).toBeVisible();
@@ -269,6 +281,27 @@ test("homepage copy remains readable on wide screens", async ({ page }) => {
     .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().width));
   expect(splitContentWidths).not.toHaveLength(0);
   expect(Math.min(...splitContentWidths)).toBeGreaterThanOrEqual(500);
+});
+
+test("school rhythm image follows the content height without stretching on mobile", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Covered responsively in the desktop project.");
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/kindergarten-schule/schule/");
+
+  const rhythm = page.locator(".school-rhythm");
+  const contentBox = await rhythm.locator(":scope > div").first().boundingBox();
+  const desktopImageBox = await rhythm.locator(".school-rhythm__image").boundingBox();
+  expect(contentBox).not.toBeNull();
+  expect(desktopImageBox).not.toBeNull();
+  expect(Math.abs(contentBox!.height - desktopImageBox!.height)).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileImageBox = await rhythm.locator(".school-rhythm__image").boundingBox();
+  expect(mobileImageBox).not.toBeNull();
+  expect(mobileImageBox!.width / mobileImageBox!.height).toBeCloseTo(4 / 3, 2);
 });
 
 test("homepage belief headings stay on one line at the reviewed desktop width", async ({

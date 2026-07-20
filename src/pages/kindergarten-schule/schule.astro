@@ -4,9 +4,13 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
+import TextLink from "@/components/TextLink.astro";
+import { getWebsiteSettings } from "@/data/content";
 import schoolImage from "@/assets/images/editorial/school.webp";
 import classImage from "@/assets/images/editorial/class.webp";
 import roomImage from "@/assets/images/editorial/room.webp";
+
+const { openingHours } = await getWebsiteSettings();
 ---
 
 <BaseLayout
@@ -94,14 +98,13 @@ import roomImage from "@/assets/images/editorial/room.webp";
       </li>
     </ul>
     <p class="small muted">
-      Die staatlichen Prüfungen legen unsere Jugendlichen als externe Bewerber:innen an einer
-      kooperierenden staatlichen Mittelschule ab. Prüfungswege und Kooperationen können sich ändern;
-      verbindliche Details klären wir im Aufnahme- und Beratungsgespräch.
+      Die staatlichen Prüfungen legen unsere Jugendlichen an einer kooperierenden staatlichen
+      Mittelschule ab.
     </p>
   </ImageSplit>
 
   <section class="section section--light">
-    <div class="container grid-2">
+    <div class="container grid-2 school-rhythm">
       <div>
         <p class="eyebrow">Alltag</p>
         <h2>Rhythmus gibt Sicherheit.</h2>
@@ -109,13 +112,21 @@ import roomImage from "@/assets/images/editorial/room.webp";
           Morgenkreise, Freiarbeit, Fachunterricht, Bewegung, Projekte und gemeinsame Verantwortung
           bilden einen verlässlichen Wochenrahmen.
         </p>
+        <h3>Schulzeiten</h3>
+        <ul class="editorial-list school-times">
+          <li><strong>Primaria:</strong> {openingHours.school.primaria}</li>
+          <li>
+            <strong>Sekundaria &amp; Tertia:</strong>{" "}{openingHours.school.secundariaAndTertia}
+          </li>
+        </ul>
         <p>
           Klassenrat und Schülerversammlung geben jungen Menschen eine echte Stimme. Konflikte
           werden nicht vermieden oder über Schuld gelöst, sondern angesprochen, geklärt und als
           Lernraum genutzt.
         </p>
+        <TextLink href="/kindergarten-schule/ganztag-verpflegung/" label="Ganztag & Verpflegung" />
       </div>
-      <div class="image-frame image-frame--landscape">
+      <div class="image-frame image-frame--landscape school-rhythm__image">
         <img
           src={roomImage.src}
           alt="Vorbereiteter Klassenraum der Montessori-Schule"
@@ -134,3 +145,19 @@ import roomImage from "@/assets/images/editorial/room.webp";
     secondaryLabel="Häufige Fragen"
   />
 </BaseLayout>
+
+<style>
+  @media (min-width: 841px) {
+    .school-rhythm {
+      align-items: stretch;
+    }
+
+    .school-rhythm__image {
+      aspect-ratio: auto;
+    }
+  }
+
+  .school-times {
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  }
+</style>
