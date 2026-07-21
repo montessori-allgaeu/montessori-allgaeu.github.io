@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 20. Juli 2026
+Stand: 21. Juli 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -319,14 +319,18 @@ Bestätigt ist **Designrichtung 1**: eine ruhige, redaktionelle, warme und hochw
 
 ### Aktuelle Design-Tokens
 
-- Papier/Creme: `#f5f1ec`
-- Helles Papier: `#fbfaf7`
-- Waldgrün: `#1d2b1e`
-- Terrakotta: `#b85b2d`
-- Ocker: `#d7a24b`
-- Linienfarbe: `#d8d0c6`
+- Headline und dunkle Markenfläche: Waldgrün `#1d2b1e`
+- Fließtext: gedämpftes Dunkelgrün `#3a4638`
+- Primäre Aktionen: Terrakotta `#b85b2d`
+- Links und Hover: dunkles Terrakotta `#98431c`
+- Sparsamer Wärmeakzent: Ocker `#d7a24b`
+- Ruhige Flächen: Papier `#f5f1ec` und helles Papier `#fbfaf7`
+- Trennlinien: `#d8d0c6` und `#bcb3a8`
 - Headline-Schrift: Unica One
 - Fließtext und UI: Krub
+
+Die vollständige Palette, ihre barrierefreien Web-Rollen sowie Logo- und Grafikregeln stehen in
+[`corporate-design-web.md`](corporate-design-web.md).
 
 ### Bildsprache
 
@@ -340,8 +344,6 @@ Authentische Fotos haben Vorrang vor perfekten generierten Motiven. Gewünscht s
 - keine Allgäu-Tourismusästhetik
 
 Die übernommenen Bilder haben unterschiedliche Auflösung und Lichtstimmung. Ein späteres Fotoshooting ist ausdrücklich sinnvoll, blockiert aber die erste Version nicht.
-
-Der dokumentierte Designvergleich liegt in [`design-qa.md`](../design-qa.md); die Bildartefakte liegen unter [`artifacts/design-qa/`](../artifacts/design-qa/).
 
 ## Informationsarchitektur
 
@@ -495,12 +497,19 @@ Wichtige Pfade:
 - Prinzipien werden als Beta gekennzeichnet, aber bereits vollständig und öffentlich gelebt.
 - Designrichtung 1 wurde ausgewählt und für die gesamte Website umgesetzt.
 - Die Typografie folgt dem Corporate Design: Unica One prägt Headlines und ausgewählte Display-Elemente, Krub Fließtext und UI. Beide Schriften werden lokal ausgeliefert.
+- Das Corporate-Design-Manual von 2021 ist die verbindliche Quelle für Logo, Typografie und
+  Illustrationsstil. Für die Webfarben ist die ruhige Palette der Stage-Seite bestätigt.
+- Der Versuch, die vollständige Manualpalette über pastellige Flächen und verschiedenfarbige
+  Akzente websiteweit einzusetzen, wurde verworfen. Waldgrün, Papier, Terrakotta und sparsames Ocker
+  bilden wieder das verbindliche Farbsystem; zusätzliche Manualfarben werden nicht mechanisch in
+  die Oberfläche übertragen.
 - Kindergarten und Schule werden als ein Bildungsweg und nicht als getrennte Zielgruppenwelten behandelt.
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
 - Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.
 - Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
 - Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
 - Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über Pages CMS gepflegt; die Kontaktadressen liegen zentral in den CMS-Stammdaten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
+- Die Mitgliedschaft im Montessori Landesverband Bayern und die damit verbundene Mitgliedschaft bei Montessori Deutschland werden als ruhiger Vertrauensbeweis im Footer genannt und auf **Träger & Verein** inhaltlich eingeordnet. Das Verbandslogo erscheint dort auf hellem Grund, nicht prominent auf der Startseite oder im Hero.
 - Termine und Downloads werden im Dropdown unter **Gemeinschaft** sowie weiterhin im Footer erschlossen; die fünf Hauptpunkte der Navigation bleiben unverändert. Mobil öffnen die Hauptbereiche ihre Unterseiten als kompakte Akkordeons. Termine, Downloads und Kontakt bleiben zusätzlich als direkte Schnellzugriffe erreichbar.
 - Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.

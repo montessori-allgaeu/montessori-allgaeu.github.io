@@ -121,8 +121,8 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     z-index: 100;
     top: 0;
     height: var(--header-height);
-    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-line) 80%, transparent);
+    background: color-mix(in srgb, var(--color-canvas) 94%, transparent);
     backdrop-filter: blur(16px);
   }
 
@@ -149,7 +149,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
   .desktop-nav__link,
   .desktop-nav__submenu a {
     position: relative;
-    color: var(--forest-soft);
+    color: var(--color-text);
     font-size: 0.76rem;
     font-weight: 650;
     text-decoration: none;
@@ -168,7 +168,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     bottom: 0;
     left: 0;
     height: 1px;
-    background: var(--terracotta);
+    background: var(--color-action);
     content: "";
     transform: scaleX(0);
     transform-origin: right;
@@ -187,8 +187,8 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     left: -1rem;
     min-width: 15rem;
     padding: 0.45rem;
-    border: 1px solid var(--line);
-    background: var(--paper-light);
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
     box-shadow: 0 1rem 2.5rem rgb(29 43 30 / 0.12);
     opacity: 0;
     pointer-events: none;
@@ -231,8 +231,8 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
   .desktop-nav__submenu a:hover,
   .desktop-nav__submenu a:focus-visible,
   .desktop-nav__submenu a.active {
-    background: color-mix(in srgb, var(--terracotta) 9%, transparent);
-    color: var(--terracotta-dark);
+    background: color-mix(in srgb, var(--color-action) 9%, transparent);
+    color: var(--color-action-hover);
   }
 
   .header-cta {
@@ -253,7 +253,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     width: 46px;
     height: 46px;
     place-items: center;
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--color-line-strong);
     cursor: pointer;
     list-style: none;
   }
@@ -283,7 +283,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 0.7rem 1.5rem 2.5rem;
-    background: var(--paper);
+    background: var(--color-canvas);
   }
 
   .mobile-menu__direct,
@@ -293,8 +293,8 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     align-items: center;
     justify-content: space-between;
     padding: 0.8rem 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--forest-soft);
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-text);
     font-family: var(--display);
     font-size: clamp(1.5rem, 6vw, 1.75rem);
     text-decoration: none;
@@ -311,13 +311,13 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   .mobile-menu__group > summary svg {
     flex: 0 0 auto;
-    color: var(--terracotta-text);
+    color: var(--color-link);
     transition: transform 160ms ease;
   }
 
   .mobile-menu__group[open] > summary {
     border-bottom-color: transparent;
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .mobile-menu__group[open] > summary svg {
@@ -328,14 +328,14 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     display: grid;
     gap: 0;
     padding: 0 0 0.75rem 1rem;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .mobile-menu__children a {
     display: flex;
     min-height: 3rem;
     align-items: center;
-    color: var(--forest-soft);
+    color: var(--color-text);
     font-size: 0.92rem;
     font-weight: 550;
     text-decoration: none;
@@ -344,7 +344,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
   .mobile-menu__children a:hover,
   .mobile-menu__children a:focus-visible,
   .mobile-menu__children a[aria-current="page"] {
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .mobile-menu__children .mobile-menu__overview {
@@ -352,15 +352,15 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
   }
 
   .mobile-menu__direct.active {
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .mobile-menu__support {
     display: flex;
     min-height: 3.8rem;
     align-items: center;
-    border-bottom: 1px solid var(--line);
-    color: var(--terracotta-text);
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-link);
     font-family: var(--sans);
     font-size: 0.9rem;
     font-weight: 700;
@@ -374,7 +374,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   .mobile-menu__quicklinks p {
     margin: 0 0 0.65rem;
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.68rem;
     font-weight: 750;
     letter-spacing: 0.1em;
@@ -389,17 +389,17 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   .mobile-menu__quicklinks a {
     min-height: 2.75rem;
-    color: var(--forest-soft);
+    color: var(--color-text);
     font-size: 0.86rem;
     font-weight: 650;
     line-height: 2.75rem;
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--terracotta) 55%, transparent);
+    text-decoration-color: color-mix(in srgb, var(--color-action) 55%, transparent);
     text-underline-offset: 0.28em;
   }
 
   .mobile-menu__quicklinks a[aria-current="page"] {
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .mobile-menu nav .button {

@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import { getTeam } from "@/data/content";
+import landesverbandLogo from "@/assets/brand/official/logo-montessori-landesverband-bayern.svg";
 
 const board = (await getTeam())
   .flatMap((member) =>
@@ -76,6 +77,33 @@ const getInitials = (name: string) =>
         Vollständiger Name: Verein zur Förderung der Montessori-Pädagogik im Grenzgebiet
         Oberallgäu/Westallgäu und Bregenzer Wald (Österreich) e.V.
       </p>
+
+      <div class="association-network">
+        <a class="association-network__logo" href="https://www.montessoribayern.de/landesverband/">
+          <Image
+            src={landesverbandLogo}
+            alt="Logo des Montessori Landesverbands Bayern"
+            width={220}
+            height={250}
+          />
+        </a>
+        <div class="association-network__content">
+          <p class="eyebrow">Vernetzung & Qualitätsentwicklung</p>
+          <h2>Vernetzt in Bayern und Deutschland.</h2>
+          <p class="lead">
+            Gute Montessori-Pädagogik entsteht nicht im Alleingang. Als Mitglied im Montessori
+            Landesverband Bayern und bei Montessori Deutschland teilen wir Erfahrungen, arbeiten an
+            gemeinsamen pädagogischen Grundlagen und entwickeln Qualität gemeinsam weiter.
+          </p>
+          <p class="association-network__links">
+            <a href="https://www.montessoribayern.de/landesverband/"
+              >Montessori Landesverband Bayern</a
+            >
+            <span aria-hidden="true">·</span>
+            <a href="https://www.montessori-deutschland.de/">Montessori Deutschland</a>
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -197,7 +225,7 @@ const getInitials = (name: string) =>
     </div>
   </section>
 
-  <section class="section section--terracotta membership-section">
+  <section class="section section--action membership-section">
     <div class="container grid-2 membership-grid">
       <div>
         <p class="eyebrow">Mitglied werden</p>
@@ -237,12 +265,12 @@ const getInitials = (name: string) =>
 
 <style>
   .association-section {
-    background: var(--paper-light);
+    background: var(--color-surface);
   }
 
   .association-intro {
     padding-bottom: clamp(3rem, 5vw, 4.5rem);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .association-intro h2 {
@@ -263,6 +291,62 @@ const getInitials = (name: string) =>
     margin: clamp(2.5rem, 4vw, 3.5rem) 0 0;
   }
 
+  .association-network {
+    display: grid;
+    grid-template-columns: minmax(9.5rem, 0.42fr) minmax(0, 1.58fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: center;
+    margin-top: clamp(3.5rem, 6vw, 5.5rem);
+    padding-top: clamp(3.5rem, 6vw, 5.5rem);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .association-network__logo {
+    display: block;
+    width: min(100%, 13.75rem);
+  }
+
+  .association-network__logo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .association-network__content {
+    max-width: 50rem;
+  }
+
+  .association-network__content h2 {
+    font-size: clamp(2.35rem, 4.4vw, 4rem);
+  }
+
+  .association-network__content .lead {
+    max-width: 47rem;
+  }
+
+  .association-network__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.8rem;
+    margin: 1.5rem 0 0;
+    font-size: 0.82rem;
+  }
+
+  .association-network__links a {
+    color: var(--color-ink);
+    font-weight: 700;
+    text-decoration-color: color-mix(in srgb, var(--color-ink) 42%, transparent);
+    text-underline-offset: 0.22em;
+  }
+
+  .association-network__links a:hover {
+    text-decoration-color: currentcolor;
+  }
+
+  .association-network__links span {
+    color: var(--color-link);
+  }
+
   .board-heading {
     max-width: 56rem;
     margin-bottom: clamp(3rem, 5vw, 4.5rem);
@@ -277,8 +361,8 @@ const getInitials = (name: string) =>
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-bottom: clamp(3.5rem, 6vw, 5.5rem);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .responsibility-brief article {
@@ -286,7 +370,7 @@ const getInitials = (name: string) =>
   }
 
   .responsibility-brief article + article {
-    border-left: 1px solid var(--line);
+    border-left: 1px solid var(--color-line);
   }
 
   .responsibility-brief h3 {
@@ -308,7 +392,7 @@ const getInitials = (name: string) =>
     aspect-ratio: 3 / 4;
     margin-bottom: 1.2rem;
     overflow: hidden;
-    background: var(--line);
+    background: var(--color-line);
   }
 
   .board-member__image img {
@@ -318,8 +402,8 @@ const getInitials = (name: string) =>
   }
 
   .board-member__image--placeholder {
-    border: 1px solid var(--line-strong);
-    background: color-mix(in srgb, var(--line) 72%, var(--paper));
+    border: 1px solid var(--color-line-strong);
+    background: color-mix(in srgb, var(--color-line) 72%, var(--color-canvas));
   }
 
   .board-member__initials {
@@ -327,7 +411,7 @@ const getInitials = (name: string) =>
     width: 100%;
     height: 100%;
     place-items: center;
-    color: var(--forest);
+    color: var(--color-ink);
     font-family: var(--display);
     font-size: clamp(2.5rem, 5vw, 4.5rem);
   }
@@ -352,19 +436,19 @@ const getInitials = (name: string) =>
   }
 
   .responsibility-map {
-    border-top: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line-strong);
+    border-top: 1px solid var(--color-line-strong);
+    border-bottom: 1px solid var(--color-line-strong);
   }
 
   .responsibility-map__group + .responsibility-map__group {
-    border-top: 1px solid var(--line-strong);
+    border-top: 1px solid var(--color-line-strong);
   }
 
   .responsibility-map__label {
     margin: 0;
     padding: 1rem 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--terracotta-text);
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-link);
     font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -388,13 +472,13 @@ const getInitials = (name: string) =>
   }
 
   .responsibility-map__card + .responsibility-map__card {
-    border-left: 1px solid var(--line);
+    border-left: 1px solid var(--color-line);
   }
 
   .responsibility-map span {
     display: block;
     margin-bottom: 1.5rem;
-    color: var(--terracotta-text);
+    color: var(--color-link);
     font-family: var(--display);
     font-size: 1.25rem;
   }
@@ -427,40 +511,40 @@ const getInitials = (name: string) =>
 
   .membership-list li {
     border-color: rgb(255 253 250 / 0.28);
-    color: var(--white);
+    color: var(--color-white);
   }
 
   .membership-list li::before {
-    background: var(--white);
+    background: var(--color-white);
   }
 
   .membership-button--outline {
     border-color: rgb(255 253 250 / 0.72);
-    color: var(--white);
+    color: var(--color-white);
     background: transparent;
   }
 
   .membership-button--outline:hover {
-    border-color: var(--white);
-    color: var(--forest);
-    background: var(--white);
+    border-color: var(--color-white);
+    color: var(--color-ink);
+    background: var(--color-white);
   }
 
   .association-history {
     padding-block: 1.8rem;
-    border-bottom: 1px solid var(--line);
-    background: var(--paper-light);
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-surface);
   }
 
   .association-history p {
     margin: 0;
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.88rem;
   }
 
   .association-history a {
     margin-left: 0.3rem;
-    color: var(--forest);
+    color: var(--color-ink);
     font-weight: 700;
   }
 
@@ -474,7 +558,7 @@ const getInitials = (name: string) =>
     }
 
     .responsibility-brief article + article {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--color-line);
       border-left: 0;
     }
 
@@ -487,7 +571,7 @@ const getInitials = (name: string) =>
     }
 
     .responsibility-map__row--primary .responsibility-map__card + .responsibility-map__card {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--color-line);
       border-left: 0;
     }
   }
@@ -538,6 +622,35 @@ const getInitials = (name: string) =>
 
     .association-name {
       margin-top: 1.75rem;
+    }
+
+    .association-network {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+      padding-top: 3rem;
+    }
+
+    .association-network__logo {
+      width: 8.75rem;
+    }
+
+    .association-network__content h2 {
+      font-size: 2.6rem;
+    }
+
+    .association-network__content .lead {
+      font-size: 1.05rem;
+    }
+
+    .association-network__links {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .association-network__links span {
+      display: none;
     }
 
     .board-heading {
@@ -594,7 +707,7 @@ const getInitials = (name: string) =>
     }
 
     .responsibility-map__row--participation .responsibility-map__card + .responsibility-map__card {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--color-line);
       border-left: 0;
     }
 

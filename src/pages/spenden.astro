@@ -104,21 +104,21 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
 <style>
   .donation-projects {
     gap: 1px;
-    border: 1px solid var(--line);
-    background: var(--line);
+    border: 1px solid var(--color-line);
+    background: var(--color-line);
     grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
   }
 
   .donation-projects .editorial-card {
     min-height: 18rem;
     border: 0;
-    background: var(--paper-light);
+    background: var(--color-surface);
   }
 
   .support-grid {
     display: grid;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -127,29 +127,29 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
   }
 
   .support-option + .support-option {
-    border-left: 1px solid var(--line);
+    border-left: 1px solid var(--color-line);
   }
 
   .support-option > svg {
     margin-bottom: 2rem;
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .support-option dl {
     margin: 2rem 0 0;
-    border-top: 1px solid var(--line-strong);
+    border-top: 1px solid var(--color-line-strong);
   }
 
   .support-option dl div {
     display: grid;
     padding: 1rem 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
     gap: 1rem;
     grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
   }
 
   .support-option dt {
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -158,14 +158,14 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
 
   .support-option dd {
     margin: 0;
-    color: var(--forest);
+    color: var(--color-ink);
     font-weight: 600;
     overflow-wrap: anywhere;
   }
 
   .support-note {
     margin-top: 1.5rem;
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.9rem;
   }
 
@@ -179,7 +179,7 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
     }
 
     .support-option + .support-option {
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--color-line);
       border-left: 0;
     }
   }

@@ -102,7 +102,7 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
 <style>
   .job-hero {
     padding: clamp(4rem, 8vw, 8rem) 0 clamp(4rem, 7vw, 7rem);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .job-back {
@@ -123,7 +123,7 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
   }
 
   .job-hero__meta span {
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.875rem;
     font-weight: 600;
   }
@@ -147,13 +147,13 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     grid-template-columns: 1.5rem minmax(0, 1fr);
     gap: 0.75rem;
     padding: 1rem 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--forest-soft);
+    border-bottom: 1px solid var(--color-line);
+    color: var(--color-text);
   }
 
   .job-checks svg {
     margin-top: 0.3rem;
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   @media (max-width: 700px) {

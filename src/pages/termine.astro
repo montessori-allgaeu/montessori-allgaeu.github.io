@@ -96,8 +96,8 @@ const fullDate = (date: string) =>
     grid-template-columns: 10rem minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 6rem);
     padding: clamp(2rem, 5vw, 4rem) 0;
-    border-top: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--color-line-strong);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .event + .event {
@@ -108,7 +108,7 @@ const fullDate = (date: string) =>
     display: flex;
     gap: 0.8rem;
     align-items: flex-start;
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .event__date span {
@@ -146,12 +146,12 @@ const fullDate = (date: string) =>
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.8rem;
   }
 
   .event__meta svg {
-    color: var(--terracotta-text);
+    color: var(--color-link);
   }
 
   .empty-state {

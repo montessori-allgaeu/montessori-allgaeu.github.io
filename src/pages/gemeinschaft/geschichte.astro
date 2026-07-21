@@ -161,7 +161,7 @@ const milestones = [
     </div>
   </section>
 
-  <section class="section section--terracotta history-today">
+  <section class="section section--action history-today">
     <div class="container grid-2">
       <div>
         <p class="eyebrow">Bis heute</p>
@@ -219,7 +219,7 @@ const milestones = [
   .history-hero figcaption,
   .history-community figcaption {
     padding-top: 0.7rem;
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.78rem;
   }
 
@@ -233,7 +233,7 @@ const milestones = [
   }
 
   .milestones {
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .milestone {
@@ -241,12 +241,12 @@ const milestones = [
     grid-template-columns: minmax(8rem, 0.32fr) minmax(0, 1fr);
     gap: clamp(2rem, 6vw, 6rem);
     padding-block: clamp(2rem, 4vw, 3.5rem);
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
   }
 
   .milestone__year {
     margin: 0;
-    color: var(--terracotta-text);
+    color: var(--color-link);
     font-family: var(--display);
     font-size: clamp(2rem, 4vw, 3.5rem);
     line-height: 1;
@@ -298,7 +298,7 @@ const milestones = [
   }
 
   .history-today p:not(.eyebrow) {
-    color: var(--white);
+    color: var(--color-white);
   }
 
   @media (max-width: 860px) {

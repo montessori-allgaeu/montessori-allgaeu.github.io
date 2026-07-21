@@ -2,7 +2,7 @@
 
 ## Strategische Grundlage zuerst lesen
 
-Vor Änderungen an Positionierung, Informationsarchitektur, Texten, Design oder Nutzerführung muss [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md) vollständig gelesen werden.
+Vor Änderungen an Positionierung, Informationsarchitektur, Texten, Design oder Nutzerführung muss [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md) vollständig gelesen werden. Für Designänderungen gilt zusätzlich [`docs/corporate-design-web.md`](docs/corporate-design-web.md).
 
 Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppen, Fit-Kriterien, pädagogischen Aussagen, Arbeitgeberpositionierung, Designrichtung und offenen Entscheidungen. Bei Widersprüchen nicht stillschweigend neu interpretieren, sondern die Abweichung sichtbar machen und klären.
 
@@ -46,11 +46,10 @@ Wichtige Content-Pfade:
 
 - Designrichtung 1 fortführen: warm, ruhig, redaktionell, hochwertig und montessorisch.
 - Bestehende Tokens und Komponenten verwenden, bevor neue Muster eingeführt werden.
-- Newsreader für emotionale Headlines, Manrope für UI und Fließtext.
-- Creme, Waldgrün, Terrakotta und Ocker bilden die Kernpalette.
+- Unica One für emotionale Headlines und ausgewählte Display-Elemente, Krub für UI und Fließtext.
+- Die bestätigte Stage-Palette verwenden: Papier `#f5f1ec` und `#fbfaf7`, Waldgrün `#1d2b1e`, Terrakotta `#b85b2d`/`#98431c` und Ocker `#d7a24b`. Keine pastelligen Abschnittstönungen oder mehrfarbigen Akzentlinien einführen.
 - Keine unnötigen Rundungen, App-Karten, lauten Animationen oder dekorativen Effekte.
 - Responsive Verhalten und echte Inhalte gemeinsam prüfen; Desktop-Screenshots allein reichen nicht.
-- Designreferenz und QA: [`design-qa.md`](design-qa.md) und `artifacts/design-qa/`.
 
 ## Technik und Veröffentlichung
 
@@ -73,5 +72,4 @@ git diff --check
 
 - Technische Betriebsinformationen gehören in [`README.md`](README.md).
 - Strategische Entscheidungen gehören in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md).
-- Visuelle Vergleichsergebnisse gehören in [`design-qa.md`](design-qa.md).
 - Wenn eine Änderung Architektur, Content-Ownership oder den Veröffentlichungsweg verändert, die betroffenen Dokumente im selben Change aktualisieren.

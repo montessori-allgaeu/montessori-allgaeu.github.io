@@ -186,7 +186,7 @@ const { costs } = await getWebsiteSettings();
 <style>
   .cost-section {
     padding: clamp(4rem, 8vw, 8rem) 0;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
   }
 
   .cost-section:first-child {
@@ -195,13 +195,13 @@ const { costs } = await getWebsiteSettings();
   }
 
   .cost-section:last-child {
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--color-line);
   }
 
   .kindergarten-subsidy {
     display: grid;
     padding: 1.4rem 1rem;
-    background: color-mix(in srgb, var(--ochre) 18%, var(--paper-light));
+    background: color-mix(in srgb, var(--color-sun) 18%, var(--color-surface));
     gap: 1rem;
     grid-template-columns: minmax(9rem, 0.65fr) minmax(0, 1.35fr);
   }
@@ -211,7 +211,7 @@ const { costs } = await getWebsiteSettings();
   }
 
   .kindergarten-subsidy__amount {
-    color: var(--forest);
+    color: var(--color-ink);
     font-family: var(--display);
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1;

@@ -8,60 +8,77 @@ const { contact } = await getWebsiteSettings();
 ---
 
 <footer class="site-footer">
-  <div class="container site-footer__top">
-    <div class="site-footer__identity">
-      <Brand inverted />
-      <address>
-        <span
-          ><MapPin size={16} aria-hidden="true" />{contact.address.street}<br />{
-            contact.address.city
-          }</span
-        >
-        <a href={`tel:${contact.phoneHref}`}
-          ><Phone size={16} aria-hidden="true" />{contact.phone}</a
-        >
-        <a href={`mailto:${contact.email}`}><Mail size={16} aria-hidden="true" />{contact.email}</a>
-      </address>
+  <div class="site-footer__main">
+    <div class="container site-footer__top">
+      <div class="site-footer__identity">
+        <Brand inverted />
+        <address>
+          <span
+            ><MapPin size={16} aria-hidden="true" />{contact.address.street}<br />{
+              contact.address.city
+            }</span
+          >
+          <a href={`tel:${contact.phoneHref}`}
+            ><Phone size={16} aria-hidden="true" />{contact.phone}</a
+          >
+          <a href={`mailto:${contact.email}`}
+            ><Mail size={16} aria-hidden="true" />{contact.email}</a
+          >
+        </address>
+        <div class="site-footer__affiliation">
+          <p class="site-footer__affiliation-label">Vernetzt in Bayern und Deutschland</p>
+          <p>
+            Mitglied im <a href="https://www.montessoribayern.de/landesverband/"
+              >Montessori Landesverband Bayern</a
+            > und bei <a href="https://www.montessori-deutschland.de/">Montessori Deutschland</a>.
+          </p>
+        </div>
+      </div>
+      <nav class="site-footer__nav" aria-label="Footer-Navigation">
+        {
+          footerNavigation.map((group) => (
+            <div>
+              <h2>{group.title}</h2>
+              <ul>
+                {group.links.map((link) => (
+                  <li>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
     </div>
-    <nav class="site-footer__nav" aria-label="Footer-Navigation">
-      {
-        footerNavigation.map((group) => (
-          <div>
-            <h2>{group.title}</h2>
-            <ul>
-              {group.links.map((link) => (
-                <li>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
-    </nav>
   </div>
-  <div class="container site-footer__bottom">
-    <div class="site-footer__legal">
-      <a href="/impressum/">Impressum</a>
-      <a href="/datenschutz/">Datenschutz</a>
-      <a href="/downloads/">Downloads</a>
+  <div class="site-footer__bar">
+    <div class="container site-footer__bottom">
+      <div class="site-footer__legal">
+        <a href="/impressum/">Impressum</a>
+        <a href="/datenschutz/">Datenschutz</a>
+        <a href="/downloads/">Downloads</a>
+      </div>
+      <p>© {new Date().getFullYear()} Montessori Allgäu · Kindergarten & Schule</p>
     </div>
-    <p>© {new Date().getFullYear()} Montessori Allgäu · Kindergarten & Schule</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    padding: clamp(3.5rem, 5vw, 4.5rem) 0 1.5rem;
-    color: var(--white);
-    background: var(--forest);
+    padding-bottom: 1.5rem;
+    color: var(--color-white);
+    background: var(--color-brand-surface);
+  }
+
+  .site-footer__main {
+    padding: clamp(3.5rem, 5vw, 4.5rem) 0 2.75rem;
   }
 
   .site-footer__top {
     display: grid;
     grid-template-columns: minmax(15rem, 0.8fr) minmax(0, 2fr);
     gap: clamp(3rem, 8vw, 8rem);
-    padding-bottom: 2.75rem;
   }
 
   .site-footer__identity address {
@@ -89,6 +106,42 @@ const { contact } = await getWebsiteSettings();
     color: var(--ochre);
   }
 
+  .site-footer__affiliation {
+    max-width: 20rem;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(255 253 250 / 0.2);
+  }
+
+  .site-footer__affiliation p {
+    margin: 0;
+    color: rgb(255 253 250 / 0.7);
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  .site-footer__affiliation .site-footer__affiliation-label {
+    margin-bottom: 0.45rem;
+    color: var(--color-white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .site-footer__affiliation a {
+    color: rgb(255 253 250 / 0.7);
+    text-decoration-color: rgb(255 253 250 / 0.45);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .site-footer__affiliation a:hover {
+    color: var(--color-white);
+    text-decoration-color: currentcolor;
+  }
+
   .site-footer__nav {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -97,7 +150,7 @@ const { contact } = await getWebsiteSettings();
 
   .site-footer__nav h2 {
     margin-bottom: 1rem;
-    color: var(--white);
+    color: var(--color-white);
     font-family: var(--sans);
     font-size: 0.72rem;
     font-weight: 700;
@@ -122,7 +175,12 @@ const { contact } = await getWebsiteSettings();
   }
 
   .site-footer__nav a:hover {
-    color: var(--white);
+    color: var(--color-white);
+  }
+
+  .site-footer__bar {
+    color: var(--color-white);
+    background: transparent;
   }
 
   .site-footer__bottom {
@@ -139,7 +197,11 @@ const { contact } = await getWebsiteSettings();
     margin: 0;
     color: rgb(255 253 250 / 0.55);
     font-size: 0.7rem;
-    text-decoration: none;
+  }
+
+  .site-footer__bottom a {
+    text-decoration-color: rgb(255 255 255 / 0.52);
+    text-underline-offset: 0.2em;
   }
 
   .site-footer__legal {

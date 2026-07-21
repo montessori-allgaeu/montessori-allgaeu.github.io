@@ -191,7 +191,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
 <style>
   .afternoon-program {
     scroll-margin-top: var(--header-height);
-    background: var(--paper-light);
+    background: var(--color-surface);
   }
 
   .afternoon-program__intro {
@@ -200,11 +200,11 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
   }
 
   .afternoon-program__groups {
-    border-top: 1px solid var(--line-strong);
+    border-top: 1px solid var(--color-line-strong);
   }
 
   .afternoon-program__groups details {
-    border-bottom: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--color-line-strong);
   }
 
   .afternoon-program__groups summary {
@@ -229,7 +229,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
     right: 0.25rem;
     width: 1rem;
     height: 1px;
-    background: var(--terracotta-text);
+    background: var(--color-link);
     content: "";
     transform-origin: center;
   }
@@ -244,7 +244,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
   }
 
   .afternoon-program__group-title {
-    color: var(--forest);
+    color: var(--color-ink);
     font-family: var(--display);
     font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: 400;
@@ -253,7 +253,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
   }
 
   .afternoon-program__group-meta {
-    color: var(--forest-muted);
+    color: var(--color-muted);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -291,12 +291,12 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
     grid-template-columns: minmax(9rem, 0.32fr) minmax(0, 1fr);
     gap: clamp(2rem, 5vw, 5rem);
     padding-block: clamp(2.5rem, 5vw, 4rem);
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
   }
 
   .afternoon-day h3 {
     margin: 0;
-    color: var(--terracotta-text);
+    color: var(--color-link);
     font-size: clamp(1.8rem, 3vw, 2.6rem);
   }
 
@@ -305,7 +305,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
     grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
     gap: clamp(1.5rem, 4vw, 4rem);
     padding-block: 2rem;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--color-line);
   }
 
   .afternoon-offer:first-child {
@@ -325,7 +325,7 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
 
   .afternoon-offer__meta {
     margin-bottom: 0.65rem;
-    color: var(--terracotta-text);
+    color: var(--color-link);
     font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.07em;
@@ -349,17 +349,17 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
   }
 
   .afternoon-offer__leaders {
-    color: var(--forest-muted);
+    color: var(--color-muted);
   }
 
   .afternoon-offer__note {
     padding-left: 1rem;
-    border-left: 2px solid var(--ochre);
-    color: var(--forest-muted);
+    border-left: 2px solid var(--color-sun);
+    color: var(--color-muted);
   }
 
   .afternoon-offer__link {
-    color: var(--terracotta-dark);
+    color: var(--color-action-hover);
     font-weight: 650;
   }
 

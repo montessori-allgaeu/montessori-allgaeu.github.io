@@ -4,7 +4,7 @@ Statische Website für Montessori-Kindergarten und Schule Allgäu. Gebaut mit As
 
 ## Strategische Grundlage
 
-Die bestätigte Positionierung, Zielgruppenlogik, Content-Architektur und Designrichtung stehen in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md). Hinweise für zukünftige Agenten und Mitwirkende stehen in [`AGENTS.md`](AGENTS.md).
+Die bestätigte Positionierung, Zielgruppenlogik, Content-Architektur und Designrichtung stehen in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md). Die verbindliche Web-Übersetzung des Corporate-Design-Manuals steht in [`docs/corporate-design-web.md`](docs/corporate-design-web.md). Hinweise für zukünftige Agenten und Mitwirkende stehen in [`AGENTS.md`](AGENTS.md).
 
 ## Lokal starten
 
