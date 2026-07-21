@@ -1,8 +1,11 @@
 # AGENTS.md
 
-## Strategische Grundlage zuerst lesen
+## Arbeitsweise und strategische Grundlage
 
-Vor Änderungen an Positionierung, Informationsarchitektur, Texten, Design oder Nutzerführung muss [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md) vollständig gelesen werden. Für Designänderungen gilt zusätzlich [`docs/corporate-design-web.md`](docs/corporate-design-web.md).
+- Nur die für die Änderung relevanten Dateien und Dokumente lesen. Bestehende Muster dort prüfen, wo neue Struktur, neues Verhalten oder neue Gestaltung eingeführt wird.
+- Vor Änderungen an Positionierung, Informationsarchitektur, zentralen Botschaften, Designrichtung oder Nutzerführung [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md) vollständig lesen.
+- Bei begrenzten Änderungen innerhalb einer bestehenden Seite genügt die Prüfung der relevanten Strategieabschnitte und der Leitplanken in dieser Datei.
+- Vor visuellen Systemänderungen zusätzlich [`docs/corporate-design-web.md`](docs/corporate-design-web.md) vollständig lesen. Bei Änderungen mit bestehenden Komponenten genügt die Prüfung der betroffenen Tokens und Komponenten.
 
 Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppen, Fit-Kriterien, pädagogischen Aussagen, Arbeitgeberpositionierung, Designrichtung und offenen Entscheidungen. Bei Widersprüchen nicht stillschweigend neu interpretieren, sondern die Abweichung sichtbar machen und klären.
 
@@ -24,7 +27,6 @@ Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppe
 
 - Zeitbezogene Angaben vor Veröffentlichung prüfen: Kosten, Stunden, Termine, Stellen, Rollen, Fotofreigaben, Kontakt- und Rechtstexte.
 - Unsichere Angaben klar markieren; keine Lücken durch plausible Annahmen füllen.
-- Änderungen an grundlegender Positionierung oder bestätigten Entscheidungen auch im Strategiedokument nachführen.
 - Prinzipienänderungen nicht nur in Website-Texten vornehmen. Zuerst den aktuellen beschlossenen Stand und die gewünschte Versionierung klären.
 
 Wichtige Content-Pfade:
@@ -57,19 +59,24 @@ Wichtige Content-Pfade:
 - Pages CMS dient als Git-basierte Redaktionsoberfläche; keine CMS-Datenbank, Analyse oder Formulare in V1, sofern nicht ausdrücklich neu entschieden.
 - Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
-- Bei reinen Textänderungen keine Tests ausführen; `git diff --check` genügt.
-- Vor Übergabe mindestens ausführen:
+- Nur auf ausdrücklichen Wunsch committen oder pushen.
+
+## Verifikation nach Änderungstyp
+
+- Reine Text- oder Contentänderungen: `git diff --check`; keine Tests. Die betroffene Seite nur dann im Browser prüfen, wenn Umfang oder Zeilenlänge das Layout sichtbar beeinflussen können.
+- Code-, Konfigurations- oder Strukturänderungen: Während der Arbeit die kleinste relevante Prüfung ausführen; vor Übergabe mindestens:
 
 ```sh
 npm run test:ci
 git diff --check
 ```
 
-- Für relevante UI-Änderungen zusätzlich Kernpfade auf Desktop und Mobil im Browser prüfen.
-- Nur auf ausdrücklichen Wunsch committen oder pushen.
+- UI-Änderungen: Zusätzlich den betroffenen Kernpfad auf Desktop und Mobil im Browser prüfen, wenn sich Layout, Navigation, responsives Verhalten, Interaktion oder visuelle Hierarchie ändern. Die Prüfung auf die tatsächlich betroffenen Pfade begrenzen.
+- Nicht ausgeführte oder fehlgeschlagene Prüfungen mit Grund und konkreten manuellen Prüfschritten dokumentieren.
 
 ## Dokumentation aktuell halten
 
-- Technische Betriebsinformationen gehören in [`README.md`](README.md).
-- Strategische Entscheidungen gehören in [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md).
-- Wenn eine Änderung Architektur, Content-Ownership oder den Veröffentlichungsweg verändert, die betroffenen Dokumente im selben Change aktualisieren.
+- [`README.md`](README.md) im selben Change aktualisieren, wenn sich Betrieb, Entwicklung oder Veröffentlichung ändern.
+- [`docs/positionierung-und-website-strategie.md`](docs/positionierung-und-website-strategie.md) im selben Change aktualisieren, wenn sich bestätigte Positionierung oder strategische Entscheidungen ändern.
+- Weitere betroffene Dokumentation im selben Change aktualisieren, wenn sich Architektur, Content-Ownership oder Nutzerabläufe wesentlich ändern.
+- Lokale Implementierungsdetails und reine Contentänderungen benötigen keine zusätzliche Dokumentation.
