@@ -20,7 +20,7 @@ kindergarten:
     details:
       - mit Mittagessen bis 14:00 Uhr
       - mit Nachmittag bis 16:00 Uhr
-ganztag: an Schultagen von Montag bis Donnerstag
+ganztag: an Schultagen von Montag bis Freitag
 kindergartenClosures:
   schoolYear: 2026/2027
   intro: Die 30 Schließtage verteilen sich auf die bayerischen Schulferien.

@@ -120,13 +120,11 @@ const afternoonOffers = defineCollection({
     .object({
       title: z.string().min(1),
       schoolYear: schoolYearField,
-      weekday: z.enum(["Montag", "Dienstag", "Mittwoch", "Donnerstag"]),
+      weekday: z.enum(["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"]),
       gradeFrom: z.number().int().min(1).max(10),
       gradeTo: z.number().int().min(1).max(10),
-      leaders: z.string().min(1),
       organization: z.string().min(1).optional(),
       description: z.string().min(1).max(800),
-      monthlyFee: z.number().int().nonnegative(),
       additionalCostNote: z.string().min(1).optional(),
       externalUrl: z.url().optional(),
       ...publicationFields,
@@ -316,8 +314,8 @@ const afternoonProgramSettings = defineCollection({
   schema: z
     .object({
       activeSchoolYear: schoolYearField,
-      minimumAfternoons: z.number().int().min(1).max(4),
-      maximumAfternoons: z.number().int().min(1).max(4),
+      minimumAfternoons: z.number().int().min(1).max(5),
+      maximumAfternoons: z.number().int().min(1).max(5),
       intro: z.string().min(1),
       secundariaNote: z.string().min(1),
     })

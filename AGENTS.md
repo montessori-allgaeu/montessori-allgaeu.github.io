@@ -61,6 +61,20 @@ Wichtige Content-Pfade:
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
 - Nur auf ausdrücklichen Wunsch committen oder pushen.
 
+## Formatierung und Prüfungsreihenfolge
+
+- Prettier ist die verbindliche Formatierungsquelle.
+- Nach dem letzten zusammenhängenden Bearbeitungsblock und vor dem ersten Testlauf alle im aktuellen Task bearbeiteten, von Prettier unterstützten Dateien genau einmal gezielt formatieren:
+
+```sh
+npx prettier --write --ignore-unknown <datei1> <datei2> ...
+```
+
+- Prettier nicht nach jedem einzelnen Edit ausführen. Weitere Formatierungsläufe sind nur nötig, wenn nach dem letzten Lauf erneut Dateien geändert wurden.
+- Nur explizit im aktuellen Task bearbeitete Dateien formatieren. In einem nicht sauberen Working Tree niemals `npm run format` oder `prettier --write .` ausführen, da dies fremde Änderungen verändern kann.
+- Erst nach der Formatierung die für den Änderungstyp vorgesehenen Prüfungen ausführen.
+- `format:check` bleibt Bestandteil von `npm run test:ci` und dient als abschließende, nicht verändernde Kontrolle.
+
 ## Verifikation nach Änderungstyp
 
 - Reine Text- oder Contentänderungen: `git diff --check`; keine Tests. Die betroffene Seite nur dann im Browser prüfen, wenn Umfang oder Zeilenlänge das Layout sichtbar beeinflussen können.

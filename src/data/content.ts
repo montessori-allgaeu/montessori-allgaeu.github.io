@@ -19,7 +19,6 @@ export type Download = CollectionEntry<"downloads">["data"] & { meta: string };
 export type DonationPage = CollectionEntry<"donations">["data"];
 export type AfternoonOffer = RawAfternoonOffer & {
   slug: string;
-  costLabel: string;
 };
 export type AfternoonProgram = CollectionEntry<"afternoonProgramSettings">["data"] & {
   offers: AfternoonOffer[];
@@ -118,7 +117,10 @@ export async function getAfternoonProgram(): Promise<AfternoonProgram> {
   }
 
   const weekdayPosition = new Map(
-    ["Montag", "Dienstag", "Mittwoch", "Donnerstag"].map((weekday, index) => [weekday, index]),
+    ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"].map((weekday, index) => [
+      weekday,
+      index,
+    ]),
   );
   const entries = await getCollection(
     "afternoonOffers",
@@ -128,7 +130,6 @@ export async function getAfternoonProgram(): Promise<AfternoonProgram> {
     .map(({ id, data }) => ({
       ...data,
       slug: id,
-      costLabel: data.monthlyFee === 0 ? "Kostenfrei" : `${data.monthlyFee} € pro Monat`,
     }))
     .sort(
       (a, b) =>

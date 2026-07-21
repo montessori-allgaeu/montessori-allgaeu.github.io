@@ -4,4 +4,6 @@ dist/
 .npm-cache/
 playwright-report/
 test-results/
+artifacts/
+tmp/
 .DS_Store

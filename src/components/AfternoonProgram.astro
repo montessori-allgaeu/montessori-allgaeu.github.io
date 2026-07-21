@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { program } = Astro.props;
-const weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag"] as const;
+const weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"] as const;
 const groups = [
   {
     id: "primaria",
@@ -62,17 +62,11 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
                       {offers.map((offer) => (
                         <article class="afternoon-offer" data-afternoon-offer={offer.slug}>
                           <div>
-                            <p class="afternoon-offer__meta">
-                              {gradeLabel(offer)} · {offer.costLabel}
-                            </p>
+                            <p class="afternoon-offer__meta">{gradeLabel(offer)}</p>
                             <h4>{offer.title}</h4>
                           </div>
                           <div class="afternoon-offer__content">
                             <p>{offer.description}</p>
-                            <p class="afternoon-offer__leaders">
-                              <strong>Begleitung:</strong> {offer.leaders}
-                              {offer.organization && ` · ${offer.organization}`}
-                            </p>
                             {offer.additionalCostNote && (
                               <p class="afternoon-offer__note">{offer.additionalCostNote}</p>
                             )}
@@ -341,15 +335,10 @@ const gradeLabel = ({ gradeFrom, gradeTo }: AfternoonOffer) =>
     margin-bottom: 0;
   }
 
-  .afternoon-offer__leaders,
   .afternoon-offer__note,
   .afternoon-offer__link {
     font-size: 0.88rem;
     line-height: 1.6;
-  }
-
-  .afternoon-offer__leaders {
-    color: var(--color-muted);
   }
 
   .afternoon-offer__note {

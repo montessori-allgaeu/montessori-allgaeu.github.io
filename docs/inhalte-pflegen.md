@@ -34,7 +34,7 @@ Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellen
 
 ### Nachmittagsangebote
 
-Jedes unterschiedliche Angebot wird nur einmal angelegt. Wochentag und Klassenstufen steuern die Darstellung automatisch: Ein Angebot für die Klassen 3 bis 6 erscheint sowohl unter **Primaria** als auch unter **Sekundaria & Tertia**. `0` Euro Monatsbeitrag wird auf der Website als **Kostenfrei** ausgegeben. Zusätzliche Kosten, eine beteiligte Organisation und ein externer Link bleiben optional.
+Jedes unterschiedliche Angebot wird nur einmal angelegt. Wochentag und Klassenstufen steuern die Darstellung automatisch: Ein Angebot für die Klassen 3 bis 6 erscheint sowohl unter **Primaria** als auch unter **Sekundaria & Tertia**. Ein zusätzlicher Kostenhinweis, eine beteiligte Organisation und ein externer Link bleiben optional.
 
 Für das nächste Schuljahr die neuen Einträge zunächst als Entwurf mit dem neuen Schuljahr vorbereiten. Nach der inhaltlichen Prüfung die Angebote veröffentlichen und erst anschließend unter **Stammdaten → Ganztag & Kurswahl** das aktive Schuljahr umstellen. So wechselt die sichtbare Übersicht gemeinsam und nicht Kurs für Kurs.
 

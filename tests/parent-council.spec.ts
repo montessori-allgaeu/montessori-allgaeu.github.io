@@ -37,14 +37,12 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
       .toBeGreaterThan(0);
   }
 
-  await expect(page.getByRole("link", { name: "Kindergarten kontaktieren" })).toHaveAttribute(
-    "href",
-    "mailto:eb-kiga@montessori-allgaeu.de",
-  );
-  await expect(page.getByRole("link", { name: "Schule kontaktieren" })).toHaveAttribute(
-    "href",
-    "mailto:eb-schule@montessori-allgaeu.de",
-  );
+  await expect(
+    kindergarten.getByRole("link", { name: "eb-kiga@montessori-allgaeu.de" }),
+  ).toHaveAttribute("href", "mailto:eb-kiga@montessori-allgaeu.de");
+  await expect(
+    school.getByRole("link", { name: "eb-schule@montessori-allgaeu.de" }),
+  ).toHaveAttribute("href", "mailto:eb-schule@montessori-allgaeu.de");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Elternbeirat", exact: true }),
   ).toHaveAttribute("href", "/gemeinschaft/elternbeirat/");

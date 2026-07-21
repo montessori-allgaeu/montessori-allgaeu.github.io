@@ -198,13 +198,13 @@ content:
       template: "{title}.yml"
       field: false
     view:
-      fields: [title, schoolYear, weekday, gradeFrom, gradeTo, monthlyFee, status, position]
+      fields: [title, schoolYear, weekday, gradeFrom, gradeTo, status, position]
       primary: title
       sort: [weekday, position, title]
       default:
         sort: weekday
         order: asc
-      search: [title, schoolYear, weekday, leaders, organization, description]
+      search: [title, schoolYear, weekday, organization, description]
     operations:
       rename: false
     fields:
@@ -230,6 +230,7 @@ content:
             - Dienstag
             - Mittwoch
             - Donnerstag
+            - Freitag
       - name: gradeFrom
         label: Ab Klasse
         type: number
@@ -244,11 +245,6 @@ content:
         options:
           min: 1
           max: 10
-      - name: leaders
-        label: Begleitung
-        type: string
-        required: true
-        description: Namen so eingeben, wie sie auf der Website erscheinen sollen.
       - name: organization
         label: Organisation
         type: string
@@ -257,15 +253,7 @@ content:
         label: Beschreibung
         type: text
         required: true
-        description: Zwei bis vier kurze Sätze. Klassenstufen, Kosten und Begleitung nicht wiederholen.
-      - name: monthlyFee
-        label: Monatlicher Beitrag in Euro
-        type: number
-        required: true
-        default: 0
-        description: 0 bedeutet „Kostenfrei“. Nur ganze Eurobeträge eingeben.
-        options:
-          min: 0
+        description: Zwei bis vier kurze Sätze. Klassenstufen und Kosten nicht wiederholen.
       - name: additionalCostNote
         label: Zusätzlicher Kostenhinweis
         type: text
@@ -1016,14 +1004,14 @@ content:
             required: true
             options:
               min: 1
-              max: 4
+              max: 5
           - name: maximumAfternoons
             label: Höchstanzahl Nachmittage
             type: number
             required: true
             options:
               min: 1
-              max: 4
+              max: 5
           - name: intro
             label: Erklärung der Kurswahl
             type: text
