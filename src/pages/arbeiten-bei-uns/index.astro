@@ -6,7 +6,7 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
-import careersImage from "@/assets/images/editorial/careers.webp";
+import careersPresentationImage from "@/assets/images/editorial/careers-presentation.webp";
 import communityImage from "@/assets/images/editorial/community.webp";
 
 const jobs = await getJobs();
@@ -26,9 +26,9 @@ const { contact } = await getWebsiteSettings();
   </PageIntro>
 
   <ImageSplit
-    image={careersImage}
-    alt="Eine Pädagogin begleitet ein Kind aufmerksam beim Lernen"
-    position="center 42%"
+    image={careersPresentationImage}
+    alt="Eine Pädagogin begleitet eine kosmische Erzählung mit Vulkanmodell, während Kinder aufmerksam zuschauen"
+    position="30% 50%"
   >
     <p class="eyebrow">Dein pädagogischer Raum</p>
     <h2>Viel Freiheit. Klare gemeinsame Grundlage.</h2>

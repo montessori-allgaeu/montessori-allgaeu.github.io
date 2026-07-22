@@ -382,6 +382,15 @@ strong {
   font-size: clamp(2.25rem, 4.1vw, 3.6rem);
 }
 
+.split--compact .split__media {
+  position: relative;
+}
+
+.split--compact .split__media img {
+  position: absolute;
+  inset: 0;
+}
+
 .split__content-inner {
   width: min(100%, 35rem);
 }

@@ -29,7 +29,7 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     />
   </div>
 
-  <section class="section section--compact">
+  <section class="section section--compact hub-stats">
     <div class="container stat-row">
       <div class="stat">
         <span class="stat__value">1</span><span class="stat__label">Kindergartengruppe</span>
@@ -52,7 +52,7 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     </div>
   </section>
 
-  <section class="section">
+  <section class="section hub-navigation">
     <div class="container hub-links">
       <HubLink
         href="/kindergarten-schule/kindergarten/"
@@ -114,10 +114,28 @@ import schoolImage from "@/assets/images/editorial/school.webp";
 
 <style>
   .hub-image {
-    max-height: 720px;
+    width: 100%;
+    height: clamp(20rem, 34vw, 35rem);
+    max-height: none;
+    aspect-ratio: auto;
   }
 
   .hub-image :global(img) {
     object-position: center 44%;
+  }
+
+  .hub-stats {
+    padding-block: clamp(3rem, 5vw, 4.5rem);
+  }
+
+  .hub-navigation {
+    padding-top: 0;
+  }
+
+  @media (max-width: 620px) {
+    .hub-image {
+      height: auto;
+      aspect-ratio: 16 / 8;
+    }
   }
 </style>

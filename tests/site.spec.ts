@@ -422,7 +422,7 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute(
     "content",
-    "Ein Schüler arbeitet konzentriert mit Montessori-Material; daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
+    "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette. Daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     "content",

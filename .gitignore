@@ -7,3 +7,6 @@ test-results/
 artifacts/
 tmp/
 .DS_Store
+
+# Large or private source material kept only on this machine
+/local-resources/

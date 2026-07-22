@@ -6,8 +6,8 @@ import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import AfternoonProgram from "@/components/AfternoonProgram.astro";
 import { getAfternoonProgram, getWebsiteSettings } from "@/data/content";
-import outdoorsImage from "@/assets/images/editorial/outdoors.webp";
-import roomImage from "@/assets/images/editorial/room.webp";
+import natureStudyImage from "@/assets/images/editorial/ganztag-nature-study.webp";
+import lunchImage from "@/assets/images/editorial/ganztag-lunch.webp";
 
 const [{ meals }, afternoonProgram] = await Promise.all([
   getWebsiteSettings(),
@@ -25,7 +25,11 @@ const [{ meals }, afternoonProgram] = await Promise.all([
     intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unsere Ganztagsschule ist deshalb mehr als Betreuung."
   />
 
-  <ImageSplit image={outdoorsImage} alt="Kinder spielen gemeinsam draußen" position="center 42%">
+  <ImageSplit
+    image={natureStudyImage}
+    alt="Kinder untersuchen gemeinsam einen Bach"
+    position="center 46%"
+  >
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
@@ -46,11 +50,11 @@ const [{ meals }, afternoonProgram] = await Promise.all([
   <AfternoonProgram program={afternoonProgram} />
 
   <ImageSplit
-    image={roomImage}
-    alt="Heller Raum der Montessori-Schule"
+    image={lunchImage}
+    alt="Kinder und Erwachsene essen gemeinsam zu Mittag"
     reverse
     light
-    position="center"
+    position="center 48%"
   >
     <p class="eyebrow">Mittagessen</p>
     <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
