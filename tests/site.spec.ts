@@ -72,6 +72,216 @@ test("mobile menu exposes the main journeys", async ({ page }) => {
   ).toHaveAttribute("aria-current", "page");
 });
 
+test("mobile menu animates without delaying its state", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const mobileMenu = page.locator(".mobile-menu");
+  const menuButton = page.getByLabel("Navigation öffnen");
+  const menuPanel = page.getByRole("navigation", { name: "Mobile Navigation" });
+  const main = page.getByRole("main");
+
+  const openingState = await menuButton.evaluate((element) => {
+    (element as HTMLElement).click();
+    const details = element.closest("details");
+    const panel = details?.querySelector("nav");
+
+    return {
+      expanded: element.getAttribute("aria-expanded"),
+      mainInert: document.querySelector("main")?.hasAttribute("inert"),
+      motion: details?.getAttribute("data-mobile-menu-motion"),
+      open: details?.hasAttribute("open"),
+      panelAnimations: panel?.getAnimations().length,
+      pageLocked: document.body.classList.contains("mobile-menu-open"),
+    };
+  });
+
+  expect(openingState).toEqual({
+    expanded: "true",
+    mainInert: true,
+    motion: "opening",
+    open: true,
+    panelAnimations: 1,
+    pageLocked: true,
+  });
+  await expect(mobileMenu).not.toHaveAttribute("data-mobile-menu-motion");
+  await expect(menuPanel).toHaveCSS("opacity", "1");
+  await expect.poll(() => menuPanel.evaluate((element) => element.getAnimations().length)).toBe(0);
+
+  const closingState = await page.getByLabel("Navigation schließen").evaluate((element) => {
+    (element as HTMLElement).click();
+    const details = element.closest("details");
+    const panel = details?.querySelector("nav");
+
+    return {
+      expanded: element.getAttribute("aria-expanded"),
+      mainInert: document.querySelector("main")?.hasAttribute("inert"),
+      motion: details?.getAttribute("data-mobile-menu-motion"),
+      open: details?.hasAttribute("open"),
+      panelHidden: panel?.getAttribute("aria-hidden"),
+      panelInert: panel?.hasAttribute("inert"),
+      pageLocked: document.body.classList.contains("mobile-menu-open"),
+    };
+  });
+
+  expect(closingState).toEqual({
+    expanded: "false",
+    mainInert: true,
+    motion: "closing",
+    open: true,
+    panelHidden: "true",
+    panelInert: true,
+    pageLocked: true,
+  });
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect(main).not.toHaveAttribute("inert", "");
+
+  const rapidToggleState = await page.getByLabel("Navigation öffnen").evaluate((element) => {
+    (element as HTMLElement).click();
+    (element as HTMLElement).click();
+    return element.getAttribute("aria-expanded");
+  });
+
+  expect(rapidToggleState).toBe("false");
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect(mobileMenu).not.toHaveAttribute("data-mobile-menu-motion");
+  await expect(page.locator("body")).not.toHaveClass(/mobile-menu-open/);
+});
+
+test("mobile menu remains visible when reduced motion is enabled after closing", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const mobileMenu = page.locator(".mobile-menu");
+  const menuPanel = mobileMenu.locator(":scope > nav");
+
+  await page.getByLabel("Navigation öffnen").click();
+  await page.getByLabel("Navigation schließen").click();
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect.poll(() => menuPanel.evaluate((element) => element.getAnimations().length)).toBe(0);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.getByLabel("Navigation öffnen").click();
+
+  await expect(mobileMenu).toHaveAttribute("open", "");
+  await expect(menuPanel).toHaveCSS("opacity", "1");
+  await expect(page.locator("body")).toHaveClass(/mobile-menu-open/);
+});
+
+test("mobile menu skips animation when reduced motion is requested", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const mobileMenu = page.locator(".mobile-menu");
+  const menuButton = page.getByLabel("Navigation öffnen");
+
+  const openingState = await menuButton.evaluate((element) => {
+    (element as HTMLElement).click();
+    const details = element.closest("details");
+    const panel = details?.querySelector("nav");
+
+    return {
+      motion: details?.getAttribute("data-mobile-menu-motion"),
+      open: details?.hasAttribute("open"),
+      panelAnimations: panel?.getAnimations().length,
+    };
+  });
+
+  expect(openingState).toEqual({ motion: null, open: true, panelAnimations: 0 });
+  await page.getByLabel("Navigation schließen").click();
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect(page.locator("body")).not.toHaveClass(/mobile-menu-open/);
+});
+
+test("mobile menu keeps its native icon state without JavaScript", async ({
+  browser,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "The native fallback only needs one browser run.");
+
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL as string,
+    javaScriptEnabled: false,
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+
+  try {
+    await page.goto("/");
+    const mobileMenu = page.locator(".mobile-menu");
+
+    await mobileMenu.locator(":scope > summary").click();
+
+    await expect(mobileMenu).toHaveAttribute("open", "");
+    await expect(mobileMenu.locator(".mobile-menu__open")).toHaveCSS("opacity", "0");
+    await expect(mobileMenu.locator(".mobile-menu__close")).toHaveCSS("opacity", "1");
+  } finally {
+    await context.close();
+  }
+});
+
+test("internal navigation fades only the page content", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "mobile",
+    "The navigation behavior only needs one browser run.",
+  );
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        header: getComputedStyle(document.querySelector(".site-header")!).animationName,
+        main: getComputedStyle(document.querySelector("main")!).animationName,
+      })),
+    )
+    .toEqual({ header: "none", main: "page-fade-in" });
+
+  await page
+    .getByRole("navigation", { name: "Hauptnavigation" })
+    .getByRole("link", { name: "Montessori", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/montessori\/$/);
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        header: getComputedStyle(document.querySelector(".site-header")!).animationName,
+        main: getComputedStyle(document.querySelector("main")!).animationName,
+      })),
+    )
+    .toEqual({ header: "none", main: "page-fade-in" });
+});
+
+test("internal navigation skips the content fade when motion is reduced", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === "mobile",
+    "The navigation behavior only needs one browser run.",
+  );
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        header: getComputedStyle(document.querySelector(".site-header")!).animationName,
+        main: getComputedStyle(document.querySelector("main")!).animationName,
+      })),
+    )
+    .toEqual({ header: "none", main: "none" });
+
+  await page
+    .getByRole("navigation", { name: "Hauptnavigation" })
+    .getByRole("link", { name: "Kindergarten & Schule", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/kindergarten-schule\/$/);
+});
+
 test("desktop navigation exposes the matching subpages on hover", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "The desktop navigation is hidden on mobile.");
 

@@ -85,6 +85,19 @@ braunen Abschlussstreifen.
   Typografie, Weißraum und den Markenfarben.
 - KI- oder Stockbilder bleiben nachrangig gegenüber authentischen Monte-Fotos.
 
+## Bewegung und Übergänge
+
+- Bewegung erklärt Zustands- und Seitenwechsel und tritt danach sofort zurück. Sie ist kein
+  dekoratives Mittel, um statische Inhalte lebendiger erscheinen zu lassen.
+- Interne Seitenwechsel dürfen als kurzer Fade-in des neuen Hauptinhalts mit maximal 160
+  Millisekunden erscheinen. Der Header bleibt davon ausgenommen und die Navigation sofort
+  verfügbar.
+- Menüs und vergleichbare Oberflächen dürfen Opacity mit höchstens sechs Pixeln Translation
+  kombinieren. Kleine Icons wechseln ausschließlich über kurze Übergänge ohne Layout-Sprung.
+- Bei der Systemeinstellung „Bewegung reduzieren“ entfallen alle nicht notwendigen Übergänge.
+- Scroll-Reveals, Karten-Staggering, Parallax, Bildzooms, Scroll-Hijacking und automatisch laufende
+  dekorative Animationen werden nicht eingesetzt.
+
 ## Weiterentwicklung
 
 Neue Farbmuster werden zuerst auf der Startseite auf Desktop und Mobil geprüft. Die bestätigte

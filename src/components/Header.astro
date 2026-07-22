@@ -262,13 +262,22 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
     display: none;
   }
 
-  .mobile-menu__close,
-  .mobile-menu[open] .mobile-menu__open {
-    display: none;
+  .mobile-menu__open,
+  .mobile-menu__close {
+    grid-area: 1 / 1;
+    pointer-events: none;
+    transition: opacity 140ms ease;
   }
 
-  .mobile-menu[open] .mobile-menu__close {
-    display: block;
+  .mobile-menu__close,
+  .mobile-menu > summary[aria-expanded="true"] .mobile-menu__open,
+  .mobile-menu[open]:not([data-mobile-menu-motion="closing"]) .mobile-menu__open {
+    opacity: 0;
+  }
+
+  .mobile-menu > summary[aria-expanded="true"] .mobile-menu__close,
+  .mobile-menu[open]:not([data-mobile-menu-motion="closing"]) .mobile-menu__close {
+    opacity: 1;
   }
 
   .mobile-menu nav {
@@ -437,6 +446,8 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .mobile-menu__open,
+    .mobile-menu__close,
     .mobile-menu__group > summary svg {
       transition: none;
     }
@@ -448,6 +459,7 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
 
   if (mobileMenu) {
     const menuButton = mobileMenu.querySelector<HTMLElement>(":scope > summary");
+    const menuPanel = mobileMenu.querySelector<HTMLElement>(":scope > nav");
     const groups = Array.from(
       mobileMenu.querySelectorAll<HTMLDetailsElement>(".mobile-menu__group"),
     );
@@ -458,19 +470,104 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
       document.querySelector(".header-cta"),
     ].filter((element): element is HTMLElement => element instanceof HTMLElement);
     const mobileBreakpoint = window.matchMedia("(max-width: 1180px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let intendedOpen = mobileMenu.open;
+    let panelAnimation: Animation | undefined;
 
-    const updateMenuState = () => {
-      const isOpen = mobileMenu.open;
+    const updateMenuButton = (isOpen: boolean) => {
       menuButton?.setAttribute("aria-expanded", String(isOpen));
       menuButton?.setAttribute("aria-label", isOpen ? "Navigation schließen" : "Navigation öffnen");
-      document.body.classList.toggle("mobile-menu-open", isOpen);
-      backgroundElements.forEach((element) => element.toggleAttribute("inert", isOpen));
+    };
+
+    const setPageLocked = (isLocked: boolean) => {
+      document.body.classList.toggle("mobile-menu-open", isLocked);
+      backgroundElements.forEach((element) => element.toggleAttribute("inert", isLocked));
+    };
+
+    const clearPanelState = () => {
+      menuPanel?.style.removeProperty("opacity");
+      menuPanel?.style.removeProperty("transform");
+      menuPanel?.removeAttribute("aria-hidden");
+      if (menuPanel) menuPanel.inert = false;
+      mobileMenu.removeAttribute("data-mobile-menu-motion");
+    };
+
+    const finishMenuTransition = (open: boolean, animation?: Animation) => {
+      if (animation && panelAnimation !== animation) return;
+
+      panelAnimation = undefined;
+      intendedOpen = open;
+      mobileMenu.open = open;
+      animation?.cancel();
+      clearPanelState();
+      updateMenuButton(open);
+      setPageLocked(open);
+    };
+
+    const setMenuOpen = (open: boolean, animate = true) => {
+      if (!menuButton || !menuPanel) return;
+
+      const wasRendered = mobileMenu.open;
+      const runningStyle = panelAnimation ? getComputedStyle(menuPanel) : undefined;
+      const currentOpacity = runningStyle?.opacity ?? (open ? "0" : "1");
+      const currentTransform =
+        runningStyle?.transform && runningStyle.transform !== "none"
+          ? runningStyle.transform
+          : open
+            ? "translateY(-6px)"
+            : "translateY(0)";
+
+      panelAnimation?.cancel();
+      panelAnimation = undefined;
+      intendedOpen = open;
+      updateMenuButton(open);
+
+      if (!animate || reducedMotion.matches || (!open && !wasRendered)) {
+        finishMenuTransition(open);
+        return;
+      }
+
+      if (open) {
+        mobileMenu.open = true;
+        menuPanel.removeAttribute("aria-hidden");
+        menuPanel.inert = false;
+      } else {
+        menuPanel.setAttribute("aria-hidden", "true");
+        menuPanel.inert = true;
+      }
+
+      setPageLocked(true);
+      mobileMenu.dataset.mobileMenuMotion = open ? "opening" : "closing";
+
+      const animation = menuPanel.animate(
+        [
+          { opacity: currentOpacity, transform: currentTransform },
+          {
+            opacity: open ? "1" : "0",
+            transform: open ? "translateY(0)" : "translateY(-6px)",
+          },
+        ],
+        {
+          duration: 160,
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+          fill: "both",
+        },
+      );
+
+      panelAnimation = animation;
+      animation.addEventListener("finish", () => finishMenuTransition(open, animation), {
+        once: true,
+      });
+    };
+
+    const syncInitialMenuState = () => {
+      updateMenuButton(intendedOpen);
+      setPageLocked(intendedOpen);
     };
 
     const closeMenuAboveMobileBreakpoint = () => {
-      if (!mobileBreakpoint.matches && mobileMenu.open) {
-        mobileMenu.open = false;
-        updateMenuState();
+      if (!mobileBreakpoint.matches && (intendedOpen || mobileMenu.open || panelAnimation)) {
+        setMenuOpen(false, false);
       }
     };
 
@@ -490,14 +587,20 @@ const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(
       updateGroupState();
     });
 
-    mobileMenu.addEventListener("toggle", updateMenuState);
+    menuButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      setMenuOpen(!intendedOpen);
+    });
     mobileBreakpoint.addEventListener("change", closeMenuAboveMobileBreakpoint);
+    reducedMotion.addEventListener("change", () => {
+      if (panelAnimation) setMenuOpen(intendedOpen, false);
+    });
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && mobileMenu.open) {
-        mobileMenu.open = false;
+      if (event.key === "Escape" && (intendedOpen || mobileMenu.open)) {
+        setMenuOpen(false);
         menuButton?.focus();
       }
     });
-    updateMenuState();
+    syncInitialMenuState();
   }
 </script>
