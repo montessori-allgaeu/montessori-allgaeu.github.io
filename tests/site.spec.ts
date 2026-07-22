@@ -246,6 +246,8 @@ test("internal navigation fades only the page content", async ({ page }, testInf
     .getByRole("link", { name: "Montessori", exact: true })
     .click();
   await expect(page).toHaveURL(/\/montessori\/$/);
+  await expect(page.locator(".site-header")).toBeAttached();
+  await expect(page.getByRole("main")).toBeAttached();
   await expect
     .poll(() =>
       page.evaluate(() => ({
