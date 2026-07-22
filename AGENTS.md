@@ -60,6 +60,8 @@ Wichtige Content-Pfade:
 - Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
 - Nur auf ausdrücklichen Wunsch committen oder pushen.
+- In der Codex-Sandbox können `git push`-Kommandos wegen DNS/Netzwerk-Auflösung scheitern; falls wiederholt „Could not resolve hostname github.com“ erscheint, im externen/ausgenommenen Kontext erneut ausführen (Retry).
+- `git commit` bleibt lokal und ist von dieser Sandbox-Network-Schwäche unabhängig.
 
 ## Formatierung und Prüfungsreihenfolge
 
