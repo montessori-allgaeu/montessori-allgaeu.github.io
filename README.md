@@ -65,9 +65,37 @@ auf Chromium.
 - Globale SEO- und Social-Metadaten: `src/layouts/BaseLayout.astro`
 - Social-Share-Grafik: `public/social-card-montessori-allgaeu.jpg`
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Team- und Elternbeiratsmitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank, keine Analyse und keine Formulare.
+Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Team- und Elternbeiratsmitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank und keine Analyse. Einzige Formular-Ausnahme ist der besondere Vorstandskontakt über Formspark.
 
 Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
+
+## Vorstandskontakt über Formspark
+
+Das Formular „Vorstand – Anliegen ohne Namensangabe“ gehört zum organisatorischen Formspark-Konto
+und sendet Benachrichtigungen an `vorstand@montessori-allgaeu.de`. Der öffentliche Endpunkt
+`https://submit-form.com/hjK9U4m90` ist in
+`src/components/AnonymousBoardContact.astro` hinterlegt; er ist eine technische Kennung und kein
+Geheimnis. E-Mail-Threading ist in Formspark deaktiviert. Die Website setzt zusätzlich einen
+Zeitstempel im Betreff, den Absendernamen „Monte Website“ und die angepasste Vorlage „Monte
+Vorstandskontakt“.
+
+Formspark prüft Einreichungen automatisch mit Akismet. Das Formular enthält zusätzlich den
+Honeypot `_honeypot`; Turnstile oder ein weiterer Dienst wird erst bei tatsächlich auftretendem Spam
+ergänzt. Automatisierte Tests müssen Requests an `https://submit-form.com/**` immer abfangen und
+dürfen keine echten Einreichungen erzeugen.
+
+Betriebsroutine:
+
+1. Monatlich im Formspark-Konto neue und alte Einreichungen prüfen.
+2. Einträge spätestens nach 90 Tagen löschen, sofern kein laufender Vorgang oder eine gesetzliche
+   Pflicht entgegensteht.
+3. Regelmäßig prüfen, ob `vorstand@montessori-allgaeu.de` weiterhin als Empfänger eingetragen ist
+   und Benachrichtigungen ankommen.
+4. Nach Änderungen am Formular einen eindeutig gekennzeichneten Live-Test senden, den Eingang im
+   Vorstandspostfach prüfen und Testeintrag sowie Test-E-Mail anschließend löschen.
+
+Wenn ein neues Formspark-Formular angelegt wird, müssen Action-URL, Empfänger, deaktiviertes
+E-Mail-Threading, Honeypot, E-Mail-Vorlage, Datenschutztext und Live-Test gemeinsam geprüft werden.
 
 ## Veröffentlichung über GitHub Pages
 
@@ -112,6 +140,7 @@ nach dem Domain-Cutover stichprobenartig geprüft und dauerhaft beibehalten werd
 - Aktive Stellenangebote und Bewerbungsadresse
 - Aufnahmefristen und öffentliche Termine
 - Team- und Elternbeiratsnamen, Rollen und Einwilligungen für Fotos
-- Vorstand, Aufsichtsbehörden, Impressum und Datenschutzerklärung rechtlich prüfen
+- Vorstand, Aufsichtsbehörden, Impressum und Datenschutzerklärung einschließlich des
+  Formspark-Abschnitts rechtlich prüfen
 - Spendenkonto und Prozess für Zuwendungsbestätigungen
 - Weiterleitungen der alten Jimdo-Adressen nach dem Domain-Cutover stichprobenartig prüfen

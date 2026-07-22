@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
+import AnonymousBoardContact from "@/components/AnonymousBoardContact.astro";
 import { getTeam } from "@/data/content";
 import landesverbandLogo from "@/assets/brand/official/logo-montessori-landesverband-bayern.svg";
 
@@ -169,6 +170,7 @@ const getInitials = (name: string) =>
           href="mailto:vorstand@montessori-allgaeu.de">vorstand@montessori-allgaeu.de</a
         >.
       </p>
+      <AnonymousBoardContact />
     </div>
   </section>
 

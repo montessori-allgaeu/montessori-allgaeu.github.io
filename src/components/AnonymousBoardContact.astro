@@ -1,0 +1,525 @@
+---
+const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
+---
+
+<div class="anonymous-board-contact" data-anonymous-board-contact>
+  <details>
+    <summary>
+      <span>Anliegen ohne Namensangabe senden</span>
+      <span class="anonymous-board-contact__toggle" aria-hidden="true"></span>
+    </summary>
+
+    <div class="anonymous-board-contact__content">
+      <div class="anonymous-board-contact__intro">
+        <p>
+          Für Anliegen, die ihr lieber ohne Namensangabe an den Vorstand senden möchtet. Wir fragen
+          weder euren Namen noch eine Kontaktadresse ab. Schildert bitte nur, was für die
+          Bearbeitung nötig ist.
+        </p>
+        <ul>
+          <li>Der Inhalt eurer Nachricht kann trotzdem Rückschlüsse auf Personen ermöglichen.</li>
+          <li>Ohne Kontaktmöglichkeit können wir nicht antworten oder Rückfragen stellen.</li>
+          <li>
+            Dieses Formular ist nicht für akute Gefahren, personenbezogene Angaben über Kinder,
+            Gesundheitsdaten oder mögliche Straftaten gedacht. Wendet euch in solchen Fällen bitte
+            an eine geeignete Fach- oder Notfallstelle.
+          </li>
+        </ul>
+      </div>
+
+      <form
+        action={FORMSPARK_ACTION}
+        method="POST"
+        data-anonymous-board-form
+        data-timeout-ms="15000"
+      >
+        <input type="hidden" name="_feedback.language" value="de" />
+        <input
+          type="hidden"
+          name="_feedback.success.title"
+          value="Danke. Euer Anliegen wurde übermittelt."
+        />
+        <input
+          type="hidden"
+          name="_feedback.success.message"
+          value="Ihr könnt dieses Fenster jetzt schließen."
+        />
+        <input
+          type="hidden"
+          name="_feedback.error.title"
+          value="Die Übermittlung hat nicht geklappt."
+        />
+        <input
+          type="hidden"
+          name="_feedback.error.message"
+          value="Bitte geht zurück und versucht es noch einmal."
+        />
+        <input type="hidden" name="_email.from" value="Monte Website" />
+        <input
+          type="hidden"
+          name="_email.subject"
+          value="Neues Anliegen ohne Namensangabe"
+          data-email-subject
+        />
+        <input
+          type="checkbox"
+          name="_honeypot"
+          class="anonymous-board-contact__honeypot"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+
+        <div class="anonymous-board-contact__field">
+          <label for="anonymous-board-message">Euer Anliegen</label>
+          <textarea
+            id="anonymous-board-message"
+            name="message"
+            rows="8"
+            minlength="20"
+            maxlength="5000"
+            required
+            aria-describedby="anonymous-board-message-hint"></textarea>
+          <p id="anonymous-board-message-hint" class="anonymous-board-contact__hint">
+            Mindestens 20, höchstens 5.000 Zeichen.
+          </p>
+        </div>
+
+        <div class="anonymous-board-contact__field">
+          <label for="anonymous-board-outcome">
+            Was wünscht ihr euch vom Vorstand? <span>(optional)</span>
+          </label>
+          <textarea
+            id="anonymous-board-outcome"
+            name="desiredOutcome"
+            rows="5"
+            maxlength="1500"
+            aria-describedby="anonymous-board-outcome-hint"></textarea>
+          <p id="anonymous-board-outcome-hint" class="anonymous-board-contact__hint">
+            Zum Beispiel: prüfen, klären oder bei einer Entscheidung berücksichtigen. Höchstens
+            1.500 Zeichen.
+          </p>
+        </div>
+
+        <p
+          class="anonymous-board-contact__status"
+          data-form-status
+          role="alert"
+          aria-live="assertive"
+          tabindex="-1"
+          hidden
+        >
+        </p>
+
+        <button class="button anonymous-board-contact__submit" type="submit">
+          Anliegen übermitteln
+        </button>
+
+        <p class="anonymous-board-contact__privacy">
+          Bei der Übermittlung verarbeitet Formspark technische Verbindungsdaten. Eine vollständige
+          technische Anonymität können wir deshalb nicht zusagen.
+          <a href="/datenschutz/#anliegen-ohne-namensangabe">Mehr zum Datenschutz</a>
+        </p>
+      </form>
+
+      <div
+        class="anonymous-board-contact__success"
+        data-form-success
+        role="status"
+        tabindex="-1"
+        hidden
+      >
+        <h3>Danke.</h3>
+        <p>Euer Anliegen wurde übermittelt.</p>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+  const contactSections = document.querySelectorAll<HTMLElement>("[data-anonymous-board-contact]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const createEmailSubject = () => {
+    const submittedAt = new Intl.DateTimeFormat("de-DE", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date());
+
+    return `Neues Anliegen ohne Namensangabe · ${submittedAt}`;
+  };
+
+  for (const contactSection of contactSections) {
+    const disclosure = contactSection.querySelector("details");
+    const summary = disclosure?.querySelector("summary");
+    const form = contactSection.querySelector<HTMLFormElement>("[data-anonymous-board-form]");
+    const message = form?.elements.namedItem("message");
+    const desiredOutcome = form?.elements.namedItem("desiredOutcome");
+    const honeypot = form?.elements.namedItem("_honeypot");
+    const subjectField = form?.querySelector<HTMLInputElement>("[data-email-subject]");
+    const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const status = form?.querySelector<HTMLElement>("[data-form-status]");
+    const success = contactSection.querySelector<HTMLElement>("[data-form-success]");
+
+    if (!disclosure || !summary || !form) continue;
+
+    const animations = new WeakMap<HTMLDetailsElement, Animation>();
+    let intendedOpen = disclosure.open;
+    let submitting = false;
+
+    const finishDisclosure = (open: boolean, animation?: Animation) => {
+      if (animation && animations.get(disclosure) !== animation) return;
+
+      disclosure.open = open;
+      disclosure.style.removeProperty("height");
+      disclosure.style.removeProperty("overflow");
+      disclosure.removeAttribute("data-contact-motion");
+      animations.delete(disclosure);
+    };
+
+    const measureDisclosureHeight = (open: boolean) => {
+      const previousOpen = disclosure.open;
+      const previousHeight = disclosure.style.height;
+
+      disclosure.style.removeProperty("height");
+      disclosure.open = open;
+      const height = disclosure.getBoundingClientRect().height;
+      disclosure.open = previousOpen;
+      disclosure.style.height = previousHeight;
+
+      return height;
+    };
+
+    const transitionDisclosure = (open: boolean) => {
+      const currentHeight = disclosure.getBoundingClientRect().height;
+      animations.get(disclosure)?.cancel();
+      intendedOpen = open;
+
+      if (reducedMotion.matches) {
+        finishDisclosure(open);
+        return;
+      }
+
+      const targetHeight = measureDisclosureHeight(open);
+      disclosure.open = true;
+      disclosure.style.height = `${currentHeight}px`;
+      disclosure.style.overflow = "hidden";
+      disclosure.dataset.contactMotion = open ? "opening" : "closing";
+
+      const animation = disclosure.animate(
+        { height: [`${currentHeight}px`, `${targetHeight}px`] },
+        { duration: 240, easing: "cubic-bezier(0.4, 0, 0.2, 1)" },
+      );
+
+      animations.set(disclosure, animation);
+      animation.addEventListener("finish", () => finishDisclosure(open, animation), {
+        once: true,
+      });
+    };
+
+    summary.addEventListener("click", (event) => {
+      event.preventDefault();
+      transitionDisclosure(!intendedOpen);
+    });
+
+    if (
+      !(message instanceof HTMLTextAreaElement) ||
+      !(desiredOutcome instanceof HTMLTextAreaElement) ||
+      !(honeypot instanceof HTMLInputElement) ||
+      !subjectField ||
+      !submitButton ||
+      !status ||
+      !success
+    ) {
+      continue;
+    }
+
+    subjectField.value = createEmailSubject();
+
+    message.addEventListener("input", () => {
+      message.setCustomValidity("");
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (submitting) return;
+
+      if (message.value.trim().length < 20) {
+        message.setCustomValidity("Bitte beschreibt euer Anliegen mit mindestens 20 Zeichen.");
+        message.reportValidity();
+        return;
+      }
+
+      submitting = true;
+      const originalButtonText = submitButton.textContent;
+      const emailSubject = createEmailSubject();
+      const controller = new AbortController();
+      const timeoutMs = Number(form.dataset.timeoutMs) || 15000;
+      const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+
+      subjectField.value = emailSubject;
+      status.hidden = true;
+      status.textContent = "";
+      form.setAttribute("aria-busy", "true");
+      submitButton.setAttribute("aria-busy", "true");
+      submitButton.disabled = true;
+      submitButton.textContent = "Wird übermittelt …";
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            message: message.value.trim(),
+            desiredOutcome: desiredOutcome.value.trim(),
+            _honeypot: honeypot.checked,
+            _email: {
+              from: "Monte Website",
+              subject: emailSubject,
+              template: {
+                title: false,
+                footer: false,
+              },
+            },
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        form.hidden = true;
+        success.hidden = false;
+        success.focus();
+      } catch {
+        status.textContent =
+          "Die Übermittlung hat nicht geklappt. Eure Eingaben sind erhalten. Bitte versucht es noch einmal.";
+        status.hidden = false;
+        status.focus();
+      } finally {
+        window.clearTimeout(timeout);
+        submitting = false;
+        form.removeAttribute("aria-busy");
+        submitButton.removeAttribute("aria-busy");
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
+    });
+  }
+</script>
+
+<style>
+  .anonymous-board-contact {
+    max-width: 52rem;
+    margin-top: 1.1rem;
+  }
+
+  .anonymous-board-contact [hidden] {
+    display: none;
+  }
+
+  .anonymous-board-contact details {
+    border-top: 1px solid var(--color-line-strong);
+    border-bottom: 1px solid var(--color-line-strong);
+  }
+
+  .anonymous-board-contact summary {
+    display: flex;
+    min-height: 3.75rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .anonymous-board-contact summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .anonymous-board-contact__toggle {
+    position: relative;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 1rem;
+  }
+
+  .anonymous-board-contact__toggle::before,
+  .anonymous-board-contact__toggle::after {
+    position: absolute;
+    top: calc(50% - 1px);
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-action);
+    content: "";
+    transition: transform 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .anonymous-board-contact__toggle::after {
+    transform: rotate(90deg);
+  }
+
+  .anonymous-board-contact details[open] .anonymous-board-contact__toggle::after {
+    transform: rotate(90deg) scaleX(0);
+  }
+
+  .anonymous-board-contact__content {
+    padding: 0.5rem 0 2.25rem;
+  }
+
+  .anonymous-board-contact__intro {
+    max-width: 48rem;
+    margin-bottom: 2rem;
+  }
+
+  .anonymous-board-contact__intro > p {
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+  }
+
+  .anonymous-board-contact__intro ul {
+    margin: 0;
+    padding: 1.1rem 1.25rem 1.1rem 2.5rem;
+    border-left: 3px solid var(--color-sun);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.84rem;
+  }
+
+  .anonymous-board-contact__intro li + li {
+    margin-top: 0.45rem;
+  }
+
+  .anonymous-board-contact form {
+    display: grid;
+    gap: 1.7rem;
+  }
+
+  .anonymous-board-contact__field {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .anonymous-board-contact__field label {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .anonymous-board-contact__field label span {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .anonymous-board-contact textarea {
+    width: 100%;
+    min-height: 8rem;
+    padding: 0.9rem 1rem;
+    resize: vertical;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    line-height: 1.6;
+  }
+
+  .anonymous-board-contact textarea:focus {
+    border-color: var(--color-action);
+  }
+
+  .anonymous-board-contact__hint,
+  .anonymous-board-contact__privacy {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+
+  .anonymous-board-contact__privacy {
+    max-width: 46rem;
+  }
+
+  .anonymous-board-contact__privacy a {
+    color: var(--color-link);
+    font-weight: 700;
+  }
+
+  .anonymous-board-contact__honeypot {
+    display: none;
+  }
+
+  .anonymous-board-contact__submit {
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  .anonymous-board-contact__submit:disabled {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+  }
+
+  .anonymous-board-contact__status,
+  .anonymous-board-contact__success {
+    margin: 0;
+    padding: 1rem 1.2rem;
+    border-left: 3px solid var(--color-action);
+    background: var(--color-surface);
+  }
+
+  .anonymous-board-contact__status {
+    color: var(--color-action-hover);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .anonymous-board-contact__success h3 {
+    margin-bottom: 0.35rem;
+    font-size: 1.8rem;
+  }
+
+  .anonymous-board-contact__success p {
+    margin: 0;
+  }
+
+  @media (max-width: 620px) {
+    .anonymous-board-contact {
+      margin-top: 1.4rem;
+    }
+
+    .anonymous-board-contact summary {
+      align-items: flex-start;
+      padding-block: 1.1rem;
+    }
+
+    .anonymous-board-contact__content {
+      padding-bottom: 1.75rem;
+    }
+
+    .anonymous-board-contact__intro > p {
+      font-size: 0.96rem;
+    }
+
+    .anonymous-board-contact__intro ul {
+      padding: 1rem 1rem 1rem 2.15rem;
+    }
+
+    .anonymous-board-contact__submit {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anonymous-board-contact__toggle::before,
+    .anonymous-board-contact__toggle::after {
+      transition: none;
+    }
+  }
+</style>
