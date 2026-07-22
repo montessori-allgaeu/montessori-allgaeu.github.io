@@ -519,7 +519,7 @@ Wichtige Pfade:
 - Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
 - Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
 - Die Nachmittagsangebote werden als strukturierte, jahresbezogene CMS-Inhalte gepflegt. Die Website zeigt sie ruhig nach Primaria beziehungsweise Sekundaria und Tertia sowie nach Wochentagen; klassenübergreifende Angebote werden aus einem gemeinsamen Eintrag abgeleitet.
-- Der Erdkinderplan wird auf der Schulseite anhand des Bauwagenprojekts konkretisiert. Das Projektvideo steht dort als authentischer Einblick in das Lernen der Sekundaria, nicht auf der Startseite und nicht stellvertretend für die gesamte Pädagogik. Der Vimeo-Player wird erst nach einer bewussten Aktivierung geladen.
+- Der Erdkinderplan gilt für Sekundaria und Tertia und wird auf der Schulseite anhand des Bauwagenprojekts konkretisiert. Das Projektvideo zeigt als authentisches Beispiel das Lernen der Sekundaria B, steht nicht auf der Startseite und nicht stellvertretend für die gesamte Pädagogik. Der Vimeo-Player wird erst nach einer bewussten Aktivierung geladen.
 
 ## Offene beziehungsweise später erneut zu prüfende Entscheidungen
 

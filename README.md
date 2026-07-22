@@ -79,10 +79,10 @@ Geheimnis. E-Mail-Threading ist in Formspark deaktiviert. Die Website setzt zus�
 Zeitstempel im Betreff, den Absendernamen „Monte Website“ und die angepasste Vorlage „Monte
 Vorstandskontakt“.
 
-Formspark prüft Einreichungen automatisch mit Akismet. Das Formular enthält zusätzlich den
-Honeypot `_honeypot`; Turnstile oder ein weiterer Dienst wird erst bei tatsächlich auftretendem Spam
-ergänzt. Automatisierte Tests müssen Requests an `https://submit-form.com/**` immer abfangen und
-dürfen keine echten Einreichungen erzeugen.
+Formspark prüft Einreichungen automatisch auf Spam. Das Formular enthält zusätzlich den Honeypot
+`_honeypot`; Turnstile oder ein weiterer Dienst wird erst bei tatsächlich auftretendem Spam ergänzt.
+Automatisierte Tests müssen Requests an `https://submit-form.com/**` immer abfangen und dürfen keine
+echten Einreichungen erzeugen.
 
 Betriebsroutine:
 

@@ -63,7 +63,7 @@ test("the Erdkinderplan section is accessible and fits the viewport", async ({ p
 test("the privacy page explains the click-to-load Vimeo player", async ({ page }) => {
   await page.goto("/datenschutz/#vimeo-video");
 
-  await expect(page.getByRole("heading", { name: "5. Vimeo-Video" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "6. Vimeo-Video" })).toBeVisible();
   await expect(
     page.getByText(/Zu Vimeo wird dabei noch keine Verbindung hergestellt/),
   ).toBeVisible();

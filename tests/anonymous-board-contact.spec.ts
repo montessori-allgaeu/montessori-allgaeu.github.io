@@ -74,7 +74,7 @@ test("the native disclosure stays coherent without JavaScript", async ({ browser
   await page.close();
 });
 
-test("browser validation blocks incomplete submissions", async ({ page }) => {
+test("browser validation blocks empty and whitespace-only submissions", async ({ page }) => {
   let requestCount = 0;
   await page.route(formsparkPattern, async (route) => {
     requestCount += 1;
@@ -85,20 +85,24 @@ test("browser validation blocks incomplete submissions", async ({ page }) => {
 
   await expect(form).toHaveAttribute("action", "https://submit-form.com/hjK9U4m90");
   await expect(message).toHaveAttribute("required", "");
-  await expect(message).toHaveAttribute("minlength", "20");
+  await expect(message).not.toHaveAttribute("minlength");
   await expect(message).toHaveAttribute("maxlength", "5000");
   await expect(desiredOutcome).toHaveAttribute("maxlength", "1500");
   await expect(form.locator('[name="name"], [name="email"]')).toHaveCount(0);
 
   await submit.click();
   await expect(message).toBeFocused();
-
-  await message.fill("Zu kurz");
-  await submit.click();
-  await expect
-    .poll(() => message.evaluate((field: HTMLTextAreaElement) => field.validity.tooShort))
-    .toBe(true);
   expect(requestCount).toBe(0);
+
+  await message.fill("   ");
+  await submit.click();
+  await expect(message).toBeFocused();
+  await expect(message).toHaveJSProperty("validationMessage", "Bitte beschreibt euer Anliegen.");
+  expect(requestCount).toBe(0);
+
+  await message.fill("Kurz");
+  await submit.click();
+  await expect.poll(() => requestCount).toBe(1);
 });
 
 test("a successful submission sends only the intended payload and cannot be duplicated", async ({

@@ -52,31 +52,38 @@ const { openingHours } = await getWebsiteSettings();
         title="Gemeinsam wachsen. Mit jedem Alter anders."
       />
       <div class="editorial-cards">
-        <article class="editorial-card">
+        <article class="editorial-card stage-card">
           <p class="eyebrow">Klasse 1–4</p>
           <h3>Primaria</h3>
+          <blockquote>„Hilf mir, es selbst zu tun.“</blockquote>
           <p>
             Die Freude am Entdecken, konkrete Materialien und der Aufbau selbstständiger
             Arbeitsweisen stehen im Mittelpunkt.
           </p>
         </article>
-        <article class="editorial-card">
+        <article class="editorial-card stage-card">
           <p class="eyebrow">Klasse 5–7</p>
           <h3>Sekundaria</h3>
+          <blockquote>„Hilf mir, selbst zu denken.“</blockquote>
           <p>
             Interessen vertiefen sich, abstraktes Denken wächst und Lernen öffnet sich stärker zu
             Projekten, Welt und Gemeinschaft.
           </p>
         </article>
-        <article class="editorial-card">
+        <article class="editorial-card stage-card">
           <p class="eyebrow">Klasse 8–10</p>
           <h3>Tertia</h3>
+          <blockquote>„Hilf mir, meinen Platz in der Welt zu finden.“</blockquote>
           <p>
             Jugendliche klären ihre Ziele, übernehmen Verantwortung und bereiten sich individuell
             auf Abschluss und nächsten Lebensweg vor.
           </p>
         </article>
       </div>
+      <p class="stage-note small muted">
+        Diese drei Leitsätze sind heutige Interpretationen der Montessori-Pädagogik. Sie sind nicht
+        als wörtliche Aussagen Maria Montessoris überliefert.
+      </p>
     </div>
   </section>
 
@@ -84,7 +91,7 @@ const { openingHours } = await getWebsiteSettings();
     <div class="container">
       <div class="grid-2 erdkinderplan__intro">
         <div>
-          <p class="eyebrow">Erdkinderplan · Sekundaria</p>
+          <p class="eyebrow">Erdkinderplan · Sekundaria &amp; Tertia</p>
           <h2 id="erdkinderplan-title">Mit Kopf, Hand und Verantwortung.</h2>
         </div>
         <div>
@@ -185,6 +192,34 @@ const { openingHours } = await getWebsiteSettings();
 </BaseLayout>
 
 <style>
+  .stage-card blockquote {
+    min-height: 5.8rem;
+    margin: 1.5rem 0;
+    color: var(--color-ink);
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 2.35vw, 2.45rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .stage-card > p:last-child {
+    margin-bottom: 0;
+  }
+
+  .stage-note {
+    max-width: 54rem;
+    margin: clamp(1.5rem, 3vw, 2.25rem) auto 0;
+    text-align: center;
+  }
+
+  @media (max-width: 1050px) {
+    .stage-card blockquote {
+      min-height: 0;
+    }
+  }
+
   @media (min-width: 841px) {
     .school-rhythm {
       align-items: stretch;

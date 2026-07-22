@@ -82,7 +82,7 @@ const getInitials = (name: string) =>
                   {sections.map((section) => (
                     <section
                       class="team-subgroup"
-                      aria-labelledby={`${groupId}-${section === "Klassenleitungen" ? "klassenleitungen" : "assistenzen"}`}
+                      aria-labelledby={`${groupId} ${groupId}-${section === "Klassenleitungen" ? "klassenleitungen" : "assistenzen"}`}
                     >
                       <h3
                         class="team-subgroup__title"

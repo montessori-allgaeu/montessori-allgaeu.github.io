@@ -9,6 +9,7 @@ const keyPages = [
   "/kindergarten-schule/ganztag-verpflegung/",
   "/kennenlernen/",
   "/gemeinschaft/prinzipien/",
+  "/gemeinschaft/team/",
   "/arbeiten-bei-uns/",
   "/spenden/",
   "/kontakt/",
