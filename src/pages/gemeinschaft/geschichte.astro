@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import CoverImage from "@/components/CoverImage.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import firstClassImage from "@/assets/images/history/erste-klasse-2001.webp";
@@ -60,8 +60,8 @@ const milestones = [
     <div class="container">
       <figure>
         <div class="history-hero__image">
-          <Image
-            src={firstClassImage}
+          <CoverImage
+            image={firstClassImage}
             alt="Kinder der ersten jahrgangsgemischten Klasse im Herbst 2001 vor dem Schulgebäude"
             widths={[640, 960, 1440, 1920]}
             sizes="(max-width: 1280px) calc(100vw - 3rem), 1240px"
@@ -142,8 +142,8 @@ const milestones = [
       <div class="history-community__images">
         <figure>
           <div class="history-community__image">
-            <Image
-              src={earlyClassroomImage}
+            <CoverImage
+              image={earlyClassroomImage}
               alt="Kinder und Erwachsene in einem Klassenraum der jungen Montessori-Schule"
               widths={[480, 720]}
               sizes="(max-width: 860px) calc(100vw - 3rem), 34vw"
@@ -153,8 +153,8 @@ const milestones = [
         </figure>
         <figure>
           <div class="history-community__image">
-            <Image
-              src={renovationImage}
+            <CoverImage
+              image={renovationImage}
               alt="Ein Mitglied der Monte-Gemeinschaft bei Umbauarbeiten in den Anfangsjahren"
               widths={[480, 720]}
               sizes="(max-width: 860px) calc(100vw - 3rem), 34vw"

@@ -77,6 +77,15 @@ braunen Abschlussstreifen.
 ## Bilder und Grafik-Elemente
 
 - Authentische Bilder aus dem Alltag der Monte bleiben das primäre Bildmedium der Website.
+- Bei redaktionellen Fotos bestimmt der Bildplatz das Seitenverhältnis, nicht die Quelldatei. Fotos
+  füllen den Platz proportional und werden bei Bedarf beschnitten (`object-fit: cover`). Ein
+  Fokuspunkt kann für Desktop und Mobil getrennt hinterlegt werden, damit das Hauptmotiv bei einem
+  späteren Bildtausch sichtbar bleibt.
+- Geteilte Text-Bild-Flächen verwenden grundsätzlich einen stabilen, vom Dateiformat unabhängigen
+  Bildplatz. Bewusste Hochformat-Erzählungen, historische Bildmontagen, Video-Poster und feste
+  Porträt-Raster dürfen eigene, ebenfalls explizit definierte Seitenverhältnisse verwenden.
+- Logos und Wort-Bild-Marken werden nicht beschnitten, sondern in ihrem natürlichen
+  Seitenverhältnis gezeigt.
 - CD-Illustrationen bestehen aus freigegebenen, stilisierten Strichzeichnungen, optional über echten
   Aquarellflächen. Sie wirken leicht und offen, aber nicht kindlich.
 - Die Illustrationen werden nicht durch CSS-Formen, generische Icons, nachgezeichnete SVGs oder

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import CoverImage from "@/components/CoverImage.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
@@ -96,11 +97,12 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
   <section class="section section--light">
     <div class="container grid-2 kindergarten-schedule">
       <div class="image-frame image-frame--landscape kindergarten-schedule__image">
-        <img
-          src={kindergartenHolzbauwerkImage.src}
+        <CoverImage
+          image={kindergartenHolzbauwerkImage}
           alt="Ein Kindergartenkind hält stolz ein selbst gebautes Holzbauwerk hoch"
-          loading="lazy"
-          style="object-position: center 30%"
+          widths={[480, 720, 960]}
+          sizes="(max-width: 840px) calc(100vw - 2rem), 40vw"
+          position="center 30%"
         />
       </div>
       <div>
@@ -135,13 +137,13 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 </BaseLayout>
 
 <style>
-  @media (min-width: 841px) {
-    .kindergarten-schedule {
-      align-items: stretch;
-    }
+  .kindergarten-schedule__image {
+    aspect-ratio: 4 / 3;
+  }
 
+  @media (min-width: 841px) {
     .kindergarten-schedule__image {
-      aspect-ratio: auto;
+      aspect-ratio: 3 / 4;
     }
   }
 

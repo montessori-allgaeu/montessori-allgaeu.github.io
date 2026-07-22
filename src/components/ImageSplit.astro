@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
+import CoverImage from "@/components/CoverImage.astro";
 
 interface Props {
   image: ImageMetadata;
@@ -8,7 +8,9 @@ interface Props {
   reverse?: boolean;
   light?: boolean;
   compact?: boolean;
+  portrait?: boolean;
   position?: string;
+  mobilePosition?: string;
   widths?: number[];
 }
 
@@ -18,7 +20,9 @@ const {
   reverse = false,
   light = false,
   compact = false,
+  portrait = false,
   position = "center",
+  mobilePosition = position,
   widths = [640, 960, 1280],
 } = Astro.props;
 ---
@@ -26,19 +30,25 @@ const {
 <section
   class:list={[
     "split",
-    { "split--reverse": reverse, "split--light": light, "split--compact": compact },
+    {
+      "split--reverse": reverse,
+      "split--light": light,
+      "split--compact": compact,
+      "split--portrait": portrait,
+    },
   ]}
 >
   <div class="split__content">
     <div class="split__content-inner"><slot /></div>
   </div>
   <div class="split__media">
-    <Image
-      src={image}
-      alt={alt}
-      widths={widths}
+    <CoverImage
+      {image}
+      {alt}
+      {widths}
       sizes="(max-width: 840px) 100vw, 50vw"
-      style={`object-position:${position}`}
+      {position}
+      {mobilePosition}
     />
   </div>
 </section>

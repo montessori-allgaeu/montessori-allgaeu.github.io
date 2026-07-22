@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import CoverImage from "@/components/CoverImage.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
@@ -21,11 +21,12 @@ import schoolImage from "@/assets/images/editorial/school.webp";
   />
 
   <div class="image-frame image-frame--wide hub-image">
-    <Image
-      src={continuumImage}
+    <CoverImage
+      image={continuumImage}
       alt="Kinder arbeiten gemeinsam in der Montessori-Lernumgebung"
       widths={[768, 1200, 1600]}
       sizes="100vw"
+      position="center 44%"
     />
   </div>
 
@@ -118,10 +119,6 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     height: clamp(20rem, 34vw, 35rem);
     max-height: none;
     aspect-ratio: auto;
-  }
-
-  .hub-image :global(img) {
-    object-position: center 44%;
   }
 
   .hub-stats {

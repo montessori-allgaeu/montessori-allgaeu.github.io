@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import CoverImage from "@/components/CoverImage.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
@@ -172,10 +173,11 @@ const { openingHours } = await getWebsiteSettings();
         <TextLink href="/kindergarten-schule/ganztag-verpflegung/" label="Ganztag & Verpflegung" />
       </div>
       <div class="image-frame image-frame--landscape school-rhythm__image">
-        <img
-          src={roomImage.src}
+        <CoverImage
+          image={roomImage}
           alt="Vorbereiteter Klassenraum der Montessori-Schule"
-          loading="lazy"
+          widths={[480, 720, 960]}
+          sizes="(max-width: 840px) calc(100vw - 2rem), 40vw"
         />
       </div>
     </div>
@@ -217,16 +219,6 @@ const { openingHours } = await getWebsiteSettings();
   @media (max-width: 1050px) {
     .stage-card blockquote {
       min-height: 0;
-    }
-  }
-
-  @media (min-width: 841px) {
-    .school-rhythm {
-      align-items: stretch;
-    }
-
-    .school-rhythm__image {
-      aspect-ratio: auto;
     }
   }
 
