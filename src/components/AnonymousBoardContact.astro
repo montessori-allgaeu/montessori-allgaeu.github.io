@@ -5,26 +5,16 @@ const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
 <div class="anonymous-board-contact" data-anonymous-board-contact>
   <details>
     <summary>
-      <span>Anliegen ohne Namensangabe senden</span>
+      <span>Vorstand anonym kontaktieren</span>
       <span class="anonymous-board-contact__toggle" aria-hidden="true"></span>
     </summary>
 
     <div class="anonymous-board-contact__content">
       <div class="anonymous-board-contact__intro">
-        <p>
-          Für Anliegen, die ihr lieber ohne Namensangabe an den Vorstand senden möchtet. Wir fragen
-          weder euren Namen noch eine Kontaktadresse ab. Schildert bitte nur, was für die
-          Bearbeitung nötig ist.
+        <p>Für Anliegen, die ihr lieber ohne Namensangabe an den Vorstand senden möchtet.</p>
+        <p class="anonymous-board-contact__notice">
+          Ohne Kontaktmöglichkeit können wir nicht antworten oder Rückfragen stellen.
         </p>
-        <ul>
-          <li>Der Inhalt eurer Nachricht kann trotzdem Rückschlüsse auf Personen ermöglichen.</li>
-          <li>Ohne Kontaktmöglichkeit können wir nicht antworten oder Rückfragen stellen.</li>
-          <li>
-            Dieses Formular ist nicht für akute Gefahren, personenbezogene Angaben über Kinder,
-            Gesundheitsdaten oder mögliche Straftaten gedacht. Wendet euch in solchen Fällen bitte
-            an eine geeignete Fach- oder Notfallstelle.
-          </li>
-        </ul>
       </div>
 
       <form
@@ -78,27 +68,15 @@ const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
             rows="8"
             minlength="20"
             maxlength="5000"
-            required
-            aria-describedby="anonymous-board-message-hint"></textarea>
-          <p id="anonymous-board-message-hint" class="anonymous-board-contact__hint">
-            Mindestens 20, höchstens 5.000 Zeichen.
-          </p>
+            required></textarea>
         </div>
 
         <div class="anonymous-board-contact__field">
           <label for="anonymous-board-outcome">
             Was wünscht ihr euch vom Vorstand? <span>(optional)</span>
           </label>
-          <textarea
-            id="anonymous-board-outcome"
-            name="desiredOutcome"
-            rows="5"
-            maxlength="1500"
-            aria-describedby="anonymous-board-outcome-hint"></textarea>
-          <p id="anonymous-board-outcome-hint" class="anonymous-board-contact__hint">
-            Zum Beispiel: prüfen, klären oder bei einer Entscheidung berücksichtigen. Höchstens
-            1.500 Zeichen.
-          </p>
+          <textarea id="anonymous-board-outcome" name="desiredOutcome" rows="5" maxlength="1500"
+          ></textarea>
         </div>
 
         <p
@@ -116,8 +94,7 @@ const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
         </button>
 
         <p class="anonymous-board-contact__privacy">
-          Bei der Übermittlung verarbeitet Formspark technische Verbindungsdaten. Eine vollständige
-          technische Anonymität können wir deshalb nicht zusagen.
+          Bei der Übermittlung verarbeitet Formspark technische Verbindungsdaten.{" "}
           <a href="/datenschutz/#anliegen-ohne-namensangabe">Mehr zum Datenschutz</a>
         </p>
       </form>
@@ -384,17 +361,13 @@ const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
     font-size: 1.05rem;
   }
 
-  .anonymous-board-contact__intro ul {
+  .anonymous-board-contact__intro .anonymous-board-contact__notice {
     margin: 0;
-    padding: 1.1rem 1.25rem 1.1rem 2.5rem;
+    padding: 1.1rem 1.25rem;
     border-left: 3px solid var(--color-sun);
     background: var(--color-surface);
     color: var(--color-text);
     font-size: 0.84rem;
-  }
-
-  .anonymous-board-contact__intro li + li {
-    margin-top: 0.45rem;
   }
 
   .anonymous-board-contact form {
@@ -434,7 +407,6 @@ const FORMSPARK_ACTION = "https://submit-form.com/hjK9U4m90";
     border-color: var(--color-action);
   }
 
-  .anonymous-board-contact__hint,
   .anonymous-board-contact__privacy {
     margin: 0;
     color: var(--color-muted);

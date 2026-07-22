@@ -7,7 +7,7 @@ async function openBoardForm(page: Page) {
   await page.goto("/gemeinschaft/traeger-verein/");
   const contact = page.locator("[data-anonymous-board-contact]");
   const disclosure = contact.locator("details");
-  const summary = contact.getByText("Anliegen ohne Namensangabe senden", { exact: true });
+  const summary = contact.getByText("Vorstand anonym kontaktieren", { exact: true });
 
   await summary.click();
   await expect(disclosure).toHaveAttribute("open", "");
