@@ -7,8 +7,8 @@ import CTASection from "@/components/CTASection.astro";
 import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 import kindergartenImage from "@/assets/images/editorial/kindergarten.webp";
+import kindergartenHolzbauwerkImage from "@/assets/images/editorial/kindergarten-holzbauwerk.webp";
 import natureImage from "@/assets/images/editorial/nature.webp";
-import playgroundImage from "@/assets/images/editorial/playground.webp";
 
 const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 ---
@@ -25,7 +25,7 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 
   <ImageSplit
     image={kindergartenImage}
-    alt="Ein Kindergartenkind arbeitet konzentriert am Tisch"
+    alt="Kindergartenkinder betrachten gemeinsam Obst und Gemüse"
     compact
     position="center 38%"
   >
@@ -80,7 +80,7 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 
   <ImageSplit
     image={natureImage}
-    alt="Kindergartenkinder wandern gemeinsam durch eine Wiese"
+    alt="Kindergartenkinder erkunden gemeinsam einen Bach mit Keschern"
     reverse
     position="center 46%"
   >
@@ -97,9 +97,10 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
     <div class="container grid-2 kindergarten-schedule">
       <div class="image-frame image-frame--landscape kindergarten-schedule__image">
         <img
-          src={playgroundImage.src}
-          alt="Außenbereich des Montessori-Kindergartens"
+          src={kindergartenHolzbauwerkImage.src}
+          alt="Ein Kindergartenkind hält stolz ein selbst gebautes Holzbauwerk hoch"
           loading="lazy"
+          style="object-position: center 30%"
         />
       </div>
       <div>
