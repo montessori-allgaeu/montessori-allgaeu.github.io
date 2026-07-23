@@ -30,7 +30,7 @@ Termine werden nach Datum sortiert. Bei einem neuen Termin bleibt das Datum bewu
 
 ### Stellenangebote
 
-Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Einleitung, Hintergrund, Aufgaben, Profil, konkrete Vorteile und die Einladung zur Bewerbung werden je Stelle aus der verbindlichen Anzeige übernommen. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
+Der Dateiname eines neuen Stellenangebots bildet die dauerhafte URL. Die Stellenbezeichnung darf danach geändert werden, die URL bleibt stabil. Bereich, Beschäftigungsumfang und optionaler Start werden getrennt gepflegt. Einleitung, Hintergrund, Aufgaben, Profil, konkrete Vorteile und die Einladung zur Bewerbung werden je Stelle aus der verbindlichen Anzeige übernommen. Die Listenpunkte unter **Aufgaben**, **Profil** und **Das erwartet dich bei uns** werden einheitlich ohne abschließenden Punkt geschrieben. Über **Position in der Stellenliste** wird die Darstellung gesteuert; `10` steht weiter oben als `20`.
 
 ### Nachmittagsangebote
 

@@ -146,18 +146,21 @@ content:
         label: Aufgaben
         type: string
         required: true
+        description: Listenpunkte ohne abschließenden Punkt schreiben.
         list:
           min: 1
       - name: profile
         label: Profil
         type: string
         required: true
+        description: Listenpunkte ohne abschließenden Punkt schreiben.
         list:
           min: 1
       - name: benefits
         label: Das erwartet dich bei uns
         type: string
         required: true
+        description: Listenpunkte ohne abschließenden Punkt schreiben.
         list:
           min: 1
       - name: closingTitle
