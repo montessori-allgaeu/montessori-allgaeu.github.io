@@ -240,7 +240,7 @@ Nicht gezielt angesprochen werden Menschen, die hauptsächlich einen Ausweg aus 
 - warmes, direktes und lernendes Team
 - Teamgröße von mehr als 30 Menschen
 - bezahltes Montessori-Diplom
-- Fortbildungen und Onboarding
+- Begleitung beim Einstieg und Fortbildungen
 - kleinere Lerngruppen und mehr pädagogische Präsenz
 - Hospitationen und unverbindliche Kennenlerngespräche
 
