@@ -1,8 +1,12 @@
 ---
-import { ArrowLeft, Check } from "@lucide/astro";
+import { Check } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings, type Job } from "@/data/content";
+import { formatGermanLongDate } from "@/data/content-utils";
+import { createJobPosting } from "@/data/job-posting";
+import { createJobSeo } from "@/data/job-seo";
+import { getSeoLayoutProps } from "@/data/seo";
 
 export async function getStaticPaths() {
   const jobs = await getJobs();
@@ -16,19 +20,23 @@ interface Props {
 const { job } = Astro.props;
 const { contact } = await getWebsiteSettings();
 const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
+const jobPosting = createJobPosting(job, contact.address);
+const jobSeo = createJobSeo(job);
 ---
 
-<BaseLayout title={job.title} description={`${job.title} bei Montessori Allgäu: ${job.intro}`}>
+<BaseLayout {...getSeoLayoutProps(jobSeo)} additionalStructuredData={[jobPosting]}>
   <section class="job-hero">
     <div class="container">
-      <a class="text-link job-back" href="/arbeiten-bei-uns/stellen/"
-        ><ArrowLeft size={16} aria-hidden="true" />Alle Stellen</a
-      >
       <p class="eyebrow">{job.areaLabel}</p>
       <h1>{job.title}</h1>
       <div class="job-hero__meta">
         <p class="lead">{job.intro}</p>
-        <span>{job.scheduleLabel}</span>
+        <div class="job-hero__facts">
+          <span>{job.scheduleLabel}</span>
+          <time datetime={job.datePosted}
+            >Veröffentlicht am {formatGermanLongDate(job.datePosted)}</time
+          >
+        </div>
       </div>
     </div>
   </section>
@@ -105,10 +113,6 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     border-bottom: 1px solid var(--color-line);
   }
 
-  .job-back {
-    margin-bottom: clamp(4rem, 8vw, 7rem);
-  }
-
   .job-hero h1 {
     max-width: 64rem;
     overflow-wrap: anywhere;
@@ -122,9 +126,16 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     align-items: end;
   }
 
-  .job-hero__meta span {
+  .job-hero__facts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-end;
     color: var(--color-muted);
     font-size: 0.875rem;
+  }
+
+  .job-hero__facts span {
     font-weight: 600;
   }
 
@@ -160,6 +171,10 @@ const mailSubject = encodeURIComponent(`Bewerbung: ${job.title}`);
     .job-hero__meta {
       grid-template-columns: 1fr;
       gap: 1rem;
+    }
+
+    .job-hero__facts {
+      align-items: flex-start;
     }
   }
 </style>

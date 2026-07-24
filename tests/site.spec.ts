@@ -626,15 +626,18 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
     "content",
     "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
   );
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
-    "content",
-    "https://montessori-allgaeu.de/social-card-montessori-allgaeu.jpg",
+  const socialImage = await page.locator('meta[property="og:image"]').getAttribute("content");
+  expect(socialImage).toMatch(
+    /^https:\/\/montessori-allgaeu\.de\/social\/startseite-[a-f0-9]{10}\.jpg$/,
   );
+  const socialImageResponse = await page.request.get(new URL(socialImage!).pathname);
+  expect(socialImageResponse.ok()).toBe(true);
+  expect(socialImageResponse.headers()["content-type"]).toBe("image/jpeg");
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute(
     "content",
-    "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette. Daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
+    "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial. Social Card mit der Überschrift „Dem eigenen inneren Kompass vertrauen.“.",
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     "content",
@@ -647,6 +650,178 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   expect(
     structuredData["@graph"].map((item: { "@type": string | string[] }) => item["@type"]),
   ).toEqual(expect.arrayContaining([["School", "Preschool"], "WebSite", "ImageObject", "WebPage"]));
+  const primaryImage = structuredData["@graph"].find(
+    (item: { "@type": string }) => item["@type"] === "ImageObject",
+  );
+  expect(primaryImage.contentUrl).toMatch(
+    /^https:\/\/montessori-allgaeu\.de\/_astro\/home-hero-focus\.[A-Za-z0-9_-]+\.webp$/,
+  );
+  expect(primaryImage.contentUrl).not.toBe(socialImage);
+  expect(primaryImage).toMatchObject({
+    width: 1448,
+    height: 1086,
+    caption: "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial",
+  });
+  await expect(page.getByRole("navigation", { name: "Brotkrümelnavigation" })).toHaveCount(0);
+});
+
+test("important pages expose distinct search titles and generated social cards", async ({
+  page,
+}) => {
+  const pages = [
+    ["/kindergarten-schule/schule/", "Montessori-Schule Oberstaufen · Klasse 1–10"],
+    ["/kennenlernen/kosten/", "Kosten für Montessori-Schule & Kindergarten"],
+    ["/arbeiten-bei-uns/stellen/", "Stellenangebote in Schule & Kindergarten"],
+  ] as const;
+
+  for (const [path, title] of pages) {
+    await page.goto(path);
+    await expect(page).toHaveTitle(`${title} | Montessori Allgäu`);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      "content",
+      /^https:\/\/montessori-allgaeu\.de\/social\/.+-[a-f0-9]{10}\.jpg$/,
+    );
+  }
+});
+
+test("breadcrumbs expose the page hierarchy visually and as structured data", async ({ page }) => {
+  await page.goto("/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/");
+
+  const breadcrumbs = page.getByRole("navigation", { name: "Brotkrümelnavigation" });
+  const visibleBreadcrumbItems = breadcrumbs.locator("li:visible");
+  const startLink = breadcrumbs.locator('a[href="/"]');
+  const careersLink = breadcrumbs.locator('a[href="/arbeiten-bei-uns/"]');
+  const jobsLink = breadcrumbs.locator('a[href="/arbeiten-bei-uns/stellen/"]');
+  const currentPage = breadcrumbs.locator('[aria-current="page"]');
+  const isMobile = (page.viewportSize()?.width ?? 0) <= 620;
+
+  await expect(breadcrumbs.locator("li")).toHaveCount(4);
+  await expect(visibleBreadcrumbItems).toHaveCount(isMobile ? 1 : 4);
+  await expect(startLink).toHaveAttribute("href", "/");
+  await expect(careersLink).toHaveAttribute("href", "/arbeiten-bei-uns/");
+  await expect(jobsLink).toHaveAttribute("href", "/arbeiten-bei-uns/stellen/");
+  await expect(currentPage).toHaveText("Klassenlehrer:in (m/w/d) für die Sekundaria");
+  await expect(breadcrumbs.getByRole("link", { name: "Offene Stellen" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Alle Stellen", exact: true })).toHaveCount(0);
+
+  const breadcrumbBox = await breadcrumbs.boundingBox();
+  const heroBox = await page.locator(".job-hero").boundingBox();
+
+  expect(breadcrumbBox).not.toBeNull();
+  expect(heroBox).not.toBeNull();
+
+  if (isMobile) {
+    await expect(startLink).toBeHidden();
+    await expect(currentPage).toBeHidden();
+    expect(heroBox!.y).toBeGreaterThanOrEqual(breadcrumbBox!.y + breadcrumbBox!.height - 1);
+  } else {
+    await expect(startLink).toBeVisible();
+    await expect(currentPage).toBeVisible();
+    expect(Math.abs(heroBox!.y - breadcrumbBox!.y)).toBeLessThanOrEqual(1);
+  }
+
+  const structuredData = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+  );
+  const breadcrumbData = structuredData["@graph"].find(
+    (item: { "@type": string }) => item["@type"] === "BreadcrumbList",
+  );
+
+  expect(breadcrumbData.itemListElement).toEqual([
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Startseite",
+      item: "https://montessori-allgaeu.de/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Arbeiten bei uns",
+      item: "https://montessori-allgaeu.de/arbeiten-bei-uns/",
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: "Offene Stellen",
+      item: "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/",
+    },
+    {
+      "@type": "ListItem",
+      position: 4,
+      name: "Klassenlehrer:in (m/w/d) für die Sekundaria",
+      item: "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/",
+    },
+  ]);
+});
+
+test("all job details expose complete JobPosting structured data", async ({ page }) => {
+  const jobs = [
+    ["bundesfreiwilligendienst", "2026-06-09", ["VOLUNTEER"]],
+    ["fachlehrkraft-musik", "2026-06-09", ["PART_TIME"]],
+    ["klassenlehrkraft-sekundaria", "2026-07-13", ["FULL_TIME", "PART_TIME"]],
+    ["paedagogische-fachkraft-kindergarten-teilzeit", "2026-06-12", ["PART_TIME"]],
+    ["paedagogische-fachkraft-kindergarten", "2026-06-12", ["FULL_TIME"]],
+  ] as const;
+
+  for (const [slug, datePosted, employmentType] of jobs) {
+    await page.goto(`/arbeiten-bei-uns/stellen/${slug}/`);
+    const formattedDate = new Intl.DateTimeFormat("de-DE", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }).format(new Date(`${datePosted}T00:00:00Z`));
+
+    await expect(page.locator(`time[datetime="${datePosted}"]`), slug).toHaveText(
+      `Veröffentlicht am ${formattedDate}`,
+    );
+
+    const structuredData = JSON.parse(
+      (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+    );
+    const jobPosting = structuredData["@graph"].find(
+      (item: { "@type": string }) => item["@type"] === "JobPosting",
+    );
+
+    expect(jobPosting, slug).toMatchObject({
+      "@type": "JobPosting",
+      url: `https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/${slug}/`,
+      datePosted,
+      employmentType,
+      directApply: true,
+      hiringOrganization: {
+        "@type": "Organization",
+        "@id": "https://montessori-allgaeu.de/#organization",
+        name: "Montessori Allgäu – Kindergarten & Schule",
+      },
+      jobLocation: {
+        "@type": "Place",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Klosterstraße 8",
+          postalCode: "87534",
+          addressLocality: "Oberstaufen",
+          addressRegion: "Bayern",
+          addressCountry: "DE",
+        },
+      },
+    });
+    expect(jobPosting.description, slug).toContain("<ul>");
+    expect(jobPosting.description, slug).toContain("Beschäftigungsumfang:");
+    expect(jobPosting, slug).not.toHaveProperty("validThrough");
+  }
+});
+
+test("breadcrumbs stay off non-indexed utility pages and legacy redirects", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/redaktion/");
+  await expect(page.getByRole("navigation", { name: "Brotkrümelnavigation" })).toHaveCount(0);
+
+  const legacyResponse = await request.get("/schule/");
+  expect(await legacyResponse.text()).not.toContain('aria-label="Brotkrümelnavigation"');
 });
 
 test("homepage copy remains readable on wide screens", async ({ page }) => {

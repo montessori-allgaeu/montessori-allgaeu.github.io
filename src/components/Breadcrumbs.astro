@@ -1,0 +1,136 @@
+---
+import { ArrowLeft } from "@lucide/astro";
+import type { BreadcrumbItem } from "@/data/breadcrumbs";
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label="Brotkrümelnavigation">
+  <div class="container">
+    <ol>
+      {
+        items.map((item, index) => {
+          const isCurrentPage = index === items.length - 1;
+          const isParentPage = index === items.length - 2;
+
+          return (
+            <li class:list={{ breadcrumbs__parent: isParentPage }}>
+              {isCurrentPage ? (
+                <span aria-current="page">{item.name}</span>
+              ) : (
+                <a href={item.href}>
+                  {isParentPage && (
+                    <span class="breadcrumbs__back-icon">
+                      <ArrowLeft size={16} stroke-width={1.8} aria-hidden="true" />
+                    </span>
+                  )}
+                  {item.name}
+                </a>
+              )}
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</nav>
+
+<style>
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0;
+    margin: 0;
+    padding: 1.1rem 0 0;
+    list-style: none;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .breadcrumbs li + li::before {
+    margin-inline: 0.65rem;
+    color: var(--color-line-strong);
+    content: "/";
+  }
+
+  .breadcrumbs a {
+    color: var(--color-muted);
+    text-decoration-color: var(--color-line-strong);
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-link);
+  }
+
+  .breadcrumbs__back-icon {
+    display: none;
+  }
+
+  .breadcrumbs [aria-current="page"] {
+    color: var(--color-ink);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 621px) {
+    :global(#main-content) {
+      position: relative;
+    }
+
+    .breadcrumbs {
+      position: absolute;
+      z-index: 1;
+      inset: 0 0 auto;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .breadcrumbs ol {
+      padding-top: 0.75rem;
+    }
+
+    .breadcrumbs li {
+      display: none;
+    }
+
+    .breadcrumbs .breadcrumbs__parent {
+      display: flex;
+      font-size: 0.8125rem;
+    }
+
+    .breadcrumbs .breadcrumbs__parent::before {
+      display: none;
+    }
+
+    .breadcrumbs__parent a {
+      display: inline-flex;
+      min-height: 2.5rem;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--color-link);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .breadcrumbs__parent a:hover {
+      color: var(--color-action-hover);
+      text-decoration: none;
+    }
+
+    .breadcrumbs__back-icon {
+      display: inline-flex;
+      color: currentColor;
+    }
+  }
+</style>

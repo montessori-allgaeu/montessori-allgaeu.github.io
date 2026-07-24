@@ -7,17 +7,14 @@ import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
-import kindergartenImage from "@/assets/images/editorial/kindergarten.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import kindergartenHolzbauwerkImage from "@/assets/images/editorial/kindergarten-holzbauwerk.webp";
 import natureImage from "@/assets/images/editorial/nature.webp";
 
 const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Montessori-Kindergarten"
-  description="Unser Montessori-Kindergarten in Oberstaufen verbindet warme, kindorientierte Begleitung mit Montessori- und Naturpädagogik sowie zwei Waldtagen pro Woche."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.kindergarten)}>
   <PageIntro
     eyebrow="Montessori-Kindergarten"
     title="Geborgen wachsen. Selbst entdecken."
@@ -25,7 +22,7 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
   />
 
   <ImageSplit
-    image={kindergartenImage}
+    image={seoPages.kindergarten.image}
     alt="Kindergartenkinder betrachten gemeinsam Obst und Gemüse"
     compact
     position="center 38%"

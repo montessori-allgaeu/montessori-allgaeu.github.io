@@ -5,14 +5,11 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
-import independentWorkImage from "@/assets/images/editorial/montessori-material-work.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import greatWorkImage from "@/assets/images/editorial/montessori-great-work.webp";
 ---
 
-<BaseLayout
-  title="Montessori"
-  description="Wie wir Montessori leben: Orientierung am Kind, selbstbestimmtes Lernen, vorbereitete Umgebung, klare Grenzen und Leistung aus eigenem Antrieb."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.montessori)}>
   <PageIntro
     eyebrow="Unser pädagogischer Ansatz"
     title="Das Kind führt. Wir bereiten den Raum."
@@ -22,7 +19,7 @@ import greatWorkImage from "@/assets/images/editorial/montessori-great-work.webp
   </PageIntro>
 
   <ImageSplit
-    image={independentWorkImage}
+    image={seoPages.montessori.image}
     alt="Zwei Kinder arbeiten selbstständig auf einem vorbereiteten Teppich mit Schriftzeichen, Bildkarten, Büchern und Pflanzen"
     position="55% 50%"
   >

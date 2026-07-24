@@ -4,10 +4,14 @@ import { join } from "node:path";
 import { formatDownloadMeta, formatGermanLongDate, formatGermanPhoneHref } from "./content-utils";
 
 type RawJob = CollectionEntry<"jobs">["data"];
+type PublishedJob = Omit<RawJob, "datePosted" | "status"> & {
+  datePosted: string;
+  status: "published";
+};
 type RawContactSettings = CollectionEntry<"contactSettings">["data"];
 type RawAfternoonOffer = CollectionEntry<"afternoonOffers">["data"];
 
-export type Job = RawJob & {
+export type Job = PublishedJob & {
   slug: string;
   areaLabel: string;
   scheduleLabel: string;
@@ -54,14 +58,28 @@ const byGermanText = (a: string, b: string) => a.localeCompare(b, "de");
 export async function getJobs(): Promise<Job[]> {
   const entries = await getCollection("jobs", ({ data }) => data.status === "published");
   return entries
-    .map(({ id, data }) => ({
-      ...data,
-      slug: id,
-      areaLabel: [data.area, data.team].filter(Boolean).join(" · "),
-      scheduleLabel: [data.scope, data.start ? `Start: ${data.start}` : undefined]
-        .filter(Boolean)
-        .join(" · "),
-    }))
+    .map(({ id, data }) => {
+      if (!data.datePosted) {
+        throw new Error(`Die veröffentlichte Stelle ${id} hat kein Veröffentlichungsdatum.`);
+      }
+
+      return {
+        ...data,
+        status: "published" as const,
+        datePosted: data.datePosted,
+        slug: id,
+        areaLabel: [data.area, data.team].filter(Boolean).join(" · "),
+        scheduleLabel: [
+          data.scope,
+          data.start ? `Start: ${data.start}` : undefined,
+          data.validThrough
+            ? `Bewerbung bis: ${formatGermanLongDate(data.validThrough)}`
+            : undefined,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      };
+    })
     .sort((a, b) => byPosition(a, b) || byGermanText(a.title, b.title));
 }
 

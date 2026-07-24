@@ -4,15 +4,13 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const jobs = await getJobs();
 const { contact } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Offene Stellen"
-  description="Aktuelle Stellenangebote bei Montessori Allgäu für Lehrkräfte, pädagogische Fachkräfte, Erzieher:innen, Fachlehrkräfte und Bundesfreiwilligendienst."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.stellen)}>
   <PageIntro
     eyebrow="Offene Stellen"
     title="Deine Arbeit soll Kinder auf ihrem eigenen Weg stärken."

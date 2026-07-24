@@ -12,6 +12,11 @@ const publicationFields = {
 };
 
 const schoolYearField = z.string().regex(/^\d{4}\/\d{2}$/, "Format: 2026/27");
+const isoDateField = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Format: 2026-07-24");
+const optionalIsoDateField = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  isoDateField.optional(),
+);
 
 const teamAssignmentFields = {
   role: z.string().min(1).optional(),
@@ -40,21 +45,49 @@ const teamAssignment = z.discriminatedUnion("group", [
 
 const jobs = defineCollection({
   loader: glob({ pattern: "**/*.yml", base: "./src/content/jobs" }),
-  schema: z.object({
-    title: z.string().min(1),
-    area: z.enum(["Kindergarten", "Schule", "Kindergarten oder Schule"]),
-    team: z.string().min(1).optional(),
-    scope: z.string().min(1),
-    start: z.string().min(1).optional(),
-    intro: z.string().min(1),
-    about: z.array(z.string().min(1)).min(1),
-    responsibilities: z.array(z.string().min(1)).min(1),
-    profile: z.array(z.string().min(1)).min(1),
-    benefits: z.array(z.string().min(1)).min(1),
-    closingTitle: z.string().min(1),
-    closingText: z.string().min(1),
-    ...publicationFields,
-  }),
+  schema: z
+    .object({
+      title: z.string().min(1),
+      area: z.enum(["Kindergarten", "Schule", "Kindergarten oder Schule"]),
+      team: z.string().min(1).optional(),
+      scope: z.string().min(1),
+      employmentType: z
+        .array(
+          z.enum([
+            "FULL_TIME",
+            "PART_TIME",
+            "CONTRACTOR",
+            "TEMPORARY",
+            "INTERN",
+            "VOLUNTEER",
+            "PER_DIEM",
+            "OTHER",
+          ]),
+        )
+        .min(1),
+      start: z.string().min(1).optional(),
+      datePosted: optionalIsoDateField,
+      validThrough: optionalIsoDateField,
+      intro: z.string().min(1),
+      about: z.array(z.string().min(1)).min(1),
+      responsibilities: z.array(z.string().min(1)).min(1),
+      profile: z.array(z.string().min(1)).min(1),
+      benefits: z.array(z.string().min(1)).min(1),
+      closingTitle: z.string().min(1),
+      closingText: z.string().min(1),
+      ...publicationFields,
+    })
+    .refine(({ datePosted, status }) => status !== "published" || Boolean(datePosted), {
+      message: "Veröffentlichte Stellen benötigen das Datum ihrer ersten Veröffentlichung.",
+      path: ["datePosted"],
+    })
+    .refine(
+      ({ datePosted, validThrough }) => !datePosted || !validThrough || validThrough >= datePosted,
+      {
+        message: "Das Bewerbungsende darf nicht vor der Veröffentlichung liegen.",
+        path: ["validThrough"],
+      },
+    ),
 });
 
 const team = defineCollection({

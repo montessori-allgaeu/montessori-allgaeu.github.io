@@ -128,10 +128,50 @@ content:
         type: string
         required: true
         description: Zum Beispiel „Vollzeit oder Teilzeit“, „Teilzeit“ oder „Umfang nach Vereinbarung“.
+      - name: employmentType
+        label: Beschäftigungsarten für Google
+        type: select
+        required: true
+        description: Alle passenden Beschäftigungsarten auswählen. Für einen Bundesfreiwilligendienst gilt „Freiwilligendienst oder Ehrenamt“.
+        options:
+          multiple: true
+          min: 1
+          placeholder: Beschäftigungsarten auswählen
+          values:
+            - name: FULL_TIME
+              label: Vollzeit
+            - name: PART_TIME
+              label: Teilzeit
+            - name: CONTRACTOR
+              label: Freie Mitarbeit
+            - name: TEMPORARY
+              label: Befristete Beschäftigung
+            - name: INTERN
+              label: Praktikum
+            - name: VOLUNTEER
+              label: Freiwilligendienst oder Ehrenamt
+            - name: PER_DIEM
+              label: Tagesweise Beschäftigung
+            - name: OTHER
+              label: Sonstiges
       - name: start
         label: Start
         type: string
         description: Optional, zum Beispiel „September 2026“ oder „Nach Vereinbarung“.
+      - name: datePosted
+        label: Ursprünglich veröffentlicht am
+        type: date
+        default: ""
+        description: Bei Entwürfen leer lassen. Beim ersten Veröffentlichen setzen und bei späteren Überarbeitungen nicht ändern.
+        options:
+          format: yyyy-MM-dd
+      - name: validThrough
+        label: Bewerbung möglich bis
+        type: date
+        default: ""
+        description: Nur eintragen, wenn es ein verbindliches Bewerbungsende gibt. Danach die Stelle zeitnah auf Entwurf setzen.
+        options:
+          format: yyyy-MM-dd
       - name: intro
         label: Einleitung
         type: text

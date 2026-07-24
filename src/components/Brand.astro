@@ -5,9 +5,11 @@ import officialLogo from "@/assets/brand/official/logo-montessori-allgaeu-ab-202
 interface Props {
   inverted?: boolean;
   compact?: boolean;
+  loading?: "eager" | "lazy";
 }
 
-const { inverted = false, compact = false } = Astro.props;
+const { inverted = false, compact = false, loading = "eager" } = Astro.props;
+const sizes = compact ? "192px" : inverted ? "264px" : "248px";
 ---
 
 <a
@@ -15,7 +17,16 @@ const { inverted = false, compact = false } = Astro.props;
   href="/"
   aria-label="Montessori Allgäu – Schule & Kindergarten – Startseite"
 >
-  <Image class="brand__logo" src={officialLogo} alt="" width={638} height={135} loading="eager" />
+  <Image
+    class="brand__logo"
+    src={officialLogo}
+    alt=""
+    width={638}
+    height={135}
+    widths={[320, 480, 638]}
+    {sizes}
+    {loading}
+  />
 </a>
 
 <style>

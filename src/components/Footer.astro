@@ -11,7 +11,7 @@ const { contact } = await getWebsiteSettings();
   <div class="site-footer__main">
     <div class="container site-footer__top">
       <div class="site-footer__identity">
-        <Brand inverted />
+        <Brand inverted loading="lazy" />
         <address>
           <span
             ><MapPin size={16} aria-hidden="true" />{contact.address.street}<br />{

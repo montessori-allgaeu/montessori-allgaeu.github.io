@@ -4,6 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getEvents } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const events = await getEvents();
 const dateFromIso = (date: string) => new Date(`${date}T00:00:00Z`);
@@ -23,10 +24,7 @@ const fullDate = (date: string) =>
   }).format(dateFromIso(date));
 ---
 
-<BaseLayout
-  title="Termine"
-  description="Aktuelle Termine der Montessori Allgäu: Kennenlernveranstaltungen, Infoabende, Tage der offenen Tür und Termine der Monte-Gemeinschaft."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.termine)}>
   <PageIntro
     eyebrow="Termine"
     title="Die Monte erleben."

@@ -5,7 +5,7 @@ import CoverImage from "@/components/CoverImage.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getDonationPage } from "@/data/content";
-import homeHeroImage from "@/assets/images/editorial/home-hero-focus.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import continuumImage from "@/assets/images/editorial/continuum.webp";
 import freedomImage from "@/assets/images/editorial/freedom.webp";
 import homeCommunityImage from "@/assets/images/editorial/home-community-event.webp";
@@ -14,14 +14,11 @@ import careersPresentationImage from "@/assets/images/editorial/careers-presenta
 const donations = await getDonationPage();
 ---
 
-<BaseLayout
-  title="Montessori-Kindergarten & Schule in Oberstaufen"
-  description="Montessori-Kindergarten und Schule in Oberstaufen: Kinder vom Kindergarten bis zur 10. Klasse warm, klar und an ihrem eigenen inneren Kompass orientiert begleiten."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.home)}>
   <section class="home-hero">
     <div class="home-hero__content">
       <div class="home-hero__inner">
-        <p class="eyebrow">Montessori-Kindergarten und Schule in Oberstaufen</p>
+        <p class="eyebrow">Montessori-Schule & Kindergarten in Oberstaufen</p>
         <h1>Dem eigenen inneren Kompass vertrauen.</h1>
         <p class="lead">
           Vom Kindergarten bis zur 10. Klasse begleiten wir Kinder auf ihrem eigenen Weg – mit
@@ -37,7 +34,7 @@ const donations = await getDonationPage();
     </div>
     <div class="home-hero__media">
       <CoverImage
-        image={homeHeroImage}
+        image={seoPages.home.image}
         alt="Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette"
         widths={[640, 960, 1280]}
         sizes="(max-width: 840px) 100vw, 50vw"

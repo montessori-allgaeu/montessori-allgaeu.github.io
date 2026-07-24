@@ -5,13 +5,10 @@ import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
-import arrivalImage from "@/assets/images/editorial/kennenlernen-arrival.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 ---
 
-<BaseLayout
-  title="Monte kennenlernen"
-  description="Lernt die Montessori Allgäu ehrlich kennen: unsere Haltung, den Aufnahmeprozess für Kindergarten und Schule, Kosten und die Frage, ob wir zueinander passen."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.kennenlernen)}>
   <PageIntro
     eyebrow="Monte kennenlernen"
     title="Nicht jede gute Schule passt zu jeder Familie."
@@ -52,7 +49,7 @@ import arrivalImage from "@/assets/images/editorial/kennenlernen-arrival.webp";
   </section>
 
   <ImageSplit
-    image={arrivalImage}
+    image={seoPages.kennenlernen.image}
     alt="Ein Kind balanciert auf einer Holzbank und wird von einer zugewandten erwachsenen Begleitperson unterstützt"
     reverse
     light

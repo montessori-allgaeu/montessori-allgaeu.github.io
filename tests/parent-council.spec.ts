@@ -25,7 +25,7 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
     "Carolin Zinth-Mang",
     "Kathleen Rasthofer",
     "Nicole Mehlin",
-    "Marica Brahms",
+    "Marica Brams",
     "Angela Günther",
   ]) {
     await expect(school.getByRole("heading", { name })).toBeVisible();

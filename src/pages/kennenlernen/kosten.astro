@@ -4,14 +4,12 @@ import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { costs } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Kosten & Mitarbeit"
-  description="Transparente Übersicht über Schulgeld, Kindergartenbeiträge, Elterneinlage, Vereinsbeitrag und verbindliche Elternarbeitsstunden der Montessori Allgäu."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.kosten)}>
   <PageIntro
     eyebrow="Kosten & Mitarbeit"
     title="Private Bildung, gemeinsam getragen."

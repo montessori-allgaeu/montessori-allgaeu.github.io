@@ -1242,7 +1242,10 @@ td {
 
   .team-card h3,
   .team-card h4 {
-    font-size: 1.25rem;
+    hyphens: none;
+    overflow-wrap: normal;
+    font-size: 1.15rem;
+    text-wrap: wrap;
   }
 
   .team-card p {

@@ -4,14 +4,12 @@ import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { schoolAdmission } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Aufnahme Schule"
-  description="Der Aufnahmeprozess der Montessori-Schule Allgäu: Infoabend, Absichtserklärung, Hospitation, Kennenlernen und gemeinsame Entscheidung."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.aufnahmeSchule)}>
   <PageIntro
     eyebrow="Aufnahme Schule"
     title="Aufnahme ist eine gemeinsame Entscheidung."

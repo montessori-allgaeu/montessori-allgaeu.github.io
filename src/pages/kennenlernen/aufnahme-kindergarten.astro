@@ -4,14 +4,12 @@ import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact, kindergartenAdmission } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Aufnahme Kindergarten"
-  description="Der Aufnahmeprozess für den Montessori-Kindergarten Allgäu: Kennenlernen, Aufnahmebogen, Hospitation und gemeinsame Entscheidung."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.aufnahmeKindergarten)}>
   <PageIntro
     eyebrow="Aufnahme Kindergarten"
     title="Ankommen beginnt mit Kennenlernen."

@@ -6,14 +6,11 @@ import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
-import continuumImage from "@/assets/images/editorial/continuum.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import schoolImage from "@/assets/images/editorial/school.webp";
 ---
 
-<BaseLayout
-  title="Kindergarten & Schule"
-  description="Eine Monte vom Kindergarten bis zur 10. Klasse: Montessori-Kindergarten mit Naturpädagogik und jahrgangsgemischte Schule in Oberstaufen."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.kindergartenSchule)}>
   <PageIntro
     eyebrow="Vom Kindergarten bis zur 10. Klasse"
     title="Von Anfang an verbunden."
@@ -22,7 +19,7 @@ import schoolImage from "@/assets/images/editorial/school.webp";
 
   <div class="image-frame image-frame--wide hub-image">
     <CoverImage
-      image={continuumImage}
+      image={seoPages.kindergartenSchule.image}
       alt="Kinder arbeiten gemeinsam in der Montessori-Lernumgebung"
       widths={[768, 1200, 1600]}
       sizes="100vw"

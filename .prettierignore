@@ -2,4 +2,8 @@ dist
 .astro
 .npm-cache
 node_modules
+playwright-report
+test-results
+artifacts
+tmp
 public/downloads

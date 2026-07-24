@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const faqs = [
   {
@@ -67,10 +68,7 @@ const faqs = [
 ];
 ---
 
-<BaseLayout
-  title="Häufige Fragen"
-  description="Klare Antworten zu Montessori Allgäu: Freiheit und Grenzen, Leistung, Noten, Abschlüsse, Aufnahme, Quereinstieg, Förderbedarf und Elternmitarbeit."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.fragen)}>
   <PageIntro
     eyebrow="Häufige Fragen"
     title="Klarheit ist Teil von Vertrauen."

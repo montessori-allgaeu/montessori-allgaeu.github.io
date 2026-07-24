@@ -33,6 +33,8 @@ Wichtige Content-Pfade:
 
 - `.pages.yml`: Redaktionsoberfläche
 - `src/content.config.ts`: Validierung redaktioneller Inhalte
+- `src/data/seo.ts`: gemeinsame SEO-Helfer und Register der zentral gepflegten Seiten
+- `src/data/seo-pages/*.ts`: seitenspezifische SEO-Vorgaben, Leitbilder und Social-Card-Inhalte
 - `src/content/settings/*.yml`: Kontaktdaten, Öffnungszeiten und Kosten
 - `src/content/donations/page.yml`: Spendenseite und aktuelle Förderschwerpunkte
 - `src/content/jobs/`: Stellenangebote
@@ -43,6 +45,17 @@ Wichtige Content-Pfade:
 - `public/downloads/`: veröffentlichte Dokumente
 - `src/data/site.ts`: Navigation und Prinzipien
 - `src/data/legacy.ts`: alte Weiterleitungen
+
+Leitbilder wichtiger SEO-Seiten werden in der jeweils passenden Datei unter `src/data/seo-pages/`
+gepflegt und in `src/data/seo.ts` typisiert zusammengeführt. Ein Bildwechsel erfolgt dort über den
+statischen Bildimport und `imageFile`; Seitenansicht, strukturierte Daten, Social Card und
+seitenspezifisches Sitemap-Änderungsdatum bleiben dadurch gekoppelt. Der aus Bild, Bildausschnitt,
+Kartentext und Template-Version berechnete Social-Card-Dateiname ändert sich automatisch und
+verhindert veraltete Vorschaubilder in Social-Media-Caches. Bei Änderungen am Template, Logo oder an
+den eingebetteten Schriften die Template-Version in `src/data/seo.ts` erhöhen. Leitbilder deshalb
+nicht zusätzlich direkt in der betroffenen Seite importieren. Die SEO-Felder der redaktionell
+gepflegten Spendenseite bleiben in `src/content/donations/page.yml`; ihr Social-Card-Leitbild kommt
+weiterhin aus `src/data/seo-pages/spenden.ts`.
 
 ## Design
 

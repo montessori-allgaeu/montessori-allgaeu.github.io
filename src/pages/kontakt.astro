@@ -4,6 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact, openingHours } = await getWebsiteSettings();
 const mapQuery = encodeURIComponent(
@@ -11,10 +12,7 @@ const mapQuery = encodeURIComponent(
 );
 ---
 
-<BaseLayout
-  title="Kontakt"
-  description="Kontakt zu Montessori-Schule und Kindergarten Allgäu in Oberstaufen/Kalzhofen: E-Mail, Telefon, Anschrift, Büro- und Öffnungszeiten."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.kontakt)}>
   <PageIntro
     eyebrow="Kontakt"
     title="Wir freuen uns, von euch zu hören."

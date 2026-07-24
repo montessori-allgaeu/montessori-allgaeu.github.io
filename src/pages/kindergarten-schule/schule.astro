@@ -8,7 +8,7 @@ import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import VimeoEmbed from "@/components/VimeoEmbed.astro";
 import { getWebsiteSettings } from "@/data/content";
-import thousandChainImage from "@/assets/images/editorial/school-thousand-chain.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import classImage from "@/assets/images/editorial/class.webp";
 import roomImage from "@/assets/images/editorial/room.webp";
 import erdkinderplanPoster from "@/assets/images/editorial/erdkinderplan-bauwagen.jpg";
@@ -16,10 +16,7 @@ import erdkinderplanPoster from "@/assets/images/editorial/erdkinderplan-bauwage
 const { openingHours } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Montessori-Schule"
-  description="Unsere Montessori-Schule in Oberstaufen begleitet Kinder und Jugendliche jahrgangsgemischt von Klasse 1 bis 10 – selbstbestimmt, anspruchsvoll und in klaren Grenzen."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.schule)}>
   <PageIntro
     eyebrow="Montessori-Schule · Klasse 1–10"
     title="Den eigenen Weg finden – und ihn wirklich gehen."
@@ -27,7 +24,7 @@ const { openingHours } = await getWebsiteSettings();
   />
 
   <ImageSplit
-    image={thousandChainImage}
+    image={seoPages.schule.image}
     alt="Zwei Schüler arbeiten gemeinsam mit der Tausenderkette"
     position="center 48%"
   >

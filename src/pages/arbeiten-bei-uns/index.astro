@@ -6,17 +6,14 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
-import careersPresentationImage from "@/assets/images/editorial/careers-presentation.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import communityImage from "@/assets/images/editorial/community.webp";
 
 const jobs = await getJobs();
 const { contact } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Arbeiten bei uns"
-  description="Arbeiten in der Montessori Allgäu: echte Montessori-Pädagogik, Freiheit innerhalb klarer Prinzipien, ein warmes lernendes Team und aktuelle Stellenangebote."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.arbeiten)}>
   <PageIntro
     eyebrow="Arbeiten bei uns"
     title="Pädagogik, hinter der du stehen kannst."
@@ -26,7 +23,7 @@ const { contact } = await getWebsiteSettings();
   </PageIntro>
 
   <ImageSplit
-    image={careersPresentationImage}
+    image={seoPages.arbeiten.image}
     alt="Eine Pädagogin begleitet eine kosmische Erzählung mit Vulkanmodell, während Kinder aufmerksam zuschauen"
     position="30% 50%"
   >

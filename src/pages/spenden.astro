@@ -5,21 +5,26 @@ import PageIntro from "@/components/PageIntro.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getDonationPage, getWebsiteSettings } from "@/data/content";
-import materialWorkImage from "@/assets/images/editorial/donations-material-work.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const [donations, { contact }] = await Promise.all([getDonationPage(), getWebsiteSettings()]);
 const companyMailto = `mailto:${contact.email}?subject=${encodeURIComponent(donations.company.emailSubject)}`;
 const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(donations.receipt.emailSubject)}`;
+const donationSeo = {
+  ...seoPages.spenden,
+  title: donations.seo.title,
+  description: donations.seo.description,
+};
 ---
 
-<BaseLayout title={donations.seo.title} description={donations.seo.description}>
+<BaseLayout {...getSeoLayoutProps(donationSeo)}>
   <PageIntro
     eyebrow={donations.hero.eyebrow}
     title={donations.hero.title}
     intro={donations.hero.intro}
   />
 
-  <ImageSplit image={materialWorkImage} alt={donations.impact.imageAlt} position="center 48%">
+  <ImageSplit image={seoPages.spenden.image} alt={donations.impact.imageAlt} position="center 48%">
     <p class="eyebrow">{donations.impact.eyebrow}</p>
     <h2>{donations.impact.title}</h2>
     {donations.impact.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
@@ -149,7 +154,7 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
   }
 
   .support-option dt {
-    color: var(--color-muted);
+    color: var(--color-forest-soft);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -165,7 +170,7 @@ const receiptMailto = `mailto:${contact.email}?subject=${encodeURIComponent(dona
 
   .support-note {
     margin-top: 1.5rem;
-    color: var(--color-muted);
+    color: var(--color-forest-soft);
     font-size: 0.9rem;
   }
 

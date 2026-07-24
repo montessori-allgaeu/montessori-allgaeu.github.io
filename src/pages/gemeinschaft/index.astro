@@ -4,13 +4,10 @@ import PageIntro from "@/components/PageIntro.astro";
 import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
-import governanceImage from "@/assets/images/editorial/governance.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 ---
 
-<BaseLayout
-  title="Gemeinschaft"
-  description="Die Monte-Gemeinschaft: fünf tragende Säulen, verbindliche Entscheidungsprinzipien, ein engagiertes Team und ein gemeinnütziger Elternverein."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.gemeinschaft)}>
   <PageIntro
     eyebrow="Gemeinschaft"
     title="Die Monte gehört den Menschen, die sie tragen."
@@ -53,7 +50,7 @@ import governanceImage from "@/assets/images/editorial/governance.webp";
   </section>
 
   <ImageSplit
-    image={governanceImage}
+    image={seoPages.gemeinschaft.image}
     alt="Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion"
     reverse
     light

@@ -4,6 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import AnonymousBoardContact from "@/components/AnonymousBoardContact.astro";
 import { getTeam } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import landesverbandLogo from "@/assets/brand/official/logo-montessori-landesverband-bayern.svg";
 
 const board = (await getTeam())
@@ -27,10 +28,7 @@ const getInitials = (name: string) =>
     .toUpperCase();
 ---
 
-<BaseLayout
-  title="Träger & Verein"
-  description="Der gemeinnützige Monte e.V. trägt Montessori-Kindergarten und Schule Allgäu. Eltern sind Mitglieder, wählen den Vorstand und gestalten die Organisation mit."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.verein)}>
   <PageIntro
     eyebrow="Träger & Verein"
     title="Die Monte sind wir."

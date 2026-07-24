@@ -6,7 +6,7 @@ import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import AfternoonProgram from "@/components/AfternoonProgram.astro";
 import { getAfternoonProgram, getWebsiteSettings } from "@/data/content";
-import natureStudyImage from "@/assets/images/editorial/ganztag-nature-study.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import lunchImage from "@/assets/images/editorial/ganztag-lunch.webp";
 
 const [{ meals }, afternoonProgram] = await Promise.all([
@@ -15,10 +15,7 @@ const [{ meals }, afternoonProgram] = await Promise.all([
 ]);
 ---
 
-<BaseLayout
-  title="Ganztag & Verpflegung"
-  description="Offene Ganztagsschule und frisches Mittagessen an der Montessori-Schule Allgäu: ein verlässlicher Rahmen mit Zeit für Beziehung, Bewegung und Projekte."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.ganztag)}>
   <PageIntro
     eyebrow="Ganztagsschule & Verpflegung"
     title="Ein ganzer Tag darf sich auch ganz anfühlen."
@@ -26,7 +23,7 @@ const [{ meals }, afternoonProgram] = await Promise.all([
   />
 
   <ImageSplit
-    image={natureStudyImage}
+    image={seoPages.ganztag.image}
     alt="Kinder untersuchen gemeinsam einen Bach"
     position="center 46%"
   >

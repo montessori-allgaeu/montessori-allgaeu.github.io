@@ -1,7 +1,9 @@
 ---
 import "@/styles/global.css";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import { getBreadcrumbItems } from "@/data/breadcrumbs";
 import { getWebsiteSettings } from "@/data/content";
 import { site } from "@/data/site";
 
@@ -10,8 +12,14 @@ interface Props {
   description: string;
   image?: string;
   imageAlt?: string;
+  breadcrumbLabel?: string;
+  primaryImage?: string;
+  primaryImageAlt?: string;
+  primaryImageWidth?: number;
+  primaryImageHeight?: number;
   noindex?: boolean;
   canonicalPath?: string;
+  additionalStructuredData?: Record<string, unknown>[];
 }
 
 const {
@@ -19,19 +27,30 @@ const {
   description,
   image = "/social-card-montessori-allgaeu.jpg",
   imageAlt = "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette. Daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
+  breadcrumbLabel = title,
+  primaryImage = image,
+  primaryImageAlt = imageAlt,
+  primaryImageWidth = 1200,
+  primaryImageHeight = 630,
   noindex = false,
   canonicalPath,
+  additionalStructuredData = [],
 } = Astro.props;
 const { contact } = await getWebsiteSettings();
 
 const pageTitle = title === site.name ? title : `${title} | ${site.name}`;
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, site.url);
 const socialImage = new URL(image, site.url);
+const pagePrimaryImage = new URL(primaryImage, site.url);
 const logo = new URL("/favicon.png", site.url);
 const organizationId = new URL("/#organization", site.url);
 const websiteId = new URL("/#website", site.url);
 const webpageId = new URL(`${canonical.pathname}#webpage`, site.url);
-const imageId = new URL(`${socialImage.pathname}#primaryimage`, site.url);
+const imageId = new URL(`${pagePrimaryImage.pathname}#primaryimage`, site.url);
+const breadcrumbId = new URL(`${canonical.pathname}#breadcrumb`, site.url);
+const isCanonicalPage = canonical.pathname === Astro.url.pathname;
+const breadcrumbItems =
+  !noindex && isCanonicalPage ? getBreadcrumbItems(Astro.url.pathname, breadcrumbLabel) : [];
 const robots = noindex
   ? "noindex, nofollow"
   : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
@@ -75,11 +94,11 @@ const structuredData = {
     {
       "@type": "ImageObject",
       "@id": imageId,
-      url: socialImage,
-      contentUrl: socialImage,
-      width: 1200,
-      height: 630,
-      caption: imageAlt,
+      url: pagePrimaryImage,
+      contentUrl: pagePrimaryImage,
+      width: primaryImageWidth,
+      height: primaryImageHeight,
+      caption: primaryImageAlt,
     },
     {
       "@type": "WebPage",
@@ -91,7 +110,23 @@ const structuredData = {
       isPartOf: { "@id": websiteId },
       about: { "@id": organizationId },
       primaryImageOfPage: { "@id": imageId },
+      ...(breadcrumbItems.length > 0 && { breadcrumb: { "@id": breadcrumbId } }),
     },
+    ...(breadcrumbItems.length > 0
+      ? [
+          {
+            "@type": "BreadcrumbList",
+            "@id": breadcrumbId,
+            itemListElement: breadcrumbItems.map((item, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: item.name,
+              item: new URL(item.href, site.url),
+            })),
+          },
+        ]
+      : []),
+    ...additionalStructuredData,
   ],
 };
 ---
@@ -104,8 +139,9 @@ const structuredData = {
     <meta name="theme-color" content="#f5f1ec" />
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="de-DE" href={canonical} />
@@ -135,6 +171,7 @@ const structuredData = {
     <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
     <Header />
     <main id="main-content">
+      {breadcrumbItems.length > 0 && <Breadcrumbs items={breadcrumbItems} />}
       <slot />
     </main>
     <Footer />
