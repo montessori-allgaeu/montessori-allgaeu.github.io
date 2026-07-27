@@ -1,19 +1,34 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getSitemapLastModified, getSitemapSourcePaths } from "./sitemap-lastmod";
 
 describe("sitemap lastmod sources", () => {
-  it("tracks the page and editorial content used by a dynamic job route", () => {
-    const sources = getSitemapSourcePaths(
-      "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/fachlehrkraft-musik/",
-    );
+  it("tracks the page and matching editorial content used by a dynamic job route", () => {
+    const projectRoot = mkdtempSync(join(tmpdir(), "sitemap-lastmod-"));
+    const fixturePaths = [
+      "src/pages/arbeiten-bei-uns/stellen/[slug].astro",
+      "src/data/job-posting.ts",
+      "src/content/jobs/beispiel-stelle.yml",
+    ];
 
-    expect(sources).toEqual(
-      expect.arrayContaining([
-        "src/pages/arbeiten-bei-uns/stellen/[slug].astro",
-        "src/data/job-posting.ts",
-        "src/content/jobs/fachlehrkraft-musik.yml",
-      ]),
-    );
+    try {
+      for (const fixturePath of fixturePaths) {
+        const absolutePath = join(projectRoot, fixturePath);
+        mkdirSync(dirname(absolutePath), { recursive: true });
+        writeFileSync(absolutePath, "");
+      }
+
+      const sources = getSitemapSourcePaths(
+        "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/beispiel-stelle/",
+        projectRoot,
+      );
+
+      expect(sources).toEqual(expect.arrayContaining(fixturePaths));
+    } finally {
+      rmSync(projectRoot, { recursive: true, force: true });
+    }
   });
 
   it("tracks the shared breadcrumb links rendered on current pages", () => {

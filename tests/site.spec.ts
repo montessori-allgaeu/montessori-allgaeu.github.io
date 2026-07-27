@@ -379,135 +379,153 @@ test("mobile menu releases the page when switching to desktop", async ({ page })
     .not.toBe("hidden");
 });
 
-test("editorial content renders from the validated content collections", async ({ page }) => {
+test("CMS-backed pages render valid structures without fixed editorial values", async ({
+  page,
+}) => {
   await page.goto("/termine/");
-  await expect(page.getByRole("heading", { name: "Sommerfest" })).toBeVisible();
-  await expect(page.getByText("Donnerstag, 30. Juli 2026")).toBeVisible();
+  const events = page.locator(".event");
+  if ((await events.count()) === 0) {
+    await expect(page.locator(".empty-state")).toBeVisible();
+  }
+  for (const event of await events.all()) {
+    expect((await event.getByRole("heading").textContent())?.trim()).not.toBe("");
+    const date = await event.locator("time").getAttribute("datetime");
+    expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(Number.isNaN(Date.parse(`${date}T00:00:00Z`))).toBe(false);
+  }
 
   await page.goto("/gemeinschaft/team/");
-  const leadership = page.getByRole("region", { name: "Leitung", exact: true });
-  const tertia = page.getByRole("region", { name: "Tertia", exact: true });
-  await expect(leadership.getByRole("heading", { name: "Ambra Steinhage" })).toBeVisible();
-  await expect(tertia.getByRole("heading", { name: "Ambra Steinhage" })).toBeVisible();
-  await expect(leadership.getByAltText("Porträt von Ambra Steinhage")).toBeVisible();
-  await expect(tertia.getByAltText("Porträt von Ambra Steinhage")).toBeVisible();
+  for (const card of await page.locator(".team-card").all()) {
+    const name = (await card.locator("h3, h4").textContent())?.trim() ?? "";
+    expect(name).not.toBe("");
+
+    const portrait = card.locator("img");
+    if ((await portrait.count()) > 0) {
+      await portrait.scrollIntoViewIfNeeded();
+      await expect(portrait).toHaveAttribute("alt", `Porträt von ${name}`);
+      await expect
+        .poll(() => portrait.evaluate((image: HTMLImageElement) => image.naturalWidth))
+        .toBeGreaterThan(0);
+    } else {
+      await expect(card.locator(".team-card__initials")).not.toHaveText("");
+    }
+  }
 
   await page.goto("/downloads/");
-  await expect(page.getByRole("link", { name: /Infoheft Schule/ })).toHaveAttribute(
-    "href",
-    "/downloads/infoheft-schule-2025.pdf",
-  );
-  await expect(page.getByRole("link", { name: /Infoheft Schule/ })).toContainText(
-    "Stand 2025 · PDF · 187 KB",
-  );
-  await expect(page.getByRole("link", { name: /Konzeption Kindergarten/ })).toContainText(
-    "Stand November 2020 · PDF · 2,2 MB",
-  );
+  for (const download of await page.locator(".download-row").all()) {
+    const href = await download.getAttribute("href");
+    expect(href).toMatch(/^\/downloads\/[^/]+\.pdf$/i);
+    expect((await download.getByRole("heading").textContent())?.trim()).not.toBe("");
+    await expect(download.locator("p")).toContainText("PDF");
+    expect((await page.request.get(href!)).ok()).toBe(true);
+  }
 
   await page.goto("/kennenlernen/kosten/");
-  await expect(page.getByText("202,50 €")).toBeVisible();
-  await expect(page.getByText("102,50 €")).toBeVisible();
-  await expect(page.getByText("−100 €")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "50 Stunden" })).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Beitrittserklärung herunterladen" }),
-  ).toHaveAttribute("href", "/downloads/beitrittserklaerung-verein.pdf");
-  await expect(page.getByText(/Mittagessen, Ausflüge, Reisen/)).toHaveCount(0);
+  const costTables = page.locator(".cost-section table");
+  expect(await costTables.count()).toBeGreaterThan(0);
+  for (const table of await costTables.all()) {
+    const rows = table.locator("tbody tr");
+    expect(await rows.count()).toBeGreaterThan(0);
+    for (const cell of await rows.locator("td").all()) {
+      expect((await cell.textContent())?.trim()).not.toBe("");
+    }
+  }
+  for (const contribution of await page.locator(".section--light .grid-3 article").all()) {
+    expect((await contribution.getByRole("heading").textContent())?.trim()).not.toBe("");
+  }
 
   await page.goto("/kindergarten-schule/schule/");
-  await expect(
-    page.getByText(/Qualifizierender Abschluss der Mittelschule.*9\. Jahrgangsstufe/),
-  ).toBeVisible();
-  await expect(
-    page.getByText(/Mittlerer Schulabschluss an der Mittelschule.*10\. Jahrgangsstufe/),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Erfolgreicher Mittelschulabschluss / Montessori-Abschluss"),
-  ).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Schulzeiten" })).toBeVisible();
-  await expect(
-    page.getByText(/In der Regel von 7:55 bis 12:10 Uhr.*einzelnen Tagen bis 12:55 Uhr/),
-  ).toBeVisible();
-  await expect(
-    page.getByText(/Von 7:55 bis 12:55 Uhr.*verpflichtenden Nachmittag pro Woche/),
-  ).toBeVisible();
+  const schoolTimes = page.locator(".school-times li");
+  await expect(schoolTimes).toHaveCount(2);
+  for (const schoolTime of await schoolTimes.all()) {
+    expect((await schoolTime.textContent())?.trim()).not.toBe("");
+  }
 
   await page.goto("/kindergarten-schule/ganztag-verpflegung/");
-  await expect(
-    page.getByText(/Der verpflichtende Nachmittag in Sekundaria und Tertia.*regulären Schulalltag/),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Was Kinder am Nachmittag wählen können." }),
-  ).toBeVisible();
+  await expect(page.locator(".afternoon-program__intro .eyebrow")).not.toHaveText("");
+  await expect(page.locator("[data-program-groups]")).toBeVisible();
 
   await page.goto("/kontakt/");
-  await expect(page.getByText("Montag: 7:30–16:30 Uhr")).toBeVisible();
-  await expect(page.getByText("Montag, Mittwoch und Freitag:")).toBeVisible();
-  await expect(page.getByText("07:45 bis 13:00 Uhr").first()).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Schließtage" })).toHaveCount(0);
-  await expect(
-    page.getByRole("main").getByRole("link", { name: "info@montessori-allgaeu.de" }),
-  ).toBeVisible();
-  await expect(page.getByRole("main").getByRole("link", { name: "08386 939 210" })).toHaveAttribute(
-    "href",
-    "tel:+498386939210",
-  );
+  for (const panel of await page.locator(".contact-panel").all()) {
+    const email = panel.locator('a[href^="mailto:"]');
+    const phone = panel.locator('a[href^="tel:"]');
+    await expect(email).toHaveCount(1);
+    await expect(phone).toHaveCount(1);
+    const emailText = (await email.textContent())?.trim() ?? "";
+    expect(emailText).not.toBe("");
+    await expect(email).toHaveAttribute("href", `mailto:${emailText}`);
+    await expect(phone).toHaveAttribute("href", /^tel:\+\d+$/);
+  }
 
   await page.goto("/kindergarten-schule/kindergarten/");
-  await expect(page.getByRole("heading", { name: "Schließtage" })).toBeVisible();
-  await expect(page.getByText("24.12.2026 bis 06.01.2027")).toBeVisible();
-  await expect(page.getByText("02.08.2027 bis 20.08.2027")).toBeVisible();
-  await expect(page.getByText("24.12.2027 bis 07.01.2028")).toHaveCount(0);
+  const closurePeriods = page.locator(".kindergarten-closures li");
+  expect(await closurePeriods.count()).toBeGreaterThan(0);
+  for (const period of await closurePeriods.all()) {
+    expect((await period.textContent())?.trim()).not.toBe("");
+  }
 
   await page.goto("/spenden/");
-  await expect(
-    page.getByRole("heading", { name: "Gemeinsam Kindern Möglichkeiten eröffnen." }),
-  ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Montessori-Materialien" })).toBeVisible();
-  await expect(page.getByText("DE93 7335 0000 0610 6672 48")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Unterstützung besprechen" })).toHaveAttribute(
+  const donationProjects = page.locator(".donation-projects .editorial-card");
+  expect(await donationProjects.count()).toBeGreaterThan(0);
+  expect(await donationProjects.count()).toBeLessThanOrEqual(4);
+  for (const project of await donationProjects.all()) {
+    expect((await project.getByRole("heading").textContent())?.trim()).not.toBe("");
+    expect((await project.locator("p").last().textContent())?.trim()).not.toBe("");
+  }
+  for (const value of await page.locator(".support-option dd").all()) {
+    expect((await value.textContent())?.trim()).not.toBe("");
+  }
+  await expect(page.locator('.support-option--company a[href^="mailto:"]')).toHaveAttribute(
     "href",
-    "mailto:info@montessori-allgaeu.de?subject=Unterst%C3%BCtzung%20durch%20Unternehmen",
+    /^mailto:.+\?subject=.+/,
   );
 
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: "Kinder brauchen Menschen, die Wege öffnen." }),
-  ).toBeVisible();
+  const homepageSupport = page.locator(".home-support");
+  await expect(homepageSupport.getByRole("heading")).not.toHaveText("");
+  await expect(homepageSupport.locator(".lead")).not.toHaveText("");
+  await expect(homepageSupport.getByRole("link")).toHaveAttribute("href", "/spenden/");
+
+  for (const path of ["/kennenlernen/aufnahme-kindergarten/", "/kennenlernen/aufnahme-schule/"]) {
+    await page.goto(path);
+    const deadlines = page.locator("time[datetime]");
+    expect(await deadlines.count()).toBeGreaterThan(0);
+    const date = await deadlines.first().getAttribute("datetime");
+    expect(date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    for (const deadline of await deadlines.all()) {
+      await expect(deadline).toHaveAttribute("datetime", date!);
+    }
+  }
 });
 
-test("current afternoon offers reveal only the selected school area", async ({ page }) => {
+test("afternoon offers reveal only the selected school area", async ({ page }) => {
   await page.goto("/kindergarten-schule/ganztag-verpflegung/");
 
   const primaria = page.locator('[data-program-group="primaria"]');
   const secundariaAndTertia = page.locator('[data-program-group="sekundaria-tertia"]');
+  const primariaOfferCount = await primaria.locator("[data-afternoon-offer]").count();
+  const secundariaOfferCount = await secundariaAndTertia.locator("[data-afternoon-offer]").count();
 
-  await expect(primaria.locator("summary")).toContainText("Klassen 1–4 · 10 Angebote");
-  await expect(secundariaAndTertia.locator("summary")).toContainText("Klassen 5–10 · 11 Angebote");
+  await expect(primaria.locator("summary")).toContainText(`· ${primariaOfferCount} Angebote`);
+  await expect(secundariaAndTertia.locator("summary")).toContainText(
+    `· ${secundariaOfferCount} Angebote`,
+  );
   await expect(primaria).not.toHaveAttribute("open", "");
   await expect(secundariaAndTertia).not.toHaveAttribute("open", "");
 
   await primaria.locator("summary").click();
   await expect(primaria).toHaveAttribute("data-program-motion", "opening");
   await expect(primaria).toHaveAttribute("open", "");
-  await expect(primaria.locator("[data-afternoon-offer]")).toHaveCount(10);
-  await expect(primaria.getByRole("heading", { name: "Aktiv am Nachmittag" })).toBeVisible();
-  await expect(primaria.getByRole("heading", { name: "Mathe verstehen & anwenden" })).toHaveCount(
-    0,
-  );
+  await expect(primaria.locator("[data-afternoon-offer]")).toHaveCount(primariaOfferCount);
 
   await secundariaAndTertia.locator("summary").click();
   await expect(primaria).toHaveAttribute("data-program-motion", "closing");
   await expect(secundariaAndTertia).toHaveAttribute("data-program-motion", "opening");
   await expect(secundariaAndTertia).toHaveAttribute("open", "");
   await expect(primaria).not.toHaveAttribute("open", "");
-  await expect(secundariaAndTertia.locator("[data-afternoon-offer]")).toHaveCount(11);
-  await expect(
-    secundariaAndTertia.getByRole("heading", { name: "Mathe verstehen & anwenden" }),
-  ).toBeVisible();
-  await expect(
-    secundariaAndTertia.getByRole("heading", { name: "Die Monte-Werkstatt" }),
-  ).toBeVisible();
+  await expect(secundariaAndTertia.locator("[data-afternoon-offer]")).toHaveCount(
+    secundariaOfferCount,
+  );
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await secundariaAndTertia.locator("summary").click();
@@ -555,7 +573,6 @@ test("impressum mirrors the published board and its joint representation rule", 
     .locator("xpath=following-sibling::ul[1]/li")
     .allTextContents();
 
-  expect(boardNames.length).toBeGreaterThan(1);
   expect(imprintBoard.map((entry) => entry.split(",")[0].trim())).toEqual(boardNames);
   await expect(
     page.getByText(
@@ -685,7 +702,16 @@ test("important pages expose distinct search titles and generated social cards",
 });
 
 test("breadcrumbs expose the page hierarchy visually and as structured data", async ({ page }) => {
-  await page.goto("/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/");
+  await page.goto("/arbeiten-bei-uns/stellen/");
+  const firstJob = page.locator(".job-row").first();
+  const jobCount = await page.locator(".job-row").count();
+  test.skip(jobCount === 0, "No published job detail is available.");
+  const jobHref = await firstJob.getAttribute("href");
+  const jobTitle = (await firstJob.getByRole("heading").textContent())?.trim() ?? "";
+  expect(jobHref).toMatch(/^\/arbeiten-bei-uns\/stellen\/[^/]+\/$/);
+  expect(jobTitle).not.toBe("");
+
+  await page.goto(jobHref!);
 
   const breadcrumbs = page.getByRole("navigation", { name: "Brotkrümelnavigation" });
   const visibleBreadcrumbItems = breadcrumbs.locator("li:visible");
@@ -700,7 +726,7 @@ test("breadcrumbs expose the page hierarchy visually and as structured data", as
   await expect(startLink).toHaveAttribute("href", "/");
   await expect(careersLink).toHaveAttribute("href", "/arbeiten-bei-uns/");
   await expect(jobsLink).toHaveAttribute("href", "/arbeiten-bei-uns/stellen/");
-  await expect(currentPage).toHaveText("Klassenlehrer:in (m/w/d) für die Sekundaria");
+  await expect(currentPage).toHaveText(jobTitle);
   await expect(breadcrumbs.getByRole("link", { name: "Offene Stellen" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Alle Stellen", exact: true })).toHaveCount(0);
 
@@ -749,33 +775,49 @@ test("breadcrumbs expose the page hierarchy visually and as structured data", as
     {
       "@type": "ListItem",
       position: 4,
-      name: "Klassenlehrer:in (m/w/d) für die Sekundaria",
-      item: "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/",
+      name: jobTitle,
+      item: `https://montessori-allgaeu.de${jobHref}`,
     },
   ]);
 });
 
 test("all job details expose complete JobPosting structured data", async ({ page }) => {
-  const jobs = [
-    ["bundesfreiwilligendienst", "2026-06-09", ["VOLUNTEER"]],
-    ["fachlehrkraft-musik", "2026-06-09", ["PART_TIME"]],
-    ["klassenlehrkraft-sekundaria", "2026-07-13", ["FULL_TIME", "PART_TIME"]],
-    ["paedagogische-fachkraft-kindergarten-teilzeit", "2026-06-12", ["PART_TIME"]],
-    ["paedagogische-fachkraft-kindergarten", "2026-06-12", ["FULL_TIME"]],
-  ] as const;
+  await page.goto("/arbeiten-bei-uns/stellen/");
+  const jobHrefs = await page
+    .locator(".job-row")
+    .evaluateAll((links) =>
+      links
+        .map((link) => link.getAttribute("href"))
+        .filter((href): href is string => Boolean(href)),
+    );
+  test.skip(jobHrefs.length === 0, "No published job detail is available.");
 
-  for (const [slug, datePosted, employmentType] of jobs) {
-    await page.goto(`/arbeiten-bei-uns/stellen/${slug}/`);
+  const employmentTypes = new Set([
+    "FULL_TIME",
+    "PART_TIME",
+    "CONTRACTOR",
+    "TEMPORARY",
+    "INTERN",
+    "VOLUNTEER",
+    "PER_DIEM",
+    "OTHER",
+  ]);
+
+  for (const href of jobHrefs) {
+    await page.goto(href);
+    const slug = href.split("/").filter(Boolean).at(-1)!;
+    const title = (await page.getByRole("heading", { level: 1 }).textContent())?.trim() ?? "";
+    const publicationTime = page.locator(".job-hero time");
+    const datePosted = await publicationTime.getAttribute("datetime");
+    expect(datePosted, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const formattedDate = new Intl.DateTimeFormat("de-DE", {
       day: "numeric",
       month: "long",
       year: "numeric",
       timeZone: "UTC",
-    }).format(new Date(`${datePosted}T00:00:00Z`));
+    }).format(new Date(`${datePosted!}T00:00:00Z`));
 
-    await expect(page.locator(`time[datetime="${datePosted}"]`), slug).toHaveText(
-      `Veröffentlicht am ${formattedDate}`,
-    );
+    await expect(publicationTime, slug).toHaveText(`Veröffentlicht am ${formattedDate}`);
 
     const structuredData = JSON.parse(
       (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
@@ -786,10 +828,14 @@ test("all job details expose complete JobPosting structured data", async ({ page
 
     expect(jobPosting, slug).toMatchObject({
       "@type": "JobPosting",
-      url: `https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/${slug}/`,
+      url: `https://montessori-allgaeu.de${href}`,
+      title,
       datePosted,
-      employmentType,
       directApply: true,
+      identifier: {
+        "@type": "PropertyValue",
+        value: slug,
+      },
       hiringOrganization: {
         "@type": "Organization",
         "@id": "https://montessori-allgaeu.de/#organization",
@@ -799,17 +845,24 @@ test("all job details expose complete JobPosting structured data", async ({ page
         "@type": "Place",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Klosterstraße 8",
-          postalCode: "87534",
-          addressLocality: "Oberstaufen",
           addressRegion: "Bayern",
           addressCountry: "DE",
         },
       },
     });
+    expect(jobPosting.jobLocation.address.streetAddress, slug).not.toBe("");
+    expect(jobPosting.jobLocation.address.postalCode, slug).toMatch(/^\d{5}$/);
+    expect(jobPosting.jobLocation.address.addressLocality, slug).not.toBe("");
+    expect(jobPosting.employmentType, slug).not.toHaveLength(0);
+    for (const employmentType of jobPosting.employmentType) {
+      expect(employmentTypes.has(employmentType), `${slug}: ${employmentType}`).toBe(true);
+    }
     expect(jobPosting.description, slug).toContain("<ul>");
     expect(jobPosting.description, slug).toContain("Beschäftigungsumfang:");
-    expect(jobPosting, slug).not.toHaveProperty("validThrough");
+    if (jobPosting.validThrough) {
+      expect(jobPosting.validThrough, slug).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(jobPosting.validThrough >= datePosted!, slug).toBe(true);
+    }
   }
 });
 

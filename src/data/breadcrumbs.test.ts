@@ -18,17 +18,14 @@ describe("getBreadcrumbItems", () => {
 
   it("uses the page title for dynamic leaf pages", () => {
     expect(
-      getBreadcrumbItems(
-        "/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/",
-        "Klassenlehrer:in (m/w/d) für die Sekundaria",
-      ),
+      getBreadcrumbItems("/arbeiten-bei-uns/stellen/beispiel-stelle/", "Beispielstelle (m/w/d)"),
     ).toEqual([
       { href: "/", name: "Startseite" },
       { href: "/arbeiten-bei-uns/", name: "Arbeiten bei uns" },
       { href: "/arbeiten-bei-uns/stellen/", name: "Offene Stellen" },
       {
-        href: "/arbeiten-bei-uns/stellen/klassenlehrkraft-sekundaria/",
-        name: "Klassenlehrer:in (m/w/d) für die Sekundaria",
+        href: "/arbeiten-bei-uns/stellen/beispiel-stelle/",
+        name: "Beispielstelle (m/w/d)",
       },
     ]);
   });

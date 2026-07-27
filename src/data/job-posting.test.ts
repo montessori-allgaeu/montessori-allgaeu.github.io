@@ -2,27 +2,27 @@ import { describe, expect, it } from "vitest";
 import { createJobPosting } from "./job-posting";
 
 const job: Parameters<typeof createJobPosting>[0] = {
-  slug: "fachlehrkraft-musik",
-  title: "Fachlehrer:in Musik (m/w/d)",
-  datePosted: "2026-06-09",
+  slug: "beispiel-stelle",
+  title: "Beispielstelle (m/w/d)",
+  datePosted: "2030-01-15",
   validThrough: undefined,
   employmentType: ["PART_TIME"],
-  areaLabel: "Schule · Klassen 1–8",
-  scope: "Bis zu 10 Unterrichtsstunden",
-  start: "01.09.2026",
-  intro: "Musik & eigenständiges Lernen.",
-  about: ["Lernen mit <Freude>."],
-  responsibilities: ["Musikunterricht gestalten"],
-  profile: ["Freude an Musikpädagogik"],
-  benefits: ["Bezahlte Fortbildungen"],
-  closingTitle: "Bereit, dich zu bewerben?",
-  closingText: "Wir freuen uns auf dich.",
+  areaLabel: "Testbereich",
+  scope: "Testumfang",
+  start: "Nach Vereinbarung",
+  intro: "Testen & eigenständig arbeiten.",
+  about: ["Zusammenarbeit mit <Freude>."],
+  responsibilities: ["Testaufgabe gestalten"],
+  profile: ["Freude an guter Zusammenarbeit"],
+  benefits: ["Zeit für Entwicklung"],
+  closingTitle: "Interesse an der Beispielstelle?",
+  closingText: "Wir freuen uns auf deine Testbewerbung.",
 };
 
 const address = {
-  street: "Klosterstraße 8",
-  postalCode: "87534",
-  locality: "Oberstaufen",
+  street: "Beispielweg 1",
+  postalCode: "12345",
+  locality: "Musterstadt",
 };
 
 describe("JobPosting structured data", () => {
@@ -31,16 +31,15 @@ describe("JobPosting structured data", () => {
 
     expect(posting).toMatchObject({
       "@type": "JobPosting",
-      "@id":
-        "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/fachlehrkraft-musik/#jobposting",
-      url: "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/fachlehrkraft-musik/",
+      "@id": "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/beispiel-stelle/#jobposting",
+      url: "https://montessori-allgaeu.de/arbeiten-bei-uns/stellen/beispiel-stelle/",
       title: job.title,
       identifier: {
         "@type": "PropertyValue",
         name: "Montessori Allgäu",
-        value: "fachlehrkraft-musik",
+        value: "beispiel-stelle",
       },
-      datePosted: "2026-06-09",
+      datePosted: "2030-01-15",
       employmentType: ["PART_TIME"],
       directApply: true,
       hiringOrganization: {
@@ -55,25 +54,25 @@ describe("JobPosting structured data", () => {
         name: "Montessori Allgäu",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Klosterstraße 8",
-          postalCode: "87534",
-          addressLocality: "Oberstaufen",
+          streetAddress: "Beispielweg 1",
+          postalCode: "12345",
+          addressLocality: "Musterstadt",
           addressRegion: "Bayern",
           addressCountry: "DE",
         },
       },
     });
     expect(posting).not.toHaveProperty("validThrough");
-    expect(posting.description).toContain("<p>Musik &amp; eigenständiges Lernen.</p>");
-    expect(posting.description).toContain("<p>Lernen mit &lt;Freude&gt;.</p>");
-    expect(posting.description).toContain("<ul><li>Musikunterricht gestalten</li></ul>");
-    expect(posting.description).toContain("Beschäftigungsumfang: Bis zu 10 Unterrichtsstunden");
+    expect(posting.description).toContain("<p>Testen &amp; eigenständig arbeiten.</p>");
+    expect(posting.description).toContain("<p>Zusammenarbeit mit &lt;Freude&gt;.</p>");
+    expect(posting.description).toContain("<ul><li>Testaufgabe gestalten</li></ul>");
+    expect(posting.description).toContain("Beschäftigungsumfang: Testumfang");
   });
 
   it("includes a known application deadline in the metadata and full description", () => {
-    const posting = createJobPosting({ ...job, validThrough: "2026-08-31" }, address);
+    const posting = createJobPosting({ ...job, validThrough: "2030-02-28" }, address);
 
-    expect(posting.validThrough).toBe("2026-08-31");
-    expect(posting.description).toContain("Bewerbung möglich bis: 31. August 2026");
+    expect(posting.validThrough).toBe("2030-02-28");
+    expect(posting.description).toContain("Bewerbung möglich bis: 28. Februar 2030");
   });
 });

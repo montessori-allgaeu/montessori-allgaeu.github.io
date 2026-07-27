@@ -11,38 +11,30 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
   const kindergarten = page.getByRole("region", { name: "Kindergarten", exact: true });
   const school = page.getByRole("region", { name: "Schule", exact: true });
 
-  await expect(kindergarten.getByRole("heading", { name: "Katharina Bentele" })).toBeVisible();
-  await expect(kindergarten.getByText("Vorsitzende", { exact: true })).toBeVisible();
-  const kindergartenPortrait = kindergarten.getByAltText("Porträt von Katharina Bentele");
-  await kindergartenPortrait.scrollIntoViewIfNeeded();
-  await expect(kindergartenPortrait).toBeVisible();
-  await expect
-    .poll(() => kindergartenPortrait.evaluate((image: HTMLImageElement) => image.naturalWidth))
-    .toBeGreaterThan(0);
+  for (const group of [kindergarten, school]) {
+    for (const card of await group.locator(".team-card").all()) {
+      const name = (await card.getByRole("heading").textContent())?.trim() ?? "";
+      expect(name).not.toBe("");
 
-  for (const name of [
-    "Veronika Rist",
-    "Carolin Zinth-Mang",
-    "Kathleen Rasthofer",
-    "Nicole Mehlin",
-    "Marica Brams",
-    "Angela Günther",
-  ]) {
-    await expect(school.getByRole("heading", { name })).toBeVisible();
-    const portrait = school.getByAltText(`Porträt von ${name}`);
-    await portrait.scrollIntoViewIfNeeded();
-    await expect(portrait).toBeVisible();
-    await expect
-      .poll(() => portrait.evaluate((image: HTMLImageElement) => image.naturalWidth))
-      .toBeGreaterThan(0);
+      const portrait = card.locator("img");
+      if ((await portrait.count()) > 0) {
+        await portrait.scrollIntoViewIfNeeded();
+        await expect(portrait).toHaveAttribute("alt", `Porträt von ${name}`);
+        await expect
+          .poll(() => portrait.evaluate((image: HTMLImageElement) => image.naturalWidth))
+          .toBeGreaterThan(0);
+      } else {
+        await expect(card.locator(".team-card__initials")).not.toHaveText("");
+      }
+    }
+
+    const emailLink = group.locator('.council-contact a[href^="mailto:"]');
+    await expect(emailLink).toHaveCount(1);
+    const email = (await emailLink.textContent())?.trim() ?? "";
+    expect(email).not.toBe("");
+    await expect(emailLink).toHaveAttribute("href", `mailto:${email}`);
   }
 
-  await expect(
-    kindergarten.getByRole("link", { name: "eb-kiga@montessori-allgaeu.de" }),
-  ).toHaveAttribute("href", "mailto:eb-kiga@montessori-allgaeu.de");
-  await expect(
-    school.getByRole("link", { name: "eb-schule@montessori-allgaeu.de" }),
-  ).toHaveAttribute("href", "mailto:eb-schule@montessori-allgaeu.de");
   await expect(
     page.getByRole("contentinfo").getByRole("link", { name: "Elternbeirat", exact: true }),
   ).toHaveAttribute("href", "/gemeinschaft/elternbeirat/");

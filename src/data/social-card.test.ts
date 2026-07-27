@@ -16,7 +16,7 @@ describe("generated social cards", () => {
   it("keeps long unbroken titles inside the text area", async () => {
     const card = await renderSocialCard({
       ...seoPages.stellen,
-      cardTitle: "Bundesfreiwilligendienst",
+      cardTitle: "Freiwilligenkoordination",
     });
     const { data, info } = await sharp(card)
       .extract({ left: 1160, top: 330, width: 40, height: 100 })
