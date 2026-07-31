@@ -701,6 +701,19 @@ test("important pages expose distinct search titles and generated social cards",
   }
 });
 
+test("principles page exposes its generated cache-busted social card", async ({ page }) => {
+  await page.goto("/gemeinschaft/prinzipien/");
+
+  await expect(page).toHaveTitle("Unsere vier Entscheidungsprinzipien | Montessori Allgäu");
+  const socialImage = await page.locator('meta[property="og:image"]').getAttribute("content");
+  expect(socialImage).toMatch(
+    /^https:\/\/montessori-allgaeu\.de\/social\/gemeinschaft-prinzipien-[a-f0-9]{10}\.jpg$/,
+  );
+  const socialImageResponse = await page.request.get(new URL(socialImage!).pathname);
+  expect(socialImageResponse.ok()).toBe(true);
+  expect(socialImageResponse.headers()["content-type"]).toBe("image/jpeg");
+});
+
 test("breadcrumbs expose the page hierarchy visually and as structured data", async ({ page }) => {
   await page.goto("/arbeiten-bei-uns/stellen/");
   const firstJob = page.locator(".job-row").first();

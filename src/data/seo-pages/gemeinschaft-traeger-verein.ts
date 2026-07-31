@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "TRÄGER & VEREIN",
   cardTitle: "Die Monte sind wir.",
   image,
-  imageFile: "governance.webp",
+  imageSourceFile: "editorial/governance.webp",
   imageAlt: "Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

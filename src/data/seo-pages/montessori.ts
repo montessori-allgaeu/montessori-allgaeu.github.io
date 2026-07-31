@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-PÄDAGOGIK",
   cardTitle: "Das Kind führt. Wir bereiten den Raum.",
   image,
-  imageFile: "montessori-material-work.webp",
+  imageSourceFile: "editorial/montessori-material-work.webp",
   imageAlt:
     "Zwei Kinder arbeiten selbstständig mit Schriftzeichen, Bildkarten, Büchern und Pflanzen",
   socialImagePosition: "attention",

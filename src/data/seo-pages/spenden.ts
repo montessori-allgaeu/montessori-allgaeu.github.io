@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "SPENDEN & UNTERSTÜTZEN",
   cardTitle: "Entwicklung braucht Menschen, die sie möglich machen.",
   image,
-  imageFile: "donations-material-work.webp",
+  imageSourceFile: "editorial/donations-material-work.webp",
   imageAlt: "Kinder arbeiten gemeinsam mit Montessori-Material",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

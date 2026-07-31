@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import { getTeam, getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact } = await getWebsiteSettings();
 const board = (await getTeam())
@@ -17,10 +18,7 @@ const board = (await getTeam())
   );
 ---
 
-<BaseLayout
-  title="Impressum"
-  description="Impressum und Anbieterkennzeichnung der Montessori Allgäu – Kindergarten und Schule in Trägerschaft des gemeinnützigen Monte e.V."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.impressum)}>
   <PageIntro
     eyebrow="Rechtliches"
     title="Impressum"

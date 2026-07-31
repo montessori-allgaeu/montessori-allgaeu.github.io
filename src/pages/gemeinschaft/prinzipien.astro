@@ -2,13 +2,11 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import { principles } from "@/data/site";
 ---
 
-<BaseLayout
-  title="Unsere Prinzipien"
-  description="Die vier Entscheidungsprinzipien der Montessori Allgäu: Montessori leben, Kind im Mittelpunkt, Konflikte annehmen und gemeinsam lernen – mit klarem Ist und Ist nicht."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.prinzipien)}>
   <PageIntro
     eyebrow="Gemeinschaft · Prinzipien"
     title="So treffen wir Entscheidungen."

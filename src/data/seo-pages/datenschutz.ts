@@ -2,13 +2,13 @@ import image from "../../assets/images/editorial/building.webp";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
-  path: "/kontakt/",
-  title: "Kontakt & Anfahrt in Oberstaufen",
+  path: "/datenschutz/",
+  title: "Datenschutz unserer Website",
   description:
-    "Kontakt zu Montessori-Schule und Kindergarten Allgäu in Kalzhofen bei Oberstaufen: E-Mail, Telefon, Anschrift sowie Büro- und Öffnungszeiten.",
-  breadcrumbLabel: "Kontakt",
-  cardEyebrow: "KONTAKT & ANFAHRT",
-  cardTitle: "Wir freuen uns, von euch zu hören.",
+    "Datenschutzhinweise der Website Montessori Allgäu zu Hosting über GitHub Pages, Formspark, Vimeo, E-Mail-Kontakt und Betroffenenrechten.",
+  breadcrumbLabel: "Datenschutz",
+  cardEyebrow: "RECHTLICHES · DATENSCHUTZ",
+  cardTitle: "Bewusst datensparsam.",
   image,
   imageSourceFile: "editorial/building.webp",
   imageAlt: "Das Gebäude der Montessori Allgäu in Kalzhofen bei Oberstaufen",

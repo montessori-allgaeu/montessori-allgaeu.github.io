@@ -48,14 +48,14 @@ Wichtige Content-Pfade:
 
 Leitbilder wichtiger SEO-Seiten werden in der jeweils passenden Datei unter `src/data/seo-pages/`
 gepflegt und in `src/data/seo.ts` typisiert zusammengeführt. Ein Bildwechsel erfolgt dort über den
-statischen Bildimport und `imageFile`; Seitenansicht, strukturierte Daten, Social Card und
+statischen Bildimport und `imageSourceFile`; Seitenansicht, strukturierte Daten, Social Card und
 seitenspezifisches Sitemap-Änderungsdatum bleiben dadurch gekoppelt. Der aus Bild, Bildausschnitt,
-Kartentext und Template-Version berechnete Social-Card-Dateiname ändert sich automatisch und
-verhindert veraltete Vorschaubilder in Social-Media-Caches. Bei Änderungen am Template, Logo oder an
-den eingebetteten Schriften die Template-Version in `src/data/seo.ts` erhöhen. Leitbilder deshalb
-nicht zusätzlich direkt in der betroffenen Seite importieren. Die SEO-Felder der redaktionell
-gepflegten Spendenseite bleiben in `src/content/donations/page.yml`; ihr Social-Card-Leitbild kommt
-weiterhin aus `src/data/seo-pages/spenden.ts`.
+Kartentext sowie den Inhalten von Renderer, Asset-Konfiguration, Logo, eingebetteten Schriften und
+Lockfile berechnete Social-Card-Dateiname ändert sich automatisch und verhindert veraltete
+Vorschaubilder in Social-Media-Caches. Eine manuelle Template-Version ist nicht erforderlich.
+Leitbilder deshalb nicht zusätzlich direkt in der betroffenen Seite importieren. Die SEO-Felder der
+redaktionell gepflegten Spendenseite bleiben in `src/content/donations/page.yml`; ihr
+Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 
 ## Design
 

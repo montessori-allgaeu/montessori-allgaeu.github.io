@@ -5,6 +5,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import { getBreadcrumbItems } from "@/data/breadcrumbs";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import { site } from "@/data/site";
 
 interface Props {
@@ -22,11 +23,12 @@ interface Props {
   additionalStructuredData?: Record<string, unknown>[];
 }
 
+const defaultSeo = getSeoLayoutProps(seoPages.home);
 const {
   title,
   description,
-  image = "/social-card-montessori-allgaeu.jpg",
-  imageAlt = "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette. Daneben steht Montessori Allgäu – Kindergarten & Schule in Oberstaufen.",
+  image = defaultSeo.image,
+  imageAlt = defaultSeo.imageAlt,
   breadcrumbLabel = title,
   primaryImage = image,
   primaryImageAlt = imageAlt,

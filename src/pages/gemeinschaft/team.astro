@@ -4,6 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getTeam } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const team = await getTeam();
 const teamGroups = [
@@ -56,10 +57,7 @@ const getInitials = (name: string) =>
     .toUpperCase();
 ---
 
-<BaseLayout
-  title="Unser Team"
-  description="Das Team der Montessori Allgäu: Leitung, Kindergarten, Primaria, Sekundaria, Tertia, Fach- und Förderteam sowie Verwaltung."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.team)}>
   <PageIntro
     eyebrow="Unser Team"
     title="Menschen, die genau hinsehen."

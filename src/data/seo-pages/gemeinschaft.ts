@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "GEMEINSCHAFT",
   cardTitle: "Die Monte gehört den Menschen, die sie tragen.",
   image,
-  imageFile: "governance.webp",
+  imageSourceFile: "editorial/governance.webp",
   imageAlt: "Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

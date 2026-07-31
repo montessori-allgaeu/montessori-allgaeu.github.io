@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-SCHULE · KLASSE 1–10",
   cardTitle: "Den eigenen Weg wirklich gehen.",
   image,
-  imageFile: "school-thousand-chain.webp",
+  imageSourceFile: "editorial/school-thousand-chain.webp",
   imageAlt: "Zwei Schüler arbeiten gemeinsam mit der Montessori-Tausenderkette",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "HÄUFIGE FRAGEN",
   cardTitle: "Klare Antworten vor der Entscheidung.",
   image,
-  imageFile: "montessori-great-work.webp",
+  imageSourceFile: "editorial/montessori-great-work.webp",
   imageAlt: "Kinder arbeiten konzentriert gemeinsam mit Montessori-Material",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

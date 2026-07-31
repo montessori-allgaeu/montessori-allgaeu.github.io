@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "EIN GEMEINSAMER BILDUNGSWEG",
   cardTitle: "Von Anfang an verbunden.",
   image,
-  imageFile: "continuum.webp",
+  imageSourceFile: "editorial/continuum.webp",
   imageAlt: "Kinder arbeiten gemeinsam in einer Montessori-Lernumgebung",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

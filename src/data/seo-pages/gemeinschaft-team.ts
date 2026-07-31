@@ -2,13 +2,13 @@ import image from "../../assets/images/editorial/careers-presentation.webp";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
-  path: "/arbeiten-bei-uns/stellen/",
-  title: "Stellenangebote in Schule & Kindergarten",
+  path: "/gemeinschaft/team/",
+  title: "Unser Team in Kindergarten und Schule",
   description:
-    "Aktuelle Stellenangebote bei Montessori Allgäu in Oberstaufen für Lehrkräfte, Erzieher:innen, pädagogische Fachkräfte und Bundesfreiwilligendienst.",
-  breadcrumbLabel: "Offene Stellen",
-  cardEyebrow: "OFFENE STELLEN · OBERSTAUFEN",
-  cardTitle: "Deine Arbeit soll Kinder stärken.",
+    "Das Team der Montessori Allgäu: Leitung, Kindergarten, Primaria, Sekundaria, Tertia, Fach- und Förderteam sowie Verwaltung.",
+  breadcrumbLabel: "Team",
+  cardEyebrow: "GEMEINSCHAFT · UNSER TEAM",
+  cardTitle: "Menschen, die genau hinsehen.",
   image,
   imageSourceFile: "editorial/careers-presentation.webp",
   imageAlt: "Eine Pädagogin erzählt mit einem Vulkanmodell, während Kinder aufmerksam zuschauen",

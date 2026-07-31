@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-KINDERGARTEN · OBERSTAUFEN",
   cardTitle: "Geborgen wachsen. Selbst entdecken.",
   image,
-  imageFile: "kindergarten.webp",
+  imageSourceFile: "editorial/kindergarten.webp",
   imageAlt: "Kindergartenkinder betrachten gemeinsam Obst und Gemüse",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

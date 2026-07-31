@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "GANZTAGSSCHULE & VERPFLEGUNG",
   cardTitle: "Ein ganzer Tag darf sich ganz anfühlen.",
   image,
-  imageFile: "ganztag-nature-study.webp",
+  imageSourceFile: "editorial/ganztag-nature-study.webp",
   imageAlt: "Kinder untersuchen gemeinsam einen Bach",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

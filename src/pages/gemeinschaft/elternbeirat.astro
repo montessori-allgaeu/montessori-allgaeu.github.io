@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import { getParentCouncil, getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const [parentCouncil, { contact }] = await Promise.all([getParentCouncil(), getWebsiteSettings()]);
 const councilGroups = ["Kindergarten", "Schule"] as const;
@@ -20,10 +21,7 @@ const getInitials = (name: string) =>
     .toUpperCase();
 ---
 
-<BaseLayout
-  title="Elternbeirat"
-  description="Der Elternbeirat der Montessori Allgäu vertritt die Anliegen der Eltern und unterstützt Kindergarten und Schule."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.elternbeirat)}>
   <PageIntro
     eyebrow="Elternbeirat"
     title="Eltern, die zuhören und mitgestalten."

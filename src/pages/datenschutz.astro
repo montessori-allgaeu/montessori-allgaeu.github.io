@@ -2,14 +2,12 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import { getWebsiteSettings } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact } = await getWebsiteSettings();
 ---
 
-<BaseLayout
-  title="Datenschutz"
-  description="Datenschutzhinweise der Website Montessori Allgäu zu Hosting über GitHub Pages, Formspark, Vimeo, E-Mail-Kontakt und Betroffenenrechten."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.datenschutz)}>
   <PageIntro
     eyebrow="Rechtliches"
     title="Datenschutz"

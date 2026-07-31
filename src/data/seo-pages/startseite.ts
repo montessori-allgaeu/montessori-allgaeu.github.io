@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "KINDERGARTEN & SCHULE · OBERSTAUFEN",
   cardTitle: "Dem eigenen inneren Kompass vertrauen.",
   image,
-  imageFile: "home-hero-focus.webp",
+  imageSourceFile: "editorial/home-hero-focus.webp",
   imageAlt: "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

@@ -65,7 +65,8 @@ auf Chromium.
 - SEO-Helfer und Seitenregister: `src/data/seo.ts`
 - Seitenspezifische SEO-Vorgaben und Leitbilder: `src/data/seo-pages/*.ts`
 - Globale SEO-Fallbacks: `src/layouts/BaseLayout.astro`
-- Fallback-Social-Share-Grafik für nicht zentral gepflegte Seiten: `public/social-card-montessori-allgaeu.jpg`
+- Alle indexierbaren Seiten haben eine eigene, versionierte Social Card. Nicht indexierte Seiten und alte Weiterleitungen verwenden die aktuelle Startseitenkarte als Fallback.
+- Bild, Ausschnitt, Kartentext, Renderer, Logo, eingebettete Schriften und Rendering-Abhängigkeiten fließen automatisch in den Social-Card-Fingerprint ein.
 
 Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Team- und Elternbeiratsmitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank und keine Analyse. Einzige Formular-Ausnahme ist der besondere Vorstandskontakt über Formspark.
 

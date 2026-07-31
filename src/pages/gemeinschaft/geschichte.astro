@@ -6,6 +6,7 @@ import CTASection from "@/components/CTASection.astro";
 import firstClassImage from "@/assets/images/history/erste-klasse-2001.webp";
 import earlyClassroomImage from "@/assets/images/history/klassenraum-anfangsjahre.webp";
 import renovationImage from "@/assets/images/history/umbau-anfangsjahre.webp";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const milestones = [
   {
@@ -46,10 +47,7 @@ const milestones = [
 ] as const;
 ---
 
-<BaseLayout
-  title="Unsere Geschichte"
-  description="Wie aus einer Elterninitiative die Monte entstand und vom Schulstart 2001 zu einer Gemeinschaft vom Kindergarten bis zur 10. Klasse wuchs."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.geschichte)}>
   <PageIntro
     eyebrow="Unsere Geschichte"
     title="Aus einer Idee wurde die Monte."

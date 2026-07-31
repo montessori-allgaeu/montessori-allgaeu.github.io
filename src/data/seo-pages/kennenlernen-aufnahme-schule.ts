@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "AUFNAHME SCHULE",
   cardTitle: "Gemeinsam den passenden Weg finden.",
   image,
-  imageFile: "school-thousand-chain.webp",
+  imageSourceFile: "editorial/school-thousand-chain.webp",
   imageAlt: "Zwei Schüler arbeiten gemeinsam mit der Montessori-Tausenderkette",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

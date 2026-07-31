@@ -1,34 +1,20 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import satori from "satori";
 import sharp from "sharp";
 import type { SeoPage } from "@/data/seo";
+import { getSocialCardAssetPaths } from "./social-card-assets";
 
 const width = 1200;
 const height = 630;
 const photoWidth = 650;
 const contentWidth = width - photoWidth;
 
-const fontPaths = {
-  unica: join(
-    process.cwd(),
-    "node_modules/@fontsource/unica-one/files/unica-one-latin-400-normal.woff",
-  ),
-  krubRegular: join(
-    process.cwd(),
-    "node_modules/@fontsource/krub/files/krub-latin-400-normal.woff",
-  ),
-  krubBold: join(process.cwd(), "node_modules/@fontsource/krub/files/krub-latin-700-normal.woff"),
-};
-const logoPath = join(
-  process.cwd(),
-  "src/assets/brand/official/logo-montessori-allgaeu-ab-2022.png",
-);
+const { fonts, logo: logoPath } = getSocialCardAssetPaths();
 
 const assetsPromise = Promise.all([
-  readFile(fontPaths.unica),
-  readFile(fontPaths.krubRegular),
-  readFile(fontPaths.krubBold),
+  readFile(fonts.unica),
+  readFile(fonts.krubRegular),
+  readFile(fonts.krubBold),
   readFile(logoPath),
 ]);
 

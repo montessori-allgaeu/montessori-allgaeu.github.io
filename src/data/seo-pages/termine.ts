@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "TERMINE · OBERSTAUFEN",
   cardTitle: "Die Monte erleben.",
   image,
-  imageFile: "home-community-event.webp",
+  imageSourceFile: "editorial/home-community-event.webp",
   imageAlt: "Kinder und Erwachsene erleben gemeinsam eine Veranstaltung der Montessori Allgäu",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

@@ -1,8 +1,33 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
+import { join, sep } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Job } from "./content";
 import { createJobSeo } from "./job-seo";
-import { getSeoLayoutProps, getSocialImageSlug, seoPages, staticSeoPages } from "./seo";
+import {
+  createSocialImageSlug,
+  getSeoLayoutProps,
+  getSocialImageSlug,
+  seoPages,
+  staticSeoPages,
+} from "./seo";
+
+function getStaticIndexablePagePaths() {
+  const pagesDirectory = join(process.cwd(), "src/pages");
+  const excludedPages = new Set(["404.astro", "redaktion.astro"]);
+  const pageFiles = readdirSync(pagesDirectory, {
+    encoding: "utf8",
+    recursive: true,
+  }) as string[];
+
+  return pageFiles
+    .map((file) => file.split(sep).join("/"))
+    .filter((file) => file.endsWith(".astro") && !file.includes("[") && !excludedPages.has(file))
+    .map((file) => {
+      const page = file.replace(/\.astro$/, "").replace(/\/index$/, "");
+      return page === "index" ? "/" : `/${page}/`;
+    })
+    .sort();
+}
 
 describe("central SEO metadata", () => {
   it("keeps titles, descriptions, paths and social cards unique", () => {
@@ -12,6 +37,10 @@ describe("central SEO metadata", () => {
       staticSeoPages.length,
     );
     expect(new Set(staticSeoPages.map(getSocialImageSlug)).size).toBe(staticSeoPages.length);
+  });
+
+  it("registers every static indexable page for its own social card", () => {
+    expect(staticSeoPages.map((page) => page.path).sort()).toEqual(getStaticIndexablePagePaths());
   });
 
   it("uses complete metadata and existing authentic source images", () => {
@@ -37,11 +66,19 @@ describe("central SEO metadata", () => {
       ...seoPages.schule,
       socialImagePosition: "north" as const,
     };
+    const changedTitlePage = {
+      ...seoPages.schule,
+      cardTitle: `${seoPages.schule.cardTitle} Neu`,
+    };
 
     expect(layout.primaryImage).toBe(seoPages.schule.image.src);
     expect(layout.image).toMatch(/^\/social\/kindergarten-schule-schule-[a-f0-9]{10}\.jpg$/);
     expect(getSocialImageSlug(changedImagePage)).not.toBe(getSocialImageSlug(seoPages.schule));
     expect(getSocialImageSlug(changedPositionPage)).not.toBe(getSocialImageSlug(seoPages.schule));
+    expect(getSocialImageSlug(changedTitlePage)).not.toBe(getSocialImageSlug(seoPages.schule));
+    expect(createSocialImageSlug(seoPages.schule, "template-a")).not.toBe(
+      createSocialImageSlug(seoPages.schule, "template-b"),
+    );
   });
 
   it("omits an optional job start cleanly from the description", () => {

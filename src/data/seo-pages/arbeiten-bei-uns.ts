@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "ARBEITEN BEI UNS · OBERSTAUFEN",
   cardTitle: "Pädagogik, die du vertreten kannst.",
   image,
-  imageFile: "careers-presentation.webp",
+  imageSourceFile: "editorial/careers-presentation.webp",
   imageAlt: "Eine Pädagogin erzählt mit einem Vulkanmodell, während Kinder aufmerksam zuschauen",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

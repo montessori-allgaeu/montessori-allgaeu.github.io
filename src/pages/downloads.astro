@@ -4,6 +4,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getDownloads } from "@/data/content";
+import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const downloads = await getDownloads();
 const sectionTitles = ["Schule", "Kindergarten", "Verein"] as const;
@@ -13,10 +14,7 @@ const sections = sectionTitles.map((title) => ({
 }));
 ---
 
-<BaseLayout
-  title="Downloads"
-  description="Infohefte, pädagogische Konzepte, Aufnahmeunterlagen, Monte-ABC und Vereinsunterlagen der Montessori Allgäu als PDF."
->
+<BaseLayout {...getSeoLayoutProps(seoPages.downloads)}>
   <PageIntro
     eyebrow="Downloads"
     title="Unterlagen zum Nachlesen."

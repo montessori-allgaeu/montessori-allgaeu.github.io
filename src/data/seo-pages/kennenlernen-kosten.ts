@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "KOSTEN & MITARBEIT",
   cardTitle: "Transparent wissen, was dazugehört.",
   image,
-  imageFile: "building.webp",
+  imageSourceFile: "editorial/building.webp",
   imageAlt: "Das Gebäude der Montessori Allgäu in Kalzhofen bei Oberstaufen",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

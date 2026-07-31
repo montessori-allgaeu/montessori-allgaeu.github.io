@@ -35,7 +35,7 @@ export function createJobSeo(job: Job): SeoPage {
     cardEyebrow: `${job.areaLabel.toUpperCase()} · STELLENANGEBOT`,
     cardTitle: seoLabel,
     image: careersImage,
-    imageFile: "careers-presentation.webp",
+    imageSourceFile: "editorial/careers-presentation.webp",
     imageAlt: "Eine Pädagogin erzählt mit einem Vulkanmodell, während Kinder aufmerksam zuschauen",
     socialImagePosition: "attention",
   });

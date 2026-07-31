@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "AUFNAHME & KENNENLERNEN",
   cardTitle: "Passt die Monte zu unserer Familie?",
   image,
-  imageFile: "kennenlernen-arrival.webp",
+  imageSourceFile: "editorial/kennenlernen-arrival.webp",
   imageAlt:
     "Ein Kind balanciert auf einer Holzbank und wird von einer zugewandten erwachsenen Begleitperson unterstützt",
   socialImagePosition: "attention",
