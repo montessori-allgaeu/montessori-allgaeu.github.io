@@ -667,6 +667,15 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   expect(
     structuredData["@graph"].map((item: { "@type": string | string[] }) => item["@type"]),
   ).toEqual(expect.arrayContaining([["School", "Preschool"], "WebSite", "ImageObject", "WebPage"]));
+  const organization = structuredData["@graph"].find(
+    (item: { "@type": string | string[] }) =>
+      Array.isArray(item["@type"]) && item["@type"].includes("School"),
+  );
+  expect(organization).toMatchObject({
+    hasMap:
+      "https://www.openstreetmap.org/search?query=Klosterstra%C3%9Fe%208%2C%2087534%20Oberstaufen",
+    sameAs: ["https://www.km.bayern.de/schule/8937", "https://www.facebook.com/MonteAllgaeu/"],
+  });
   const primaryImage = structuredData["@graph"].find(
     (item: { "@type": string }) => item["@type"] === "ImageObject",
   );
@@ -688,7 +697,7 @@ test("important pages expose distinct search titles and generated social cards",
   const pages = [
     ["/kindergarten-schule/schule/", "Montessori-Schule Oberstaufen · Klasse 1–10"],
     ["/kennenlernen/kosten/", "Kosten für Montessori-Schule & Kindergarten"],
-    ["/arbeiten-bei-uns/stellen/", "Stellenangebote in Schule & Kindergarten"],
+    ["/arbeiten-bei-uns/stellen/", "Montessori-Stellenangebote in Oberstaufen"],
   ] as const;
 
   for (const [path, title] of pages) {
@@ -699,6 +708,47 @@ test("important pages expose distinct search titles and generated social cards",
       /^https:\/\/montessori-allgaeu\.de\/social\/.+-[a-f0-9]{10}\.jpg$/,
     );
   }
+});
+
+test("local search pages expose their intended introductions and trust facts", async ({ page }) => {
+  const introductions = [
+    ["/", "Vom Montessori-Kindergarten bis zur 10. Klasse begleiten wir Kinder in Oberstaufen"],
+    [
+      "/kindergarten-schule/schule/",
+      "Unsere private Montessori-Schule in Oberstaufen begleitet Kinder und Jugendliche von Klasse 1 bis 10",
+    ],
+    [
+      "/kindergarten-schule/kindergarten/",
+      "Unser Montessori-Kindergarten in Oberstaufen verbindet feinfühlige Entwicklungsbegleitung",
+    ],
+    [
+      "/kennenlernen/kosten/",
+      "Hier zeigen wir transparent, was Montessori-Schule und Montessori-Kindergarten in Oberstaufen kosten",
+    ],
+    [
+      "/arbeiten-bei-uns/stellen/",
+      "Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen",
+    ],
+  ] as const;
+
+  for (const [path, introduction] of introductions) {
+    await page.goto(path);
+    await expect(page.locator(".lead").first()).toContainText(introduction);
+  }
+
+  await page.goto("/kindergarten-schule/");
+  const facts = page.getByRole("region", { name: "Montessori Allgäu auf einen Blick" });
+  await expect(facts).toContainText("Oberstaufen");
+  await expect(facts).toContainText("Gemeinsamer Standort in Kalzhofen");
+  await expect(facts).toContainText("Kindergarten–10");
+  await expect(facts).toContainText("Staatlich anerkannte Abschlüsse");
+  await expect(facts).toContainText("Gemeinnütziger Träger");
+
+  await page.goto("/kindergarten-schule/schule/");
+  await expect(page.getByRole("link", { name: "Bayerischen Schulverzeichnis" })).toHaveAttribute(
+    "href",
+    "https://www.km.bayern.de/schule/8937",
+  );
 });
 
 test("principles page exposes its generated cache-busted social card", async ({ page }) => {

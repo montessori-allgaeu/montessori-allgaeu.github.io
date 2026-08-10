@@ -3,7 +3,7 @@ import type { SeoPageDefinition } from "../seo";
 
 export default {
   path: "/arbeiten-bei-uns/stellen/",
-  title: "Stellenangebote in Schule & Kindergarten",
+  title: "Montessori-Stellenangebote in Oberstaufen",
   description:
     "Aktuelle Stellenangebote bei Montessori Allgäu in Oberstaufen für Lehrkräfte, Erzieher:innen, pädagogische Fachkräfte und Bundesfreiwilligendienst.",
   breadcrumbLabel: "Offene Stellen",

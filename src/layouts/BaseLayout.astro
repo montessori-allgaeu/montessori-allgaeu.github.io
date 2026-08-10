@@ -6,7 +6,7 @@ import Footer from "@/components/Footer.astro";
 import { getBreadcrumbItems } from "@/data/breadcrumbs";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import { site } from "@/data/site";
+import { officialProfiles, site } from "@/data/site";
 
 interface Props {
   title: string;
@@ -39,6 +39,10 @@ const {
   additionalStructuredData = [],
 } = Astro.props;
 const { contact } = await getWebsiteSettings();
+const mapQuery = encodeURIComponent(
+  `${contact.address.street}, ${contact.address.postalCode} ${contact.address.locality}`,
+);
+const mapUrl = `https://www.openstreetmap.org/search?query=${mapQuery}`;
 
 const pageTitle = title === site.name ? title : `${title} | ${site.name}`;
 const canonical = new URL(canonicalPath ?? Astro.url.pathname, site.url);
@@ -76,6 +80,8 @@ const structuredData = {
       image: { "@id": imageId },
       email: contact.email,
       telephone: contact.phoneHref,
+      hasMap: mapUrl,
+      sameAs: [officialProfiles.bavarianSchoolDirectory, officialProfiles.facebook],
       address: {
         "@type": "PostalAddress",
         streetAddress: contact.address.street,

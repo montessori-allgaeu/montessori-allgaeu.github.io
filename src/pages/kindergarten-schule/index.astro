@@ -27,24 +27,29 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     />
   </div>
 
-  <section class="section section--compact hub-stats">
+  <section
+    class="section section--compact hub-stats"
+    aria-label="Montessori Allgäu auf einen Blick"
+  >
     <div class="container stat-row">
       <div class="stat">
-        <span class="stat__value">1</span><span class="stat__label">Kindergartengruppe</span>
-      </div>
-      <div class="stat">
-        <span class="stat__value">1–10</span><span class="stat__label"
-          >Jahrgangsstufen an unserer Schule</span
+        <span class="stat__value">Oberstaufen</span><span class="stat__label"
+          >Gemeinsamer Standort in Kalzhofen</span
         >
       </div>
       <div class="stat">
-        <span class="stat__value">3</span><span class="stat__label"
-          >Lernstufen: Primaria, Sekundaria, Tertia</span
+        <span class="stat__value">Kindergarten–10</span><span class="stat__label"
+          >Ein durchgängiger Bildungsweg</span
         >
       </div>
       <div class="stat">
-        <span class="stat__value">1</span><span class="stat__label"
-          >Gemeinsame Monte-Gemeinschaft</span
+        <span class="stat__value">2</span><span class="stat__label"
+          >Staatlich anerkannte Abschlüsse: Quali und Mittlere Reife</span
+        >
+      </div>
+      <div class="stat">
+        <span class="stat__value">e.V.</span><span class="stat__label"
+          >Gemeinnütziger Träger, Mitglied im Landes- und Bundesverband</span
         >
       </div>
     </div>
@@ -122,6 +127,19 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     padding-block: clamp(3rem, 5vw, 4.5rem);
   }
 
+  .hub-stats .stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hub-stats .stat:nth-child(3) {
+    border-top: 1px solid var(--color-line);
+    border-left: 0;
+  }
+
+  .hub-stats .stat:nth-child(4) {
+    border-top: 1px solid var(--color-line);
+  }
+
   .hub-navigation {
     padding-top: 0;
   }
@@ -130,6 +148,18 @@ import schoolImage from "@/assets/images/editorial/school.webp";
     .hub-image {
       height: auto;
       aspect-ratio: 16 / 8;
+    }
+
+    .hub-stats .stat-row {
+      grid-template-columns: 1fr;
+    }
+
+    .hub-stats .stat {
+      border-left: 0;
+    }
+
+    .hub-stats .stat + .stat {
+      border-top: 1px solid var(--color-line);
     }
   }
 </style>

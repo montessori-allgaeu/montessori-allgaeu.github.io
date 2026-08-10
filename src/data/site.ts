@@ -4,6 +4,11 @@ export const site = {
   url: "https://montessori-allgaeu.de",
 } as const;
 
+export const officialProfiles = {
+  bavarianSchoolDirectory: "https://www.km.bayern.de/schule/8937",
+  facebook: "https://www.facebook.com/MonteAllgaeu/",
+} as const;
+
 export const supportLink = {
   label: "Spenden & unterstützen",
   href: "/spenden/",
