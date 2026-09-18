@@ -1,0 +1,40 @@
+---
+import type { WebsiteSettings } from "@/data/content";
+
+interface Props {
+  recipient: string;
+  email: string;
+  address: WebsiteSettings["contact"]["address"];
+}
+
+const { recipient, email, address } = Astro.props;
+---
+
+<div class="admission-address">
+  <p><strong>Ausgefüllte Unterlagen senden an:</strong></p>
+  <a href={`mailto:${email}`}>{email}</a>
+  <address>
+    Montessori Allgäu – {recipient}<br />
+    {address.street}<br />
+    {address.city}
+  </address>
+</div>
+
+<style>
+  .admission-address {
+    margin-top: 1.5rem;
+  }
+
+  .admission-address p {
+    margin-bottom: 0.5rem;
+  }
+
+  .admission-address a {
+    overflow-wrap: anywhere;
+  }
+
+  .admission-address address {
+    margin-top: 0.75rem;
+    font-style: normal;
+  }
+</style>

@@ -21,6 +21,7 @@ for (const path of keyPages) {
     await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByRole("banner")).toBeVisible();
     await expect(page.getByRole("contentinfo")).toBeVisible();
+    await expect(page.getByRole("main")).toHaveCSS("opacity", "1");
 
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);

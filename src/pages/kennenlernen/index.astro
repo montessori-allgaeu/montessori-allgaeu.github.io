@@ -5,15 +5,27 @@ import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
+import NextIntroductionEvent from "@/components/NextIntroductionEvent.astro";
+import { getEvents } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
+
+const events = await getEvents();
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.kennenlernen)}>
   <PageIntro
     eyebrow="Monte kennenlernen"
-    title="Nicht jede gute Schule passt zu jeder Familie."
-    intro="Der Aufnahmeweg ist keine Bewerbung um den besten Eindruck. Er ist ein gegenseitiges Kennenlernen: Ihr sollt klar verstehen, wie wir arbeiten – und wir wollen sehen, ob Kind, Familie und Monte gemeinsam wachsen können."
-  />
+    title="Findet heraus, ob die Monte zu euch passt."
+    intro="Wir möchten euch kennenlernen – und ihr sollt erleben, wie wir arbeiten. Gemeinsam finden wir heraus, ob euer Kind, eure Familie und die Monte gut zusammenpassen."
+    compact
+  >
+    <nav class="introduction-links" aria-label="Aufnahme und Kosten">
+      <TextLink href="/kennenlernen/aufnahme-kindergarten/" label="Aufnahme Kindergarten" />
+      <TextLink href="/kennenlernen/aufnahme-schule/" label="Aufnahme Schule" />
+      <TextLink href="/kennenlernen/kosten/" label="Kosten & Mitarbeit" />
+    </nav>
+    <NextIntroductionEvent events={events} />
+  </PageIntro>
 
   <section class="section">
     <div class="container grid-2 fit-columns">
@@ -31,18 +43,19 @@ import { getSeoLayoutProps, seoPages } from "@/data/seo";
         </ul>
       </article>
       <article>
-        <p class="eyebrow">Ergebnis vorgeben</p>
-        <h2>Wann passen wir nicht zusammen?</h2>
+        <p class="eyebrow">Gemeinsame Grundlage</p>
+        <h2>Was ihr mittragen solltet</h2>
         <ul class="editorial-list">
           <li>
-            Gute Noten, ein bestimmter Abschlusszeitpunkt oder ein vorgezeichneter Karriereweg
-            stehen über dem Tempo des Kindes.
+            Entwicklung und Tempo des Kindes haben Vorrang vor einem vorgegebenen Notenschnitt,
+            Abschlusszeitpunkt oder Karriereweg.
           </li>
-          <li>Freiheit versteht ihr als Service ohne Regeln, Mitarbeit oder Verantwortung.</li>
+          <li>Freiheit braucht klare Regeln, Mitarbeit und Verantwortung.</li>
           <li>
-            Ihr erwartet, dass Pädagog:innen ein Kind mit Druck, Belohnung oder Bestrafung steuern.
+            Wir begleiten Kinder ohne Druck, Belohnung oder Bestrafung als pädagogische
+            Steuerungsmittel.
           </li>
-          <li>Ihr möchtet Schule abgeben, statt Teil der Gemeinschaft zu werden.</li>
+          <li>Eltern gestalten die Gemeinschaft aktiv mit.</li>
         </ul>
       </article>
     </div>
@@ -108,6 +121,17 @@ import { getSeoLayoutProps, seoPages } from "@/data/seo";
 </BaseLayout>
 
 <style>
+  .introduction-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .introduction-links :global(a) {
+    min-height: 44px;
+  }
+
   .fit-columns article {
     padding-top: 2rem;
     border-top: 2px solid var(--color-action);

@@ -3,12 +3,13 @@ interface Props {
   eyebrow: string;
   title: string;
   intro: string;
+  compact?: boolean;
 }
 
-const { eyebrow, title, intro } = Astro.props;
+const { eyebrow, title, intro, compact = false } = Astro.props;
 ---
 
-<section class="page-intro">
+<section class:list={["page-intro", { "page-intro--compact": compact }]}>
   <div class="container page-intro__grid">
     <p class="eyebrow page-intro__eyebrow">{eyebrow}</p>
     <h1>{title}</h1>
@@ -18,3 +19,20 @@ const { eyebrow, title, intro } = Astro.props;
     </div>
   </div>
 </section>
+
+<style>
+  .page-intro--compact {
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+
+  @media (max-width: 840px) {
+    .page-intro--compact h1 {
+      margin-bottom: 1rem;
+      font-size: clamp(2.5rem, 10vw, 3.5rem);
+    }
+
+    .page-intro--compact .lead {
+      font-size: 1rem;
+    }
+  }
+</style>

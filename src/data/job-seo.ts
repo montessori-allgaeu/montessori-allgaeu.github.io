@@ -3,18 +3,14 @@ import type { Job } from "./content";
 import { createSeoPage, type SeoPage } from "./seo";
 
 const jobSeoTitles: Record<string, string> = {
-  bundesfreiwilligendienst: "Bundesfreiwilligendienst in Oberstaufen",
   "fachlehrkraft-musik": "Fachlehrer:in Musik in Oberstaufen",
-  "klassenlehrkraft-sekundaria": "Klassenlehrer:in Sekundaria in Oberstaufen",
   "paedagogische-fachkraft-kindergarten-teilzeit":
     "Erzieher:in im Montessori-Kindergarten · Teilzeit",
   "paedagogische-fachkraft-kindergarten": "Erzieher:in im Montessori-Kindergarten",
 };
 
 const jobSeoLabels: Record<string, string> = {
-  bundesfreiwilligendienst: "Bundesfreiwilligendienst",
   "fachlehrkraft-musik": "Fachlehrer:in Musik",
-  "klassenlehrkraft-sekundaria": "Klassenlehrer:in Sekundaria",
   "paedagogische-fachkraft-kindergarten-teilzeit":
     "Erzieher:in im Montessori-Kindergarten · Teilzeit",
   "paedagogische-fachkraft-kindergarten": "Erzieher:in im Montessori-Kindergarten",

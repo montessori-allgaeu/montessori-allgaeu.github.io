@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
+import AdmissionAddress from "@/components/AdmissionAddress.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
@@ -34,6 +35,11 @@ const { contact, kindergartenAdmission } = await getWebsiteSettings();
             > per E-Mail oder Post an den Kindergarten senden.
           </p>
         </div>
+        <AdmissionAddress
+          recipient="Kindergarten"
+          email={contact.kindergartenEmail}
+          address={contact.address}
+        />
       </div>
       <div>
         <p class="lead">
@@ -62,7 +68,8 @@ const { contact, kindergartenAdmission } = await getWebsiteSettings();
             <h3>Haltung und Monte kennenlernen</h3><p>
               Lest, wie wir Montessori und Naturpädagogik leben und weshalb wir Kindergarten und
               Schule als einen gemeinsamen Weg verstehen. Bei einem Tag der offenen Tür könnt ihr
-              die Monte zusätzlich persönlich erleben.
+              die Monte zusätzlich persönlich erleben. Alle sind willkommen, eine Anmeldung ist
+              nicht nötig.
             </p>
           </div>
         </li>

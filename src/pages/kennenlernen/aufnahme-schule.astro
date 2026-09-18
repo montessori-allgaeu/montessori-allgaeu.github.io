@@ -3,10 +3,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
+import AdmissionAddress from "@/components/AdmissionAddress.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
-const { schoolAdmission } = await getWebsiteSettings();
+const { contact, schoolAdmission } = await getWebsiteSettings();
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.aufnahmeSchule)}>
@@ -34,6 +35,7 @@ const { schoolAdmission } = await getWebsiteSettings();
             > per E-Mail oder Post an das Schulbüro senden.
           </p>
         </div>
+        <AdmissionAddress recipient="Schulbüro" email={contact.email} address={contact.address} />
       </div>
       <div>
         <p class="lead">
@@ -61,7 +63,8 @@ const { schoolAdmission } = await getWebsiteSettings();
           <div>
             <h3>Tag der offenen Tür und Infoabend</h3><p>
               Ihr lernt Montessori-Arbeit, Schulalltag, Abschlusswege, Elternrolle und unseren
-              Aufnahmeprozess kennen. Der Infoabend ist verbindlicher Teil des Wegs.
+              Aufnahmeprozess kennen. Zum Tag der offenen Tür sind alle ohne Anmeldung willkommen.
+              Der Infoabend ist verbindlicher Teil des Wegs.
             </p>
           </div>
         </li>

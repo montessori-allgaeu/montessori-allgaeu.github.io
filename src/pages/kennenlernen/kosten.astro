@@ -59,12 +59,12 @@ const { costs } = await getWebsiteSettings();
             </div>
             <p>{costs.kindergartenFees.subsidyNote}</p>
           </div>
-          <table>
+          <table class="kindergarten-fees-table" aria-label="Monatliche Kindergartenbeiträge">
             <thead>
               <tr>
-                <th>Buchungszeit</th>
-                <th>Grundbeitrag*</th>
-                <th>Effektiv mit Zuschuss*</th>
+                <th scope="col">Buchungszeit</th>
+                <th scope="col">Grundbeitrag*</th>
+                <th scope="col">Effektiv mit Zuschuss*</th>
               </tr>
             </thead>
             <tbody>
@@ -83,10 +83,24 @@ const { costs } = await getWebsiteSettings();
               }
             </tbody>
           </table>
+          <dl class="kindergarten-fees-mobile" aria-label="Monatliche Kindergartenbeiträge">
+            {
+              costs.kindergartenFees.rows.map((row) => (
+                <div>
+                  <dt>{row.label}</dt>
+                  <dd>
+                    <span>Grundbeitrag: {row.amount} monatlich</span>
+                    <span>
+                      Mit Zuschuss*: <strong>{row.effectiveAmount}</strong> monatlich
+                    </span>
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
           <p class="small muted">
-            * Die angegebenen Grundbeiträge gelten ab 1. September 2026. Bis dahin gelten die
-            Beiträge im aktuell veröffentlichten Kindergarten-Aufnahmebogen. Die effektiven Beiträge
-            sind unter Berücksichtigung des oben beschriebenen Beitragszuschusses errechnet.
+            * Die angegebenen Grundbeiträge gelten ab 1. September 2026. Die effektiven Beiträge
+            sind unter Berücksichtigung des oben beschriebenen Beitragszuschusses errechnet.{" "}
             <a href="https://www.stmas.bayern.de/kinderbetreuung/finanzierung/index.php">
               Aktuelle Informationen zum Beitragszuschuss beim Freistaat Bayern
             </a>
@@ -182,6 +196,28 @@ const { costs } = await getWebsiteSettings();
 </BaseLayout>
 
 <style>
+  .kindergarten-fees-mobile {
+    display: none;
+    margin: 0;
+  }
+
+  .kindergarten-fees-mobile > div {
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .kindergarten-fees-mobile dt {
+    margin-bottom: 0.5rem;
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .kindergarten-fees-mobile dd {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+  }
+
   .cost-section {
     padding: clamp(4rem, 8vw, 8rem) 0;
     border-top: 1px solid var(--color-line);
@@ -216,6 +252,14 @@ const { costs } = await getWebsiteSettings();
   }
 
   @media (max-width: 640px) {
+    .kindergarten-fees-table {
+      display: none;
+    }
+
+    .kindergarten-fees-mobile {
+      display: block;
+    }
+
     .kindergarten-subsidy {
       grid-template-columns: 1fr;
     }

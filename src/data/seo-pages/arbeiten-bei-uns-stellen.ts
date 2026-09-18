@@ -5,7 +5,7 @@ export default {
   path: "/arbeiten-bei-uns/stellen/",
   title: "Montessori-Stellenangebote in Oberstaufen",
   description:
-    "Aktuelle Stellenangebote bei Montessori Allgäu in Oberstaufen für Lehrkräfte, Erzieher:innen, pädagogische Fachkräfte und Bundesfreiwilligendienst.",
+    "Aktuelle Stellenangebote bei Montessori Allgäu in Oberstaufen für Lehrkräfte, Erzieher:innen und pädagogische Fachkräfte.",
   breadcrumbLabel: "Offene Stellen",
   cardEyebrow: "OFFENE STELLEN · OBERSTAUFEN",
   cardTitle: "Deine Arbeit soll Kinder stärken.",

@@ -1,0 +1,74 @@
+---
+import TextLink from "@/components/TextLink.astro";
+import type { Event } from "@/data/content";
+import { formatGermanLongDate } from "@/data/content-utils";
+
+interface Props {
+  events: Event[];
+}
+
+const { events } = Astro.props;
+---
+
+<div class="next-event" data-next-introduction-event>
+  <div data-current-event></div>
+  <TextLink href="/termine/" label="Termine ansehen" />
+  {
+    events.map((event) => (
+      <template
+        data-date={event.date}
+        data-title={event.title}
+        data-category={event.category}
+        data-status={event.status}
+      >
+        <p class="eyebrow">Nächste Gelegenheit zum Kennenlernen</p>
+        <h2>{event.title}</h2>
+        <p class="next-event__date">
+          <time datetime={event.date}>{formatGermanLongDate(event.date)}</time>
+          {" · "}
+          {event.time}
+        </p>
+        <p>{event.description}</p>
+      </template>
+    ))
+  }
+</div>
+
+<script>
+  import { getNextIntroductionEvent } from "@/data/introduction-events";
+
+  const updateNextEvents = () => {
+    for (const container of document.querySelectorAll("[data-next-introduction-event]")) {
+      const events = [...container.querySelectorAll("template")].map((template) => ({
+        title: template.dataset.title!,
+        date: template.dataset.date!,
+        category: template.dataset.category!,
+        status: template.dataset.status!,
+        template,
+      }));
+      const next = getNextIntroductionEvent(events);
+      const target = container.querySelector("[data-current-event]")!;
+      target.replaceChildren(...(next ? [next.template.content.cloneNode(true)] : []));
+    }
+  };
+
+  updateNextEvents();
+  window.addEventListener("pageshow", updateNextEvents);
+</script>
+
+<style>
+  .next-event {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .next-event h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+  }
+
+  .next-event__date {
+    font-weight: 700;
+  }
+</style>
