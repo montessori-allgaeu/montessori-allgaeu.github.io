@@ -106,6 +106,7 @@ test("both admissions show the correct submission address beside the deadline", 
       .locator("main section")
       .filter({ has: page.locator(".admission-address") });
     await expect(section.locator("time[datetime]")).toBeVisible();
+    await section.locator(".admission-address [data-email-trigger]").click();
     await expect(section.getByRole("link", { name: email, exact: true })).toHaveAttribute(
       "href",
       `mailto:${email}`,

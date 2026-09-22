@@ -1,4 +1,5 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 import type { WebsiteSettings } from "@/data/content";
 
 interface Props {
@@ -12,7 +13,7 @@ const { recipient, email, address } = Astro.props;
 
 <div class="admission-address">
   <p><strong>Ausgefüllte Unterlagen senden an:</strong></p>
-  <a href={`mailto:${email}`}>{email}</a>
+  <EmailContact href={`mailto:${email}`} />
   <address>
     Montessori Allgäu – {recipient}<br />
     {address.street}<br />

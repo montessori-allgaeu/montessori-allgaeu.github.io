@@ -1,4 +1,5 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 import { Mail, MapPin, Phone } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
@@ -26,9 +27,9 @@ const mapQuery = encodeURIComponent(
         <h2>Schulbüro</h2>
         <address>{contact.address.street}<br />{contact.address.city}</address>
         <p>
-          <a href={`mailto:${contact.email}`}
-            ><Mail size={18} aria-hidden="true" />{contact.email}</a
-          >
+          <EmailContact href={`mailto:${contact.email}`}>
+            <Mail size={18} aria-hidden="true" />
+          </EmailContact>
         </p>
         <p>
           <a href={`tel:${contact.phoneHref}`}
@@ -45,9 +46,9 @@ const mapQuery = encodeURIComponent(
         <h2>Kindergartenleitung</h2>
         <address>{contact.address.street}<br />{contact.address.city}</address>
         <p>
-          <a href={`mailto:${contact.kindergartenEmail}`}
-            ><Mail size={18} aria-hidden="true" />{contact.kindergartenEmail}</a
-          >
+          <EmailContact href={`mailto:${contact.kindergartenEmail}`}>
+            <Mail size={18} aria-hidden="true" />
+          </EmailContact>
         </p>
         <p>
           <a href={`tel:${contact.kindergartenPhoneHref}`}

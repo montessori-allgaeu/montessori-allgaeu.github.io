@@ -1,10 +1,12 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 interface Props {
   eyebrow?: string;
   title: string;
   text: string;
   primaryHref: string;
   primaryLabel: string;
+  primaryRevealLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
 }
@@ -15,6 +17,7 @@ const {
   text,
   primaryHref,
   primaryLabel,
+  primaryRevealLabel,
   secondaryHref,
   secondaryLabel,
 } = Astro.props;
@@ -29,13 +32,34 @@ const {
     <div>
       <p class="lead">{text}</p>
       <div class="button-row">
-        <a class="button button--light" href={primaryHref}>{primaryLabel}</a>
         {
-          secondaryHref && secondaryLabel && (
-            <a class="button button--outline footer-outline" href={secondaryHref}>
-              {secondaryLabel}
+          primaryHref.startsWith("mailto:") ? (
+            <EmailContact
+              class="button button--light"
+              href={primaryHref}
+              label={primaryLabel}
+              revealLabel={primaryRevealLabel}
+            />
+          ) : (
+            <a class="button button--light" href={primaryHref}>
+              {primaryLabel}
             </a>
           )
+        }
+        {
+          secondaryHref &&
+            secondaryLabel &&
+            (secondaryHref.startsWith("mailto:") ? (
+              <EmailContact
+                class="button button--outline footer-outline"
+                href={secondaryHref}
+                label={secondaryLabel}
+              />
+            ) : (
+              <a class="button button--outline footer-outline" href={secondaryHref}>
+                {secondaryLabel}
+              </a>
+            ))
         }
       </div>
     </div>

@@ -51,10 +51,10 @@ const board = (await getTeam())
         gemeinsam vertreten.
       </p>
 
-      <h3>Kontakt</h3>
+      <h3 id="kontakt">Kontakt</h3>
       <p>
         Telefon: <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a><br />
-        E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        E-Mail: <a href={`mailto:${contact.email}`} data-public-email>{contact.email}</a>
       </p>
 
       <h3>Registereintrag</h3>

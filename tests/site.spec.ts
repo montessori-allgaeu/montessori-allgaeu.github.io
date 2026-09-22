@@ -448,6 +448,7 @@ test("CMS-backed pages render valid structures without fixed editorial values", 
 
   await page.goto("/kontakt/");
   for (const panel of await page.locator(".contact-panel").all()) {
+    await panel.locator("[data-email-trigger]").click();
     const email = panel.locator('a[href^="mailto:"]');
     const phone = panel.locator('a[href^="tel:"]');
     await expect(email).toHaveCount(1);
@@ -476,6 +477,7 @@ test("CMS-backed pages render valid structures without fixed editorial values", 
   for (const value of await page.locator(".support-option dd").all()) {
     expect((await value.textContent())?.trim()).not.toBe("");
   }
+  await page.locator(".support-option--company [data-email-trigger]").click();
   await expect(page.locator('.support-option--company a[href^="mailto:"]')).toHaveAttribute(
     "href",
     /^mailto:.+\?subject=.+/,

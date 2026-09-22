@@ -22,7 +22,7 @@ const { contact } = await getWebsiteSettings();
         Bregenzer Wald (Österreich) e.V.<br />
         {contact.address.street}, {`${contact.address.postalCode} ${contact.address.locality}`}<br
         />
-        E-Mail: <a href={`mailto:${contact.email}`}>{contact.email}</a><br />
+        E-Mail: <a href={`mailto:${contact.email}`} data-public-email>{contact.email}</a><br />
         Telefon: <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a>
       </p>
 

@@ -13,10 +13,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:ci": "npm run format:check && npm run lint && npm run check && npm run test && npm run build",
+    "test:ci": "npm run format:check && npm run lint && npm run check && npm run test && npm run build && npm run check:email-exposure",
     "test:e2e": "playwright test",
-    "test:all": "npm run format:check && npm run lint && npm run check && npm run test && npm run build && npm run test:e2e",
-    "screenshot:mobile": "playwright screenshot --browser chromium --viewport-size \"390,844\""
+    "test:all": "npm run test:ci && npm run test:e2e",
+    "screenshot:mobile": "playwright screenshot --browser chromium --viewport-size \"390,844\"",
+    "check:email-exposure": "node scripts/check-email-exposure.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",

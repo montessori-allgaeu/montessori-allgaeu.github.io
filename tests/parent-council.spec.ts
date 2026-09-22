@@ -28,6 +28,7 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
       }
     }
 
+    await group.locator("[data-email-trigger]").click();
     const emailLink = group.locator('.council-contact a[href^="mailto:"]');
     await expect(emailLink).toHaveCount(1);
     const email = (await emailLink.textContent())?.trim() ?? "";
@@ -49,6 +50,7 @@ test("parent council page is complete, accessible and discoverable", async ({ pa
     await expect(
       communityGroup.getByRole("link", { name: "Elternbeirat", exact: true }),
     ).toHaveAttribute("href", "/gemeinschaft/elternbeirat/");
+    await expect(page.locator(".mobile-menu")).not.toHaveAttribute("data-mobile-menu-motion");
   } else {
     const navigation = page.getByRole("navigation", { name: "Hauptnavigation" });
     await navigation.getByRole("link", { name: "Gemeinschaft", exact: true }).hover();

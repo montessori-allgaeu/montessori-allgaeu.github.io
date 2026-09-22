@@ -1,4 +1,5 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 import { ArrowRight } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
@@ -47,11 +48,12 @@ const { contact } = await getWebsiteSettings();
           Schreib kurz, was du beitragen möchtest, welche Erfahrung du mitbringst und weshalb gerade
           diese Pädagogik für dich wichtig ist.
         </p>
-        <a
+        <EmailContact
           class="button button--outline"
           href={`mailto:${contact.careersEmail}?subject=Initiativbewerbung%20Montessori%20Allg%C3%A4u`}
-          >Initiativkontakt aufnehmen</a
-        >
+          label="Initiativkontakt aufnehmen"
+          revealLabel="Bewerbungsadresse anzeigen"
+        />
       </div>
     </div>
   </section>

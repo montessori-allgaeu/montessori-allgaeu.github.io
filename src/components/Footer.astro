@@ -1,4 +1,5 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 import { Mail, MapPin, Phone } from "@lucide/astro";
 import Brand from "./Brand.astro";
 import { getWebsiteSettings } from "@/data/content";
@@ -21,9 +22,9 @@ const { contact } = await getWebsiteSettings();
           <a href={`tel:${contact.phoneHref}`}
             ><Phone size={16} aria-hidden="true" />{contact.phone}</a
           >
-          <a href={`mailto:${contact.email}`}
-            ><Mail size={16} aria-hidden="true" />{contact.email}</a
-          >
+          <EmailContact href={`mailto:${contact.email}`}>
+            <Mail size={16} aria-hidden="true" />
+          </EmailContact>
         </address>
         <div class="site-footer__affiliation">
           <p class="site-footer__affiliation-label">Vernetzt in Bayern und Deutschland</p>
@@ -92,8 +93,8 @@ const { contact } = await getWebsiteSettings();
     line-height: 1.6;
   }
 
-  .site-footer__identity address span,
-  .site-footer__identity address a {
+  .site-footer__identity address > span:not(.email-contact),
+  .site-footer__identity address > a {
     display: grid;
     grid-template-columns: 1.2rem minmax(0, 1fr);
     gap: 0.5rem;

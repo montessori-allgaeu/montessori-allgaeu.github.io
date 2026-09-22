@@ -17,7 +17,7 @@ export default defineConfig({
       ? `python3 -m http.server ${port} --bind 127.0.0.1 --directory dist`
       : `npm run dev -- --host 127.0.0.1 --port ${port}`,
     url: `http://127.0.0.1:${port}`,
-    reuseExistingServer: true,
+    reuseExistingServer: !serveStaticBuild,
     timeout: 120000,
   },
   projects: [

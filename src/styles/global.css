@@ -728,7 +728,8 @@ strong {
   margin-bottom: 0.65rem;
 }
 
-.prose a {
+.prose a,
+.prose .email-contact .email-contact__text {
   color: var(--color-action-hover);
 }
 
@@ -1078,7 +1079,8 @@ td {
   font-style: normal;
 }
 
-.contact-panel a:not(.button) {
+.contact-panel a:not(.button),
+.contact-panel .email-contact .email-contact__text {
   color: var(--color-action-hover);
 }
 

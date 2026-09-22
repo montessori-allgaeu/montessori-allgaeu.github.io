@@ -516,6 +516,14 @@ Wichtige Pfade:
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.
 - Erste Version sollte schnell live gehen; ein neues Fotoshooting darf später folgen.
 - Die Website ist statisch mit Astro umgesetzt und wird über GitHub Pages veröffentlicht.
+- Direkte E-Mail-Kontakte bleiben der reguläre Kontaktweg. Zum Erschweren automatischer
+  Adresssammlung werden Adressen außerhalb der Rechtstextseiten erst nach einer bewussten
+  Klick- oder Tastaturaktion angezeigt; danach sind sie kopierbar und über das eigene
+  Mailprogramm erreichbar. Es entsteht kein Formularzwang und kein zusätzliches Kontingent.
+  Der zentrale Kontakt im Inhalt von Impressum und Datenschutz bleibt ohne JavaScript
+  zugänglich. PDFs und das öffentliche Repository bleiben unverändert; die Verschleierung
+  ist kein vollständiger Spamschutz. Das bestehende anonyme Vorstandsformular bleibt ein
+  gesonderter Kontaktweg.
 - Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
 - Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
 - Die Nachmittagsangebote werden als strukturierte, jahresbezogene CMS-Inhalte gepflegt. Die Website zeigt sie ruhig nach Primaria beziehungsweise Sekundaria und Tertia sowie nach Wochentagen; klassenübergreifende Angebote werden aus einem gemeinsamen Eintrag abgeleitet.

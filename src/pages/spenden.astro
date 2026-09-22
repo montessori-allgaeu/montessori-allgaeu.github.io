@@ -1,4 +1,5 @@
 ---
+import EmailContact from "@/components/EmailContact.astro";
 import { Building2, HeartHandshake } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
@@ -76,7 +77,11 @@ const donationSeo = {
         <h2>{donations.company.title}</h2>
         <p class="lead">{donations.company.text}</p>
         <p>{donations.company.detail}</p>
-        <a class="button button--outline" href={companyMailto}>{donations.company.buttonLabel}</a>
+        <EmailContact
+          class="button button--outline"
+          href={companyMailto}
+          label={donations.company.buttonLabel}
+        />
       </article>
     </div>
   </section>
@@ -90,7 +95,11 @@ const donationSeo = {
       <div>
         <p class="lead">{donations.receipt.intro}</p>
         <p>{donations.receipt.instruction}</p>
-        <a class="button button--outline" href={receiptMailto}>{donations.receipt.buttonLabel}</a>
+        <EmailContact
+          class="button button--outline"
+          href={receiptMailto}
+          label={donations.receipt.buttonLabel}
+        />
       </div>
     </div>
   </section>

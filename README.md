@@ -100,6 +100,30 @@ Betriebsroutine:
 Wenn ein neues Formspark-Formular angelegt wird, müssen Action-URL, Empfänger, deaktiviertes
 E-Mail-Threading, Honeypot, E-Mail-Vorlage, Datenschutztext und Live-Test gemeinsam geprüft werden.
 
+## Schutz veröffentlichter E-Mail-Adressen
+
+Direkte Website-Kontakte verwenden `EmailContact`. Die Komponente erhält ein vollständiges
+`mailto:`-Ziel und optional eine Aktionsbeschriftung, eine Beschriftung für die Freigabe sowie
+bestehende CSS-Klassen. Das Ziel einschließlich Betreff wird beim Build als UTF-8/Base64 kodiert.
+Erst nach einer Klick- oder Tastaturaktion wird ausschließlich dieser Kontakt angezeigt; ein
+weiterer Klick auf den normalen Mail-Link öffnet das eigene Mailprogramm. Es gibt weder einen
+zusätzlichen Dienst noch ein Nachrichtenkontingent. Ohne verfügbares Skript bleibt ein Link zum
+Kontaktabschnitt des Impressums sichtbar.
+
+Kodierung ist keine Verschlüsselung und kein Schutz gegen gezielte Decoder oder interaktive Bots.
+Die zentrale Adresse im Inhalt von Impressum und Datenschutz bleibt ohne JavaScript zugänglich
+(`data-public-email`). PDFs, das öffentliche Repository und bereits verbreitete Adressen bleiben
+weitere Fundstellen. Bereits eingehender Spam wird dadurch nicht gestoppt. Das anonyme
+Vorstandsformular und seine Spamprüfung sind davon unabhängig und bleiben unverändert.
+
+`npm run check:email-exposure` prüft den aktuellen Build in `dist` auf Klartextadressen und fertige
+Mail-Links in Textassets, einschließlich JSON-LD, Skripten und Source Maps. `test:ci` führt die
+Prüfung nach dem Build aus; damit gilt sie auch für die Deployment-Pipeline. Nur die markierten
+Kontaktlinks mit `info@montessori-allgaeu.de` auf den zwei Rechtstextseiten sind ausgenommen;
+PDFs werden nicht geprüft. Bei einer Änderung der zentralen Adresse muss diese enge Ausnahme in
+`scripts/check-email-exposure.mjs` bewusst angepasst werden. Die Prüfung ist eine Absicherung gegen
+versehentliche Klartextausgabe, kein Beweis gegen alle Formen der Adressrekonstruktion.
+
 ## Veröffentlichung über GitHub Pages
 
 Vorgesehen ist die GitHub-Organisation `montessori-allgaeu` mit dem Repository `montessori-allgaeu.github.io`. Der Workflow `.github/workflows/deploy.yml` baut den statischen Astro-Output und veröffentlicht das Verzeichnis `dist` über GitHub Pages.

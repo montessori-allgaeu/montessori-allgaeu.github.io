@@ -102,6 +102,7 @@ const jobSeo = createJobSeo(job);
     text={job.closingText}
     primaryHref={`mailto:${contact.careersEmail}?subject=${mailSubject}`}
     primaryLabel="Per E-Mail bewerben"
+    primaryRevealLabel="Bewerbungsadresse anzeigen"
     secondaryHref={`mailto:${contact.careersEmail}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
     secondaryLabel="Erst kennenlernen"
   />

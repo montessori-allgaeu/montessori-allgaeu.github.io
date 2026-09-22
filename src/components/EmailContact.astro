@@ -1,0 +1,130 @@
+---
+interface Props {
+  href: string;
+  label?: string;
+  revealLabel?: string;
+  class?: string;
+}
+
+const {
+  href,
+  label,
+  revealLabel = label ? `${label}: E-Mail anzeigen` : "E-Mail-Adresse anzeigen",
+  class: className,
+  ...attributes
+} = Astro.props;
+if (!href.startsWith("mailto:")) throw new Error("EmailContact requires a mailto link");
+const payload = Buffer.from(href, "utf8").toString("base64");
+const controlClass = className || "email-contact__text";
+---
+
+<span class="email-contact" data-email-contact data-email-payload={payload}>
+  <a {...attributes} class={controlClass} href="/impressum/#kontakt" data-email-fallback
+    ><slot /><span>E-Mail-Kontakt im Impressum</span></a
+  >
+  <button {...attributes} type="button" class={controlClass} data-email-trigger hidden
+    ><slot /><span>{revealLabel}</span></button
+  >
+  <span class="email-contact__result" data-email-result hidden>
+    <a {...attributes} class={controlClass} data-email-link>
+      <slot /><span data-email-label>{label}</span>
+    </a>
+    {label && <span class="email-contact__address" data-email-address />}
+  </span>
+</span>
+
+<script>
+  for (const contact of document.querySelectorAll<HTMLElement>("[data-email-contact]")) {
+    const trigger = contact.querySelector<HTMLButtonElement>("[data-email-trigger]");
+    const fallback = contact.querySelector<HTMLAnchorElement>("[data-email-fallback]");
+    const result = contact.querySelector<HTMLElement>("[data-email-result]");
+    const link = contact.querySelector<HTMLAnchorElement>("[data-email-link]");
+    const label = contact.querySelector<HTMLElement>("[data-email-label]");
+    const address = contact.querySelector<HTMLElement>("[data-email-address]");
+    if (!trigger || !fallback || !result || !link || !label) continue;
+
+    trigger.addEventListener("click", () => {
+      try {
+        // Decode only this activated contact. This is obfuscation, not a secret.
+        const bytes = Uint8Array.from(atob(contact.dataset.emailPayload ?? ""), (c) =>
+          c.charCodeAt(0),
+        );
+        const href = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        const url = new URL(href);
+        if (url.protocol !== "mailto:" || !url.pathname) throw new Error("Invalid email link");
+        const email = decodeURIComponent(url.pathname);
+        link.setAttribute("href", href);
+        if (address) address.textContent = email;
+        else label.textContent = email;
+        result.hidden = false;
+        trigger.hidden = true;
+        link.focus();
+      } catch {
+        // A broken payload must leave a working contact route, not a dead button.
+        trigger.hidden = true;
+        fallback.hidden = false;
+        fallback.focus();
+      }
+    });
+    trigger.hidden = false;
+    fallback.hidden = true;
+  }
+</script>
+
+<style>
+  .email-contact {
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: baseline;
+  }
+
+  .email-contact [hidden] {
+    display: none !important;
+  }
+
+  .email-contact__text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: none;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .email-contact__text:hover {
+    text-decoration-color: var(--color-action);
+  }
+
+  .email-contact__text span,
+  .email-contact__address {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .email-contact__result {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 100%;
+    gap: 0.4rem;
+  }
+
+  .email-contact .button {
+    max-width: 100%;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .email-contact__address {
+    max-width: 100%;
+    font-size: 0.85em;
+  }
+</style>
