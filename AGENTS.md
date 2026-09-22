@@ -72,7 +72,6 @@ Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 - Pages CMS dient als Git-basierte Redaktionsoberfläche; keine CMS-Datenbank, Analyse oder Formulare in V1, sofern nicht ausdrücklich neu entschieden.
 - Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen CI und Pages-Deployment aus.
-- Nur auf ausdrücklichen Wunsch committen oder pushen.
 - In der Codex-Sandbox können `git push`-Kommandos wegen DNS/Netzwerk-Auflösung scheitern; falls wiederholt „Could not resolve hostname github.com“ erscheint, im externen/ausgenommenen Kontext erneut ausführen (Retry).
 - `git commit` bleibt lokal und ist von dieser Sandbox-Network-Schwäche unabhängig.
 
