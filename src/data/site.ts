@@ -36,6 +36,8 @@ export const mainNavigation = [
       { label: "Aufnahme Schule", href: "/kennenlernen/aufnahme-schule/" },
       { label: "Kosten", href: "/kennenlernen/kosten/" },
       { label: "Häufige Fragen", href: "/kennenlernen/haeufige-fragen/" },
+      { label: "Termine", href: "/termine/" },
+      { label: "Downloads", href: "/downloads/" },
     ],
   },
   {
@@ -46,8 +48,6 @@ export const mainNavigation = [
       { label: "Elternbeirat", href: "/gemeinschaft/elternbeirat/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
-      { label: "Termine", href: "/termine/" },
-      { label: "Downloads", href: "/downloads/" },
       supportLink,
     ],
   },
@@ -76,6 +76,8 @@ export const footerNavigation = [
       { label: "Aufnahme Schule", href: "/kennenlernen/aufnahme-schule/" },
       { label: "Kosten", href: "/kennenlernen/kosten/" },
       { label: "Häufige Fragen", href: "/kennenlernen/haeufige-fragen/" },
+      { label: "Termine", href: "/termine/" },
+      { label: "Downloads", href: "/downloads/" },
     ],
   },
   {
@@ -85,8 +87,6 @@ export const footerNavigation = [
       { label: "Elternbeirat", href: "/gemeinschaft/elternbeirat/" },
       { label: "Träger & Verein", href: "/gemeinschaft/traeger-verein/" },
       { label: "Unsere Geschichte", href: "/gemeinschaft/geschichte/" },
-      { label: "Termine", href: "/termine/" },
-      { label: "Downloads", href: "/downloads/" },
     ],
   },
   {

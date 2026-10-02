@@ -9,11 +9,16 @@ Die bestätigte Positionierung, Zielgruppenlogik, Content-Architektur und Design
 ## Lokal starten
 
 ```sh
-npm install
-npm run dev
+npm ci
+./dev
 ```
 
-Die Website läuft anschließend unter `http://localhost:4321/`.
+`npm ci` ist einmalig nach dem Checkout und nach Änderungen am Lockfile nötig. `./dev` startet
+die Website standardmäßig unter `http://127.0.0.1:8000/`. Ist der Port belegt, wird der nächste
+freie Port in aufsteigender Reihenfolge verwendet; die tatsächlich gebundene URL steht direkt
+im Terminal. `./dev --port 8005` wählt einen festen Port und bricht ab, wenn dieser belegt ist.
+Mit dem globalen `dev`-Befehl kann der Start auch aus einem Repository-Unterordner erfolgen.
+`Ctrl+C` beendet den gestarteten Server. `npm run dev` bleibt als direkter Astro-Aufruf verfügbar.
 
 Der Dev-Server baut den Astro-Content-Cache bei jedem Start neu auf. Nach Änderungen an der
 Inhaltsstruktur oder an `src/content.config.ts` einen bereits laufenden Dev-Server neu starten.
@@ -36,7 +41,7 @@ npm run test:e2e
 Für einen manuellen Mobil-Screenshot Chromium direkt über den vorbereiteten Befehl starten:
 
 ```sh
-npm run screenshot:mobile -- --full-page http://127.0.0.1:4321/ /tmp/montessori-mobile.png
+npm run screenshot:mobile -- --full-page http://127.0.0.1:8000/ /tmp/montessori-mobile.png
 ```
 
 Nicht den eigenständigen Playwright-CLI-Schalter `--device "iPhone 13"` verwenden. Dieser wählt

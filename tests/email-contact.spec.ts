@@ -88,6 +88,10 @@ test("job actions retain distinct subjects and normal secondary navigation", asy
   page,
 }, testInfo) => {
   await page.goto("/arbeiten-bei-uns/stellen/");
+  test.skip(
+    (await page.locator(".job-row").count()) === 0,
+    "No published job detail is available.",
+  );
   await page.locator(".job-row").first().click();
   const title = (await page.getByRole("heading", { level: 1 }).innerText()).trim();
   const contacts = page.locator("main .section--brand [data-email-contact]");

@@ -66,10 +66,10 @@ test("mobile menu exposes the main journeys", async ({ page }) => {
 
   await page.goto("/downloads/");
   await page.getByLabel("Navigation öffnen").click();
-  const activeCommunityGroup = page.locator('[data-mobile-nav-group="/gemeinschaft/"]');
-  await expect(activeCommunityGroup).toHaveAttribute("open", "");
+  const activeIntroductionGroup = page.locator('[data-mobile-nav-group="/kennenlernen/"]');
+  await expect(activeIntroductionGroup).toHaveAttribute("open", "");
   await expect(
-    activeCommunityGroup.getByRole("link", { name: "Downloads", exact: true }),
+    activeIntroductionGroup.getByRole("link", { name: "Downloads", exact: true }),
   ).toHaveAttribute("aria-current", "page");
 });
 
@@ -299,13 +299,15 @@ test("desktop navigation exposes the matching subpages on hover", async ({ page 
   await expect(
     mainNavigation.getByRole("link", { name: "Häufige Fragen", exact: true }),
   ).toBeVisible();
+  await expect(mainNavigation.getByRole("link", { name: "Termine", exact: true })).toBeVisible();
+  await expect(mainNavigation.getByRole("link", { name: "Downloads", exact: true })).toBeVisible();
 
   await mainNavigation.getByRole("link", { name: "Gemeinschaft", exact: true }).hover();
   await expect(
     mainNavigation.getByRole("link", { name: "Spenden & unterstützen", exact: true }),
   ).toBeVisible();
-  await expect(mainNavigation.getByRole("link", { name: "Termine", exact: true })).toBeVisible();
-  await expect(mainNavigation.getByRole("link", { name: "Downloads", exact: true })).toBeVisible();
+  await expect(mainNavigation.getByRole("link", { name: "Termine", exact: true })).toBeHidden();
+  await expect(mainNavigation.getByRole("link", { name: "Downloads", exact: true })).toBeHidden();
 
   await page.goto("/kennenlernen/kosten/");
   await mainNavigation.getByRole("link", { name: "Kennenlernen", exact: true }).hover();

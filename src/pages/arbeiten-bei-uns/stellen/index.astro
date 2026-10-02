@@ -15,26 +15,30 @@ const { contact } = await getWebsiteSettings();
   <PageIntro
     eyebrow="Offene Stellen"
     title="Deine Arbeit soll Kinder auf ihrem eigenen Weg stärken."
-    intro="Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen. Wichtig ist uns, dass deine Haltung, Qualifikation und Motivation zu unserer Arbeit passen."
+    intro={jobs.length > 0
+      ? "Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen. Wichtig ist uns, dass deine Haltung, Qualifikation und Motivation zu unserer Arbeit passen."
+      : "Aktuell haben wir keine offenen Stellen. Wenn du qualifiziert bist, Montessori wirklich leben willst und zu unserer Arbeit beitragen möchtest, freuen wir uns trotzdem, von dir zu hören."}
   />
 
-  <section class="section">
-    <div class="container job-list">
-      {
-        jobs.map((job) => (
-          <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
-            <h2>{job.title}</h2>
-            <p>
-              {job.areaLabel}
-              <br />
-              {job.scheduleLabel}
-            </p>
-            <ArrowRight size={26} aria-hidden="true" />
-          </a>
-        ))
-      }
-    </div>
-  </section>
+  {
+    jobs.length > 0 && (
+      <section class="section">
+        <div class="container job-list">
+          {jobs.map((job) => (
+            <a class="job-row" href={`/arbeiten-bei-uns/stellen/${job.slug}/`}>
+              <h2>{job.title}</h2>
+              <p>
+                {job.areaLabel}
+                <br />
+                {job.scheduleLabel}
+              </p>
+              <ArrowRight size={26} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <section class="section section--light">
     <div class="container grid-2">

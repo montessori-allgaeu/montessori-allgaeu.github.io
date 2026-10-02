@@ -114,7 +114,7 @@ const { contact } = await getWebsiteSettings();
     <div class="container">
       <div class="section-heading">
         <p class="eyebrow">Offene Stellen</p>
-        <h2>Wo du gerade gebraucht wirst.</h2>
+        <h2>{jobs.length > 0 ? "Wo du gerade gebraucht wirst." : "Bleiben wir in Kontakt."}</h2>
       </div>
       <div class="job-list">
         {
@@ -131,9 +131,17 @@ const { contact } = await getWebsiteSettings();
           ))
         }
       </div>
+      {
+        jobs.length === 0 && (
+          <p class="lead">
+            Aktuell haben wir keine offenen Stellen. Wenn unsere Pädagogik und Arbeitsweise zu dir
+            passen, freuen wir uns über deinen Initiativkontakt.
+          </p>
+        )
+      }
       <div class="button-row">
         <a class="button button--outline" href="/arbeiten-bei-uns/stellen/"
-          >Alle Stellen & Initiativkontakt</a
+          >{jobs.length > 0 ? "Alle Stellen & Initiativkontakt" : "Initiativkontakt aufnehmen"}</a
         >
       </div>
     </div>

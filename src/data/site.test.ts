@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { legacyRedirects } from "./legacy";
-import { mainNavigation, principles } from "./site";
+import { footerNavigation, mainNavigation, principles } from "./site";
 
 describe("site content", () => {
   it("keeps navigation targets unique", () => {
@@ -11,11 +11,21 @@ describe("site content", () => {
     expect(new Set(hrefs).size).toBe(hrefs.length);
   });
 
-  it("links Termine and Downloads from Gemeinschaft", () => {
+  it("links Termine and Downloads from Kennenlernen in both navigation menus", () => {
+    const introduction = mainNavigation.find((item) => item.href === "/kennenlernen/");
     const community = mainNavigation.find((item) => item.href === "/gemeinschaft/");
-    expect(community?.children.map((child) => child.href)).toEqual(
+    expect(introduction?.children.map((child) => child.href)).toEqual(
       expect.arrayContaining(["/termine/", "/downloads/"]),
     );
+    const introductionFooter = footerNavigation.find((group) => group.title === "Kennenlernen");
+    const communityFooter = footerNavigation.find((group) => group.title === "Gemeinschaft");
+    expect(introductionFooter?.links.map((link) => link.href)).toEqual(
+      expect.arrayContaining(["/termine/", "/downloads/"]),
+    );
+    for (const href of ["/termine/", "/downloads/"]) {
+      expect(community?.children.map((child) => child.href)).not.toContain(href);
+      expect(communityFooter?.links.map((link) => link.href)).not.toContain(href);
+    }
   });
 
   it("publishes all four approved principles", () => {
