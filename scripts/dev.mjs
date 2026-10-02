@@ -1,39 +1,39 @@
-import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
+import { dev } from "astro";
 
-const args = process.argv.slice(2);
-const explicitPort = args.length > 0;
-const port = explicitPort ? Number(args[1]) : 8000;
+const { values } = parseArgs({
+  options: {
+    port: { type: "string" },
+    help: { type: "boolean", short: "h" },
+  },
+});
 
-if (
-  (explicitPort && (args.length !== 2 || args[0] !== "--port" || !/^\d+$/.test(args[1]))) ||
-  !Number.isInteger(port) ||
-  port < 1 ||
-  port > 65535
-) {
-  console.error("Aufruf: ./dev [--port N], mit einem Port zwischen 1 und 65535.");
-  process.exit(1);
+if (values.help) {
+  process.stdout.write(
+    "Usage: ./dev [--port PORT]\nDefault: port 8000 with automatic fallback; explicit ports stay fixed.\n",
+  );
+  process.exit(0);
 }
 
-process.chdir(fileURLToPath(new URL("../", import.meta.url)));
-process.env.ASTRO_TELEMETRY_DISABLED = "1";
-
-try {
-  const { dev } = await import("astro");
-  const server = await dev({
-    force: true,
-    server: { host: "127.0.0.1", port },
-    vite: { server: { strictPort: explicitPort } },
-  });
-
-  process.stdout.write(`Lokale Vorschau: http://127.0.0.1:${server.address.port}/\n`);
-
-  const stop = async () => {
-    await server.stop();
-    process.exit(0);
-  };
-  process.once("SIGINT", stop);
-  process.once("SIGTERM", stop);
-} catch (error) {
-  console.error(error);
-  process.exit(1);
+const port = values.port === undefined ? 8000 : Number(values.port);
+if (!Number.isInteger(port) || port < 0 || port > 65535 || values.port === "") {
+  throw new Error("--port must be an integer between 0 and 65535");
 }
+
+// Use Astro's server API: the CLI backgrounds agent runs and --force replaces servers.
+const server = await dev({
+  root: new URL("../", import.meta.url),
+  force: true,
+  server: { port, host: "127.0.0.1" },
+  vite: { server: { strictPort: values.port !== undefined } },
+});
+
+let stopping = false;
+async function stop() {
+  if (stopping) return;
+  stopping = true;
+  await server.stop();
+  process.exit(0);
+}
+process.once("SIGINT", stop);
+process.once("SIGTERM", stop);
