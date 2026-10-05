@@ -46,7 +46,14 @@ const fullDate = (date: string) =>
               <div class="event__content">
                 <p class="eyebrow">{event.category}</p>
                 <h2>{event.title}</h2>
-                <p>{event.description}</p>
+                <p>
+                  {event.description.split("Schulbüro").map((text, index) => (
+                    <>
+                      {index > 0 && <a href="/kontakt/">Schulbüro</a>}
+                      {text}
+                    </>
+                  ))}
+                </p>
                 <ul class="event__meta">
                   <li>
                     <CalendarDays size={17} aria-hidden="true" />
