@@ -157,6 +157,9 @@ verweist per Canonical auf die Zielseite und leitet im Browser zusätzlich mit `
 weiter. [Google interpretiert einen sofortigen Meta-Refresh als permanente
 Weiterleitung](https://developers.google.com/search/docs/crawling-indexing/301-redirects).
 
+Auch die alte Startseitenadresse `/index.php` führt auf diesem Weg zur heutigen Startseite `/`.
+Astro erzeugt dafür `dist/index.php/index.html`; PHP muss dafür nicht ausgeführt werden.
+
 Falls später eine vorgeschaltete Redirect-Schicht eingesetzt wird, sollen dieselben Zuordnungen dort
 als serverseitige 301- oder 308-Weiterleitungen abgebildet werden. Die alten Weiterleitungen sollten
 nach dem Domain-Cutover stichprobenartig geprüft und dauerhaft beibehalten werden.

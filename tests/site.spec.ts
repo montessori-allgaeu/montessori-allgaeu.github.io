@@ -634,6 +634,21 @@ test("legacy job links lead to the durable current job overview", async ({ page 
   );
 });
 
+test.describe("legacy homepage", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("redirects the old PHP address to the homepage without JavaScript", async ({ page }) => {
+    for (const source of ["/index.php", "/index.php/"]) {
+      await page.goto(source);
+
+      await expect(page).toHaveURL("/");
+      await expect(page).toHaveTitle(
+        "Montessori-Kindergarten & Schule in Oberstaufen | Montessori Allgäu",
+      );
+    }
+  });
+});
+
 test("homepage exposes complete search and social metadata", async ({ page }) => {
   await page.goto("/");
 

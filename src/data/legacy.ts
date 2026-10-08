@@ -4,6 +4,7 @@ export const legacyRedirects: Record<string, string> = {
   "j/privacy": "/datenschutz/",
   "j/withdrawal": "/kontakt/",
   sitemap: "/",
+  "index.php": "/",
 
   // Montessori
   "montessori/montessori": "/montessori/",
