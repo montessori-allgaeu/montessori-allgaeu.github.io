@@ -8,6 +8,7 @@ export interface Env {
   RP_ID: string;
   GITHUB_REPOSITORY: string;
   GITHUB_REPOSITORY_ID: string;
+  GITHUB_OIDC_SUB: string;
   GITHUB_APP_ID: string;
   GITHUB_INSTALLATION_ID: string;
   GITHUB_APP_PRIVATE_KEY: string;

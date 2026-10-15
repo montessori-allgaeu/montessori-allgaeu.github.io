@@ -215,7 +215,8 @@ export async function verifyRunner(request: Request, env: Env) {
       claims.workflow_ref ===
         `${env.GITHUB_REPOSITORY}/.github/workflows/publish.yml@refs/heads/main` &&
       claims.event_name === "workflow_dispatch" &&
-      claims.sub === `repo:${env.GITHUB_REPOSITORY}:ref:refs/heads/main`,
+      Boolean(env.GITHUB_OIDC_SUB) &&
+      claims.sub === env.GITHUB_OIDC_SUB,
     403,
     "runner_claims",
     "Dieser Workflow darf nicht veröffentlichen.",

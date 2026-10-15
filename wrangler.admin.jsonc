@@ -23,6 +23,7 @@
     "PUBLIC_SITE_URL": "https://montessori-allgaeu.de",
     "GITHUB_REPOSITORY": "montessori-allgaeu/montessori-allgaeu.github.io",
     "GITHUB_REPOSITORY_ID": "1302907775",
+    "GITHUB_OIDC_SUB": "repo:montessori-allgaeu@305887578/montessori-allgaeu.github.io@1302907775:ref:refs/heads/main",
     "GITHUB_APP_ID": "5333362",
     "GITHUB_INSTALLATION_ID": "171796211",
   },

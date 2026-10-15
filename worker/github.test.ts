@@ -95,6 +95,7 @@ function settings(): Env {
     ADMIN_ORIGIN: origin,
     GITHUB_REPOSITORY: repository,
     GITHUB_REPOSITORY_ID: "123",
+    GITHUB_OIDC_SUB: "repo:fixture@42/monte@123:ref:refs/heads/main",
     GITHUB_APP_ID: "1",
     GITHUB_INSTALLATION_ID: "2",
     GITHUB_APP_PRIVATE_KEY: privateKey,
@@ -170,7 +171,7 @@ const validClaims = {
   ref: "refs/heads/main",
   workflow_ref: `${repository}/.github/workflows/publish.yml@refs/heads/main`,
   event_name: "workflow_dispatch",
-  sub: `repo:${repository}:ref:refs/heads/main`,
+  sub: "repo:fixture@42/monte@123:ref:refs/heads/main",
   run_id: "456",
   run_attempt: "1",
 };
@@ -191,11 +192,19 @@ async function runnerRequest(changes: Record<string, unknown> = {}) {
   });
 }
 
-test("verifies an actual RSA signature and returns the pinned workflow run identity", async () => {
-  await expect(verifyRunner(await runnerRequest(), settings())).resolves.toEqual({
-    runId: "456",
-    runAttempt: "1",
-  });
+test("accepts the immutable subject used by newly created GitHub repositories", async () => {
+  await expect(
+    verifyRunner(
+      await runnerRequest({ sub: "repo:fixture@42/monte@123:ref:refs/heads/main" }),
+      settings(),
+    ),
+  ).resolves.toEqual({ runId: "456", runAttempt: "1" });
+});
+
+test("rejects a runner when no subject has been configured", async () => {
+  await expect(
+    verifyRunner(await runnerRequest(), { ...settings(), GITHUB_OIDC_SUB: "" }),
+  ).rejects.toMatchObject({ status: 403, code: "runner_claims" });
 });
 
 test.each([
@@ -205,6 +214,9 @@ test.each([
   ["workflow_ref", `${repository}/.github/workflows/ci.yml@refs/heads/main`],
   ["event_name", "pull_request"],
   ["sub", `repo:${repository}:pull_request`],
+  ["sub", `repo:${repository}:ref:refs/heads/main`],
+  ["sub", "repo:fixture@99/monte@123:ref:refs/heads/main"],
+  ["sub", "repo:fixture@42/monte@999:ref:refs/heads/main"],
   ["run_id", "456/../../secret"],
   ["run_attempt", 1],
 ])("rejects a signed but unauthorized %s claim", async (key, value) => {
