@@ -5,4 +5,4 @@ gradeFrom: 3
 gradeTo: 8
 description: Ihr trainiert gemeinsam, spielt kleine Matches und übt Passen, Schießen und Verteidigen. Fairplay und Freude am Zusammenspiel stehen im Mittelpunkt; Vorerfahrung ist nicht nötig.
 position: 20
-status: published
+visible: true

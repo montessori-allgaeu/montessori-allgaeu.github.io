@@ -3,4 +3,4 @@ assignments:
   - group: Kindergarten
     role: Erzieherin
     position: 20
-status: published
+visible: true

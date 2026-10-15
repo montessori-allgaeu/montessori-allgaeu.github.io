@@ -3,4 +3,4 @@ assignments:
   - group: Tertia
     position: 20
 image: ../../assets/images/team/kerstin-felgenhauer.webp
-status: published
+visible: true

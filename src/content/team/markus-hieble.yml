@@ -3,4 +3,4 @@ assignments:
   - group: Fach- & Förderteam
     position: 10
 image: ../../assets/images/team/markus-hieble.webp
-status: published
+visible: true

@@ -6,6 +6,8 @@ export default [
   {
     ignores: [
       "dist/**",
+      "dist-admin/**",
+      ".wrangler/**",
       ".astro/**",
       ".npm-cache/**",
       "node_modules/**",
@@ -29,12 +31,13 @@ export default [
     },
   },
   {
-    files: ["**/*.ts"],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
+        ecmaFeatures: { jsx: true },
       },
       globals: {
         ...globals.browser,

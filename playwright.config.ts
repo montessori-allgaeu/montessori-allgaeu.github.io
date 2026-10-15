@@ -14,7 +14,7 @@ export default defineConfig({
   },
   webServer: {
     command: serveStaticBuild
-      ? `python3 -m http.server ${port} --bind 127.0.0.1 --directory dist`
+      ? `npm run preview -- --host 127.0.0.1 --port ${port}`
       : `npm run dev -- --host 127.0.0.1 --port ${port}`,
     url: `http://127.0.0.1:${port}`,
     reuseExistingServer: !serveStaticBuild,

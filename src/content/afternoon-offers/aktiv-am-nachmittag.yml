@@ -5,4 +5,4 @@ gradeFrom: 1
 gradeTo: 4
 description: Fang- und Ballspiele, kleine Bewegungsaktionen und viel Zeit draußen sorgen für einen aktiven gemeinsamen Nachmittag. Neben wechselnden Impulsen bleibt Raum für freies Spiel und eigene Wünsche.
 position: 20
-status: published
+visible: true

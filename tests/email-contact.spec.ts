@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { contactData, donationData } from "./content-data";
 
 test.beforeEach(async ({ page }) => {
   await page.route("https://submit-form.com/**", (route) => route.abort());
@@ -44,8 +45,8 @@ test("pointer activation reveals only one contact, with accessible focus and sel
 
   await trigger.click();
   const link = first.locator("[data-email-link]");
-  await expect(link).toHaveText("info@montessori-allgaeu.de");
-  await expect(link).toHaveAttribute("href", "mailto:info@montessori-allgaeu.de");
+  await expect(link).toHaveText(contactData.email);
+  await expect(link).toHaveAttribute("href", `mailto:${contactData.email}`);
   await expect(link).toBeFocused();
   await expect(trigger).toBeHidden();
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(1);
@@ -80,7 +81,7 @@ test("mobile touch reveals an address", async ({ page }, testInfo) => {
   await contact.locator("[data-email-trigger]").tap();
   await expect(contact.locator("[data-email-link]")).toHaveAttribute(
     "href",
-    "mailto:kindergarten@montessori-allgaeu.de",
+    `mailto:${contactData.kindergartenEmail}`,
   );
 });
 
@@ -101,11 +102,9 @@ test("job actions retain distinct subjects and normal secondary navigation", asy
     await contact.locator("[data-email-trigger]").click();
     const href = await contact.locator("[data-email-link]").getAttribute("href");
     const url = new URL(href!);
-    expect(url.pathname).toBe("geschaeftsleitung@montessori-allgaeu.de");
+    expect(url.pathname).toBe(contactData.careersEmail);
     expect(url.searchParams.get("subject")).toBe(subject);
-    await expect(contact.locator("[data-email-address]")).toHaveText(
-      "geschaeftsleitung@montessori-allgaeu.de",
-    );
+    await expect(contact.locator("[data-email-address]")).toHaveText(contactData.careersEmail);
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page
@@ -129,9 +128,9 @@ test("donation actions preserve their original link labels and subjects", async 
   await contact.locator("[data-email-trigger]").click();
   const link = contact.locator("[data-email-link]");
   const href = await link.getAttribute("href");
-  expect(new URL(href!).searchParams.get("subject")).toBe("Unterstützung durch Unternehmen");
+  expect(new URL(href!).searchParams.get("subject")).toBe(donationData.company.emailSubject);
   await expect(link).not.toHaveText("");
-  await expect(contact.locator("[data-email-address]")).toHaveText("info@montessori-allgaeu.de");
+  await expect(contact.locator("[data-email-address]")).toHaveText(contactData.email);
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(1);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page
@@ -178,7 +177,7 @@ test.describe("without JavaScript", () => {
     await expect(page).toHaveURL(/\/impressum\/#kontakt$/);
     await expect(page.locator("[data-public-email]")).toHaveAttribute(
       "href",
-      "mailto:info@montessori-allgaeu.de",
+      `mailto:${contactData.email}`,
     );
     await expect(page.locator("[data-public-email]")).toBeVisible();
     await page.goto("/datenschutz/");

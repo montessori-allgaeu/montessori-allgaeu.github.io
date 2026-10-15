@@ -8,4 +8,4 @@ assignments:
     role: Primaria C
     position: 30
 image: ../../assets/images/team/stefanie-lorinser-kefer.webp
-status: published
+visible: true

@@ -1,0 +1,81 @@
+name: Publish Monte
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      change_id:
+        description: Immutable administration change UUID (empty for a code-only release)
+        type: string
+        required: false
+      attempt:
+        description: One-use dispatch nonce supplied by the administration
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monte-production
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      ADMIN_ORIGIN: ${{ vars.ADMIN_ORIGIN || 'https://verwaltung.montessori-allgaeu.de' }}
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://montessori-allgaeu.de' }}
+      MONTE_CHANGE_ID: ${{ inputs.change_id }}
+      MONTE_PUBLISH_ATTEMPT: ${{ inputs.attempt }}
+    steps:
+      - name: Read current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Validate and apply content transaction
+        run: npx tsx scripts/publish.ts prepare
+      - name: Complete quality checks and build both sites
+        run: npm run test:ci
+      - name: Commit verified content
+        run: npx tsx scripts/publish.ts commit
+      - name: Refresh commit-based sitemap dates
+        if: inputs.change_id != ''
+        run: npm run build && npm run check:email-exposure
+      - name: Stamp the rebuilt release
+        run: npx tsx scripts/publish.ts stamp
+      - name: Check Cloudflare Free asset limits
+        run: node scripts/check-static-assets.mjs
+      - name: Refuse an outdated release
+        run: npx tsx scripts/publish.ts check-head
+      - name: Deploy public assets
+        run: npx wrangler deploy --config wrangler.site.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Check current main before administration deployment
+        run: npx tsx scripts/publish.ts check-head
+      - name: Deploy administration
+        run: npx wrangler deploy --config wrangler.admin.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify live versions and acknowledge publication
+        run: npx tsx scripts/publish.ts verify
+      - name: Report failed publication
+        if: ${{ (failure() || cancelled()) && inputs.change_id != '' }}
+        run: npx tsx scripts/publish.ts failure

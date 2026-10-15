@@ -1,9 +1,19 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
+import { parse } from "yaml";
 
 const legalPages = new Set(["impressum/index.html", "datenschutz/index.html"]);
-const legalEmail = "info@montessori-allgaeu.de";
+/** @param {string | URL} [contactPath] */
+export function readLegalEmail(
+  contactPath = new URL("../src/content/settings/contact.yml", import.meta.url),
+) {
+  const contact = parse(readFileSync(contactPath, "utf8"));
+  if (typeof contact?.email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
+    throw new Error("The canonical public contact email is missing or invalid.");
+  }
+  return contact.email;
+}
 const emailPattern = /[a-z\d.!#$%&'*+/=?^_`{|}~-]+@[a-z\d.-]+\.[a-z]{2,}/gi;
 const linkPattern = /\bmailto:[^\s"'<>`\\)]+/gi;
 
@@ -25,7 +35,7 @@ function decodeReferences(text) {
     );
 }
 
-export function findEmailExposure(path, source) {
+export function findEmailExposure(path, source, legalEmail = readLegalEmail()) {
   let text = decodeReferences(source);
   if (legalPages.has(path)) {
     // Only the marked public contact anchor is exempt, never JSON-LD or scripts.
@@ -40,7 +50,7 @@ export function findEmailExposure(path, source) {
   return [...new Set([...emails, ...links])];
 }
 
-export function checkEmailExposure(directory) {
+export function checkEmailExposure(directory, legalEmail = readLegalEmail()) {
   const root = resolve(directory);
   const files = readdirSync(root, { recursive: true, withFileTypes: true }).filter(
     (entry) => entry.isFile() && extname(entry.name).toLowerCase() !== ".pdf",
@@ -63,7 +73,7 @@ export function checkEmailExposure(directory) {
       continue; // Binary assets, such as fonts and images.
     }
     checked += 1;
-    const exposed = findEmailExposure(path, source);
+    const exposed = findEmailExposure(path, source, legalEmail);
     if (exposed.length) findings.push({ path, exposed });
   }
   return { checked, findings };

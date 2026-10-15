@@ -1,5 +1,10 @@
 node_modules/
 dist/
+dist-admin/
+.wrangler/
+.dev.vars*
+.env*
+!.env.example
 .astro/
 .npm-cache/
 playwright-report/

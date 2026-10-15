@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { legacyRedirects } from "../src/data/legacy";
+import { hasVisibleJobs } from "./content-data";
 
 const keyPages = [
   "/",
@@ -586,17 +587,20 @@ test("impressum mirrors the published board and its joint representation rule", 
   ).toBeVisible();
 });
 
-test("editorial quick guide links to the exact CMS project and stays out of search", async ({
+test("administration is directly reachable and the old entry redirects out of search", async ({
   page,
+  request,
 }) => {
-  await page.goto("/redaktion/");
-
-  await expect(page.getByRole("heading", { name: "Inhalte sicher aktualisieren." })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Pages CMS öffnen/ })).toHaveAttribute(
-    "href",
-    "https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main",
-  );
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+  const administrationUrl = "https://verwaltung.montessori-allgaeu.de";
+  await page.goto("/");
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "Verwaltung", exact: true }),
+  ).toHaveAttribute("href", administrationUrl);
+  const response = await request.get("/redaktion/");
+  const html = await response.text();
+  expect(response.ok()).toBe(true);
+  expect(html).toContain(`http-equiv="refresh" content="0; url=${administrationUrl}"`);
+  expect(html).toContain('content="noindex, nofollow"');
 });
 
 test("legacy pages expose permanent static redirect signals", async ({ request }) => {
@@ -747,7 +751,9 @@ test("local search pages expose their intended introductions and trust facts", a
     ],
     [
       "/arbeiten-bei-uns/stellen/",
-      "Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen",
+      hasVisibleJobs
+        ? "Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen"
+        : "Aktuell haben wir keine offenen Stellen.",
     ],
   ] as const;
 

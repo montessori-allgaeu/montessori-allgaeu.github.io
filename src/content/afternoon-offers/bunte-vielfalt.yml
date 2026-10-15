@@ -5,4 +5,4 @@ gradeFrom: 1
 gradeTo: 4
 description: Basteln, kleine Projekte und Spiele machen den Nachmittag drinnen oder draußen abwechslungsreich. Das Programm orientiert sich an den Jahreszeiten und euren Ideen, sodass jede Woche etwas Neues entstehen kann.
 position: 10
-status: published
+visible: true

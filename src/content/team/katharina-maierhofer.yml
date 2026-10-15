@@ -5,4 +5,4 @@ assignments:
     role: Primaria A
     position: 10
 image: ../../assets/images/team/katharina-maierhofer.webp
-status: published
+visible: true

@@ -5,4 +5,4 @@ gradeFrom: 1
 gradeTo: 5
 description: Im Wald und auf der Wiese erforscht ihr die Natur im Lauf der Jahreszeiten. Bei herausforderndem Wetter arbeitet ihr in der Monte kreativ mit Naturmaterialien, zum Beispiel beim Schnitzen, Flechten, Kochen oder Basteln.
 position: 10
-status: published
+visible: true

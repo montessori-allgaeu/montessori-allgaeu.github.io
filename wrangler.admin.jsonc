@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "monte-verwaltung",
+  "account_id": "c41d663b36be9f97108e9359d2bb3390",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "assets": {
+    "directory": "./dist-admin",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "ADMIN", "class_name": "MonteAdmin" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["MonteAdmin"] }],
+  "kv_namespaces": [{ "binding": "UPLOADS", "id": "e9b5b9f7c9d4432b9299b3d405d4572e" }],
+  "vars": {
+    "ADMIN_ORIGIN": "https://verwaltung.montessori-allgaeu.de",
+    "RP_ID": "verwaltung.montessori-allgaeu.de",
+    "PUBLIC_SITE_URL": "https://montessori-allgaeu.de",
+    "GITHUB_REPOSITORY": "montessori-allgaeu/montessori-allgaeu.github.io",
+    "GITHUB_REPOSITORY_ID": "1302907775",
+    "GITHUB_APP_ID": "5333362",
+    "GITHUB_INSTALLATION_ID": "171796211",
+  },
+  "observability": { "enabled": false },
+}

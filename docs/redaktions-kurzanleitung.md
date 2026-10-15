@@ -1,28 +1,56 @@
 # Website-Inhalte bearbeiten
 
-Direkter Einstieg: [Website-Inhalte bearbeiten](https://app.pagescms.org/montessori-allgaeu/montessori-allgaeu.github.io/main)
+Öffne die [Monte-Verwaltung](https://verwaltung.montessori-allgaeu.de) und speichere den Link als Favorit. Du findest ihn auch ganz unten auf der Website unter **Verwaltung**.
 
-Diesen Link im Browser als Favorit speichern und zum Beispiel **Website-Inhalte bearbeiten** nennen.
+## Anmelden
 
-Die gleiche Kurzanleitung steht nach der Veröffentlichung auch druckfreundlich unter [montessori-allgaeu.de/redaktion/](https://montessori-allgaeu.de/redaktion/).
+Wähle **Mit Passkey anmelden** und bestätige auf deinem Gerät, zum Beispiel mit Fingerabdruck, Gesichtserkennung oder Geräte-PIN. Du brauchst weder einen Benutzernamen noch eine E-Mail-Adresse oder ein Passwort.
 
-## Der sichere Ablauf
+Beim ersten Mal erhältst du von einem Admin einen persönlichen Einrichtungslink. Öffne ihn innerhalb von 24 Stunden und folge der Anleitung. Unter **Dein Zugang** kannst du später einen weiteren Passkey hinzufügen.
 
-1. Den passenden Bereich öffnen: Termine, Stellenangebote, Nachmittagsangebote, Team, Elternbeirat, Downloads, Spendenseite oder Stammdaten.
-2. Inhalt anlegen oder ändern.
-3. Neue Termine, Stellen, Nachmittagsangebote, Personen und Downloads zunächst als **Entwurf – nicht auf Website** speichern.
-4. Angaben im Formular prüfen.
-5. Den Status auf **Veröffentlicht – auf Website** setzen und erneut speichern.
-6. Nach dem automatischen Build die Änderung auf [montessori-allgaeu.de](https://montessori-allgaeu.de) kontrollieren.
+## Ändern und speichern
 
-## Drei wichtige Regeln
+1. Öffne den passenden Bereich oder suche nach dem Inhalt.
+2. Klicke auf die Angabe, die du ändern möchtest. Fotos und PDFs ersetzt du direkt beim jeweiligen Eintrag.
+3. Prüfe deine Angaben und wähle **Speichern**.
+4. Warte auf **Auf der Website sichtbar**. Die Veröffentlichung läuft automatisch.
 
-- **Erst Entwurf, dann veröffentlichen.** So kann ein unvollständiger Eintrag nicht versehentlich sichtbar werden.
-- **Zeitbezogene Fakten prüfen.** Termine, Stellen, Kosten, Öffnungszeiten, Rollen und Dokumentstände nur aus einer verbindlichen Quelle übernehmen.
-- **Aufnahmen gemeinsam aktualisieren.** Kindergarten- beziehungsweise Schuljahr und den zugehörigen Anmeldeschluss unter **Stammdaten → Aufnahme Kindergarten** oder **Aufnahme Schule** immer zusammen prüfen und ändern.
-- **Kursjahr erst vollständig vorbereiten.** Neue Nachmittagsangebote mit dem neuen Schuljahr anlegen und prüfen. Das aktive Schuljahr unter **Stammdaten → Ganztag & Kurswahl** erst danach umstellen.
-- **Medien über den Inhalt auswählen.** Porträts über **Team** beziehungsweise **Elternbeirat** und PDFs über **Downloads** pflegen. Die Bereiche unter **Media** sind vor allem die gemeinsame Dateiablage.
+Es gibt keine Entwürfe und keinen zweiten Veröffentlichungsschritt. Neue Einträge werden mit dem Speichern sichtbar. Solange eine Änderung geprüft oder veröffentlicht wird, zeigt die Verwaltung ihren Fortschritt.
 
-## Wenn etwas schiefgeht
+## Was du wo findest
 
-Bei einem Inhaltsfehler den Eintrag wieder auf **Entwurf – nicht auf Website** setzen und speichern. Bei einem technischen Fehler oder einer versehentlich gelöschten Datei die technische Website-Verantwortung informieren; jede Änderung bleibt in Git nachvollziehbar und kann wiederhergestellt werden.
+| Bereich          | Hier änderst du …                                        |
+| ---------------- | -------------------------------------------------------- |
+| Termine          | Veranstaltungen, Datum, Uhrzeit, Ort und Beschreibung    |
+| Menschen         | Team, Vorstand, Elternbeirat und Fotos                   |
+| Stellen          | Stellenangebote und Bewerbungsangaben                    |
+| Downloads        | Dokumente, Hinweise und PDF-Dateien                      |
+| Ganztag & Essen  | Nachmittagsangebote, Schuljahr und Essensangaben         |
+| Kontakt & Zeiten | Kontaktdaten, Anschrift, Öffnungs- und Schließzeiten     |
+| Aufnahme         | Schuljahr und Anmeldeschluss für Schule und Kindergarten |
+| Kosten           | Beiträge, Zuschüsse, Elternarbeit und Mitgliedschaft     |
+| Spenden          | Texte, Förderschwerpunkte und Spendenangaben             |
+
+Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernommen. Du musst dieselbe Angabe nicht auf mehreren Seiten ändern. Spendenempfänger und Bankverbindung können nur Admins bearbeiten.
+
+## Häufige Aufgaben
+
+- **Termin oder Stelle anlegen:** Den Bereich öffnen und einen neuen Eintrag hinzufügen. Einen ähnlichen Eintrag kannst du duplizieren.
+- **Foto ersetzen:** Die Person öffnen, beim Bild die neue Datei auswählen und speichern.
+- **PDF ersetzen:** Das Dokument unter **Downloads** öffnen und die Datei ersetzen. Die verknüpften Seiten verwenden danach die neue Fassung.
+- **Eintrag vorübergehend entfernen:** **Ausblenden** wählen und speichern. Über **Wieder einblenden** lässt er sich zurückholen. Die drei fest verknüpften Anmelde- und Beitrittsunterlagen müssen verfügbar bleiben; diese Dateien kannst du ersetzen.
+- **Neues Ganztagsjahr vorbereiten:** Unter **Ganztag & Essen** das Programm für ein neues Schuljahr übernehmen. Alle Angebote prüfen und gemeinsam speichern. Erst dann wechselt die Website auf das neue Jahr.
+
+Termine, Kosten, Öffnungszeiten, Rollen, Aufnahmefristen und Dokumentstände vor dem Speichern mit der verbindlichen Quelle abgleichen. Schuljahr und Anmeldeschluss jeweils gemeinsam prüfen. Vor dem Hochladen von Personenfotos muss die Freigabe vorliegen.
+
+## Wenn etwas nicht klappt
+
+- **Änderung noch nicht sichtbar:** Den Veröffentlichungsstatus abwarten. Wenn eine Wiederholung angeboten wird, diese verwenden.
+- **Jemand hat gleichzeitig geändert:** Die aktuelle Fassung neu laden und die eigenen Änderungen damit abgleichen.
+- **Technische Unterbrechung:** Die bisherige Website bleibt erreichbar. Eine Fehlermeldung ist keine Speicherbestätigung; die Änderung später erneut versuchen.
+- **Gerät oder Passkey verloren:** Einen Admin um einen neuen Einrichtungslink bitten. Bisherige Passkeys und Anmeldungen dieses Zugangs werden dabei gesperrt.
+- **Inhalt versehentlich geändert:** Korrigieren und erneut speichern oder die technische Betreuung um Wiederherstellung bitten.
+
+## Für Admins
+
+Unter **Zugänge** eine Person einladen, ihren Namen und die Rolle wählen und den persönlichen Link direkt weitergeben. **Content Manager** dürfen Inhalte und Medien bearbeiten. **Admin** darf zusätzlich Zugänge und Bankdaten verwalten. Nicht mehr benötigte Zugänge deaktivieren.

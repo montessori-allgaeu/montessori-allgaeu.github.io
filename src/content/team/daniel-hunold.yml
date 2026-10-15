@@ -4,4 +4,4 @@ assignments:
     role: Finanzvorstand
     position: 40
 image: ../../assets/images/team/daniel-hunold.webp
-status: published
+visible: true

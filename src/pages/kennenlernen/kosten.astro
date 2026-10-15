@@ -3,10 +3,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
-import { getWebsiteSettings } from "@/data/content";
+import { getWebsiteSettings, getLinkedDownload } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { costs } = await getWebsiteSettings();
+const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.kosten)}>
@@ -177,10 +178,7 @@ const { costs } = await getWebsiteSettings();
         <ul class="editorial-list">
           {costs.membership.rows.map((row) => <li>{row}</li>)}
         </ul>
-        <TextLink
-          href="/downloads/beitrittserklaerung-verein.pdf"
-          label="Beitrittserklärung herunterladen"
-        />
+        <TextLink href={documentHref} label="Beitrittserklärung herunterladen" />
       </div>
     </div>
   </section>

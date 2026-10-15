@@ -4,10 +4,11 @@ import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import AdmissionAddress from "@/components/AdmissionAddress.astro";
-import { getWebsiteSettings } from "@/data/content";
+import { getWebsiteSettings, getLinkedDownload } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact, kindergartenAdmission } = await getWebsiteSettings();
+const documentHref = await getLinkedDownload("anmeldeantrag-kindergarten");
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.aufnahmeKindergarten)}>
@@ -16,10 +17,7 @@ const { contact, kindergartenAdmission } = await getWebsiteSettings();
     title="Ankommen beginnt mit Kennenlernen."
     intro="Wir vergeben nur wenige neue Plätze pro Jahr. Entscheidend ist nicht, wer sich am besten präsentiert, sondern ob unsere Pädagogik, das Kind und die Familie gut zusammenpassen."
   >
-    <TextLink
-      href="/downloads/anmeldeantrag-kindergarten.pdf"
-      label="Aufnahmebogen herunterladen"
-    />
+    <TextLink href={documentHref} label="Aufnahmebogen herunterladen" />
   </PageIntro>
 
   <section class="section">
@@ -47,9 +45,7 @@ const { contact, kindergartenAdmission } = await getWebsiteSettings();
           kennenzulernen, veröffentlichen wir auf unserer Terminseite.
         </p>
         <div class="button-row">
-          <a class="button" href="/downloads/anmeldeantrag-kindergarten.pdf"
-            >Aufnahmebogen herunterladen</a
-          >
+          <a class="button" href={documentHref}>Aufnahmebogen herunterladen</a>
           <a class="button button--outline" href="/termine/">Termine ansehen</a>
         </div>
       </div>

@@ -31,7 +31,9 @@ Dieses Dokument ist die verbindliche Zusammenfassung der bestätigten Zielgruppe
 
 Wichtige Content-Pfade:
 
-- `.pages.yml`: Redaktionsoberfläche
+- `admin/`: Monte-Verwaltung
+- `src/admin/content-model.ts`, `src/admin/content-fields.ts`: Redaktionsfelder, Defaults und erlaubte Inhaltspfade
+- `src/admin/content-schemas.ts`: gemeinsame Inhaltsvalidierung für Verwaltung, Backend und Website
 - `src/content.config.ts`: Validierung redaktioneller Inhalte
 - `src/data/seo.ts`: gemeinsame SEO-Helfer und Register der zentral gepflegten Seiten
 - `src/data/seo-pages/*.ts`: seitenspezifische SEO-Vorgaben, Leitbilder und Social-Card-Inhalte
@@ -68,10 +70,14 @@ Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 
 ## Technik und Veröffentlichung
 
-- Astro, statischer Output, GitHub Pages.
-- Pages CMS dient als Git-basierte Redaktionsoberfläche; keine CMS-Datenbank, Analyse oder Formulare in V1, sofern nicht ausdrücklich neu entschieden.
+- Astro mit statischem Output; öffentliche Website und Monte-Verwaltung sind getrennte Cloudflare Workers mit Static Assets. Die öffentliche Website benötigt kein Worker-Script.
+- Pages CMS ist durch die eigene Monte-Verwaltung ersetzt. Redaktionelle Inhalte und Medien bleiben in Git; Zugänge, Passkeys, Sitzungen und Änderungsaufträge liegen privat in SQLite Durable Objects. Keine Zugangsdaten ins öffentliche Repository schreiben.
+- Keine Entwürfe: Speichern startet Prüfung und Veröffentlichung. `visible: false` blendet einen vorhandenen Eintrag aus. Admins verwalten Zugänge und Bankdaten; Content Manager bearbeiten übrige Inhalte.
+- Ausschließlich Free-Tarife: statische Auslieferung ohne vorgeschaltete Worker-Ausführung, Verwaltungs-API nur unter `/api/*`, kostenlose GitHub-Standard-Runner. Keine automatischen Tarifwechsel oder kostenpflichtigen Erweiterungen.
 - Canonical Domain: `https://montessori-allgaeu.de`.
-- Pushes auf `main` lösen CI und Pages-Deployment aus.
+- Pushes auf `main` lösen `.github/workflows/publish.yml` aus: vollständige Prüfungen, Builds und Cloudflare-Deployment. Speichern in der Verwaltung verwendet denselben geprüften Veröffentlichungsweg.
+- GitHub Pages und externer Pages-CMS-Zugriff werden erst nach dokumentierter Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen DNS-TTLs abgeschaltet. Der Codewechsel allein bestätigt keine externe Abschaltung.
+- Einrichtung, Wiederherstellung und DNS-Rückfall stehen in `docs/verwaltung-betrieb.md`.
 - In der Codex-Sandbox können `git push`-Kommandos wegen DNS/Netzwerk-Auflösung scheitern; falls wiederholt „Could not resolve hostname github.com“ erscheint, im externen/ausgenommenen Kontext erneut ausführen (Retry).
 - `git commit` bleibt lokal und ist von dieser Sandbox-Network-Schwäche unabhängig.
 

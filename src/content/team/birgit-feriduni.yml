@@ -3,4 +3,4 @@ assignments:
   - group: Tertia
     position: 40
 image: ../../assets/images/team/birgit-feriduni.webp
-status: published
+visible: true

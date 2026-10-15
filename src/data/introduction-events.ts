@@ -2,7 +2,7 @@ interface IntroductionEvent {
   title: string;
   date: string;
   category: string;
-  status: string;
+  visible: boolean;
 }
 
 export function getNextIntroductionEvent<T extends IntroductionEvent>(
@@ -21,7 +21,7 @@ export function getNextIntroductionEvent<T extends IntroductionEvent>(
   return events
     .filter(
       (event) =>
-        event.status === "published" &&
+        event.visible &&
         (event.category === "Kennenlernen" || event.category === "Informationsabend") &&
         event.date >= today,
     )

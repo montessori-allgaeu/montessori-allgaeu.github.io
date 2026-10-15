@@ -1,12 +1,13 @@
 import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import type { LinkedDownloadId } from "../admin/content-model";
 import { stat } from "node:fs/promises";
 import { join } from "node:path";
 import { formatDownloadMeta, formatGermanLongDate, formatGermanPhoneHref } from "./content-utils";
 
 type RawJob = CollectionEntry<"jobs">["data"];
-type PublishedJob = Omit<RawJob, "datePosted" | "status"> & {
+type PublishedJob = Omit<RawJob, "datePosted" | "visible"> & {
   datePosted: string;
-  status: "published";
+  visible: true;
 };
 type RawContactSettings = CollectionEntry<"contactSettings">["data"];
 type RawAfternoonOffer = CollectionEntry<"afternoonOffers">["data"];
@@ -56,7 +57,7 @@ const byPosition = <T extends { position: number }>(a: T, b: T) => a.position - 
 const byGermanText = (a: string, b: string) => a.localeCompare(b, "de");
 
 export async function getJobs(): Promise<Job[]> {
-  const entries = await getCollection("jobs", ({ data }) => data.status === "published");
+  const entries = await getCollection("jobs", ({ data }) => data.visible);
   return entries
     .map(({ id, data }) => {
       if (!data.datePosted) {
@@ -65,7 +66,7 @@ export async function getJobs(): Promise<Job[]> {
 
       return {
         ...data,
-        status: "published" as const,
+        visible: true as const,
         datePosted: data.datePosted,
         slug: id,
         areaLabel: [data.area, data.team].filter(Boolean).join(" · "),
@@ -84,12 +85,12 @@ export async function getJobs(): Promise<Job[]> {
 }
 
 export async function getTeam(): Promise<TeamMember[]> {
-  const entries = await getCollection("team", ({ data }) => data.status === "published");
+  const entries = await getCollection("team", ({ data }) => data.visible);
   return entries.map(({ data }) => data).sort((a, b) => byGermanText(a.name, b.name));
 }
 
 export async function getParentCouncil(): Promise<ParentCouncilMember[]> {
-  const entries = await getCollection("parentCouncil", ({ data }) => data.status === "published");
+  const entries = await getCollection("parentCouncil", ({ data }) => data.visible);
   return entries
     .map(({ data }) => data)
     .sort(
@@ -99,12 +100,12 @@ export async function getParentCouncil(): Promise<ParentCouncilMember[]> {
 }
 
 export async function getEvents(): Promise<Event[]> {
-  const entries = await getCollection("events", ({ data }) => data.status === "published");
+  const entries = await getCollection("events", ({ data }) => data.visible);
   return entries.map(({ data }) => data).sort((a, b) => a.date.localeCompare(b.date));
 }
 
 export async function getDownloads(): Promise<Download[]> {
-  const entries = await getCollection("downloads", ({ data }) => data.status === "published");
+  const entries = await getCollection("downloads", ({ data }) => data.visible);
   const downloads = await Promise.all(
     entries.map(async ({ data }) => {
       const path = join(publicDirectory, data.file.replace(/^\/+/, ""));
@@ -115,6 +116,15 @@ export async function getDownloads(): Promise<Download[]> {
   );
 
   return downloads.sort((a, b) => byPosition(a, b) || byGermanText(a.title, b.title));
+}
+
+/** Shared references keep admission and membership links in sync with Downloads. */
+export async function getLinkedDownload(id: LinkedDownloadId): Promise<string> {
+  const entry = await getEntry("downloads", id);
+  if (!entry?.data.visible)
+    throw new Error(`Das verknüpfte Dokument ${id} fehlt oder ist ausgeblendet.`);
+  await stat(join(publicDirectory, entry.data.file.slice(1)));
+  return entry.data.file;
 }
 
 export async function getDonationPage(): Promise<DonationPage> {
@@ -142,7 +152,7 @@ export async function getAfternoonProgram(): Promise<AfternoonProgram> {
   );
   const entries = await getCollection(
     "afternoonOffers",
-    ({ data }) => data.status === "published" && data.schoolYear === settings.data.activeSchoolYear,
+    ({ data }) => data.visible && data.schoolYear === settings.data.activeSchoolYear,
   );
   const offers = entries
     .map(({ id, data }) => ({

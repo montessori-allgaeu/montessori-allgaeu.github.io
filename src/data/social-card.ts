@@ -47,6 +47,7 @@ export async function renderSocialCard(page: SeoPage) {
   const svg = await satori(
     {
       type: "div",
+      key: null,
       props: {
         style: {
           display: "flex",

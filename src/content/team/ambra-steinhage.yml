@@ -7,4 +7,4 @@ assignments:
     role: Klassenleitung
     position: 10
 image: ../../assets/images/team/ambra-steinhage.webp
-status: published
+visible: true

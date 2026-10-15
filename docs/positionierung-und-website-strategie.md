@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 21. Juli 2026
+Stand: 15. Oktober 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -438,7 +438,7 @@ Die aktuelle technische Checkliste steht in [`README.md`](../README.md).
 - keine typische Luxus-Privatschulästhetik
 - keine Positionierung als Förder- oder Therapieschule
 - keine Kopie anderer Montessori-Websites
-- kein datenbank- oder serverbasiertes CMS, Analytics-System oder Formularzwang in der aktuellen V1; Pages CMS dient ausschließlich als Git-basierte Redaktionsoberfläche für operative Inhalte einschließlich der Nachmittagsangebote und für die freigegebenen Inhalte der Spendenseite
+- kein Webtracking, kein Formularzwang und kein frei konfigurierbarer Seitenbaukasten; die bestätigte Monte-Verwaltung pflegt operative Inhalte und die freigegebenen Texte der Spendenseite
 - kein Wachstum als Selbstzweck
 
 ## Erfolgskriterien
@@ -465,12 +465,14 @@ In V1 gibt es bewusst kein Webtracking. Erfolg wird zunächst über die Qualitä
 
 - Strategische Erstfassung und Richtung: Executive-Chairman-/CEO-Perspektive des Auftraggebers
 - Operativer Website-Owner nach Erstellung: Nathanael, Geschäftsleiter
-- Änderungen: Nathanael oder der Auftraggeber
-- Inhalte liegen direkt im Repository. Pages CMS bietet Nathanael eine begrenzte Redaktionsoberfläche und speichert Änderungen als Git-Commits auf `main`.
+- Redaktionelle Änderungen: vom Admin eingeladene Content Manager und Admins; operative Verantwortung weiterhin bei Nathanael
+- Inhalte und Medien liegen direkt im Repository. Die Monte-Verwaltung führt Speichern automatisch über gemeinsame Inhaltsvalidierung, GitHub-Prüfungen, einen Commit auf `main` und Cloudflare-Veröffentlichung.
+- Die Verwaltung ist über den Website-Footer erreichbar. Anmeldung ausschließlich per Passkey, ohne Nutzername, E-Mail oder Passwort. Admins laden Personen ein und verwalten Zugänge; Content Manager bearbeiten Inhalte einschließlich Gebühren. Spendenempfänger und Bankverbindung bleiben Admins vorbehalten.
 
 Wichtige Pfade:
 
-- CMS-Konfiguration: `.pages.yml`
+- Verwaltungsoberfläche: `admin/`
+- Gemeinsame Felder, Defaults und Inhaltsmodelle: `src/admin/content-model.ts`, `src/admin/content-fields.ts`, `src/admin/content-schemas.ts`
 - Validierung der redaktionellen Daten: `src/content.config.ts`
 - Kontaktdaten, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
 - Aktives Schuljahr und Rahmen der Nachmittagswahl: `src/content/settings/afternoon-program.yml`
@@ -506,16 +508,17 @@ Wichtige Pfade:
 - Kindergarten und Schule werden als ein Bildungsweg und nicht als getrennte Zielgruppenwelten behandelt.
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
 - Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.
-- Die Spendenseite und ihr ruhiger Startseitenhinweis werden über Pages CMS gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
+- Die Spendenseite und ihr ruhiger Startseitenhinweis werden über die Monte-Verwaltung gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
 - Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
-- Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über Pages CMS gepflegt; die Kontaktadressen liegen zentral in den CMS-Stammdaten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
+- Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über die Monte-Verwaltung gepflegt; die Kontaktadressen liegen zentral unter Kontakt & Zeiten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
 - Die Mitgliedschaft im Montessori Landesverband Bayern und die damit verbundene Mitgliedschaft bei Montessori Deutschland werden als ruhiger Vertrauensbeweis im Footer genannt und auf **Träger & Verein** inhaltlich eingeordnet. Das Verbandslogo erscheint dort auf hellem Grund, nicht prominent auf der Startseite oder im Hero.
 - Termine und Downloads werden im Dropdown und im Footer unter **Kennenlernen** erschlossen; ihre bestehenden Routen `/termine/` und `/downloads/` und die fünf Hauptpunkte der Navigation bleiben unverändert. Mobil öffnen die Hauptbereiche ihre Unterseiten als kompakte Akkordeons. Termine, Downloads und Kontakt bleiben zusätzlich als direkte Schnellzugriffe erreichbar.
 - Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.
 - Allgäu darf subtil vorkommen, ist aber kein inhaltlicher oder visueller Schwerpunkt.
 - Erste Version sollte schnell live gehen; ein neues Fotoshooting darf später folgen.
-- Die Website ist statisch mit Astro umgesetzt und wird über GitHub Pages veröffentlicht.
+- Die Website bleibt statisch mit Astro umgesetzt. Website und Verwaltung werden als getrennte Cloudflare Workers mit Static Assets betrieben. Die öffentliche Auslieferung benötigt keine Verwaltungs-API und bleibt bei ausgeschöpften Backend-Kontingenten erreichbar.
+- Die Infrastruktur verwendet ausschließlich kostenlose Tarife und Dienste. GitHub bleibt für Code, Inhalte, Historie und automatische Prüfungen zuständig. Ein normaler Push auf `main` veröffentlicht nach erfolgreichen Prüfungen ohne weitere Alltagsaktionen. Domainregistrierung und Mailpostfächer können beim bisherigen Anbieter bleiben.
 - Direkte E-Mail-Kontakte bleiben der reguläre Kontaktweg. Zum Erschweren automatischer
   Adresssammlung werden Adressen außerhalb der Rechtstextseiten erst nach einer bewussten
   Klick- oder Tastaturaktion angezeigt; danach sind sie kopierbar und über das eigene
@@ -525,14 +528,14 @@ Wichtige Pfade:
   ist kein vollständiger Spamschutz. Das bestehende anonyme Vorstandsformular bleibt ein
   gesonderter Kontaktweg.
 - Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
-- Operative Inhalte werden über Pages CMS direkt auf `main` gepflegt. Astro-Schemas und der Build verhindern die Veröffentlichung strukturell ungültiger Inhalte.
+- Pages CMS wird vollständig abgelöst. Speichern startet unmittelbar die geprüfte Veröffentlichung; es gibt keine Entwürfe oder zusätzlichen Freigaben. Bereits ausgeblendete Inhalte bleiben ausgeblendet. Wiederverwendete Kontaktdaten, Personen und Dokumente werden zentral gepflegt.
+- Der einmalige Wechsel zu Cloudflare-DNS übernimmt sämtliche bisherigen DNS- und Maileinträge. GitHub Pages bleibt bis zur Abnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf relevanter DNS-TTLs als Rückfall erhalten. Die externe Abschaltung wird separat nachgewiesen.
 - Die Nachmittagsangebote werden als strukturierte, jahresbezogene CMS-Inhalte gepflegt. Die Website zeigt sie ruhig nach Primaria beziehungsweise Sekundaria und Tertia sowie nach Wochentagen; klassenübergreifende Angebote werden aus einem gemeinsamen Eintrag abgeleitet.
 - Der Erdkinderplan gilt für Sekundaria und Tertia und wird auf der Schulseite anhand des Bauwagenprojekts konkretisiert. Das Projektvideo zeigt als authentisches Beispiel das Lernen der Sekundaria B, steht nicht auf der Startseite und nicht stellvertretend für die gesamte Pädagogik. Der Vimeo-Player wird erst nach einer bewussten Aktivierung geladen.
 
 ## Offene beziehungsweise später erneut zu prüfende Entscheidungen
 
 - endgültige Aufnahmefristen und deren Darstellung
-- dauerhaftes Verfahren für Termine und Aktualisierungen
 - spätere Messung von Anfrage- und Bewerbungsqualität
 - dauerhaftes Verfahren zur Auswahl, Freigabe und Aktualisierung konkreter Förderschwerpunkte
 - Umfang und Art eines professionellen Fotoshootings

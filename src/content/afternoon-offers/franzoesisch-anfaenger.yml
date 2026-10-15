@@ -5,4 +5,4 @@ gradeFrom: 5
 gradeTo: 10
 description: Du lernst die Grundlagen der französischen Sprache und entwickelst ein Gefühl für Klang, Wortschatz und Kultur. Das Angebot schafft zugleich eine Basis für einen späteren Bildungsweg, auf dem eine zweite Fremdsprache vorausgesetzt wird.
 position: 10
-status: published
+visible: true

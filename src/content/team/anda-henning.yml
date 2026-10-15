@@ -5,4 +5,4 @@ assignments:
     role: Primaria B
     position: 20
 image: ../../assets/images/team/anda-henning.webp
-status: published
+visible: true

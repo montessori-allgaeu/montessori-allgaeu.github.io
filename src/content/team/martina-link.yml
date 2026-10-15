@@ -4,4 +4,4 @@ assignments:
     section: Pädagogische Assistenzen
     position: 20
 image: ../../assets/images/team/martina-link.webp
-status: published
+visible: true

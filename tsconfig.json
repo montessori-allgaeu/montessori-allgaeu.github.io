@@ -1,6 +1,8 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -8,5 +10,15 @@
     "types": ["vitest/globals"]
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "playwright-report", "test-results", "artifacts", "tmp"]
+  "exclude": [
+    "dist",
+    "dist-admin",
+    ".wrangler",
+    "worker",
+    "vitest.worker.config.ts",
+    "playwright-report",
+    "test-results",
+    "artifacts",
+    "tmp"
+  ]
 }

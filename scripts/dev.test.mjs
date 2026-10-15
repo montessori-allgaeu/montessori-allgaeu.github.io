@@ -7,10 +7,11 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { setTimeout as delay } from "node:timers/promises";
 
 const repo = fileURLToPath(new URL("../", import.meta.url));
 
-async function fixture(t, defaultPort) {
+async function fixture(t, defaultPort, includeAdmin = false) {
   const root = await mkdtemp(path.join(os.tmpdir(), "astro dev test "));
   t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, "scripts"));
@@ -25,6 +26,33 @@ async function fixture(t, defaultPort) {
     path.join(root, "scripts/dev.mjs"),
     original.replace("? 8000 :", `? ${defaultPort} :`),
   );
+  if (includeAdmin) {
+    await writeFile(
+      path.join(root, "scripts/dev-admin.mjs"),
+      await readFile(path.join(repo, "scripts/dev-admin.mjs"), "utf8"),
+    );
+    await mkdir(path.join(root, "admin"));
+    await writeFile(path.join(root, "admin/index.html"), "<h1>Local admin fixture</h1>");
+    await writeFile(
+      path.join(root, "admin/vite.config.ts"),
+      `import { defineConfig } from "vite"; import { fileURLToPath } from "node:url";
+      export default defineConfig({ root: fileURLToPath(new URL(".", import.meta.url)), build: { outDir: "../dist-admin", emptyOutDir: true } });`,
+    );
+    await writeFile(
+      path.join(root, "worker.mjs"),
+      `export default { fetch(request, env) { return Response.json({ origin: env.ADMIN_ORIGIN, rpId: env.RP_ID, path: new URL(request.url).pathname, requestOrigin: new URL(request.url).origin }); } };`,
+    );
+    await writeFile(
+      path.join(root, "wrangler.admin.jsonc"),
+      JSON.stringify({
+        name: "monte-local-dev-test",
+        main: "worker.mjs",
+        compatibility_date: "2026-10-15",
+        assets: { directory: "dist-admin", run_worker_first: ["/api/*"] },
+        vars: { ADMIN_ORIGIN: "https://production.invalid", RP_ID: "production.invalid" },
+      }),
+    );
+  }
   return root;
 }
 
@@ -130,5 +158,47 @@ test(
     assert.doesNotMatch(running.output(), /Local\s+http:\/\//);
     assert.match(running.output(), /already in use/);
     assert.equal(held.listening, true);
+  },
+);
+
+test(
+  "one entry starts the local administration and API with aligned origins and stops every listener",
+  { timeout: 90000 },
+  async (t) => {
+    const held = await consecutivePort(t);
+    const root = await fixture(t, held.address().port, true);
+    const running = start(t, root);
+    const publicUrl = await running.ready;
+    let adminUrl;
+    let apiUrl;
+    const deadline = Date.now() + 60000;
+    while (Date.now() < deadline) {
+      adminUrl = running.output().match(/Monte-Verwaltung: (http:\/\/localhost:\d+)\//)?.[1];
+      apiUrl = running.output().match(/Monte-Verwaltung API: (http:\/\/127\.0\.0\.1:\d+)\//)?.[1];
+      if (adminUrl && apiUrl) break;
+      assert.equal(running.child.exitCode, null, running.output());
+      await delay(100);
+    }
+    assert.ok(adminUrl && apiUrl, running.output());
+    assert.equal(Number(new URL(adminUrl).port), Number(new URL(publicUrl).port) + 1);
+    assert.equal(Number(new URL(apiUrl).port), Number(new URL(adminUrl).port) + 1);
+    assert.match(await (await fetch(publicUrl)).text(), /Local dev fixture/);
+    assert.match(await (await fetch(adminUrl)).text(), /Local admin fixture/);
+    assert.deepEqual(await (await fetch(`${adminUrl}/api/session`)).json(), {
+      origin: adminUrl,
+      rpId: "localhost",
+      path: "/api/session",
+      requestOrigin: adminUrl,
+    });
+    assert.match(running.output(), /Preparing the local administration assets once/);
+    assert.equal(held.listening, true);
+    running.child.kill("SIGINT");
+    assert.deepEqual(await running.exited, [0, null]);
+    for (const url of [publicUrl, adminUrl, apiUrl]) {
+      const replacement = net.createServer();
+      replacement.listen(Number(new URL(url).port), "127.0.0.1");
+      await once(replacement, "listening");
+      await new Promise((resolve) => replacement.close(resolve));
+    }
   },
 );

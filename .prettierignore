@@ -1,4 +1,8 @@
 dist
+dist-admin
+.wrangler
+.dev.vars*
+.env*
 .astro
 .npm-cache
 node_modules

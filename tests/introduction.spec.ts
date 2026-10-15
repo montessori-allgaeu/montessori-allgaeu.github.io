@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { contactData, kindergartenFeeData } from "./content-data";
 
 test("introduction shortcuts fit into the first mobile screen and lead to the intended pages", async ({
   page,
@@ -77,8 +78,10 @@ test("kindergarten fees reflow without horizontal scrolling or duplicate accessi
     if (width <= 640) {
       await expect(table).toHaveCount(0);
       await expect(mobileFees).toBeVisible();
-      await expect(mobileFees.locator("dt")).toHaveCount(5);
-      await expect(mobileFees.locator("dd").first()).toContainText("90 €");
+      await expect(mobileFees.locator("dt")).toHaveCount(kindergartenFeeData.rows.length);
+      await expect(mobileFees.locator("dd").first()).toContainText(
+        kindergartenFeeData.rows[0].effectiveAmount,
+      );
       const fits = await mobileFees.evaluate(
         (element) =>
           element.scrollWidth <= element.clientWidth &&
@@ -98,8 +101,8 @@ test("both admissions show the correct submission address beside the deadline", 
   page,
 }) => {
   for (const [path, email, recipient] of [
-    ["aufnahme-schule", "info@montessori-allgaeu.de", "Schulbüro"],
-    ["aufnahme-kindergarten", "kindergarten@montessori-allgaeu.de", "Kindergarten"],
+    ["aufnahme-schule", contactData.email, "Schulbüro"],
+    ["aufnahme-kindergarten", contactData.kindergartenEmail, "Kindergarten"],
   ]) {
     await page.goto(`/kennenlernen/${path}/`);
     const section = page
@@ -112,8 +115,10 @@ test("both admissions show the correct submission address beside the deadline", 
       `mailto:${email}`,
     );
     await expect(section.locator("address")).toContainText(`Montessori Allgäu – ${recipient}`);
-    await expect(section.locator("address")).toContainText("Klosterstraße 8");
-    await expect(section.locator("address")).toContainText("87534 Oberstaufen");
+    await expect(section.locator("address")).toContainText(contactData.address.street);
+    await expect(section.locator("address")).toContainText(
+      `${contactData.address.postalCode} ${contactData.address.locality}`,
+    );
     await expect(page.getByRole("main")).toHaveCSS("opacity", "1");
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   }

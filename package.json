@@ -13,25 +13,41 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:ci": "npm run format:check && npm run lint && npm run check && npm run test && npm run build && npm run check:email-exposure && npm run test:dev",
+    "test:ci": "npm run format:check && npm run lint && npm run check && npm run check:admin && npm run test && npm run test:worker && npm run build && npm run build:admin && node scripts/check-static-assets.mjs && npm run check:email-exposure && npm run test:dev && npm run test:admin",
     "test:e2e": "playwright test",
     "test:all": "npm run test:ci && npm run test:e2e",
     "screenshot:mobile": "playwright screenshot --browser chromium --viewport-size \"390,844\"",
     "check:email-exposure": "node scripts/check-email-exposure.mjs",
-    "test:dev": "node --test scripts/dev.test.mjs"
+    "test:dev": "node --test scripts/dev.test.mjs",
+    "build:admin": "vite build --config admin/vite.config.ts",
+    "check:admin": "tsc -p admin/tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit",
+    "test:worker": "vitest run --config vitest.worker.config.ts",
+    "test:admin": "playwright test --config admin/playwright.config.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
     "@fontsource/krub": "5.3.0",
     "@fontsource/unica-one": "5.3.0",
     "@lucide/astro": "1.24.0",
-    "astro": "7.1.0"
+    "@simplewebauthn/browser": "^14.0.0",
+    "@simplewebauthn/server": "^14.0.3",
+    "astro": "7.1.0",
+    "jose": "^6.2.12",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "@axe-core/playwright": "4.12.1",
+    "@cloudflare/vitest-plugin": "^1.4.3",
+    "@cloudflare/workers-types": "^5.20261015.1",
     "@playwright/test": "1.61.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@typescript-eslint/parser": "8.64.0",
+    "@vitejs/plugin-react": "^6.1.2",
     "eslint": "10.7.0",
     "eslint-plugin-astro": "1.7.0",
     "globals": "17.7.0",
@@ -39,8 +55,11 @@
     "prettier-plugin-astro": "0.14.1",
     "satori": "^0.29.0",
     "sharp": "^0.35.3",
+    "tsx": "^4.23.15",
     "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "vite": "^8.3.4",
+    "vitest": "4.1.10",
+    "wrangler": "^4.151.0"
   },
   "engines": {
     "node": ">=22.12.0"

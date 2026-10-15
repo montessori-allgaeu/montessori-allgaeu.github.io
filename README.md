@@ -1,6 +1,6 @@
 # Montessori Allgäu – Website
 
-Statische Website für Montessori-Kindergarten und Schule Allgäu. Gebaut mit Astro und für GitHub Pages vorbereitet.
+Statische Astro-Website für Montessori-Kindergarten und Schule Allgäu mit eigener Monte-Verwaltung. Website und Verwaltung verwenden getrennte Cloudflare Workers mit Static Assets; GitHub verwaltet Code, Inhalte, Historie und automatische Veröffentlichung.
 
 ## Strategische Grundlage
 
@@ -9,12 +9,13 @@ Die bestätigte Positionierung, Zielgruppenlogik, Content-Architektur und Design
 ## Lokal starten
 
 ```sh
-npm install
+npm ci
 ./dev
 ```
 
-Auf diesem Mac funktioniert auch `dev` aus jedem Unterordner des Repos. Astro beginnt bei Port 8000 und prüft bei Belegung 8001, 8002 und so weiter und gibt die tatsächliche lokale URL aus. Mit Ctrl+C beenden. `npm run dev` bleibt ebenfalls verfügbar.
-Der Starter verwendet die Astro-Server-API, damit er auch aus Codex im Vordergrund läuft und vorhandene Server nicht ersetzt. `./dev --port 8050` verlangt einen festen Port; bei Belegung bricht der Start ab.
+Auf diesem Mac funktioniert auch `dev` aus jedem Unterordner des Repos. Der Starter öffnet Astro auf dem ersten freien Port ab 8000 und anschließend die Verwaltung mit Vite und lokalem Wrangler auf den nächsten freien Ports. Alle tatsächlichen URLs werden im Terminal ausgegeben. Die Verwaltung lokal über die ausgegebene `localhost`-Adresse öffnen; Passkey-Domain und API sind darauf abgestimmt.
+
+Mit Ctrl+C werden nur die gestarteten Prozesse beendet. `npm run dev` bleibt verfügbar. `./dev --port 8050` verlangt einen festen öffentlichen Port; bei Belegung bricht der Start ab. Fehlende Verwaltungsassets werden einmal gebaut, Abhängigkeiten nicht erneut installiert. Die lokalen Backenddaten liegen unter `.wrangler/state`; ohne eingerichtete GitHub-App können keine Repository-Inhalte geladen oder veröffentlicht werden.
 
 Der Dev-Server baut den Astro-Content-Cache bei jedem Start neu auf. Nach Änderungen an der
 Inhaltsstruktur oder an `src/content.config.ts` einen bereits laufenden Dev-Server neu starten.
@@ -47,8 +48,8 @@ auf Chromium.
 
 ## Inhalte pflegen
 
-- Redaktionsoberfläche: [Pages CMS](https://app.pagescms.org)
-- Kurzanleitung für Nathanael: [`docs/redaktions-kurzanleitung.md`](docs/redaktions-kurzanleitung.md)
+- Redaktionsoberfläche: [Monte-Verwaltung](https://verwaltung.montessori-allgaeu.de)
+- Kurzanleitung für das Team: [`docs/redaktions-kurzanleitung.md`](docs/redaktions-kurzanleitung.md)
 - Kontaktdaten, Aufnahme, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
 - Spendenseite und aktuelle Förderschwerpunkte: `src/content/donations/page.yml`
 - Termine: `src/content/events/`
@@ -69,9 +70,11 @@ auf Chromium.
 - Alle indexierbaren Seiten haben eine eigene, versionierte Social Card. Nicht indexierte Seiten und alte Weiterleitungen verwenden die aktuelle Startseitenkarte als Fallback.
 - Bild, Ausschnitt, Kartentext, Renderer, Logo, eingebettete Schriften und Rendering-Abhängigkeiten fließen automatisch in den Social-Card-Fingerprint ein.
 
-Pages CMS stellt eine eingeschränkte Oberfläche für operative Inhalte und die freigegebenen Inhalte der Spendenseite bereit und speichert Änderungen direkt als Git-Commit auf `main`. Neue Termine, Stellen, Team- und Elternbeiratsmitglieder, Nachmittagsangebote und Downloads beginnen als Entwurf. Astro validiert die Inhalte beim Build; nur ein erfolgreicher Build wird automatisch veröffentlicht. Die Seite verwendet weiterhin keine CMS-Datenbank und keine Analyse. Einzige Formular-Ausnahme ist der besondere Vorstandskontakt über Formspark.
+Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** startet automatisch Prüfung, Übernahme in Git und Veröffentlichung. Vorhandene Einträge können mit `visible: false` ausgeblendet werden. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
 
-Die vollständige Anleitung für Einrichtung, Pflege und Wiederherstellung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md).
+Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
+
+Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.
 
 ## Vorstandskontakt über Formspark
 
@@ -120,38 +123,31 @@ Vorstandsformular und seine Spamprüfung sind davon unabhängig und bleiben unve
 `npm run check:email-exposure` prüft den aktuellen Build in `dist` auf Klartextadressen und fertige
 Mail-Links in Textassets, einschließlich JSON-LD, Skripten und Source Maps. `test:ci` führt die
 Prüfung nach dem Build aus; damit gilt sie auch für die Deployment-Pipeline. Nur die markierten
-Kontaktlinks mit `info@montessori-allgaeu.de` auf den zwei Rechtstextseiten sind ausgenommen;
-PDFs werden nicht geprüft. Bei einer Änderung der zentralen Adresse muss diese enge Ausnahme in
-`scripts/check-email-exposure.mjs` bewusst angepasst werden. Die Prüfung ist eine Absicherung gegen
+Kontaktlinks mit der jeweils zentral gepflegten Adresse aus `src/content/settings/contact.yml` auf den zwei Rechtstextseiten sind ausgenommen;
+PDFs werden nicht geprüft. Die enge Ausnahme folgt automatisch der zentralen Kontaktadresse. Die Prüfung ist eine Absicherung gegen
 versehentliche Klartextausgabe, kein Beweis gegen alle Formen der Adressrekonstruktion.
 
-## Veröffentlichung über GitHub Pages
+## Automatische Veröffentlichung auf Cloudflare
 
-Vorgesehen ist die GitHub-Organisation `montessori-allgaeu` mit dem Repository `montessori-allgaeu.github.io`. Der Workflow `.github/workflows/deploy.yml` baut den statischen Astro-Output und veröffentlicht das Verzeichnis `dist` über GitHub Pages.
+Ein Push auf `main` startet `.github/workflows/publish.yml`: vollständige Prüfungen, Builds, Prüfung der kostenlosen Asset-Grenzen und Veröffentlichung beider Anwendungen. Bei fehlgeschlagenen Prüfungen bleibt die bisherige Website online. Für redaktionelle Änderungen startet die Verwaltung denselben Ablauf über eine auf dieses Repository beschränkte GitHub App. Es sind keine manuellen Uploads oder weiteren Cloudflare-Aktionen im Alltag nötig.
 
-Vor dem ersten Deployment:
+- Öffentliche Website: `wrangler.site.jsonc`, Ausgabe `dist/`; statische Auslieferung ohne Worker-Script.
+- Verwaltung: `wrangler.admin.jsonc`, Ausgabe `dist-admin/`; Worker nur für `/api/*`.
+- Gemeinsame Inhaltsmodelle: `src/admin/content-model.ts` und `src/admin/content-schemas.ts`.
+- Private Backenddaten: SQLite Durable Objects; temporäre Uploads: Workers KV.
+- Deployment-Secrets und Domainkonfiguration: siehe [Betriebsanleitung](docs/verwaltung-betrieb.md).
 
-1. GitHub-Organisation und Repository anlegen.
-2. Unter **Settings → Pages → Source** „GitHub Actions“ wählen.
-3. Custom Domain in den Pages-Einstellungen auf `montessori-allgaeu.de` setzen.
-4. Domain in der Organisation verifizieren.
-5. Erst danach DNS umstellen und HTTPS aktivieren.
+Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runner verwenden. Backend-Limits unterbrechen Änderungen, nicht die öffentliche statische Website. Keine kostenpflichtigen Erweiterungen oder automatischen Upgrades aktivieren.
 
-## DNS-Cutover
+## DNS-Umstieg und Abschaltung des bisherigen Hostings
 
-Geplante Zielkonfiguration:
+Die vollständige vorhandene DNS-Zone wird zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer können beim bisherigen Anbieter bleiben. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden.
 
-- `www` als `CNAME` auf `montessori-allgaeu.github.io`
-- Apex-Domain mit den aktuell von GitHub dokumentierten `A`- und optional `AAAA`-Records
-- Kein Wildcard-DNS
-- Canonical Domain: `montessori-allgaeu.de`
-
-GitHub leitet bei korrekt gesetzter Apex- und `www`-Konfiguration automatisch auf die in Pages hinterlegte Canonical Domain um. DNS-Werte immer unmittelbar vor dem Cutover mit der aktuellen GitHub-Dokumentation abgleichen.
+Der Umstieg muss mit gesicherten DNS- und GitHub-Pages-Einstellungen, geprüfter Mailfunktion und Rückfallmöglichkeit erfolgen. **GitHub Pages und der externe Pages-CMS-App-Zugriff werden erst nach Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen DNS-TTLs abgeschaltet.** Diese externen Schritte gelten nicht allein durch Änderungen im Repository als erledigt. Der genaue Ablauf steht in der [Betriebsanleitung](docs/verwaltung-betrieb.md).
 
 ## Weiterleitungen alter Adressen
 
-In der aktuellen statischen GitHub-Pages-Konfiguration stehen keine individuellen serverseitigen
-301- oder 308-Weiterleitungen zur Verfügung. Deshalb erzeugt Astro für jeden Eintrag in
+Die bestehenden Weiterleitungen bleiben mit dem Hostingwechsel erhalten. Astro erzeugt für jeden Eintrag in
 `src/data/legacy.ts` eine statische Weiterleitungsseite. Sie verwendet einen sofortigen Meta-Refresh,
 verweist per Canonical auf die Zielseite und leitet im Browser zusätzlich mit `location.replace`
 weiter. [Google interpretiert einen sofortigen Meta-Refresh als permanente
@@ -160,9 +156,7 @@ Weiterleitung](https://developers.google.com/search/docs/crawling-indexing/301-r
 Auch die alte Startseitenadresse `/index.php` führt auf diesem Weg zur heutigen Startseite `/`.
 Astro erzeugt dafür `dist/index.php/index.html`; PHP muss dafür nicht ausgeführt werden.
 
-Falls später eine vorgeschaltete Redirect-Schicht eingesetzt wird, sollen dieselben Zuordnungen dort
-als serverseitige 301- oder 308-Weiterleitungen abgebildet werden. Die alten Weiterleitungen sollten
-nach dem Domain-Cutover stichprobenartig geprüft und dauerhaft beibehalten werden.
+Falls einzelne Zuordnungen später als statische Cloudflare-Redirects hinterlegt werden, müssen sie dieselben Ziele verwenden und ohne vorgeschaltete Worker-Ausführung auskommen. Die bestehenden Weiterleitungen nach dem Domainwechsel stichprobenartig prüfen und dauerhaft beibehalten. `/redaktion/` führt direkt zur neuen Monte-Verwaltung.
 
 ## Vor dem öffentlichen Launch bestätigen
 

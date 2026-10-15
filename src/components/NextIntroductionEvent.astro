@@ -19,7 +19,7 @@ const { events } = Astro.props;
         data-date={event.date}
         data-title={event.title}
         data-category={event.category}
-        data-status={event.status}
+        data-visible={String(event.visible)}
       >
         <p class="eyebrow">Nächste Gelegenheit zum Kennenlernen</p>
         <h2>{event.title}</h2>
@@ -43,7 +43,7 @@ const { events } = Astro.props;
         title: template.dataset.title!,
         date: template.dataset.date!,
         category: template.dataset.category!,
-        status: template.dataset.status!,
+        visible: template.dataset.visible === "true",
         template,
       }));
       const next = getNextIntroductionEvent(events);

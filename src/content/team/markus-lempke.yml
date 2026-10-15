@@ -4,4 +4,4 @@ assignments:
     role: Schriftführer
     position: 30
 image: ../../assets/images/team/markus-lempke.jpg
-status: published
+visible: true

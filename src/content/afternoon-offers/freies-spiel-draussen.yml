@@ -5,4 +5,4 @@ gradeFrom: 1
 gradeTo: 6
 description: Auf dem Spielplatz ist Zeit zum Klettern, Rennen, Schaukeln und Spielen mit Freund:innen – ohne festes Programm und mit viel Bewegung. Bei schlechtem Wetter geht das freie Spiel mit Rollen- oder Brettspielen drinnen weiter.
 position: 20
-status: published
+visible: true

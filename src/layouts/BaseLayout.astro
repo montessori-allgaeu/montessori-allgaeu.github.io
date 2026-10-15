@@ -7,6 +7,7 @@ import { getBreadcrumbItems } from "@/data/breadcrumbs";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import { officialProfiles, site } from "@/data/site";
+import { serializeStructuredData } from "@/data/structured-data";
 
 interface Props {
   title: string;
@@ -171,7 +172,11 @@ const structuredData = {
     <meta name="twitter:image" content={socialImage} />
     <meta name="twitter:image:alt" content={imageAlt} />
     <title>{pageTitle}</title>
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={serializeStructuredData(structuredData)}
+    />
     <slot name="head" />
   </head>
   <body>

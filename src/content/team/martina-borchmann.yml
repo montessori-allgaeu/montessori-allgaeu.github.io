@@ -4,4 +4,4 @@ assignments:
     role: Sekretariat
     position: 10
 image: ../../assets/images/team/martina-borchmann.jpg
-status: published
+visible: true

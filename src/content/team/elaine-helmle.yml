@@ -3,4 +3,4 @@ assignments:
   - group: Fach- & Förderteam
     position: 20
 image: ../../assets/images/team/elaine-helmle.webp
-status: published
+visible: true

@@ -2,7 +2,11 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { checkEmailExposure, findEmailExposure } from "../../scripts/check-email-exposure.mjs";
+import {
+  checkEmailExposure,
+  findEmailExposure,
+  readLegalEmail,
+} from "../../scripts/check-email-exposure.mjs";
 
 describe("production email exposure guard", () => {
   it.each([
@@ -17,19 +21,41 @@ describe("production email exposure guard", () => {
   });
 
   it("allows only the marked legal contact on the two legal pages", () => {
-    const anchor =
-      '<a href="mailto:info@montessori-allgaeu.de" data-public-email>info@montessori-allgaeu.de</a>';
+    const email = readLegalEmail();
+    const anchor = `<a href="mailto:${email}" data-public-email>${email}</a>`;
     for (const path of ["impressum/index.html", "datenschutz/index.html"]) {
       expect(findEmailExposure(path, anchor)).toEqual([]);
+      expect(findEmailExposure(path, `${anchor}<script>{"email":"${email}"}</script>`)).not.toEqual(
+        [],
+      );
       expect(
-        findEmailExposure(path, `${anchor}<script>{"email":"info@montessori-allgaeu.de"}</script>`),
+        findEmailExposure(path, anchor.replaceAll(email, "forbidden-one@example.org")),
       ).not.toEqual([]);
-      expect(findEmailExposure(path, anchor.replaceAll("info@", "vorstand@"))).not.toEqual([]);
-      expect(findEmailExposure(path, anchor.replaceAll("info@", "other-info@"))).not.toEqual([]);
-      expect(findEmailExposure(path, anchor.replaceAll(".de", ".de.example.org"))).not.toEqual([]);
+      expect(findEmailExposure(path, anchor.replaceAll(email, `other-${email}`))).not.toEqual([]);
+      expect(findEmailExposure(path, anchor.replaceAll(email, `${email}.example.org`))).not.toEqual(
+        [],
+      );
     }
     expect(findEmailExposure("kontakt/index.html", anchor)).not.toEqual([]);
-    expect(findEmailExposure("impressum/index.html", "info@montessori-allgaeu.de")).not.toEqual([]);
+    expect(findEmailExposure("impressum/index.html", email)).not.toEqual([]);
+  });
+
+  it("reads the allowed legal email from canonical contact data", () => {
+    const root = mkdtempSync(join(tmpdir(), "legal-email-"));
+    try {
+      const contactPath = join(root, "contact.yml");
+      writeFileSync(contactPath, "email: office@example.org\ncareersEmail: jobs@example.org\n");
+      const email = readLegalEmail(contactPath);
+      const anchor = '<a href="mailto:office@example.org" data-public-email>office@example.org</a>';
+      expect(findEmailExposure("impressum/index.html", anchor, email)).toEqual([]);
+      expect(
+        findEmailExposure("impressum/index.html", anchor.replaceAll("office@", "jobs@"), email),
+      ).not.toEqual([]);
+      writeFileSync(contactPath, "email: invalid\n");
+      expect(() => readLegalEmail(contactPath)).toThrow(/invalid/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("permits an opaque payload and a decoder's bare protocol literal", () => {

@@ -5,4 +5,4 @@ gradeFrom: 1
 gradeTo: 4
 description: Drinnen und draußen probiert ihr unterschiedliche Bewegungsformen, Spiele, Übungen und Parcours aus. Neben abwechslungsreichen Ideen ist Platz für eure Wünsche und dafür, euch so zu bewegen, wie es euch guttut.
 position: 10
-status: published
+visible: true

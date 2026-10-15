@@ -4,7 +4,7 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import AnonymousBoardContact from "@/components/AnonymousBoardContact.astro";
-import { getTeam } from "@/data/content";
+import { getTeam, getLinkedDownload } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import landesverbandLogo from "@/assets/brand/official/logo-montessori-landesverband-bayern.svg";
 
@@ -27,6 +27,7 @@ const getInitials = (name: string) =>
     .join("")
     .slice(0, 2)
     .toUpperCase();
+const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.verein)}>
@@ -244,9 +245,7 @@ const getInitials = (name: string) =>
           <li>Alleinerziehende: 30 € jährlich</li>
         </ul>
         <div class="button-row">
-          <a class="button button--light" href="/downloads/beitrittserklaerung-verein.pdf">
-            Beitrittserklärung
-          </a>
+          <a class="button button--light" href={documentHref}> Beitrittserklärung </a>
           <a class="button membership-button--outline" href="/spenden/">Spenden</a>
         </div>
       </div>
