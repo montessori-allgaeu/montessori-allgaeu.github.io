@@ -13,18 +13,6 @@ import { principles } from "@/data/site";
     intro="Unsere Prinzipien gelten für alle Menschen mit Aufgaben und Verantwortung – über alle fünf Säulen hinweg. Sie bestimmen unser Handeln und machen sichtbar, woran wir uns selbst und einander erinnern."
   />
 
-  <section class="quote-band principles-quote">
-    <div class="container">
-      <blockquote lang="en" cite="https://x.com/fu_joehudson/status/2110022008084000886">
-        “A great decision isn’t one where you avoid the bad outcomes and get the good outcomes. It’s
-        one where you are who you want to be, no matter the outcome.”
-      </blockquote>
-      <cite>
-        <a href="https://x.com/fu_joehudson/status/2110022008084000886">Joe Hudson</a>
-      </cite>
-    </div>
-  </section>
-
   <section class="section section--compact">
     <div class="container container--reading principles-intro">
       <p class="lead">
@@ -87,6 +75,15 @@ import { principles } from "@/data/site";
         </p>
       </div>
     </div>
+    <figure class="container container--reading principles-quote">
+      <blockquote lang="en" cite="https://x.com/fu_joehudson/status/2110022008084000886">
+        “A great decision isn’t one where you avoid the bad outcomes and get the good outcomes. It’s
+        one where you are who you want to be, no matter the outcome.”
+      </blockquote>
+      <figcaption>
+        <a href="https://x.com/fu_joehudson/status/2110022008084000886">Joe Hudson</a>
+      </figcaption>
+    </figure>
   </section>
 
   <section class="section">
@@ -137,13 +134,22 @@ import { principles } from "@/data/site";
 
 <style>
   .principles-quote {
-    padding-block: clamp(2rem, 5vw, 4rem);
+    margin-block: clamp(3rem, 6vw, 5rem) 0;
+    padding-top: clamp(1.75rem, 3vw, 2.5rem);
+    border-top: 1px solid var(--color-line);
   }
 
   .principles-quote blockquote {
-    max-width: 54rem;
-    font-size: clamp(1.8rem, 3.2vw, 3rem);
-    line-height: 1.2;
+    margin: 0 0 1.25rem;
+    color: var(--color-text);
+    font-family: var(--display);
+    font-size: clamp(1.55rem, 2.5vw, 2.2rem);
+    line-height: 1.35;
+  }
+
+  .principles-quote figcaption {
+    color: var(--color-muted);
+    font-size: 0.85rem;
   }
 
   .principles-intro {
