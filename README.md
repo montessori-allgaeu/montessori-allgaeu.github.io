@@ -70,7 +70,7 @@ auf Chromium.
 - Alle indexierbaren Seiten haben eine eigene, versionierte Social Card. Nicht indexierte Seiten und alte Weiterleitungen verwenden die aktuelle Startseitenkarte als Fallback.
 - Bild, Ausschnitt, Kartentext, Renderer, Logo, eingebettete Schriften und Rendering-Abhängigkeiten fließen automatisch in den Social-Card-Fingerprint ein.
 
-Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** startet automatisch Prüfung, Übernahme in Git und Veröffentlichung. Vorhandene Einträge können mit `visible: false` ausgeblendet werden. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
+Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** bestätigt die dauerhaft angenommene Änderung sofort; Prüfung, Übernahme in Git und Veröffentlichung laufen im Hintergrund. Andere Einträge können währenddessen bearbeitet werden. Der gespeicherte Stand bleibt beim Neuladen sichtbar; „Auf der Website sichtbar“ erscheint erst nach bestätigter Veröffentlichung. Vorhandene Einträge können mit `visible: false` ausgeblendet werden. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
 
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 

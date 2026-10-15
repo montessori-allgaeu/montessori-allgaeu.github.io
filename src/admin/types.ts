@@ -54,6 +54,7 @@ export type Change = {
   error?: string;
   commit?: string;
   runUrl?: string;
+  saved?: { mutations: ContentMutation[]; previews: Record<string, string>; hasUploads?: boolean };
 };
 export type AccessUser = {
   id: string;

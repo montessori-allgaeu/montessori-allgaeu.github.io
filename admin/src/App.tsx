@@ -47,9 +47,9 @@ const areaDescriptions: Record<string, string> = {
   Spenden: "Förderprojekte und Möglichkeiten, die Monte zu unterstützen.",
 };
 const statusLabels: Record<Change["status"], string> = {
-  queued: "Wird vorbereitet",
-  checking: "Wird geprüft",
-  committed: "Gespeichert – Veröffentlichung läuft",
+  queued: "Gespeichert · Website wird aktualisiert",
+  checking: "Gespeichert · Website wird aktualisiert",
+  committed: "Gespeichert · Website wird aktualisiert",
   published: "Auf der Website sichtbar",
   failed: "Veröffentlichung fehlgeschlagen",
   conflict: "Gleichzeitig geändert",
@@ -71,6 +71,14 @@ const makeId = (data: ContentData) =>
       .replace(/^-|-$/g, "")
       .slice(0, 48) || "eintrag"
   }-${crypto.randomUUID().slice(0, 8)}`;
+const failureKey = (change: Change) => `${change.id}:${change.updatedAt}:${change.status}`;
+function readSeenFailures(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem("monte-seen-failures") ?? "[]") as string[];
+  } catch {
+    return [];
+  }
+}
 const today = () =>
   new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(new Date());
 function initialArea() {
@@ -104,6 +112,8 @@ type EditState = ContentMutation & {
   mediaVersions: Record<string, string>;
   requestId: string;
   operationId?: string;
+  savedPreviews: Record<string, string>;
+  savedWithUploads?: boolean;
 };
 type YearPlan = {
   year: string;
@@ -112,16 +122,40 @@ type YearPlan = {
   requestId: string;
   operationId?: string;
 };
-function toEdit(record: ContentRecord, mediaVersions: Record<string, string>): EditState {
+function pendingChange(record: { collection: string; id: string }, changes: Change[]) {
+  return changes.find(
+    (change) =>
+      ongoing(change) &&
+      change.saved?.mutations.some((mutation) => recordKey(mutation) === recordKey(record)),
+  );
+}
+function editorialRecords(records: ContentRecord[], changes: Change[]): ContentRecord[] {
+  const result = new Map(records.map((record) => [recordKey(record), record]));
+  // The API orders newest first. Apply older pending changes first.
+  for (const change of [...changes].reverse()) {
+    if (!ongoing(change)) continue;
+    for (const mutation of change.saved?.mutations ?? [])
+      result.set(recordKey(mutation), { ...mutation, version: mutation.baseVersion ?? "" });
+  }
+  return [...result.values()];
+}
+function toEdit(
+  record: ContentRecord,
+  mediaVersions: Record<string, string>,
+  change?: Change,
+): EditState {
   return {
     collection: record.collection,
     id: record.id,
-    baseVersion: record.version,
+    baseVersion: record.version || null,
     data: structuredClone(record.data),
     original: structuredClone(record.data),
     pendingMedia: {},
     mediaVersions: { ...mediaVersions },
     requestId: crypto.randomUUID(),
+    operationId: change?.id,
+    savedPreviews: change?.saved?.previews ?? {},
+    savedWithUploads: change?.saved?.hasUploads,
   };
 }
 
@@ -188,8 +222,10 @@ function Login({ invite, onEnrolled }: { invite: string | null; onEnrolled: () =
 function ChangeList({
   changes,
   onRetry,
+  onOpen,
 }: {
   changes: Change[];
+  onOpen: (change: Change, mutation: ContentMutation) => void;
   onRetry: (change: Change) => void;
 }) {
   return (
@@ -202,6 +238,20 @@ function ChangeList({
               <strong>{change.summary || "Website aktualisieren"}</strong>
               <p className={`change-state ${change.status}`}>{statusLabels[change.status]}</p>
               {change.error && <p className="error-detail">{change.error}</p>}
+              {change.saved && (change.status === "failed" || change.status === "conflict") && (
+                <div className="row-actions">
+                  {change.saved.mutations.map((mutation) => (
+                    <button
+                      className="text-button"
+                      key={recordKey(mutation)}
+                      onClick={() => onOpen(change, mutation)}
+                    >
+                      {titleOf(mutation.data, getContentDefinition(mutation.collection).label)}{" "}
+                      ansehen
+                    </button>
+                  ))}
+                </div>
+              )}
               <small>{new Date(change.updatedAt).toLocaleString("de-DE")}</small>
             </div>
             {change.status === "failed" && (
@@ -225,6 +275,7 @@ export function App() {
   const [initializing, setInitializing] = useState(true);
   const [snapshot, setSnapshot] = useState<EditableContentSnapshot | null>(null);
   const [changes, setChanges] = useState<Change[]>([]);
+  const [seenFailures, setSeenFailures] = useState(readSeenFailures);
   const [area, setArea] = useState(initialArea);
   const [query, setQuery] = useState("");
   const [editor, setEditor] = useState<EditState | null>(null);
@@ -246,14 +297,30 @@ export function App() {
   const changesRef = useRef(changes);
   changesRef.current = changes;
   const pendingUploads = editor ? activeMedia(editor.pendingMedia, editor.data) : [];
-  const previews = Object.fromEntries(
-    pendingUploads.map((upload) => [upload.value, upload.previewUrl]),
-  );
+  const previews = {
+    ...editor?.savedPreviews,
+    ...Object.fromEntries(pendingUploads.map((upload) => [upload.value, upload.previewUrl])),
+  };
   const dirty =
     !!editor &&
     (pendingUploads.length > 0 || JSON.stringify(editor.data) !== JSON.stringify(editor.original));
   const currentChange = changes.find((change) => change.id === editor?.operationId);
   const saving = busy || uploadsInProgress > 0 || !!ongoing(currentChange);
+  const editingLocked =
+    saving || currentChange?.status === "failed" || currentChange?.status === "conflict";
+  const needsFileReselection =
+    !!editor &&
+    !editor.operationId &&
+    (editor.savedWithUploads
+      ? [editor.data.file, editor.data.image].filter(
+          (value): value is string => typeof value === "string",
+        )
+      : Object.keys(editor.savedPreviews)
+    ).some(
+      (value) =>
+        (editor.data.file === value || editor.data.image === value) &&
+        !pendingUploads.some((upload) => upload.value === value),
+    );
   const uploadBusy = (uploading: boolean) => {
     setUploadsInProgress((count) => Math.max(0, count + (uploading ? 1 : -1)));
     if (uploading)
@@ -289,6 +356,7 @@ export function App() {
     ]);
     setSnapshot(content);
     setChanges(result.changes);
+    changesRef.current = result.changes;
     return content;
   }, []);
 
@@ -299,11 +367,12 @@ export function App() {
       .then((content) => {
         if (!current || editorRef.current) return;
         const params = new URLSearchParams(location.search);
-        const match = content.records.find(
+        const match = editorialRecords(content.records, changesRef.current).find(
           (record) =>
             record.collection === params.get("collection") && record.id === params.get("id"),
         );
-        if (match) setEditor(toEdit(match, content.mediaVersions));
+        if (match)
+          setEditor(toEdit(match, content.mediaVersions, pendingChange(match, changesRef.current)));
       })
       .catch((cause) => {
         if (current) setError(errorText(cause));
@@ -320,16 +389,18 @@ export function App() {
       if (running || document.visibilityState === "hidden") return;
       running = true;
       try {
+        const before = changesRef.current;
         const result = await api.request<{ changes: Change[] }>("/changes");
+        if (before !== changesRef.current) return;
         const newlyPublished = result.changes.some(
           (change) =>
             change.status === "published" &&
             changesRef.current.find((previous) => previous.id === change.id)?.status !==
               "published",
         );
-        setChanges(result.changes);
         if (newlyPublished) {
           const content = await api.request<EditableContentSnapshot>("/content");
+          if (before !== changesRef.current) return;
           setSnapshot(content);
           const current = editorRef.current;
           if (
@@ -351,6 +422,7 @@ export function App() {
               : plan,
           );
         }
+        setChanges(result.changes);
       } catch (cause) {
         setError(errorText(cause));
       } finally {
@@ -369,7 +441,26 @@ export function App() {
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty, editor?.operationId, yearPlan]);
 
+  useEffect(() => {
+    if (area !== "Änderungen") return;
+    const failures = changes
+      .filter((change) => change.status === "failed" || change.status === "conflict")
+      .map(failureKey);
+    if (failures.every((key) => seenFailures.includes(key))) return;
+    const next = [...new Set([...failures, ...seenFailures])].slice(0, 50);
+    setSeenFailures(next);
+    try {
+      localStorage.setItem("monte-seen-failures", JSON.stringify(next));
+    } catch {
+      /* Acknowledgement remains available for this session. */
+    }
+  }, [area, changes, seenFailures]);
+
   function leaveEditor() {
+    if (busy) {
+      setError("Bitte warte kurz, bis deine Änderung sicher gespeichert ist.");
+      return false;
+    }
     if (uploadsInProgress > 0) {
       setError(
         "Bitte warte, bis die Datei vollständig hochgeladen ist. Deine Eingaben bleiben erhalten.",
@@ -405,7 +496,7 @@ export function App() {
   function openRecord(record: ContentRecord) {
     if (!leaveEditor()) return;
     setArea(getContentDefinition(record.collection).area);
-    setEditor(toEdit(record, snapshot?.mediaVersions ?? {}));
+    setEditor(toEdit(record, snapshot?.mediaVersions ?? {}, pendingChange(record, changes)));
     setQuery("");
     history.replaceState(
       null,
@@ -413,6 +504,18 @@ export function App() {
       `?collection=${encodeURIComponent(record.collection)}&id=${encodeURIComponent(record.id)}`,
     );
     rememberArea(getContentDefinition(record.collection).area);
+  }
+  function openSavedChange(change: Change, mutation: ContentMutation) {
+    if (!leaveEditor()) return;
+    setArea(getContentDefinition(mutation.collection).area);
+    setQuery("");
+    setEditor(
+      toEdit(
+        { ...mutation, version: mutation.baseVersion ?? "" },
+        snapshot?.mediaVersions ?? {},
+        change,
+      ),
+    );
   }
   function newRecord(collection: ContentCollection, source?: ContentRecord) {
     if (!leaveEditor()) return;
@@ -444,6 +547,7 @@ export function App() {
       original: {},
       pendingMedia: {},
       mediaVersions: {},
+      savedPreviews: {},
       requestId: crypto.randomUUID(),
     });
     setQuery("");
@@ -496,7 +600,8 @@ export function App() {
     setError("");
     setFieldErrors([]);
     try {
-      const change = await api.post<Change>("/changes", { requestId, mutations, uploadIds });
+      const accepted = await api.post<Change>("/changes", { requestId, mutations, uploadIds });
+      const change = { ...accepted, saved: accepted.saved ?? { mutations, previews } };
       setChanges((current) => [change, ...current.filter((item) => item.id !== change.id)]);
       return change;
     } catch (cause) {
@@ -523,7 +628,7 @@ export function App() {
     }
   }
   async function save() {
-    if (!editor) return;
+    if (!editor || needsFileReselection) return;
     const change = await submit(
       [
         {
@@ -539,7 +644,13 @@ export function App() {
     if (change)
       setEditor((current) =>
         current && current.requestId === editor.requestId
-          ? { ...current, operationId: change.id }
+          ? {
+              ...current,
+              original: structuredClone(current.data),
+              savedPreviews: change.saved?.previews ?? previews,
+              savedWithUploads: change.saved?.hasUploads ?? pendingUploads.length > 0,
+              operationId: change.id,
+            }
           : current,
       );
   }
@@ -702,7 +813,7 @@ export function App() {
     );
   if (!session || invite) return <Login invite={invite} onEnrolled={() => setInvite(null)} />;
   const definition = editor ? getContentDefinition(editor.collection) : null;
-  const recordList = snapshot?.records ?? [];
+  const recordList = editorialRecords(snapshot?.records ?? [], changes);
   const searched = query.trim().toLocaleLowerCase("de-DE");
   const matches = searched
     ? recordList.filter((record) =>
@@ -718,6 +829,11 @@ export function App() {
       .activeSchoolYear ?? "",
   );
   const pendingCount = changes.filter((change) => ongoing(change)).length;
+  const failedCount = changes.filter(
+    (change) =>
+      (change.status === "failed" || change.status === "conflict") &&
+      !seenFailures.includes(failureKey(change)),
+  ).length;
   const yearChange = changes.find((change) => change.id === yearPlan?.operationId);
 
   return (
@@ -810,6 +926,20 @@ export function App() {
           </label>
           <span className="topbar-note">Einmal pflegen. Überall aktuell.</span>
         </div>
+        {((pendingCount > 0 && !(ongoing(currentChange) && pendingCount === 1)) ||
+          failedCount > 0) &&
+          area !== "Änderungen" && (
+            <div className={`publication-notice${failedCount ? " failed" : ""}`} role="status">
+              <span>
+                {failedCount
+                  ? `${failedCount === 1 ? "Eine gespeicherte Änderung konnte" : `${failedCount} gespeicherte Änderungen konnten`} nicht veröffentlicht werden.`
+                  : "Gespeichert. Die Website wird im Hintergrund aktualisiert."}
+              </span>
+              <button className="text-button" onClick={() => navigate("Änderungen")}>
+                {failedCount ? "Problem ansehen" : "Stand ansehen"}
+              </button>
+            </div>
+          )}
         {error && (
           <div className="global-error" role="alert">
             <p>{error}</p>
@@ -877,7 +1007,11 @@ export function App() {
             <p className="page-intro">
               Nach dem Speichern prüfen wir die Website und veröffentlichen sie automatisch.
             </p>
-            <ChangeList changes={changes} onRetry={(change) => void retry(change)} />
+            <ChangeList
+              changes={changes}
+              onRetry={(change) => void retry(change)}
+              onOpen={openSavedChange}
+            />
           </section>
         ) : editor && definition ? (
           <section className="page-content editor-page">
@@ -895,17 +1029,20 @@ export function App() {
               <div className="save-controls">
                 <span aria-live="polite" className="save-hint">
                   {ongoing(currentChange)
-                    ? statusLabels[currentChange!.status]
-                    : dirty
-                      ? "Noch nicht gespeichert"
-                      : currentChange?.status === "published"
-                        ? "Auf der Website sichtbar"
-                        : "Alles gespeichert"}
+                    ? "Website wird aktualisiert"
+                    : currentChange?.status === "failed" || currentChange?.status === "conflict"
+                      ? "Gespeichert · Bitte Veröffentlichung prüfen"
+                      : dirty
+                        ? "Noch nicht gespeichert"
+                        : currentChange?.status === "published"
+                          ? "Auf der Website sichtbar"
+                          : "Alles gespeichert"}
                 </span>
                 <button
                   className="button"
                   disabled={
                     saving ||
+                    needsFileReselection ||
                     !dirty ||
                     currentChange?.status === "conflict" ||
                     currentChange?.status === "failed" ||
@@ -913,7 +1050,11 @@ export function App() {
                   }
                   onClick={() => void save()}
                 >
-                  {saving ? "Wird gespeichert …" : "Speichern"}
+                  {busy || uploadsInProgress > 0
+                    ? "Wird gespeichert …"
+                    : ongoing(currentChange) || (currentChange && !dirty)
+                      ? "Gespeichert ✓"
+                      : "Speichern"}
                 </button>
               </div>
             </div>
@@ -921,6 +1062,18 @@ export function App() {
             {currentChange && (
               <div className={`operation-banner ${currentChange.status}`} role="status">
                 <strong>{statusLabels[currentChange.status]}</strong>
+                {ongoing(currentChange) && (
+                  <>
+                    <p>
+                      Du kannst jetzt weiterarbeiten oder diese Seite schließen. Auf der Website
+                      erscheint die Änderung automatisch in etwa 2–3 Minuten. Diesen Eintrag kannst
+                      du danach wieder bearbeiten.
+                    </p>
+                    <button className="text-button" onClick={() => navigate(area)}>
+                      Zurück zu {area} →
+                    </button>
+                  </>
+                )}
                 {currentChange.error && <p>{currentChange.error}</p>}
                 {currentChange.status === "failed" && (
                   <div className="row-actions">
@@ -936,6 +1089,11 @@ export function App() {
                       onClick={() =>
                         setEditor({
                           ...editor,
+                          pendingMedia: {},
+                          original:
+                            snapshot?.records.find(
+                              (record) => recordKey(record) === recordKey(editor),
+                            )?.data ?? {},
                           operationId: undefined,
                           requestId: crypto.randomUUID(),
                         })
@@ -955,6 +1113,13 @@ export function App() {
                   </button>
                 )}
               </div>
+            )}
+            {needsFileReselection && (
+              <p className="operation-banner" role="alert">
+                Bitte wähle die Datei noch einmal aus, bevor du diese überarbeitete Änderung
+                speicherst. Deine Texte bleiben erhalten. Die vorherige Datei gehört zum
+                ursprünglichen Veröffentlichungsauftrag.
+              </p>
             )}
             {fieldErrors.length > 0 && (
               <div className="error" role="alert">
@@ -978,6 +1143,7 @@ export function App() {
                     original: conflict.data,
                     baseVersion: conflict.version,
                     mediaVersions: conflictMediaVersions,
+                    pendingMedia: editor.operationId ? {} : editor.pendingMedia,
                     operationId: undefined,
                     requestId: crypto.randomUUID(),
                   });
@@ -991,7 +1157,7 @@ export function App() {
                 .filter((field) => !field.optional || editor.original[field.key] !== undefined)
                 .map((field) => (
                   <InlineField
-                    key={`${recordKey(editor)}:${field.key}`}
+                    key={`${recordKey(editor)}:${field.key}:${editor.operationId ?? "editing"}`}
                     field={field}
                     value={editor.data[field.key]}
                     onChange={(value) => updateField(recordKey(editor), field.key, value)}
@@ -1004,7 +1170,7 @@ export function App() {
                     context={editor.data}
                     onUploadBusy={uploadBusy}
                     previews={previews}
-                    disabled={saving || !!conflict}
+                    disabled={editingLocked || !!conflict}
                   />
                 ))}
               {definition.fields.some(
@@ -1021,7 +1187,7 @@ export function App() {
                     )
                     .map((field) => (
                       <InlineField
-                        key={`${recordKey(editor)}:${field.key}`}
+                        key={`${recordKey(editor)}:${field.key}:${editor.operationId ?? "editing"}`}
                         field={field}
                         value={editor.data[field.key]}
                         onChange={(value) => updateField(recordKey(editor), field.key, value)}
@@ -1034,7 +1200,7 @@ export function App() {
                         context={editor.data}
                         onUploadBusy={uploadBusy}
                         previews={previews}
-                        disabled={saving}
+                        disabled={editingLocked}
                       />
                     ))}
                 </details>
@@ -1063,7 +1229,7 @@ export function App() {
                 </button>
                 <button
                   className="text-button danger-text"
-                  disabled={saving}
+                  disabled={editingLocked}
                   onClick={() => {
                     if (
                       window.confirm(
@@ -1093,7 +1259,11 @@ export function App() {
                 disabled={busy || !!ongoing(yearChange) || !!yearPlan.operationId}
                 onClick={() => void saveYearPlan()}
               >
-                Programm speichern
+                {busy
+                  ? "Wird gespeichert …"
+                  : yearPlan.operationId
+                    ? "Gespeichert ✓"
+                    : "Programm speichern"}
               </button>
             </div>
             <p className="page-intro">
@@ -1103,6 +1273,17 @@ export function App() {
             {yearChange && (
               <div className={`operation-banner ${yearChange.status}`} role="status">
                 {statusLabels[yearChange.status]}
+                {ongoing(yearChange) && (
+                  <>
+                    <p>
+                      Du kannst weiterarbeiten oder die Seite schließen. Das Programm wird im
+                      Hintergrund veröffentlicht.
+                    </p>
+                    <button className="text-button" onClick={() => navigate(area)}>
+                      Zurück zu Ganztag & Essen →
+                    </button>
+                  </>
+                )}
                 {yearChange.error && <p>{yearChange.error}</p>}
                 {yearChange.status === "failed" && (
                   <div className="row-actions">
@@ -1276,7 +1457,11 @@ export function App() {
                 Alle ansehen →
               </button>
             </div>
-            <ChangeList changes={changes.slice(0, 4)} onRetry={(change) => void retry(change)} />
+            <ChangeList
+              changes={changes.slice(0, 4)}
+              onRetry={(change) => void retry(change)}
+              onOpen={openSavedChange}
+            />
           </section>
         ) : (
           <section className="page-content">
@@ -1305,7 +1490,17 @@ export function App() {
                 </label>
               )}
               {area === "Ganztag & Essen" && (
-                <button className="button secondary" onClick={startYearPlan}>
+                <button
+                  className="button secondary"
+                  disabled={changes.some(
+                    (change) =>
+                      ongoing(change) &&
+                      change.saved?.mutations.some(
+                        (mutation) => mutation.collection === "afternoonProgramSettings",
+                      ),
+                  )}
+                  onClick={startYearPlan}
+                >
                   Programm für neues Schuljahr übernehmen
                 </button>
               )}
@@ -1329,17 +1524,11 @@ export function App() {
                     .map((year) => (
                       <option key={year} value={year}>
                         {year}
-                        {year === currentYear ? " · Aktuell auf der Website" : ""}
+                        {year === currentYear ? " · Aktuelles Programm" : ""}
                       </option>
                     ))}
                 </select>
               </label>
-            )}
-            {pendingCount > 0 && (
-              <p className="operation-banner" role="status">
-                {pendingCount === 1 ? "Eine Änderung wird" : `${pendingCount} Änderungen werden`}{" "}
-                gerade geprüft und veröffentlicht. Den Stand findest du unter „Änderungen“.
-              </p>
             )}
             {areaDefinitions.map((item) => {
               let records = recordList

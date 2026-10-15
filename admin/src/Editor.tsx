@@ -560,6 +560,14 @@ export function InlineField({ field, value, onChange, ...props }: EditorProps) {
             <small>Mit „Speichern“ oben übernehmen.</small>
           </div>
         </div>
+      ) : field.type === "pdf" && typeof value === "string" && value ? (
+        <a
+          href={props.previews[value] ?? `https://montessori-allgaeu.de${value}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          PDF ansehen ↗
+        </a>
       ) : (
         <button
           type="button"

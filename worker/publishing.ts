@@ -67,11 +67,6 @@ const statuses = z.strictObject({
     .optional(),
   error: z.string().max(1000).optional(),
 });
-function publicChange(operation: Operation): Change {
-  const { id, status, createdAt, updatedAt, summary, error, commit, runUrl } = operation;
-  return { id, status, createdAt, updatedAt, summary, error, commit, runUrl };
-}
-
 export class Publishing {
   constructor(
     private store: Store,
@@ -87,12 +82,35 @@ export class Publishing {
     operation.updatedAt = new Date().toISOString();
     this.store.put(`change:${operation.id}`, operation);
   }
+  private publicChange(operation: Operation): Change {
+    const { id, status, createdAt, updatedAt, summary, error, commit, runUrl } = operation;
+    const saved =
+      status === "published"
+        ? undefined
+        : {
+            mutations: operation.mutations,
+            hasUploads: operation.uploadIds.length > 0,
+            previews: Object.fromEntries(
+              operation.uploadIds.flatMap((uploadId) => {
+                const upload = this.store.get<Upload>(`upload:${uploadId}`);
+                if (!upload) return [];
+                const kind = upload.path.startsWith("public/downloads/")
+                  ? "downloads"
+                  : upload.path.startsWith("src/assets/images/team/")
+                    ? "team"
+                    : "parentCouncil";
+                return [[mediaValue(upload.path, kind), `/api/uploads/${upload.id}`]];
+              }),
+            ),
+          };
+    return { id, status, createdAt, updatedAt, summary, error, commit, runUrl, saved };
+  }
   list() {
     return json({
       changes: this.operations()
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
         .slice(0, 50)
-        .map(publicChange),
+        .map((operation) => this.publicChange(operation)),
     });
   }
   async content() {
@@ -119,7 +137,7 @@ export class Publishing {
         "request_reused",
         "Diese Anfragekennung wurde bereits für eine andere Änderung verwendet.",
       );
-      return json(publicChange(previous));
+      return json(this.publicChange(previous));
     }
     this.auth.limit(`changes:${user.id}`, 30, 600_000);
     requireCondition(
@@ -240,7 +258,7 @@ export class Publishing {
       this.store.put(`upload:${upload.id}`, { ...upload, changeId: operation.id });
     this.auth.audit(user.id, "content_saved", operation.id);
     await this.storage.setAlarm(Date.now() + 1000);
-    return json(publicChange(operation), 202);
+    return json(this.publicChange(operation), 202);
   }
   async retry(id: string, user: AccessUser, session: Session) {
     const operation = this.store.get<Operation>(`change:${id}`);
@@ -274,7 +292,7 @@ export class Publishing {
     operation.dispatchCount = 0;
     this.write(operation);
     await this.storage.setAlarm(Date.now() + 1000);
-    return json(publicChange(operation), 202);
+    return json(this.publicChange(operation), 202);
   }
   async upload(request: Request, user: AccessUser): Promise<Response> {
     this.auth.limit(`uploads:${user.id}`, 20, 600_000);
@@ -343,8 +361,12 @@ export class Publishing {
   }
   async uploadPreview(id: string, user: AccessUser) {
     const upload = this.store.get<Upload>(`upload:${id}`);
+    const change = upload?.changeId
+      ? this.store.get<Operation>(`change:${upload.changeId}`)
+      : undefined;
     requireCondition(
-      upload && (upload.ownerId === user.id || user.role === "admin"),
+      upload &&
+        (upload.ownerId === user.id || user.role === "admin" || change?.uploadIds.includes(id)),
       404,
       "upload_missing",
       "Datei nicht gefunden.",

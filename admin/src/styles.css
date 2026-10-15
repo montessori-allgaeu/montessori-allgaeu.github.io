@@ -909,6 +909,19 @@ strong {
   align-items: center;
   margin-top: 32px;
 }
+.publication-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid #d7a24b;
+  font-size: 13px;
+}
+.publication-notice.failed {
+  color: #98431c;
+}
 .operation-banner {
   border-left: 3px solid #d7a24b;
   background: #eee9db;

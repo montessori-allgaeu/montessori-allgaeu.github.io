@@ -92,7 +92,7 @@ async function editEvent(page: Page) {
   await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Unser neuer Kennenlerntag");
 }
 
-test("bearbeitet inline, prüft CSRF und zeigt erst nach Veröffentlichung Erfolg", async ({
+test("bestätigt Speichern sofort und unterscheidet die spätere Veröffentlichung", async ({
   page,
 }) => {
   let submitted = false;
@@ -117,7 +117,8 @@ test("bearbeitet inline, prüft CSRF und zeigt erst nach Veröffentlichung Erfol
   await editEvent(page);
   await expect(page.getByRole("button", { name: "Zugänge", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
-  await expect(page.getByText("Wird geprüft", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Gespeichert ✓", exact: true })).toBeVisible();
+  await expect(page.getByText("Website wird aktualisiert", { exact: true })).toBeVisible();
   await expect(page.getByText("Auf der Website sichtbar", { exact: true })).toHaveCount(0);
   expect(requests[0].mutations[0].data.title).toBe("Unser neuer Kennenlerntag");
   expect(requests[0].mutations[0].baseVersion).toBe("version-1");
@@ -746,3 +747,210 @@ test("PDF erneut auswählen und danach einen anderen Datensatz bearbeiten vermis
   ]);
   expect(forms.map((form) => form.baseVersion)).toEqual(Array(3).fill("media-version-1"));
 });
+
+for (const viewport of [
+  { width: 1440, height: 1000 },
+  { width: 390, height: 844 },
+]) {
+  test(`gespeicherter Stand bleibt beim Wechsel und Neuladen erhalten (${viewport.width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    let saved: Change | undefined;
+    let published = false;
+    const other = record("events", { title: "Zweiter Termin", date: "2099-12-20" }, "zweiter");
+    await mock(page, [event, other], {
+      route: async (route, path) => {
+        if (path === "/changes") {
+          if (route.request().method() === "POST") {
+            saved = {
+              ...change(),
+              saved: { mutations: route.request().postDataJSON().mutations, previews: {} },
+            };
+            await route.fulfill({ json: saved });
+          } else
+            await route.fulfill({
+              json: {
+                changes: saved ? [{ ...saved, status: published ? "published" : "checking" }] : [],
+              },
+            });
+          return true;
+        }
+        if (path === "/content" && published) {
+          await route.fulfill({
+            json: {
+              revision: "revision-2",
+              mediaVersions: {},
+              records: [
+                { ...event, version: "version-2", data: saved!.saved!.mutations[0].data },
+                other,
+              ],
+            },
+          });
+          return true;
+        }
+        return false;
+      },
+    });
+    await editEvent(page);
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Gespeichert ✓" })).toBeDisabled();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Unser neuer Kennenlerntag", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }),
+    ).toBeDisabled();
+    await page.getByRole("button", { name: "Zurück zu Termine →", exact: true }).click();
+    await expect(
+      page.locator(".record-row").filter({ hasText: "Unser neuer Kennenlerntag" }),
+    ).toBeVisible();
+    await page.locator(".record-row").filter({ hasText: "Zweiter Termin" }).click();
+    await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
+    await page
+      .getByRole("textbox", { name: "Titel", exact: true })
+      .fill("Noch nicht gespeicherte Eingabe");
+    published = true;
+    await expect(page.locator(".publication-notice")).toHaveCount(0, { timeout: 8000 });
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+      "Noch nicht gespeicherte Eingabe",
+    );
+    await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
+  });
+}
+
+test("neue Einträge und Dateien bleiben vor Veröffentlichung auffindbar; Fehler bieten Wiederholung", async ({
+  page,
+}) => {
+  const mutation = {
+    collection: "downloads" as const,
+    id: "neue-datei",
+    baseVersion: null,
+    data: {
+      ...getContentDefinition("downloads").defaults(),
+      title: "Neue Unterlage",
+      file: "/downloads/neu.pdf",
+    },
+  };
+  let status: Change["status"] = "checking";
+  let retries = 0;
+  const saved = {
+    mutations: [mutation],
+    previews: { "/downloads/neu.pdf": "/api/uploads/preview" },
+  };
+  await mock(page, [], {
+    route: async (route, path) => {
+      if (path === "/changes") {
+        await route.fulfill({
+          json: {
+            changes: [
+              {
+                ...change(status),
+                saved,
+                error: status === "failed" ? "Prüfung fehlgeschlagen" : undefined,
+              },
+            ],
+          },
+        });
+        return true;
+      }
+      if (path.endsWith("/retry")) {
+        retries++;
+        status = "checking";
+        await route.fulfill({ json: { ...change(), saved } });
+        return true;
+      }
+      return false;
+    },
+  });
+  await page.goto("/?collection=downloads&id=neue-datei");
+  await expect(page.getByRole("heading", { name: "Neue Unterlage", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "PDF ansehen ↗", exact: true })).toHaveAttribute(
+    "href",
+    "/api/uploads/preview",
+  );
+  await page.getByRole("button", { name: "Zurück zu Downloads →", exact: true }).click();
+  status = "failed";
+  await expect(page.getByRole("button", { name: "Problem ansehen" })).toBeVisible({
+    timeout: 8000,
+  });
+  await page.getByRole("button", { name: "Problem ansehen" }).click();
+  await page.getByRole("button", { name: "Neue Unterlage ansehen" }).click();
+  await expect(page.getByRole("heading", { name: "Neue Unterlage", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Erneut versuchen", exact: true }).click();
+  await expect.poll(() => retries).toBe(1);
+  await expect(page.getByRole("button", { name: "Gespeichert ✓" })).toBeVisible();
+});
+
+for (const recovery of ["new", "replacement", "expired"] as const) {
+  const replacement = recovery !== "new";
+  test(`überarbeitete Dateiänderung verlangt erneute Auswahl (${recovery})`, async ({ page }) => {
+    const original = record("downloads", { title: "Unterlage", file: "/downloads/alt.pdf" });
+    const value = replacement ? "/downloads/alt.pdf" : "/downloads/neu.pdf";
+    const mutation = {
+      collection: original.collection,
+      id: original.id,
+      baseVersion: original.version,
+      data: { ...original.data, title: "Gespeicherte Änderung", file: value },
+    };
+    let accepted = false;
+    const requests = await mock(page, [original], {
+      route: async (route, path) => {
+        if (path === "/changes" && route.request().method() === "GET") {
+          await route.fulfill({
+            json: {
+              changes: accepted
+                ? []
+                : [
+                    {
+                      ...change("failed"),
+                      saved: {
+                        mutations: [mutation],
+                        previews:
+                          recovery === "expired"
+                            ? {}
+                            : { [value]: "/api/uploads/old-bound-upload" },
+                        hasUploads: true,
+                      },
+                    },
+                  ],
+            },
+          });
+          return true;
+        }
+        if (path === "/uploads") {
+          await route.fulfill({
+            json: { id: "new-upload", value, previewUrl: "/api/uploads/new-upload" },
+          });
+          return true;
+        }
+        if (path === "/changes" && route.request().method() === "POST") accepted = true;
+        return false;
+      },
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Problem ansehen" }).click();
+    await page.getByRole("button", { name: "Gespeicherte Änderung ansehen" }).click();
+    await page.getByRole("button", { name: "Eingaben überarbeiten" }).click();
+    await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
+    await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Korrigierter Titel");
+    await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
+    await expect(page.getByRole("alert")).toContainText("Datei noch einmal");
+    await page.getByRole("button", { name: "Bearbeiten: PDF-Datei", exact: true }).click();
+    await page.locator('input[type="file"]').setInputFiles({
+      name: "neu.pdf",
+      mimeType: "application/pdf",
+      buffer: Buffer.from("%PDF-1.7\n"),
+    });
+    await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].uploadIds).toEqual(["new-upload"]);
+    expect(requests[0].mutations[0].data.title).toBe("Korrigierter Titel");
+    // The historical failure still exists, but has already been inspected.
+    accepted = false;
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Problem ansehen" })).toHaveCount(0);
+  });
+}
