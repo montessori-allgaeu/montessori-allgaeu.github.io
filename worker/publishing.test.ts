@@ -315,9 +315,7 @@ test("uploads are private, belong to their uploader and can bind to only one cha
       code: "upload_missing",
     });
     expect((await publishing.uploadPreview(upload.id, user("admin"))).status).toBe(200);
-    const input = change(
-      records.find((record) => record.collection === "downloads" && record.data.visible)!,
-    );
+    const input = change(records.find((record) => record.collection === "downloads")!);
     input.mutations[0].data.file = upload.value;
     input.uploadIds = [upload.id];
     await expect(publishing.submit(input, other, session(other))).rejects.toMatchObject({
@@ -346,7 +344,7 @@ test("uploads are private, belong to their uploader and can bind to only one cha
 test("refuses a PDF replacement when the original file changed after upload", async () => {
   await withPublishing(async ({ publishing, store }) => {
     const owner = user();
-    const record = records.find((entry) => entry.collection === "downloads" && entry.data.visible)!;
+    const record = records.find((entry) => entry.collection === "downloads")!;
     const original = record.data.file as string;
     const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
     const upload = await (
@@ -369,9 +367,7 @@ test("rejects stale or missing media baselines before staging a replacement", as
   await withPublishing(async ({ publishing, store }) => {
     const owner = user();
     const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
-    const record = baseline.records.find(
-      (entry) => entry.collection === "downloads" && entry.data.visible,
-    )!;
+    const record = baseline.records.find((entry) => entry.collection === "downloads")!;
     const original = record.data.file as string;
     expect(baseline.mediaVersions[original]).toMatch(/^[a-f0-9]{40}$/);
     await expect(publishing.upload(pdfRequest(original), owner)).rejects.toMatchObject({
@@ -546,5 +542,68 @@ test("an admin retry preserves the original request identity and invalidates the
       await run(publishing, await runnerRequest(job.id, nextAttempt, "457"))
     ).json<{ commit: string }>();
     expect(retried.commit).toBe("a".repeat(40));
+  });
+});
+
+test("accepts versioned deletion once and rejects missing, protected and program-breaking deletions", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const account = user();
+    const input = change();
+    input.mutations[0].delete = true;
+    const first = await (await publishing.submit(input, account, session(account))).json<Change>();
+    expect(first).toMatchObject({
+      status: "queued",
+      deleted: true,
+      saved: { mutations: [{ delete: true }] },
+    });
+    const repeated = await (
+      await publishing.submit(input, account, session(account))
+    ).json<Change>();
+    expect(repeated.id).toBe(first.id);
+    expect(store.list("change:")).toHaveLength(1);
+    for (const record of records.filter(
+      (item) =>
+        item.collection === "contactSettings" ||
+        item.collection === "donations" ||
+        item.id === "absichtserklaerung-schule",
+    )) {
+      const invalid = change(record);
+      invalid.mutations[0].delete = true;
+      await expect(publishing.submit(invalid, account, session(account))).rejects.toMatchObject({
+        status: 400,
+        code: "deletion_invalid",
+      });
+    }
+    const stale = change();
+    stale.mutations[0].delete = true;
+    stale.mutations[0].baseVersion = "0".repeat(40);
+    await expect(publishing.submit(stale, account, session(account))).rejects.toMatchObject({
+      status: 409,
+    });
+    const absent = change();
+    absent.mutations[0] = {
+      ...absent.mutations[0],
+      id: "missing",
+      baseVersion: null,
+      delete: true,
+    };
+    await expect(publishing.submit(absent, account, session(account))).rejects.toMatchObject({
+      status: 400,
+    });
+    const program = change();
+    program.mutations = records
+      .filter((record) => record.collection === "afternoonOffers")
+      .map((record) => ({
+        collection: record.collection,
+        id: record.id,
+        baseVersion: record.version,
+        data: record.data,
+        delete: true,
+      }));
+    await expect(publishing.submit(program, account, session(account))).rejects.toMatchObject({
+      status: 400,
+      code: "content_invalid",
+    });
+    expect(store.list("change:")).toHaveLength(1);
   });
 });

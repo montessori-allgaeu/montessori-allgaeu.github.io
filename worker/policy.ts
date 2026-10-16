@@ -15,6 +15,7 @@ export const mutationSchema = z.strictObject({
     .regex(/^[0-9a-f]{40}$/)
     .nullable(),
   data: z.record(z.string(), z.json()),
+  delete: z.literal(true).optional(),
 });
 export const changeSchema = z.strictObject({
   requestId: z.uuid(),

@@ -1,6 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { activeMedia, discardMedia, selectMedia } from "../src/media";
-import { nextEvents, eventTemplates } from "../src/overview";
+import { nextEvents, eventTemplates, recentContent } from "../src/overview";
 import { getContentDefinition } from "../../src/admin/content-model";
 import type {
   Change,
@@ -272,14 +272,13 @@ test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) 
   const first = record("afternoonOffers", {
     title: "Werkstatt",
     schoolYear: "2026/27",
-    visible: true,
   });
-  const hidden = record(
+  const previousYear = record(
     "afternoonOffers",
-    { title: "Verstecktes Angebot", schoolYear: "2026/27", visible: false },
-    "versteckt",
+    { title: "Früheres Angebot", schoolYear: "2025/26" },
+    "frueher",
   );
-  const requests = await mock(page, [settings, first, hidden]);
+  const requests = await mock(page, [settings, first, previousYear]);
   await page.goto("/");
   await page
     .locator(".sidebar")
@@ -289,7 +288,7 @@ test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) 
   await expect(page.getByRole("textbox", { name: "Neues Schuljahr", exact: true })).toHaveValue(
     "2027/28",
   );
-  await expect(page.getByText("Verstecktes Angebot", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Früheres Angebot", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Programm speichern", exact: true }).click();
   await expect.poll(() => requests.length).toBe(1);
   expect(requests[0].mutations).toHaveLength(2);
@@ -351,7 +350,7 @@ for (const viewport of [
     }
     // The last action must not be covered by the fixed bar at the end of the page.
     const lastAction = (await page
-      .getByRole("button", { name: "Ausblenden", exact: true })
+      .getByRole("button", { name: "Löschen", exact: true })
       .boundingBox())!;
     expect(lastAction.y + lastAction.height).toBeLessThan((await bar.boundingBox())!.y);
     await bar.getByRole("button", { name: "Speichern", exact: true }).click();
@@ -366,7 +365,7 @@ test("neuer Termin zeigt Eingabefelder ohne Warnung für unberührte Vorgaben", 
   await page.getByRole("button", { name: "+ Termin hinzufügen", exact: true }).click();
   await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeEditable();
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Ausblenden", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Löschen", exact: true })).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }),
   ).toHaveCount(0);
@@ -592,15 +591,10 @@ test("zuletzt bearbeitete Inhalte sind eindeutig, bleiben nach Neuladen erhalten
   await expect(page).toHaveURL(/collection=downloads&id=info/);
 });
 
-test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene sowie ausgeblendete aus", async ({
+test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene aus", async ({
   page,
 }) => {
   const past = record("events", { title: "Vergangener Termin", date: "2020-01-01" }, "past");
-  const hidden = record(
-    "events",
-    { title: "Ausgeblendeter Termin", date: "2099-01-01", visible: false },
-    "hidden",
-  );
   const saved: Change = {
     ...change(),
     saved: {
@@ -615,7 +609,7 @@ test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene s
       previews: {},
     },
   };
-  await mock(page, [event, past, hidden], {
+  await mock(page, [event, past], {
     route: async (route, path) => {
       if (path !== "/changes") return false;
       await route.fulfill({ json: { changes: [saved] } });
@@ -673,19 +667,12 @@ test("Terminauswahl verwendet Berliner Datum und sinnvolle Vorlagen ohne Duplika
   const old = record("events", { title: "Elternabend", date: "2026-10-15" }, "old");
   const future = record("events", { title: "Elternabend", date: "2026-11-15" }, "future");
   const current = record("events", { title: "Heute", date: "2026-10-16" }, "current");
-  const hidden = record(
-    "events",
-    { title: "Versteckt", date: "2026-12-01", visible: false },
-    "hidden",
-  );
   expect(
-    nextEvents([future, old, hidden, current], new Date("2026-10-15T22:30:00Z")).map(
-      (record) => record.id,
-    ),
+    nextEvents([future, old, current], new Date("2026-10-15T22:30:00Z")).map((record) => record.id),
   ).toEqual(["current", "future"]);
-  expect(
-    eventTemplates([old, future, hidden, current], "Eltern").map((record) => record.id),
-  ).toEqual(["future"]);
+  expect(eventTemplates([old, future, current], "Eltern").map((record) => record.id)).toEqual([
+    "future",
+  ]);
 });
 
 test("Terminvorlage übernimmt Angaben und bewahrt das gewählte neue Datum", async ({ page }) => {
@@ -1352,5 +1339,220 @@ for (const recovery of ["new", "replacement", "expired"] as const) {
     accepted = false;
     await page.reload();
     await expect(page.getByRole("button", { name: "Problem ansehen" })).toHaveCount(0);
+  });
+}
+
+for (const width of [1440, 390]) {
+  test(`Löschen bestätigt die Entfernung, bleibt nach Neuladen wirksam und meldet Veröffentlichung (${width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    let saved: Change | undefined;
+    let published = false;
+    const requests = await mock(page, [event], {
+      role: "content-manager",
+      route: async (route, path) => {
+        if (path === "/changes") {
+          if (route.request().method() === "POST") {
+            const input: ChangeRequest = route.request().postDataJSON();
+            requests.push(input);
+            saved = {
+              ...change(),
+              deleted: true,
+              summary: "Termine · 1 Eintrag löschen",
+              saved: { mutations: input.mutations, previews: {} },
+            };
+            await route.fulfill({ json: saved });
+          } else
+            await route.fulfill({
+              json: {
+                changes: saved
+                  ? [
+                      {
+                        ...saved,
+                        status: published ? "published" : "checking",
+                        saved: published ? undefined : saved.saved,
+                      },
+                    ]
+                  : [],
+              },
+            });
+          return true;
+        }
+        if (path === "/content" && published) {
+          await route.fulfill({ json: { revision: "revision-2", records: [], mediaVersions: {} } });
+          return true;
+        }
+        return false;
+      },
+    });
+    await page.goto("/?collection=events&id=test-eintrag");
+    const remove = page.getByRole("button", { name: "Löschen", exact: true });
+    await expect(remove).toBeVisible();
+    await remove.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: testInfo.outputPath("delete.png"), fullPage: true });
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await remove.click();
+    expect(requests).toHaveLength(0);
+    await expect(remove).toBeVisible();
+    page.once("dialog", (dialog) => dialog.accept());
+    await remove.click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0]).toMatchObject({
+      mutations: [{ collection: "events", id: event.id, baseVersion: event.version, delete: true }],
+      uploadIds: [],
+    });
+    await expect(page.locator(".record-row")).toHaveCount(0);
+    await page.reload();
+    await expect(page.locator(".record-row")).toHaveCount(0);
+    await expect(page.getByRole("checkbox", { name: "Ausgeblendete anzeigen" })).toHaveCount(0);
+    if (width < 800) await page.getByRole("button", { name: "Menü öffnen" }).click();
+    await page
+      .locator(".sidebar")
+      .getByRole("button", { name: /^Änderungen(?: \d+)?$/ })
+      .click();
+    await expect(page.getByText("Termine · 1 Eintrag löschen", { exact: true })).toBeVisible();
+    published = true;
+    await expect(page.getByText("Von der Website entfernt", { exact: true })).toBeVisible({
+      timeout: 8000,
+    });
+    await expect(page.getByText("Auf der Website sichtbar", { exact: true })).toHaveCount(0);
+  });
+}
+
+test("alle wiederholbaren Bereiche bieten Löschen ohne Sichtbarkeitssteuerung; verknüpfte PDFs bleiben geschützt", async ({
+  page,
+}) => {
+  const records: ContentRecord[] = [
+    event,
+    record("jobs", { title: "Lernbegleitung" }),
+    record("team", { name: "Testperson" }),
+    record("parentCouncil", { name: "Elternvertretung" }),
+    record("downloads", { title: "Freie Unterlage", file: "/downloads/test.pdf" }),
+    record("afternoonOffers", { title: "Werkstatt", schoolYear: "2026/27" }),
+    record(
+      "downloads",
+      { title: "Pflichtunterlage", file: "/downloads/aufnahme.pdf" },
+      "absichtserklaerung-schule",
+    ),
+  ];
+  await mock(page, records);
+  for (const item of records) {
+    await page.goto(`/?collection=${item.collection}&id=${item.id}`);
+    await expect(page.getByRole("button", { name: "Löschen", exact: true })).toHaveCount(
+      item.id === "absichtserklaerung-schule" ? 0 : 1,
+    );
+    await expect(
+      page.getByRole("button", { name: /^(Ausblenden|Wieder einblenden)$/ }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("checkbox", { name: "Auf der Website sichtbar" })).toHaveCount(0);
+  }
+});
+
+test("fehlgeschlagenes Löschen behält den Eintrag und wiederholt dieselbe Anfrage", async ({
+  page,
+}) => {
+  const ids: string[] = [];
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path !== "/changes" || route.request().method() !== "POST") return false;
+      ids.push(route.request().postDataJSON().requestId);
+      await route.fulfill({
+        status: 503,
+        json: { error: "Bitte erneut versuchen", code: "unavailable" },
+      });
+      return true;
+    },
+  });
+  await page.goto("/?collection=events&id=test-eintrag");
+  for (let i = 0; i < 2; i++) {
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Löschen", exact: true }).click();
+    await expect(page.getByRole("alert")).toContainText("Bitte erneut versuchen");
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+      event.data.title as string,
+    );
+  }
+  expect(ids).toHaveLength(2);
+  expect(ids[0]).toBe(ids[1]);
+});
+
+test("Löschkonflikt lädt den aktuellen Inhalt vor einer neuen Bestätigung", async ({ page }) => {
+  let conflicted = false;
+  const requests: ChangeRequest[] = [];
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path === "/content" && conflicted) {
+        await route.fulfill({
+          json: {
+            revision: "revision-2",
+            records: [
+              {
+                ...event,
+                version: "version-2",
+                data: { ...event.data, title: "Vom Team geändert" },
+              },
+            ],
+            mediaVersions: {},
+          },
+        });
+        return true;
+      }
+      if (path !== "/changes" || route.request().method() !== "POST") return false;
+      requests.push(route.request().postDataJSON());
+      if (!conflicted) {
+        conflicted = true;
+        await route.fulfill({
+          status: 409,
+          json: { error: "Inzwischen geändert", code: "content_conflict" },
+        });
+      } else await route.fulfill({ json: change() });
+      return true;
+    },
+  });
+  await page.goto("/?collection=events&id=test-eintrag");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Löschen", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+    "Vom Team geändert",
+  );
+  expect(requests).toHaveLength(1);
+  await expect(page.locator(".conflict-panel")).toHaveCount(0);
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Löschen", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(2);
+  expect(requests[1].mutations[0]).toMatchObject({
+    baseVersion: "version-2",
+    delete: true,
+    data: { title: "Vom Team geändert" },
+  });
+});
+
+for (const status of ["checking", "published"] as const) {
+  test(`gelöschte Einträge erscheinen nicht über ältere Änderungen wieder in der Übersicht (${status})`, () => {
+    const mutation = {
+      collection: event.collection,
+      id: event.id,
+      baseVersion: event.version,
+      data: event.data,
+    };
+    const deletion: Change = {
+      ...change(status),
+      deleted: true,
+      targets: [mutation],
+      saved:
+        status === "published"
+          ? undefined
+          : { mutations: [{ ...mutation, delete: true }], previews: {} },
+    };
+    const older: Change = {
+      ...change("failed"),
+      createdAt: "2026-10-14T12:00:00Z",
+      saved: { mutations: [mutation], previews: {} },
+    };
+    expect(recentContent([], [deletion, older])).toEqual([]);
   });
 }

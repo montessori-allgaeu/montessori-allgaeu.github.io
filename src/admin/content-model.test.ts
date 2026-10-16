@@ -97,34 +97,40 @@ describe("shared content boundary and migration", () => {
     expect(() => mediaRepositoryPath("team", "../../assets/images/team/../secret.webp")).toThrow();
   });
 
-  it("requires a publication date only for visible jobs and removes blank optional fields", () => {
-    const job = readSnapshot().records.find((record) => record.collection === "jobs")!;
-    const withoutDate = { ...job.data, visible: false, datePosted: "", team: "" };
-    expect(parseContent("jobs", job.id, withoutDate)).not.toHaveProperty("datePosted");
-    expect(parseContent("jobs", job.id, withoutDate)).not.toHaveProperty("team");
-    expect(() => parseContent("jobs", job.id, { ...withoutDate, visible: true })).toThrow(
-      /Veröffentlichungsdatum|Veröffentlichung/,
-    );
+  it("requires a publication date for jobs and removes blank optional fields", () => {
+    const data = {
+      ...createContentDefaults("jobs"),
+      title: "Lernbegleitung",
+      scope: "Teilzeit",
+      intro: "Kinder begleiten",
+      about: ["Monte"],
+      responsibilities: ["Begleiten"],
+      profile: ["Erfahrung"],
+      benefits: ["Team"],
+      closingTitle: "Melde dich",
+      closingText: "Wir freuen uns",
+      team: "",
+    };
+    expect(parseContent("jobs", "test", data)).not.toHaveProperty("team");
+    expect(() => parseContent("jobs", "test", { ...data, datePosted: "" })).toThrow();
+    expect(() => parseContent("jobs", "test", { ...data, visible: false })).toThrow();
   });
 
   it("validates an atomic school-year transition against all candidate offers", () => {
     const { records, media } = readSnapshot();
     const program = records.find((record) => record.collection === "afternoonProgramSettings")!;
     program.data.activeSchoolYear = "2027/28";
-    for (const record of records)
-      if (record.collection === "afternoonOffers") record.data.visible = false;
-    expect(() => validateContentSnapshot({ records }, media)).toThrow(/mindestens ein sichtbares/);
+    expect(() => validateContentSnapshot({ records }, media)).toThrow(
+      /mindestens ein Nachmittagsangebot/,
+    );
     const offer = records.find((record) => record.collection === "afternoonOffers")!;
     offer.data.schoolYear = "2027/28";
-    offer.data.visible = true;
     expect(() => validateContentSnapshot({ records }, media)).not.toThrow();
   });
 
-  it("rejects missing visible media, absent settings, duplicate IDs and hidden linked PDFs", () => {
+  it("rejects missing media, absent settings, duplicate IDs and deleted linked PDFs", () => {
     const { records, media } = readSnapshot();
-    const first = records.find(
-      (record) => record.collection === "downloads" && record.data.visible,
-    )!;
+    const first = records.find((record) => record.collection === "downloads")!;
     media.delete(mediaRepositoryPath("downloads", String(first.data.file)));
     expect(() => validateContentSnapshot({ records }, media)).toThrow(/Datei/);
     const complete = readSnapshot();
@@ -140,21 +146,34 @@ describe("shared content boundary and migration", () => {
         complete.media,
       ),
     ).toThrow(/Doppelter/);
-    complete.records.find((record) => record.id === "absichtserklaerung-schule")!.data.visible =
-      false;
-    expect(() => validateContentSnapshot(complete, complete.media)).toThrow(/sichtbar bleiben/);
+    complete.records = complete.records.filter(
+      (record) => record.id !== "absichtserklaerung-schule",
+    );
+    expect(() => validateContentSnapshot(complete, complete.media)).toThrow(/darf nicht gelöscht/);
   });
 
-  it("defaults new content to visible and uses the supplied year and date", () => {
+  it("uses the supplied year and date for new content", () => {
     expect(
       createContentDefaults("jobs", { now: new Date("2026-10-15T12:00:00Z"), position: 90 }),
-    ).toMatchObject({ visible: true, datePosted: "2026-10-15", position: 90 });
+    ).toMatchObject({ datePosted: "2026-10-15", position: 90 });
     expect(createContentDefaults("afternoonOffers", { schoolYear: "2027/28" })).toMatchObject({
       schoolYear: "2027/28",
-      visible: true,
       gradeFrom: 1,
       gradeTo: 4,
     });
+  });
+
+  it("rejects visibility flags in every repeatable collection", () => {
+    const { records } = readSnapshot();
+    for (const record of records.filter(
+      (item) =>
+        !getContentPath(item.collection, item.id).startsWith("src/content/settings/") &&
+        item.collection !== "donations",
+    )) {
+      expect(() =>
+        parseContent(record.collection, record.id, { ...record.data, visible: false }),
+      ).toThrow();
+    }
   });
 
   it("derives numeric effective fees while preserving editorial exceptions", () => {

@@ -15,12 +15,7 @@ const { events } = Astro.props;
   <TextLink href="/termine/" label="Termine ansehen" />
   {
     events.map((event) => (
-      <template
-        data-date={event.date}
-        data-title={event.title}
-        data-category={event.category}
-        data-visible={String(event.visible)}
-      >
+      <template data-date={event.date} data-title={event.title} data-category={event.category}>
         <p class="eyebrow">Nächste Gelegenheit zum Kennenlernen</p>
         <h2>{event.title}</h2>
         <p class="next-event__date">
@@ -43,7 +38,6 @@ const { events } = Astro.props;
         title: template.dataset.title!,
         date: template.dataset.date!,
         category: template.dataset.category!,
-        visible: template.dataset.visible === "true",
         template,
       }));
       const next = getNextIntroductionEvent(events);

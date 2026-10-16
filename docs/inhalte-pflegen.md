@@ -4,7 +4,7 @@ Die [Monte-Verwaltung](https://verwaltung.montessori-allgaeu.de) ersetzt Pages C
 
 ## Speichern und Veröffentlichung
 
-Eine Änderung wird mit **Speichern** zur Prüfung und automatischen Veröffentlichung übergeben. Es gibt keine Entwürfe, Freigaben oder gesonderte Veröffentlichung. Neue Einträge sind standardmäßig sichtbar. Einträge mit `visible: false` bleiben zur späteren Wiederverwendung erhalten.
+Eine Änderung wird mit **Speichern** zur Prüfung und automatischen Veröffentlichung übergeben. Es gibt keine Entwürfe, Freigaben oder gesonderte Veröffentlichung. Einträge sind vorhanden oder gelöscht. **Löschen** entfernt einen Eintrag nach Bestätigung aus der Verwaltung und über denselben geprüften Veröffentlichungsweg von der Website. Es gibt kein Ausblenden oder Einblenden. Fest verknüpfte Pflichtunterlagen, Einstellungen und das letzte Angebot des aktiven Nachmittagsprogramms können nicht gelöscht werden. Frühere Inhalte bleiben in der Git-Historie wiederherstellbar; Medien werden beim Löschen eines Eintrags nicht automatisch entfernt.
 
 Die Verwaltung zeigt getrennt an, ob eine Änderung geprüft wird, gespeichert ist oder bereits auf der Website sichtbar ist. Der Inhalt wird erst nach erfolgreichen Prüfungen nach `main` geschrieben. Die Website erhält anschließend das geprüfte Ergebnis. Bei Fehlern bleiben zuvor veröffentlichte Inhalte online; ein fehlgeschlagener Auftrag kann nach Behebung wiederholt werden. Gleichzeitige Änderungen derselben Datei führen zu einem sichtbaren Konflikt statt zu stillen Überschreibungen.
 
@@ -14,9 +14,9 @@ Die redaktionellen Daten und Medien bleiben im GitHub-Repository. Benutzer, Pass
 
 ### Termine
 
-Titel, Kategorie, Datum, Uhrzeit, Ort und Beschreibung werden zentral gepflegt. Die Uhrzeit bleibt ein Textfeld, beispielsweise „19:00 Uhr“ oder „Uhrzeit über die interne Einladung“. Vergangene Termine werden in der Verwaltung getrennt angezeigt; ihre Sichtbarkeit auf der vollständigen Terminseite wird weiterhin bewusst gepflegt.
+Titel, Kategorie, Datum, Uhrzeit, Ort und Beschreibung werden zentral gepflegt. Die Uhrzeit bleibt ein Textfeld, beispielsweise „19:00 Uhr“ oder „Uhrzeit über die interne Einladung“. Vergangene Termine werden in der Verwaltung getrennt angezeigt; auf der vollständigen Terminseite bleiben sie bis zum Löschen vorhanden.
 
-Der Hinweis auf **Kennenlernen** wählt beim Seitenaufruf den nächsten sichtbaren Termin der Kategorien **Kennenlernen** oder **Informationsabend**. Maßgeblich ist Europe/Berlin. Ein Termin bleibt am Veranstaltungstag berücksichtigt; bei gleichem Datum entscheidet der Titel. Ohne passenden Termin oder ohne JavaScript bleibt **Termine ansehen** erreichbar.
+Der Hinweis auf **Kennenlernen** wählt beim Seitenaufruf den nächsten Termin der Kategorien **Kennenlernen** oder **Informationsabend**. Maßgeblich ist Europe/Berlin. Ein Termin bleibt am Veranstaltungstag berücksichtigt; bei gleichem Datum entscheidet der Titel. Ohne passenden Termin oder ohne JavaScript bleibt **Termine ansehen** erreichbar.
 
 ### Menschen
 
@@ -26,21 +26,21 @@ Die Rolle **Vorstand** wird auch für Verein und Impressum verwendet. Personen d
 
 ### Stellen
 
-Die Kennung einer Stelle bildet ihre dauerhafte URL. Änderungen der Stellenbezeichnung verändern diese Kennung nicht. Bereich, Umfang, Beschäftigungsarten und gegebenenfalls Start und Bewerbungsende getrennt pflegen. Das ursprüngliche Veröffentlichungsdatum wird bei neuen Stellen vorausgefüllt und bei späteren Änderungen beibehalten. Eine sichtbare Stelle benötigt dieses Datum.
+Die Kennung einer Stelle bildet ihre dauerhafte URL. Änderungen der Stellenbezeichnung verändern diese Kennung nicht. Bereich, Umfang, Beschäftigungsarten und gegebenenfalls Start und Bewerbungsende getrennt pflegen. Das ursprüngliche Veröffentlichungsdatum wird bei neuen Stellen vorausgefüllt und bei späteren Änderungen beibehalten. Jede Stelle benötigt dieses Datum.
 
-Einleitung, Hintergrund, Aufgaben, Profil, Leistungen und Bewerbungsabschluss stammen aus der verbindlichen Anzeige. Aufgaben-, Profil- und Leistungslisten werden ohne abschließenden Punkt geschrieben. Sichtbarer Inhalt und strukturierte Stelleninformationen für Suchmaschinen verwenden dieselben Daten. Besetzte oder abgelaufene Stellen ausblenden; ein Bewerbungsende allein blendet sie nicht automatisch aus.
+Einleitung, Hintergrund, Aufgaben, Profil, Leistungen und Bewerbungsabschluss stammen aus der verbindlichen Anzeige. Aufgaben-, Profil- und Leistungslisten werden ohne abschließenden Punkt geschrieben. Sichtbarer Inhalt und strukturierte Stelleninformationen für Suchmaschinen verwenden dieselben Daten. Besetzte oder abgelaufene Stellen löschen; ein Bewerbungsende allein entfernt sie nicht automatisch.
 
 ### Downloads
 
-Titel, Stand, Hinweis, Gruppe und Reihenfolge werden beim Dokument gepflegt. Dateityp und tatsächliche Dateigröße ergänzt die Website. Die Anmeldeunterlagen für Schule und Kindergarten sowie die Vereinsbeitrittserklärung sind zentral verknüpft. **Datei ersetzen** aktualisiert ihre Verwendung auf Aufnahme-, Kosten-, Vereins- und Spendenseiten. Diese drei Einträge müssen sichtbar bleiben.
+Titel, Stand, Hinweis, Gruppe und Reihenfolge werden beim Dokument gepflegt. Dateityp und tatsächliche Dateigröße ergänzt die Website. Die Anmeldeunterlagen für Schule und Kindergarten sowie die Vereinsbeitrittserklärung sind zentral verknüpft. **Datei ersetzen** aktualisiert ihre Verwendung auf Aufnahme-, Kosten-, Vereins- und Spendenseiten. Diese drei Einträge können ersetzt, aber nicht gelöscht werden.
 
-Der bei der Migration ausgeblendete Eintrag **Freiraum zur Entfaltung** hatte bereits keine vorhandene PDF-Datei. Er bleibt ausgeblendet, bis eine passende Datei hochgeladen wurde. Die beiden zuvor ausgeblendeten Stellen bleiben ebenfalls ausgeblendet.
+Die beiden bisher ausgeblendeten Kindergarten-Stellen und **Freiraum zur Entfaltung** ohne PDF wurden beim Entfernen des Sichtbarkeitsstatus gelöscht. Ihre früheren Inhalte bleiben in der Git-Historie erhalten.
 
 ### Ganztag & Essen
 
 Jedes Angebot wird einmal gepflegt. Die Klassenstufen bestimmen automatisch, ob es unter Primaria, Sekundaria und Tertia oder in beiden Gruppen erscheint. Organisation, zusätzliche Kosten und externer Link bleiben optional.
 
-**Programm für neues Schuljahr übernehmen** kopiert die Angebote zur Bearbeitung im geöffneten Browser. Ein gemeinsames Speichern übernimmt Angebote und aktives Schuljahr zusammen. Es gibt keine gespeicherten Entwürfe. Frühere Schuljahre bleiben erhalten. Für das aktive Schuljahr muss mindestens ein sichtbares Angebot vorhanden sein.
+**Programm für neues Schuljahr übernehmen** kopiert die Angebote zur Bearbeitung im geöffneten Browser. Ein gemeinsames Speichern übernimmt Angebote und aktives Schuljahr zusammen. Es gibt keine gespeicherten Entwürfe. Frühere Schuljahre bleiben erhalten. Für das aktive Schuljahr muss mindestens ein Angebot vorhanden sein.
 
 Bei Essensangaben wird derzeit nur der Anbieter öffentlich verwendet. Die bisher vorhandenen Felder Liefertage, Richtpreis und Hinweis bleiben erhalten und sind als derzeit nicht angezeigt gekennzeichnet. Dasselbe gilt für das ältere Ganztags-Zeitfeld unter Öffnungszeiten. Diese Angaben werden nicht durch die Migration neu veröffentlicht.
 
