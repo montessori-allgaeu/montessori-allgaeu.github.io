@@ -149,6 +149,8 @@ Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runn
 
 Die vollständige vorhandene DNS-Zone wird zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer können beim bisherigen Anbieter bleiben. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden.
 
+Für `montessori-allgaeu.com` und `www.montessori-allgaeu.com` ist eine eigene Cloudflare-Single-Redirect-Regel auf die HTTPS-Hauptdomain konfiguriert, die Pfade und URL-Parameter erhält. Dafür sind kein zusätzlicher Worker und kein kostenpflichtiger Tarif nötig. DNSSEC bleibt für `.com` ausgeschaltet. Konfiguration, Abnahme und Rückfall stehen in der [Betriebsanleitung](docs/verwaltung-betrieb.md#weiterleitungsdomain-com); der tatsächliche Umstellungsstatus wird im privaten Betriebsnachweis dokumentiert.
+
 Der Umstieg muss mit gesicherten DNS- und GitHub-Pages-Einstellungen, geprüfter Mailfunktion und Rückfallmöglichkeit erfolgen. **GitHub Pages und der externe Pages-CMS-App-Zugriff werden erst nach Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen DNS-TTLs abgeschaltet.** Diese externen Schritte gelten nicht allein durch Änderungen im Repository als erledigt. Der genaue Ablauf steht in der [Betriebsanleitung](docs/verwaltung-betrieb.md).
 
 ## Weiterleitungen alter Adressen
