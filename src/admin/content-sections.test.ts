@@ -54,7 +54,6 @@ describe("website-aligned people lists", () => {
         version: "v1",
         data: {
           name: "Maria",
-          visible: true,
           assignments: [
             { group: "Leitung", role: "Leitung", position: 10 },
             { group: "Leitung", role: "Weitere Aufgabe", position: 30 },
@@ -67,7 +66,7 @@ describe("website-aligned people lists", () => {
         collection: "team",
         id: "berta",
         version: "v2",
-        data: { name: "Berta", visible: true, assignments: [{ group: "Leitung", position: 20 }] },
+        data: { name: "Berta", assignments: [{ group: "Leitung", position: 20 }] },
       },
     ];
     const original = structuredClone(records);

@@ -70,11 +70,18 @@ auf Chromium.
 - Alle indexierbaren Seiten haben eine eigene, versionierte Social Card. Nicht indexierte Seiten und alte Weiterleitungen verwenden die aktuelle Startseitenkarte als Fallback.
 - Bild, Ausschnitt, Kartentext, Renderer, Logo, eingebettete Schriften und Rendering-Abhängigkeiten fließen automatisch in den Social-Card-Fingerprint ein.
 
-Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** bestätigt die dauerhaft angenommene Änderung sofort; Prüfung, Übernahme in Git und Veröffentlichung laufen im Hintergrund. Andere Einträge können währenddessen bearbeitet werden. Der gespeicherte Stand bleibt beim Neuladen sichtbar; „Auf der Website sichtbar“ erscheint erst nach bestätigter Veröffentlichung. Vorhandene Einträge können mit `visible: false` ausgeblendet werden. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
+Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** bestätigt die dauerhaft angenommene Änderung sofort; Prüfung, Übernahme in Git und Veröffentlichung laufen im Hintergrund. Andere Einträge können währenddessen bearbeitet werden. Der gespeicherte Stand bleibt beim Neuladen sichtbar; „Auf der Website sichtbar“ erscheint erst nach bestätigter Veröffentlichung. Einträge können angelegt, bearbeitet oder gelöscht werden. **Löschen** wird nach Bestätigung direkt gespeichert und über denselben geprüften Weg veröffentlicht; fest verknüpfte Pflichtunterlagen und Einstellungen bleiben erhalten. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
 
 Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleiste bleibt am unteren Bildschirmrand erreichbar. Unter **Downloads** öffnet **PDF ersetzen** direkt die Dateiauswahl. Danach kann die neue PDF geprüft und zusammen mit Titel oder weiteren Angaben gespeichert werden. Beim Austausch bleibt der bestehende Dateilink erhalten.
 
-Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten sichtbaren Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
+Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
+
+Die Liste **Menschen** lädt statische WebP-Vorschaubilder mit 96 × 114 Pixeln. `build:admin`
+erzeugt sie aus den Team- und Elternbeiratsfotos; Vite stellt sie auch lokal bereit. Die
+Dateinamen enthalten einen Hash des Bildinhalts und dürfen ein Jahr unverändert im Browsercache
+bleiben. Eine ungecachte Zuordnung der Git-Bildversionen wird nach Veröffentlichungen neu geladen,
+damit ersetzte Fotos auch in bereits geöffneten Verwaltungen erscheinen. Die größere Fotoansicht
+im Editor und private Vorschauen laufender Uploads verwenden weiterhin die Verwaltungs-API.
 
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
@@ -148,6 +155,8 @@ Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runn
 ## DNS-Umstieg und Abschaltung des bisherigen Hostings
 
 Die vollständige vorhandene DNS-Zone wird zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer können beim bisherigen Anbieter bleiben. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden.
+
+Für `montessori-allgaeu.com` und `www.montessori-allgaeu.com` ist eine eigene Cloudflare-Single-Redirect-Regel auf die HTTPS-Hauptdomain konfiguriert, die Pfade und URL-Parameter erhält. Dafür sind kein zusätzlicher Worker und kein kostenpflichtiger Tarif nötig. DNSSEC bleibt für `.com` ausgeschaltet. Konfiguration, Abnahme und Rückfall stehen in der [Betriebsanleitung](docs/verwaltung-betrieb.md#weiterleitungsdomain-com); der tatsächliche Umstellungsstatus wird im privaten Betriebsnachweis dokumentiert.
 
 Der Umstieg muss mit gesicherten DNS- und GitHub-Pages-Einstellungen, geprüfter Mailfunktion und Rückfallmöglichkeit erfolgen. **GitHub Pages und der externe Pages-CMS-App-Zugriff werden erst nach Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen DNS-TTLs abgeschaltet.** Diese externen Schritte gelten nicht allein durch Änderungen im Repository als erledigt. Der genaue Ablauf steht in der [Betriebsanleitung](docs/verwaltung-betrieb.md).
 

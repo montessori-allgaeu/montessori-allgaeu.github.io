@@ -75,6 +75,7 @@ const getInitials = (name: string) =>
                               {member.image ? (
                                 <Image
                                   src={member.image}
+                                  format="webp"
                                   alt={`Porträt von ${member.name}`}
                                   widths={[300, 480, 640]}
                                   sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"
@@ -101,6 +102,7 @@ const getInitials = (name: string) =>
                         {member.image ? (
                           <Image
                             src={member.image}
+                            format="webp"
                             alt={`Porträt von ${member.name}`}
                             widths={[300, 480, 640]}
                             sizes="(max-width: 620px) 50vw, (max-width: 1050px) 33vw, 25vw"

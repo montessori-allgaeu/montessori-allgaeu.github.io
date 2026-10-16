@@ -72,7 +72,7 @@ Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 
 - Astro mit statischem Output; öffentliche Website und Monte-Verwaltung sind getrennte Cloudflare Workers mit Static Assets. Die öffentliche Website benötigt kein Worker-Script.
 - Pages CMS ist durch die eigene Monte-Verwaltung ersetzt. Redaktionelle Inhalte und Medien bleiben in Git; Zugänge, Passkeys, Sitzungen und Änderungsaufträge liegen privat in SQLite Durable Objects. Keine Zugangsdaten ins öffentliche Repository schreiben.
-- Keine Entwürfe: Speichern startet Prüfung und Veröffentlichung. `visible: false` blendet einen vorhandenen Eintrag aus. Admins verwalten Zugänge und Bankdaten; Content Manager bearbeiten übrige Inhalte.
+- Keine Entwürfe: Speichern startet Prüfung und Veröffentlichung. Einträge werden angelegt, bearbeitet oder gelöscht; einen Sichtbarkeitsstatus gibt es nicht. Admins verwalten Zugänge und Bankdaten; Content Manager bearbeiten übrige Inhalte.
 - Ausschließlich Free-Tarife: statische Auslieferung ohne vorgeschaltete Worker-Ausführung, Verwaltungs-API nur unter `/api/*`, kostenlose GitHub-Standard-Runner. Keine automatischen Tarifwechsel oder kostenpflichtigen Erweiterungen.
 - Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen `.github/workflows/publish.yml` aus: vollständige Prüfungen, Builds und Cloudflare-Deployment. Speichern in der Verwaltung verwendet denselben geprüften Veröffentlichungsweg.

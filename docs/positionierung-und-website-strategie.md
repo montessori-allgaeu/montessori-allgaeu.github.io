@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 15. Oktober 2026
+Stand: 16. Oktober 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -528,7 +528,7 @@ Wichtige Pfade:
   ist kein vollständiger Spamschutz. Das bestehende anonyme Vorstandsformular bleibt ein
   gesonderter Kontaktweg.
 - Als Canonical Domain wird die Apex-Domain `https://montessori-allgaeu.de` ohne `www` verwendet; die `www`-Variante wird dorthin weitergeleitet.
-- Pages CMS wird vollständig abgelöst. Speichern startet unmittelbar die geprüfte Veröffentlichung; es gibt keine Entwürfe oder zusätzlichen Freigaben. Bereits ausgeblendete Inhalte bleiben ausgeblendet. Wiederverwendete Kontaktdaten, Personen und Dokumente werden zentral gepflegt.
+- Pages CMS wird vollständig abgelöst. Speichern startet unmittelbar die geprüfte Veröffentlichung; es gibt keine Entwürfe oder zusätzlichen Freigaben. Einträge sind vorhanden oder gelöscht; Ausblenden und Einblenden entfallen überall. Die drei bisher ausgeblendeten Altbestände wurden entfernt und bleiben über die Git-Historie wiederherstellbar. Wiederverwendete Kontaktdaten, Personen und Dokumente werden zentral gepflegt.
 - Der einmalige Wechsel zu Cloudflare-DNS übernimmt sämtliche bisherigen DNS- und Maileinträge. GitHub Pages bleibt bis zur Abnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf relevanter DNS-TTLs als Rückfall erhalten. Die externe Abschaltung wird separat nachgewiesen.
 - Die Nachmittagsangebote werden als strukturierte, jahresbezogene CMS-Inhalte gepflegt. Die Website zeigt sie ruhig nach Primaria beziehungsweise Sekundaria und Tertia sowie nach Wochentagen; klassenübergreifende Angebote werden aus einem gemeinsamen Eintrag abgeleitet.
 - Der Erdkinderplan gilt für Sekundaria und Tertia und wird auf der Schulseite anhand des Bauwagenprojekts konkretisiert. Das Projektvideo zeigt als authentisches Beispiel das Lernen der Sekundaria B, steht nicht auf der Startseite und nicht stellvertretend für die gesamte Pädagogik. Der Vimeo-Player wird erst nach einer bewussten Aktivierung geladen.

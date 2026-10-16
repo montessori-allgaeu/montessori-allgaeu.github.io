@@ -1,11 +1,12 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve, sep } from "node:path";
 import { format } from "prettier";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
 import {
+  canDeleteContent,
   contentDefinitions,
   getContentPath,
   mediaRepositoryPath,
@@ -27,6 +28,7 @@ export const publishOperationSchema = z.strictObject({
         id: z.string(),
         baseVersion: commitSchema.nullable(),
         data: z.record(z.string(), z.unknown()),
+        delete: z.literal(true).optional(),
       }),
     )
     .min(1)
@@ -40,6 +42,7 @@ export const publishOperationSchema = z.strictObject({
         size: z.number().int().positive().max(maximumUploadBytes),
         contentType: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
         baseVersion: commitSchema.nullable(),
+        replacement: z.strictObject({ path: z.string(), baseVersion: commitSchema }).optional(),
       }),
     )
     .max(50),
@@ -141,6 +144,14 @@ export function planOperation(
     paths.add(path);
     const current = records.get(path);
     if ((current?.version ?? null) !== mutation.baseVersion) throw new PublishConflict();
+    if (mutation.delete) {
+      if (!current || !canDeleteContent(mutation))
+        throw new Error(
+          "Dieser Eintrag wird auf der Website benötigt und darf nicht gelöscht werden.",
+        );
+      records.delete(path);
+      return { path, data: current.data, delete: true };
+    }
     const data = parseContent(mutation.collection, mutation.id, mutation.data);
     const mediaValue = mutation.collection === "downloads" ? data.file : data.image;
     if (typeof mediaValue === "string")
@@ -158,7 +169,10 @@ export function planOperation(
   for (const upload of operation.uploads) {
     if (paths.has(upload.path) || uploadIds.has(upload.id) || !referencedMedia.has(upload.path))
       throw new Error("Eine hochgeladene Datei gehört nicht zu den geänderten Inhalten.");
-    if ((media.get(upload.path) ?? null) !== upload.baseVersion)
+    if (
+      (media.get(upload.path) ?? null) !== upload.baseVersion ||
+      (upload.replacement && media.get(upload.replacement.path) !== upload.replacement.baseVersion)
+    )
       throw new PublishConflict(
         "Diese Datei wurde inzwischen ersetzt. Bitte den aktuellen Stand laden.",
       );
@@ -179,11 +193,7 @@ export function assertUploadHash(upload: PublishUpload, bytes: Uint8Array): void
     throw new Error("Die hochgeladene Datei ist unvollständig oder verändert.");
 }
 
-export async function safeWrite(
-  root: string,
-  path: string,
-  bytes: string | Uint8Array,
-): Promise<void> {
+async function safeRepositoryPath(root: string, path: string): Promise<string> {
   const absolute = resolve(root, path);
   if (!absolute.startsWith(`${resolve(root)}${sep}`))
     throw new Error("Dateipfad außerhalb des Repositorys.");
@@ -197,6 +207,19 @@ export async function safeWrite(
     if (stat?.isSymbolicLink())
       throw new Error("Verknüpfungen sind als Inhalts- oder Medienpfad nicht erlaubt.");
   }
+  return absolute;
+}
+
+export async function safeRemove(root: string, path: string): Promise<void> {
+  await unlink(await safeRepositoryPath(root, path));
+}
+
+export async function safeWrite(
+  root: string,
+  path: string,
+  bytes: string | Uint8Array,
+): Promise<void> {
+  const absolute = await safeRepositoryPath(root, path);
   await mkdir(dirname(absolute), { recursive: true });
   await writeFile(absolute, bytes);
 }

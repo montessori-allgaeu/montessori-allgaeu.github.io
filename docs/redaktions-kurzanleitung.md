@@ -39,7 +39,7 @@ Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernomm
 - **Menschen sortieren:** Unter **Menschen** den passenden Bereich suchen und **Reihenfolge ändern** wählen. Mit den Pfeilen oder durch Ziehen verschieben; jede Änderung wird direkt gespeichert. Die Reihenfolge anderer Bereiche bleibt unverändert, auch wenn dieselbe Person dort ebenfalls erscheint.
 - **Foto ersetzen:** Die Person öffnen, beim Bild die neue Datei auswählen und speichern.
 - **PDF ersetzen:** Das Dokument unter **Downloads** öffnen und die Datei ersetzen. Die verknüpften Seiten verwenden danach die neue Fassung.
-- **Eintrag vorübergehend entfernen:** **Ausblenden** wählen und speichern. Über **Wieder einblenden** lässt er sich zurückholen. Die drei fest verknüpften Anmelde- und Beitrittsunterlagen müssen verfügbar bleiben; diese Dateien kannst du ersetzen.
+- **Eintrag entfernen:** Den Eintrag öffnen, **Löschen** wählen und bestätigen. Die Entfernung wird direkt gespeichert und anschließend automatisch veröffentlicht. Die drei fest verknüpften Anmelde- und Beitrittsunterlagen kannst du ersetzen, aber nicht löschen.
 - **Neues Ganztagsjahr vorbereiten:** Unter **Ganztag & Essen** das Programm für ein neues Schuljahr übernehmen. Alle Angebote prüfen und gemeinsam speichern. Erst dann wechselt die Website auf das neue Jahr.
 
 Termine, Kosten, Öffnungszeiten, Rollen, Aufnahmefristen und Dokumentstände vor dem Speichern mit der verbindlichen Quelle abgleichen. Schuljahr und Anmeldeschluss jeweils gemeinsam prüfen. Vor dem Hochladen von Personenfotos muss die Freigabe vorliegen.

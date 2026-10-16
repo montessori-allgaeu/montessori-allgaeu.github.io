@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  canDeleteContent,
   getContentDefinition,
   getContentPath,
   mediaRepositoryPath,
@@ -38,6 +39,7 @@ type Upload = {
   size: number;
   contentType: string;
   baseVersion: string | null;
+  replacement?: { path: string; baseVersion: string };
   createdAt: number;
   changeId?: string;
 };
@@ -103,8 +105,21 @@ export class Publishing {
               }),
             ),
           };
+    const deleted = operation.mutations.every((mutation) => mutation.delete) ? true : undefined;
     const targets = operation.mutations.map(({ collection, id }) => ({ collection, id }));
-    return { id, status, createdAt, updatedAt, summary, error, commit, runUrl, targets, saved };
+    return {
+      id,
+      status,
+      createdAt,
+      updatedAt,
+      summary,
+      error,
+      commit,
+      runUrl,
+      targets,
+      saved,
+      deleted,
+    };
   }
   list() {
     return json({
@@ -169,9 +184,17 @@ export class Publishing {
         "content_conflict",
         "Dieser Inhalt wurde inzwischen geändert. Bitte neu laden und die Änderung erneut prüfen.",
       );
+      requireCondition(
+        !mutation.delete || (before && canDeleteContent(mutation)),
+        400,
+        "deletion_invalid",
+        "Dieser Eintrag wird auf der Website benötigt und darf nicht gelöscht werden.",
+      );
       const parsed = {
         ...mutation,
-        data: parseContent(mutation.collection, mutation.id, mutation.data),
+        data: mutation.delete
+          ? before!.data
+          : parseContent(mutation.collection, mutation.id, mutation.data),
       };
       if (changesBankDetails(parsed, before?.data)) {
         requireAdmin(user);
@@ -189,7 +212,9 @@ export class Publishing {
         "Eine hochgeladene Datei ist nicht mehr verfügbar. Bitte erneut hochladen.",
       );
       requireCondition(
-        (current.files.get(upload.path)?.sha ?? null) === upload.baseVersion,
+        (current.files.get(upload.path)?.sha ?? null) === upload.baseVersion &&
+          (!upload.replacement ||
+            current.files.get(upload.replacement.path)?.sha === upload.replacement.baseVersion),
         409,
         "media_conflict",
         "Diese Datei wurde inzwischen ersetzt. Bitte neu laden.",
@@ -197,6 +222,7 @@ export class Publishing {
       requireCondition(
         mutations.some(
           (m) =>
+            !m.delete &&
             ["team", "parentCouncil", "downloads"].includes(m.collection) &&
             (m.data.image ===
               mediaValue(
@@ -225,7 +251,7 @@ export class Publishing {
     const candidate = {
       records: [
         ...current.records.filter((r) => !paths.has(getContentPath(r.collection, r.id))),
-        ...mutations.map((m) => ({ ...m, version: m.baseVersion ?? "" })),
+        ...mutations.filter((m) => !m.delete).map((m) => ({ ...m, version: m.baseVersion ?? "" })),
       ],
     };
     const media = new Set([...current.files.keys(), ...uploads.map((u) => u.path)]);
@@ -249,7 +275,7 @@ export class Publishing {
       status: "queued",
       createdAt: now,
       updatedAt: now,
-      summary: `${areas.join(", ")} · ${mutations.length} ${mutations.length === 1 ? "Eintrag" : "Einträge"}`,
+      summary: `${areas.join(", ")} · ${mutations.length} ${mutations.length === 1 ? "Eintrag" : "Einträge"}${mutations.every((mutation) => mutation.delete) ? " löschen" : ""}`,
       fingerprint,
       dispatchCount: 0,
       bankChange,
@@ -320,26 +346,35 @@ export class Publishing {
       "Der temporäre Medienspeicher ist voll. Bitte laufende Veröffentlichungen abwarten.",
     );
     const id = crypto.randomUUID();
-    const replacement = form.get("replace");
+    const replace = form.get("replace");
+    const originalPath =
+      typeof replace === "string" && replace ? mediaRepositoryPath(kind, replace) : undefined;
+    const snapshot = await this.github.snapshot();
+    let replacement: Upload["replacement"];
+    if (originalPath) {
+      const originalVersion = snapshot.files.get(originalPath)?.sha;
+      requireCondition(
+        originalVersion,
+        409,
+        "replace_missing",
+        "Die zu ersetzende Datei wurde nicht gefunden.",
+      );
+      requireCondition(
+        form.get("baseVersion") === originalVersion,
+        409,
+        "media_conflict",
+        "Diese Datei wurde zwischenzeitlich geändert. Bitte den Inhalt neu laden.",
+      );
+      replacement = { path: originalPath, baseVersion: originalVersion };
+    }
+    const originalExtension = originalPath?.split(".").at(-1)?.toLowerCase().replace("jpeg", "jpg");
+    // Keep stable links for same-format replacements; changed formats need their own valid path.
     const path =
-      typeof replacement === "string" && replacement
-        ? mediaRepositoryPath(kind, replacement)
+      originalPath && originalExtension === format.extension
+        ? originalPath
         : newMediaPath(kind, file.name, id, format.extension);
     validateMedia(new Uint8Array(buffer), path, format.contentType);
-    const snapshot = await this.github.snapshot();
     const baseVersion = snapshot.files.get(path)?.sha ?? null;
-    requireCondition(
-      !replacement || baseVersion,
-      409,
-      "replace_missing",
-      "Die zu ersetzende Datei wurde nicht gefunden.",
-    );
-    requireCondition(
-      !replacement || form.get("baseVersion") === baseVersion,
-      409,
-      "media_conflict",
-      "Diese Datei wurde zwischenzeitlich geändert. Bitte den Inhalt neu laden.",
-    );
     const upload: Upload = {
       id,
       ownerId: user.id,
@@ -348,6 +383,7 @@ export class Publishing {
       sha256: await hash(buffer),
       contentType: format.contentType,
       baseVersion,
+      ...(replacement && path !== originalPath ? { replacement } : {}),
       createdAt: Date.now(),
     };
     await this.env.UPLOADS.put(id, buffer);
@@ -474,8 +510,8 @@ export class Publishing {
           "upload_missing",
           "Eine hochgeladene Datei ist abgelaufen. Bitte neu speichern.",
         );
-        const { path, sha256, size, contentType, baseVersion } = upload;
-        return { id, path, sha256, size, contentType, baseVersion };
+        const { path, sha256, size, contentType, baseVersion, replacement } = upload;
+        return { id, path, sha256, size, contentType, baseVersion, replacement };
       });
       return json({
         id: operation.id,

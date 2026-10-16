@@ -5,14 +5,10 @@ import { join } from "node:path";
 import { formatDownloadMeta, formatGermanLongDate, formatGermanPhoneHref } from "./content-utils";
 
 type RawJob = CollectionEntry<"jobs">["data"];
-type PublishedJob = Omit<RawJob, "datePosted" | "visible"> & {
-  datePosted: string;
-  visible: true;
-};
 type RawContactSettings = CollectionEntry<"contactSettings">["data"];
 type RawAfternoonOffer = CollectionEntry<"afternoonOffers">["data"];
 
-export type Job = PublishedJob & {
+export type Job = RawJob & {
   slug: string;
   areaLabel: string;
   scheduleLabel: string;
@@ -57,17 +53,11 @@ const byPosition = <T extends { position: number }>(a: T, b: T) => a.position - 
 const byGermanText = (a: string, b: string) => a.localeCompare(b, "de");
 
 export async function getJobs(): Promise<Job[]> {
-  const entries = await getCollection("jobs", ({ data }) => data.visible);
+  const entries = await getCollection("jobs");
   return entries
     .map(({ id, data }) => {
-      if (!data.datePosted) {
-        throw new Error(`Die veröffentlichte Stelle ${id} hat kein Veröffentlichungsdatum.`);
-      }
-
       return {
         ...data,
-        visible: true as const,
-        datePosted: data.datePosted,
         slug: id,
         areaLabel: [data.area, data.team].filter(Boolean).join(" · "),
         scheduleLabel: [
@@ -85,12 +75,12 @@ export async function getJobs(): Promise<Job[]> {
 }
 
 export async function getTeam(): Promise<TeamMember[]> {
-  const entries = await getCollection("team", ({ data }) => data.visible);
+  const entries = await getCollection("team");
   return entries.map(({ data }) => data).sort((a, b) => byGermanText(a.name, b.name));
 }
 
 export async function getParentCouncil(): Promise<ParentCouncilMember[]> {
-  const entries = await getCollection("parentCouncil", ({ data }) => data.visible);
+  const entries = await getCollection("parentCouncil");
   return entries
     .map(({ data }) => data)
     .sort(
@@ -100,12 +90,12 @@ export async function getParentCouncil(): Promise<ParentCouncilMember[]> {
 }
 
 export async function getEvents(): Promise<Event[]> {
-  const entries = await getCollection("events", ({ data }) => data.visible);
+  const entries = await getCollection("events");
   return entries.map(({ data }) => data).sort((a, b) => a.date.localeCompare(b.date));
 }
 
 export async function getDownloads(): Promise<Download[]> {
-  const entries = await getCollection("downloads", ({ data }) => data.visible);
+  const entries = await getCollection("downloads");
   const downloads = await Promise.all(
     entries.map(async ({ data }) => {
       const path = join(publicDirectory, data.file.replace(/^\/+/, ""));
@@ -121,8 +111,7 @@ export async function getDownloads(): Promise<Download[]> {
 /** Shared references keep admission and membership links in sync with Downloads. */
 export async function getLinkedDownload(id: LinkedDownloadId): Promise<string> {
   const entry = await getEntry("downloads", id);
-  if (!entry?.data.visible)
-    throw new Error(`Das verknüpfte Dokument ${id} fehlt oder ist ausgeblendet.`);
+  if (!entry) throw new Error(`Das verknüpfte Dokument ${id} fehlt.`);
   await stat(join(publicDirectory, entry.data.file.slice(1)));
   return entry.data.file;
 }
@@ -152,7 +141,7 @@ export async function getAfternoonProgram(): Promise<AfternoonProgram> {
   );
   const entries = await getCollection(
     "afternoonOffers",
-    ({ data }) => data.visible && data.schoolYear === settings.data.activeSchoolYear,
+    ({ data }) => data.schoolYear === settings.data.activeSchoolYear,
   );
   const offers = entries
     .map(({ id, data }) => ({

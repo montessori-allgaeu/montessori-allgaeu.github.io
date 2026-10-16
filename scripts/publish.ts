@@ -16,6 +16,7 @@ import {
   PublishConflict,
   publishOperationSchema,
   readContentSnapshot,
+  safeRemove,
   safeWrite,
   StaleRelease,
   writeContentFile,
@@ -187,7 +188,10 @@ async function prepare(): Promise<void> {
     uploads.push({ path: upload.path, bytes: await download(upload) });
   state.paths = plan.paths;
   await saveState(state);
-  for (const file of plan.files) await writeContentFile(root, file.path, file.data);
+  for (const file of plan.files) {
+    if (file.delete) await safeRemove(root, file.path);
+    else await writeContentFile(root, file.path, file.data);
+  }
   for (const upload of uploads) await safeWrite(root, upload.path, upload.bytes);
   assertOnlyAllowedChanges(root, new Set(state.paths));
 }
