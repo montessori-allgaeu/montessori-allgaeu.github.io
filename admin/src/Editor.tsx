@@ -23,7 +23,7 @@ export function humanValue(value: JsonValue | undefined): string {
   return String(value);
 }
 
-function newFieldValue(field: EditorField): JsonValue {
+export function newFieldValue(field: EditorField): JsonValue {
   if (field.defaultValue !== undefined) return structuredClone(field.defaultValue);
   if (field.type === "object")
     return Object.fromEntries(

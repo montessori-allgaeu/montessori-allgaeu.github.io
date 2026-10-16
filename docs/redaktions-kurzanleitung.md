@@ -42,6 +42,29 @@ Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernomm
 - **Eintrag entfernen:** Den Eintrag öffnen, **Löschen** wählen und bestätigen. Die Entfernung wird direkt gespeichert und anschließend automatisch veröffentlicht. Die drei fest verknüpften Anmelde- und Beitrittsunterlagen kannst du ersetzen, aber nicht löschen.
 - **Neues Ganztagsjahr vorbereiten:** Unter **Ganztag & Essen** das Programm für ein neues Schuljahr übernehmen. Alle Angebote prüfen und gemeinsam speichern. Erst dann wechselt die Website auf das neue Jahr.
 
+## Mit Vorschauen arbeiten
+
+- **Stellen und Spenden:** Texte direkt im Seitenlayout anklicken. Auf der Spendenseite kannst du
+  auch zum **Hinweis auf der Startseite** wechseln. Suchmaschinenangaben findest du unter
+  **Einstellungen**, die Kontodaten in einem eigenen Bereich.
+- **Kosten:** Beiträge in den Tabellen vergleichen und bearbeiten. Bei Kindergartenbeiträgen
+  steht der gemeinsame Zuschuss oberhalb; der effektive Beitrag wird weiterhin automatisch
+  berechnet, wenn Grundbeitrag und Zuschuss Eurobeträge sind.
+- **Ganztag:** Angebote stehen nach Wochentagen geordnet. Öffne ein Angebot, um Inhalt oder Tag
+  zu ändern. Neue Angebote kannst du direkt beim gewünschten Tag hinzufügen. Die ausgewählte
+  Jahresansicht bestimmt das Schuljahr des neuen Angebots.
+- **Öffnungszeiten:** Schulbüro, Kindergarten und Schließzeiten in den kompakten Übersichten
+  pflegen. Ergänzungen wie „nicht besetzt“ oder verlängerte Betreuung bleiben möglich.
+- **Termine und Menschen:** Die Vorschau zeigt die aktuellen Eingaben. Bei Menschen mit mehreren
+  Rollen siehst du die Darstellung in den einzelnen Bereichen.
+- **Downloads:** Die erste PDF-Seite und die Downloadzeile prüfen. Bei einem Austausch bleibt
+  der vorhandene Dateilink erhalten. Über **PDF ansehen** kannst du das ganze Dokument öffnen.
+- **Aufnahme:** Jahr auswählen, Anmeldeschluss setzen und den vollständigen Satz in der Vorschau
+  prüfen. Ein Hinweis macht auf einen bereits abgelaufenen Anmeldeschluss aufmerksam.
+
+Vorschauen zeigen deine noch nicht gespeicherten Eingaben. Erst **Speichern** startet die
+Veröffentlichung. Die Links zu den öffentlichen Seiten zeigen weiterhin den veröffentlichten Stand.
+
 Termine, Kosten, Öffnungszeiten, Rollen, Aufnahmefristen und Dokumentstände vor dem Speichern mit der verbindlichen Quelle abgleichen. Schuljahr und Anmeldeschluss jeweils gemeinsam prüfen. Vor dem Hochladen von Personenfotos muss die Freigabe vorliegen.
 
 ## Wenn etwas nicht klappt

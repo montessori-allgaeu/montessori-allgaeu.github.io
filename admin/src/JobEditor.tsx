@@ -1,55 +1,9 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { InlineText } from "./InlineText";
 import type { ContentData, JsonValue } from "../../src/admin/types";
 import type { EditorField } from "../../src/admin/content-model";
 import { formatGermanLongDate } from "../../src/data/content-utils";
 import "./job-editor.css";
-
-function InlineText({
-  label,
-  value,
-  onChange,
-  disabled,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  disabled: boolean;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-  useLayoutEffect(() => {
-    const input = ref.current!;
-    const resize = () => {
-      input.style.height = "0px";
-      input.style.height = `${input.scrollHeight}px`;
-    };
-    resize();
-    let width = input.parentElement!.getBoundingClientRect().width;
-    let frame = 0;
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.width === width) return;
-      width = entry.contentRect.width;
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(resize);
-    });
-    observer.observe(input.parentElement!);
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(frame);
-    };
-  }, [value]);
-  return (
-    <textarea
-      ref={ref}
-      className="job-inline-text"
-      aria-label={label}
-      placeholder={label}
-      value={value}
-      rows={1}
-      disabled={disabled}
-      onChange={(event) => onChange(event.currentTarget.value)}
-    />
-  );
-}
 
 function InlineList({
   label,
@@ -203,7 +157,7 @@ export function JobEditor({
           {settingsKeys
             .map((key) => fields.find((field) => field.key === key))
             .filter((field) => field !== undefined)
-            .map(renderField)}
+            .map((field) => renderField(field))}
         </details>
       </div>
       <article className="job-preview" aria-label="Stellenanzeige bearbeiten">

@@ -1,0 +1,87 @@
+.editorial-cards.donation-projects {
+  gap: 1px;
+  border: 1px solid var(--color-line);
+  background: var(--color-line);
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+}
+
+.donation-projects .editorial-card {
+  min-height: 18rem;
+  border: 0;
+  background: var(--color-surface);
+}
+
+.support-grid {
+  display: grid;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.support-option {
+  padding: clamp(2rem, 5vw, 4.5rem);
+}
+
+.support-option + .support-option {
+  border-left: 1px solid var(--color-line);
+}
+
+.support-option > svg {
+  margin-bottom: 2rem;
+  color: var(--color-link);
+}
+
+.support-option dl {
+  margin: 2rem 0 0;
+  border-top: 1px solid var(--color-line-strong);
+}
+
+.support-option dl div {
+  display: grid;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-line);
+  gap: 1rem;
+  grid-template-columns: minmax(8rem, 0.6fr) minmax(0, 1fr);
+}
+
+.support-option dt {
+  color: var(--color-forest-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.support-option dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.support-note {
+  margin-top: 1.5rem;
+  color: var(--color-forest-soft);
+  font-size: 0.9rem;
+}
+
+.support-option--company .button {
+  margin-top: 1rem;
+}
+
+@media (max-width: 800px) {
+  .support-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .support-option + .support-option {
+    border-top: 1px solid var(--color-line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .support-option dl div {
+    grid-template-columns: 1fr;
+  }
+}

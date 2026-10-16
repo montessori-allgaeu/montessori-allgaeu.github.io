@@ -1,0 +1,347 @@
+@import "../../src/styles/donation-page.css";
+
+.donation-editor-toolbar {
+  margin-bottom: 24px;
+}
+.donation-editor-toolbar > p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.donation-view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 20px;
+}
+.donation-view-switch button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  background: transparent;
+}
+.donation-view-switch button[aria-pressed="true"] {
+  color: var(--surface);
+  background: var(--forest);
+  border-color: var(--forest);
+}
+.donation-settings {
+  border-block: 1px solid var(--line);
+}
+.donation-settings > summary {
+  padding-block: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.donation-preview {
+  container-type: inline-size;
+  border: 1px solid var(--line);
+  --color-line: #d8d0c6;
+  --color-line-strong: #bcb3a8;
+  --color-text: #3a4638;
+  --color-forest-soft: #3a4638;
+  --color-ink: var(--forest);
+  --color-surface: var(--surface);
+  --color-link: #98431c;
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.donation-preview .container {
+  width: calc(100% - 48px);
+  margin-inline: auto;
+}
+.donation-preview .section {
+  padding-block: clamp(48px, 9cqw, 100px);
+}
+.donation-preview .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(32px, 6cqw, 72px);
+  align-items: start;
+}
+.donation-preview .grid-2 > *,
+.donation-preview .page-intro__grid > * {
+  min-width: 0;
+}
+.donation-preview h1,
+.donation-preview h2,
+.donation-preview h3 {
+  color: var(--forest);
+  font-family: "Unica One", sans-serif;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.donation-preview h1 {
+  margin-bottom: 26px;
+  font-size: clamp(44px, 6cqw, 96px);
+}
+.donation-preview h2 {
+  margin-bottom: 22px;
+  font-size: clamp(37.6px, 5cqw, 72px);
+}
+.donation-preview h3 {
+  margin-bottom: 20px;
+  font-size: clamp(24.8px, 2.6cqw, 36px);
+}
+.donation-preview .eyebrow {
+  margin-bottom: 16px;
+  color: var(--color-link);
+  font-size: 12.48px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.donation-preview .lead {
+  margin-bottom: 21px;
+  font-size: clamp(17.92px, 1.7cqw, 21.6px);
+  line-height: 1.65;
+}
+.donation-preview .section--light {
+  background: var(--surface);
+}
+.donation-preview .section--brand {
+  color: #fffdfa;
+  background: var(--forest);
+}
+.donation-preview .section--brand h2,
+.donation-preview .section--brand .eyebrow {
+  color: inherit;
+}
+.donation-preview .page-intro {
+  max-width: none;
+  margin: 0;
+  padding-block: clamp(56px, 10cqw, 140px) clamp(48px, 8cqw, 100px);
+  border-bottom: 1px solid var(--color-line);
+  color: inherit;
+  font-size: inherit;
+}
+.donation-preview .page-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(230px, 0.65fr);
+  grid-template-areas: "eyebrow ." "title aside";
+  column-gap: clamp(32px, 6cqw, 100px);
+}
+.donation-preview .page-intro__eyebrow {
+  grid-area: eyebrow;
+}
+.donation-preview .page-intro h1 {
+  grid-area: title;
+}
+.donation-preview .page-intro__aside {
+  grid-area: aside;
+  align-self: center;
+}
+.donation-preview .split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.donation-preview .split__content {
+  padding: clamp(32px, 6cqw, 72px) 24px;
+  align-self: center;
+}
+.donation-image {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--surface);
+}
+.donation-image img {
+  display: block;
+  width: 100%;
+  min-height: 360px;
+  height: 100%;
+  flex: 1;
+  object-fit: cover;
+  object-position: center 48%;
+}
+.donation-image-settings {
+  padding: 16px;
+}
+.donation-link-settings,
+.donation-image-settings {
+  font-size: 13px;
+}
+.donation-link-settings {
+  margin-top: 20px;
+}
+.donation-link-settings summary,
+.donation-image-settings summary {
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+}
+.donation-preview .editorial-cards {
+  display: grid;
+}
+.donation-preview .editorial-card {
+  padding: clamp(24px, 4cqw, 48px);
+  min-width: 0;
+}
+.donation-preview .section-heading {
+  display: block;
+  max-width: 850px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+.donation-preview .section-heading h2 {
+  margin-bottom: 22px;
+  font-size: clamp(37.6px, 5cqw, 72px);
+}
+.donation-preview .section-heading .donation-copy {
+  max-width: 688px;
+  margin-inline: auto;
+}
+.donation-preview .support-option {
+  min-width: 0;
+  padding: clamp(24px, 4cqw, 56px);
+}
+.donation-copy,
+.donation-paragraph {
+  margin-bottom: 21px;
+}
+.donation-account {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid var(--color-line-strong);
+  background: var(--surface);
+  font-size: 14px;
+}
+.donation-account > .editable-field {
+  border: 0;
+  padding: 0;
+}
+.donation-preview textarea.donation-inline-text {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.donation-inline-text::placeholder {
+  color: inherit;
+  opacity: 0.6;
+}
+.donation-preview h1 .donation-inline-text,
+.donation-preview h2 .donation-inline-text,
+.donation-preview h3 .donation-inline-text {
+  hyphens: none;
+  overflow-wrap: normal;
+}
+.donation-inline-text:hover:not(:disabled) {
+  outline: 1px dashed currentColor;
+  outline-offset: 5px;
+}
+.donation-preview .donation-inline-text:focus {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 5px;
+}
+.donation-preview .section--brand .donation-inline-text:focus {
+  outline-color: #d7a24b;
+}
+.donation-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+.donation-item-actions button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  font-size: 13px;
+}
+.donation-item-actions button:hover:not(:disabled) {
+  background: var(--paper);
+}
+.donation-add-item {
+  margin-top: 16px;
+  min-height: 44px;
+}
+.donation-preview-button {
+  width: fit-content;
+  max-width: 100%;
+  padding: 14px 22px;
+  border: 1px solid currentColor;
+  color: var(--color-link);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.donation-preview .section--brand .donation-preview-button {
+  color: #fffdfa;
+}
+.donation-preview .section--brand .donation-preview-button--light {
+  color: var(--forest);
+  background: #fffdfa;
+}
+.donation-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.donation-text-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--color-link);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@container (max-width: 840px) {
+  .donation-preview .grid-2,
+  .donation-preview .split,
+  .donation-preview .support-grid {
+    grid-template-columns: 1fr;
+  }
+  .donation-preview .page-intro__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "eyebrow" "title" "aside";
+  }
+  .donation-preview .support-option + .support-option {
+    border-top: 1px solid var(--color-line);
+    border-left: 0;
+  }
+  .donation-image img {
+    aspect-ratio: 4 / 3;
+    height: auto;
+    min-height: 0;
+  }
+}
+@container (max-width: 620px) {
+  .donation-preview h1 .donation-inline-text,
+  .donation-preview h2 .donation-inline-text,
+  .donation-preview h3 .donation-inline-text {
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+}
+@container (max-width: 420px) {
+  .donation-preview .container {
+    width: calc(100% - 32px);
+  }
+  .donation-preview .split__content {
+    padding-inline: 16px;
+  }
+  .donation-preview .support-option {
+    padding-inline: 16px;
+  }
+  .donation-account {
+    padding: 12px;
+  }
+}

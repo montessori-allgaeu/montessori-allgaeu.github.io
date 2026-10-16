@@ -1,0 +1,65 @@
+.afternoon-week {
+  margin-top: 36px;
+}
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+.week-day {
+  min-width: 0;
+  border-top: 2px solid var(--forest);
+  padding-top: 18px;
+}
+.week-day > h3 {
+  font-size: 16px;
+}
+.week-offer {
+  padding-block: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.week-offer-open {
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  width: 100%;
+  text-align: left;
+  display: grid;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.week-offer-open strong {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.week-offer-open span,
+.week-offer-open small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.week-offer .row-actions {
+  justify-content: flex-end;
+  gap: 4px;
+}
+.week-offer .icon-button {
+  min-height: 36px;
+  min-width: 36px;
+}
+.week-add {
+  margin-top: 14px;
+  min-height: 44px;
+}
+@media (max-width: 1150px) {
+  .week-days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+  }
+}
+@media (max-width: 600px) {
+  .week-days {
+    grid-template-columns: 1fr;
+  }
+  .week-offer-open strong {
+    font-size: 16px;
+  }
+}

@@ -15,6 +15,7 @@ import {
   contentDefinitions,
   getContentDefinition,
   calculateEffectiveFee,
+  type EditorField,
 } from "../../src/admin/content-model";
 import {
   contentSections,
@@ -24,7 +25,8 @@ import {
 import { api, errorText, RequestError } from "./api";
 import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
-import { JobEditor } from "./JobEditor";
+import { ContentEditor } from "./ContentEditor";
+import { AfternoonWeek } from "./AfternoonWeek";
 import { Access, Profile } from "./Access";
 import {
   recordKey,
@@ -35,7 +37,14 @@ import {
   recentContent,
   eventTemplates,
 } from "./overview";
-import { activeMedia, discardMedia, selectMedia, uploadMedia, type PendingMedia } from "./media";
+import {
+  activeMedia,
+  discardMedia,
+  selectMedia,
+  uploadMedia,
+  mediaValueAt,
+  type PendingMedia,
+} from "./media";
 import { loadProfileThumbnails, ProfileThumbnail } from "./ProfileThumbnail";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
@@ -900,6 +909,50 @@ export function App() {
   ).length;
   const yearChange = changes.find((change) => change.id === yearPlan?.operationId);
 
+  function renderEditorField(field: EditorField, path: string[] = [field.key]) {
+    if (!editor || !session) return null;
+    const owner = recordKey(editor);
+    return (
+      <EditableField
+        key={`${owner}:${path.join(".")}`}
+        field={field}
+        fieldPath={path}
+        value={mediaValueAt(editor.data, path)}
+        originalValue={mediaValueAt(editor.original, path)}
+        onChange={(value) => {
+          const current = editorRef.current;
+          if (!current || recordKey(current) !== owner) return;
+          if (path.length === 1) return updateField(owner, path[0], value);
+          const data = structuredClone(current.data);
+          let parent: JsonValue = data;
+          for (const part of path.slice(0, -1)) {
+            if (parent === null || typeof parent !== "object")
+              throw new Error("Ungültiger Inhaltspfad.");
+            parent = Array.isArray(parent) ? parent[Number(part)] : parent[part];
+          }
+          if (parent === null || typeof parent !== "object")
+            throw new Error("Ungültiger Feldpfad.");
+          const key = path[path.length - 1];
+          if (Array.isArray(parent)) {
+            if (value === undefined) parent.splice(Number(key), 1);
+            else parent[Number(key)] = value;
+          } else if (value === undefined) delete parent[key];
+          else parent[key] = value;
+          updateField(owner, path[0], data[path[0]]);
+        }}
+        collection={editor.collection}
+        role={session.user.role}
+        mediaVersions={editor.mediaVersions}
+        onUpload={(upload, uploadPath) => acceptUpload(owner, uploadPath, upload)}
+        onDiscardUpload={(uploadPath) => discardUpload(owner, uploadPath)}
+        context={editor.data}
+        onUploadBusy={uploadBusy}
+        previews={previews}
+        disabled={editingLocked || !!conflict}
+      />
+    );
+  }
+
   return (
     <div className="app-shell">
       <header className="mobile-header">
@@ -1304,82 +1357,18 @@ export function App() {
                   Termin ankündigen möchtest.
                 </p>
               )}
-            {editor.collection === "jobs" ? (
-              <JobEditor
-                key={recordKey(editor)}
-                data={editor.data}
-                fields={definition.fields}
-                onChange={(key, value) => updateField(recordKey(editor), key, value)}
-                disabled={editingLocked || !!conflict}
-                renderField={(field) => (
-                  <EditableField
-                    key={field.key}
-                    field={field}
-                    value={editor.data[field.key]}
-                    onChange={(value) => updateField(recordKey(editor), field.key, value)}
-                    collection={editor.collection}
-                    role={session.user.role}
-                    onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
-                    previews={previews}
-                    context={editor.data}
-                    disabled={editingLocked || !!conflict}
-                  />
-                )}
-              />
-            ) : (
-              <div
-                className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
-              >
-                {definition.fields
-                  .filter((field) => field.key !== "position")
-                  .filter((field) => !field.optional || editor.original[field.key] !== undefined)
-                  .map((field) => (
-                    <EditableField
-                      key={`${recordKey(editor)}:${field.key}`}
-                      field={field}
-                      value={editor.data[field.key]}
-                      onChange={(value) => updateField(recordKey(editor), field.key, value)}
-                      collection={editor.collection}
-                      role={session.user.role}
-                      originalValue={editor.original[field.key]}
-                      mediaVersions={editor.mediaVersions}
-                      onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
-                      onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
-                      context={editor.data}
-                      onUploadBusy={uploadBusy}
-                      previews={previews}
-                      disabled={editingLocked || !!conflict}
-                    />
-                  ))}
-                {definition.fields.some(
-                  (field) => field.optional && editor.original[field.key] === undefined,
-                ) && (
-                  <details className="optional-fields">
-                    <summary>Weitere Angaben ergänzen</summary>
-                    {definition.fields
-                      .filter((field) => field.optional && editor.original[field.key] === undefined)
-                      .map((field) => (
-                        <EditableField
-                          key={`${recordKey(editor)}:${field.key}`}
-                          field={field}
-                          value={editor.data[field.key]}
-                          onChange={(value) => updateField(recordKey(editor), field.key, value)}
-                          collection={editor.collection}
-                          role={session.user.role}
-                          originalValue={editor.original[field.key]}
-                          mediaVersions={editor.mediaVersions}
-                          onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
-                          onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
-                          context={editor.data}
-                          onUploadBusy={uploadBusy}
-                          previews={previews}
-                          disabled={editingLocked}
-                        />
-                      ))}
-                  </details>
-                )}
-              </div>
-            )}
+            <ContentEditor
+              key={recordKey(editor)}
+              collection={editor.collection}
+              data={editor.data}
+              originalData={editor.original}
+              fields={definition.fields}
+              role={session.user.role}
+              previews={previews}
+              onChange={(key, value) => updateField(recordKey(editor), key, value)}
+              disabled={editingLocked || !!conflict}
+              renderField={renderEditorField}
+            />
             {!definition.singleton && editor.baseVersion !== null && (
               <div className="record-actions">
                 <button
@@ -1746,6 +1735,7 @@ export function App() {
               <label className="year-filter">
                 Angebote für
                 <select
+                  aria-label="Angebote für"
                   value={offerYear || currentYear}
                   onChange={(event) => setOfferYear(event.currentTarget.value)}
                 >
@@ -1767,190 +1757,216 @@ export function App() {
                 </select>
               </label>
             )}
-            {areaDefinitions.flatMap((item) => {
-              let records = recordList.filter((record) => record.collection === item.collection);
-              if (item.collection === "events" && !past)
-                records = records.filter((record) => String(record.data.date ?? "") >= today());
-              records = [...records].sort((left, right) =>
-                item.collection === "events"
-                  ? String(left.data.date).localeCompare(String(right.data.date))
-                  : Number(left.data.position ?? 0) - Number(right.data.position ?? 0) ||
-                    titleOf(left.data).localeCompare(titleOf(right.data), "de"),
-              );
-              if (item.collection === "afternoonOffers")
-                records = records.filter(
-                  (record) => record.data.schoolYear === (offerYear || currentYear),
+            {areaDefinitions
+              .filter((item) => item.collection !== "afternoonOffers")
+              .flatMap((item) => {
+                let records = recordList.filter((record) => record.collection === item.collection);
+                if (item.collection === "events" && !past)
+                  records = records.filter((record) => String(record.data.date ?? "") >= today());
+                records = [...records].sort((left, right) =>
+                  item.collection === "events"
+                    ? String(left.data.date).localeCompare(String(right.data.date))
+                    : Number(left.data.position ?? 0) - Number(right.data.position ?? 0) ||
+                      titleOf(left.data).localeCompare(titleOf(right.data), "de"),
                 );
-              return contentSections(item, records).map((section) => {
-                const entries = section.entries;
-                const canSort = section.sortable && entries.length > 1;
-                const sortable = canSort && sortingSection === section.key;
-                if (item.singleton)
-                  return (
-                    <div className="singleton-section" key={item.collection}>
-                      {records[0] ? (
-                        <button className="singleton-link" onClick={() => openRecord(records[0])}>
-                          <div>
-                            <h2>{item.label}</h2>
-                            <p>
-                              {contentUsage(records[0], recordList)
-                                .pages.map((page) => page.label)
-                                .join(" · ")}
-                            </p>
-                          </div>
-                          <span aria-hidden="true">→</span>
-                        </button>
-                      ) : (
-                        <p className="error">{item.label} konnte nicht geladen werden.</p>
-                      )}
-                    </div>
-                  );
-                return (
-                  <section
-                    className={`collection-section${section.newValues ? " people-section" : ""}`}
-                    key={section.key}
-                    aria-labelledby={`heading-${section.key}`}
-                  >
-                    <div className="section-heading">
-                      <h2 id={`heading-${section.key}`}>
-                        {section.label}
-                        <span className="subtle count">{entries.length}</span>
-                      </h2>
-                      <div className="row-actions">
-                        {canSort && (
-                          <button
-                            className="text-button"
-                            aria-pressed={sortable}
-                            onClick={() => {
-                              setSortingSection(sortable ? null : section.key);
-                              setDragged(null);
-                            }}
-                          >
-                            {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+                return contentSections(item, records).map((section) => {
+                  const entries = section.entries;
+                  const canSort = section.sortable && entries.length > 1;
+                  const sortable = canSort && sortingSection === section.key;
+                  if (item.singleton)
+                    return (
+                      <div className="singleton-section" key={item.collection}>
+                        {records[0] ? (
+                          <button className="singleton-link" onClick={() => openRecord(records[0])}>
+                            <div>
+                              <h2>{item.label}</h2>
+                              <p>
+                                {contentUsage(records[0], recordList)
+                                  .pages.map((page) => page.label)
+                                  .join(" · ")}
+                              </p>
+                            </div>
+                            <span aria-hidden="true">→</span>
                           </button>
+                        ) : (
+                          <p className="error">{item.label} konnte nicht geladen werden.</p>
                         )}
-                        <button
-                          className="button secondary"
-                          onClick={() => newRecord(item.collection, undefined, section.newValues)}
-                        >
-                          + Hinzufügen
-                        </button>
                       </div>
-                    </div>
-                    {sortable && (
-                      <p className="hint">
-                        Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
-                      </p>
-                    )}
-                    {!entries.length ? (
-                      <p className="empty-state">
-                        {item.collection === "events"
-                          ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
-                          : "Hier sind noch keine Einträge."}
-                      </p>
-                    ) : (
-                      <div className="record-list">
-                        {entries.map(({ record, key, role }, index) => (
-                          <article
-                            className="record-item"
-                            key={key}
-                            onDragOver={(event) => {
-                              if (dragged) event.preventDefault();
-                            }}
-                            onDrop={(event) => {
-                              event.preventDefault();
-                              const from = entries.findIndex((entry) => entry.key === dragged);
-                              if (from >= 0 && sortable) void moveRecord(entries, from, index);
-                              setDragged(null);
-                            }}
+                    );
+                  return (
+                    <section
+                      className={`collection-section${section.newValues ? " people-section" : ""}`}
+                      key={section.key}
+                      aria-labelledby={`heading-${section.key}`}
+                    >
+                      <div className="section-heading">
+                        <h2 id={`heading-${section.key}`}>
+                          {section.label}
+                          <span className="subtle count">{entries.length}</span>
+                        </h2>
+                        <div className="row-actions">
+                          {canSort && (
+                            <button
+                              className="text-button"
+                              aria-pressed={sortable}
+                              onClick={() => {
+                                setSortingSection(sortable ? null : section.key);
+                                setDragged(null);
+                              }}
+                            >
+                              {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+                            </button>
+                          )}
+                          <button
+                            className="button secondary"
+                            onClick={() => newRecord(item.collection, undefined, section.newValues)}
                           >
-                            <button className="record-row" onClick={() => openRecord(record)}>
-                              {typeof record.data.image === "string" && (
-                                <ProfileThumbnail
-                                  src={
-                                    pendingChange(record, changes)?.saved?.previews[
-                                      record.data.image
-                                    ] ??
-                                    thumbnails[snapshot?.mediaVersions[record.data.image] ?? ""]
+                            + Hinzufügen
+                          </button>
+                        </div>
+                      </div>
+                      {sortable && (
+                        <p className="hint">
+                          Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
+                        </p>
+                      )}
+                      {!entries.length ? (
+                        <p className="empty-state">
+                          {item.collection === "events"
+                            ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
+                            : "Hier sind noch keine Einträge."}
+                        </p>
+                      ) : (
+                        <div className="record-list">
+                          {entries.map(({ record, key, role }, index) => (
+                            <article
+                              className="record-item"
+                              key={key}
+                              onDragOver={(event) => {
+                                if (dragged) event.preventDefault();
+                              }}
+                              onDrop={(event) => {
+                                event.preventDefault();
+                                const from = entries.findIndex((entry) => entry.key === dragged);
+                                if (from >= 0 && sortable) void moveRecord(entries, from, index);
+                                setDragged(null);
+                              }}
+                            >
+                              <button className="record-row" onClick={() => openRecord(record)}>
+                                {typeof record.data.image === "string" && (
+                                  <ProfileThumbnail
+                                    src={
+                                      pendingChange(record, changes)?.saved?.previews[
+                                        record.data.image
+                                      ] ??
+                                      thumbnails[snapshot?.mediaVersions[record.data.image] ?? ""]
+                                    }
+                                  />
+                                )}
+                                <span>
+                                  <strong>{titleOf(record.data)}</strong>
+                                  <small>
+                                    {[
+                                      record.data.date
+                                        ? eventDate(String(record.data.date))
+                                        : undefined,
+                                      record.data.time,
+                                      record.data.area,
+                                      record.data.weekday,
+                                      record.data.schoolYear,
+                                      role ?? record.data.role,
+                                      record.data.group,
+                                    ]
+                                      .filter(Boolean)
+                                      .map(String)
+                                      .join(" · ")}
+                                    {item.collection === "afternoonOffers" &&
+                                    record.data.schoolYear !== currentYear
+                                      ? " · Früheres / anderes Schuljahr"
+                                      : ""}
+                                  </small>
+                                </span>
+                                <span className="record-arrow" aria-hidden="true">
+                                  →
+                                </span>
+                              </button>
+                              {item.collection === "downloads" && (
+                                <PdfReplaceInput
+                                  title={titleOf(record.data)}
+                                  disabled={
+                                    busy ||
+                                    uploadsInProgress > 0 ||
+                                    !!pendingChange(record, changes)
                                   }
+                                  onSelect={(file) => void replacePdf(record, file)}
                                 />
                               )}
-                              <span>
-                                <strong>{titleOf(record.data)}</strong>
-                                <small>
-                                  {[
-                                    record.data.date
-                                      ? eventDate(String(record.data.date))
-                                      : undefined,
-                                    record.data.time,
-                                    record.data.area,
-                                    record.data.weekday,
-                                    record.data.schoolYear,
-                                    role ?? record.data.role,
-                                    record.data.group,
-                                  ]
-                                    .filter(Boolean)
-                                    .map(String)
-                                    .join(" · ")}
-                                  {item.collection === "afternoonOffers" &&
-                                  record.data.schoolYear !== currentYear
-                                    ? " · Früheres / anderes Schuljahr"
-                                    : ""}
-                                </small>
-                              </span>
-                              <span className="record-arrow" aria-hidden="true">
-                                →
-                              </span>
-                            </button>
-                            {item.collection === "downloads" && (
-                              <PdfReplaceInput
-                                title={titleOf(record.data)}
-                                disabled={
-                                  busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
-                                }
-                                onSelect={(file) => void replacePdf(record, file)}
-                              />
-                            )}
-                            {sortable && (
-                              <div className="sort-controls">
-                                <span
-                                  className="drag-handle"
-                                  draggable={!busy}
-                                  onDragStart={() => setDragged(key)}
-                                  onDragEnd={() => setDragged(null)}
-                                  title="Zum Verschieben ziehen"
-                                  aria-hidden="true"
-                                >
-                                  ⋮⋮
-                                </span>
-                                <button
-                                  className="icon-button"
-                                  disabled={busy || index === 0 || pendingCount > 0}
-                                  aria-label={`${titleOf(record.data)} nach oben`}
-                                  onClick={() => void moveRecord(entries, index, index - 1)}
-                                >
-                                  ↑
-                                </button>
-                                <button
-                                  className="icon-button"
-                                  disabled={
-                                    busy || index === entries.length - 1 || pendingCount > 0
-                                  }
-                                  aria-label={`${titleOf(record.data)} nach unten`}
-                                  onClick={() => void moveRecord(entries, index, index + 1)}
-                                >
-                                  ↓
-                                </button>
-                              </div>
-                            )}
-                          </article>
-                        ))}
-                      </div>
-                    )}
-                  </section>
-                );
-              });
-            })}
+                              {sortable && (
+                                <div className="sort-controls">
+                                  <span
+                                    className="drag-handle"
+                                    draggable={!busy}
+                                    onDragStart={() => setDragged(key)}
+                                    onDragEnd={() => setDragged(null)}
+                                    title="Zum Verschieben ziehen"
+                                    aria-hidden="true"
+                                  >
+                                    ⋮⋮
+                                  </span>
+                                  <button
+                                    className="icon-button"
+                                    disabled={busy || index === 0 || pendingCount > 0}
+                                    aria-label={`${titleOf(record.data)} nach oben`}
+                                    onClick={() => void moveRecord(entries, index, index - 1)}
+                                  >
+                                    ↑
+                                  </button>
+                                  <button
+                                    className="icon-button"
+                                    disabled={
+                                      busy || index === entries.length - 1 || pendingCount > 0
+                                    }
+                                    aria-label={`${titleOf(record.data)} nach unten`}
+                                    onClick={() => void moveRecord(entries, index, index + 1)}
+                                  >
+                                    ↓
+                                  </button>
+                                </div>
+                              )}
+                            </article>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  );
+                });
+              })}
+            {area === "Ganztag & Essen" && (
+              <AfternoonWeek
+                records={recordList.filter(
+                  (record) =>
+                    record.collection === "afternoonOffers" &&
+                    record.data.schoolYear === (offerYear || currentYear),
+                )}
+                disabled={busy || pendingCount > 0}
+                onOpen={openRecord}
+                onAdd={(weekday) =>
+                  newRecord("afternoonOffers", undefined, {
+                    weekday,
+                    schoolYear: offerYear || currentYear,
+                  })
+                }
+                onMove={(entries, from, to) => void moveRecord(entries, from, to)}
+                statuses={Object.fromEntries(
+                  recordList
+                    .filter((record) => record.collection === "afternoonOffers")
+                    .flatMap((record) => {
+                      const pending = pendingChange(record, changes);
+                      return pending ? [[recordKey(record), statusLabels[pending.status]]] : [];
+                    }),
+                )}
+              />
+            )}
           </section>
         )}
       </main>

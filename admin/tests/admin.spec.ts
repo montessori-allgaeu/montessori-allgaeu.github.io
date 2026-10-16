@@ -502,6 +502,118 @@ test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) 
   expect(requests[0].mutations[1].id).not.toBe(first.id);
 });
 
+for (const width of [1440, 390]) {
+  test(`Wochenplan trennt Tage und Schuljahre und legt Angebote im gewählten Jahr an (${width})`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const settings = record(
+      "afternoonProgramSettings",
+      { activeSchoolYear: "2026/27" },
+      "afternoon-program",
+    );
+    const records = [
+      settings,
+      record(
+        "afternoonOffers",
+        {
+          title: "Montagswerkstatt",
+          weekday: "Montag",
+          schoolYear: "2026/27",
+          gradeFrom: 1,
+          gradeTo: 4,
+        },
+        "montag",
+      ),
+      record(
+        "afternoonOffers",
+        {
+          title: "Dienstagskunst",
+          weekday: "Dienstag",
+          schoolYear: "2026/27",
+          gradeFrom: 5,
+          gradeTo: 7,
+        },
+        "dienstag",
+      ),
+      record(
+        "afternoonOffers",
+        {
+          title: "Vorjahreskurs",
+          weekday: "Mittwoch",
+          schoolYear: "2025/26",
+          gradeFrom: 1,
+          gradeTo: 4,
+        },
+        "vorjahr",
+      ),
+    ];
+    const requests = await mock(page, records);
+    await page.goto("/?collection=afternoonOffers");
+    await expect(page.getByRole("region", { name: "Montag", exact: true })).toContainText(
+      "Montagswerkstatt",
+    );
+    await expect(page.getByRole("region", { name: "Dienstag", exact: true })).toContainText(
+      "Klasse 5–7",
+    );
+    await expect(page.getByText("Vorjahreskurs", { exact: true })).toHaveCount(0);
+    await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).press("Enter");
+    await expect(
+      page.getByRole("button", { name: "Sortierung beenden", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await page.screenshot({ path: `test-results/afternoon-week-${width}.png`, fullPage: true });
+    await page.getByLabel("Angebote für", { exact: true }).selectOption("2025/26");
+    await expect(page.getByRole("region", { name: "Mittwoch", exact: true })).toContainText(
+      "Vorjahreskurs",
+    );
+    await page.getByRole("button", { name: "Angebot für Freitag hinzufügen" }).press("Enter");
+    await expect(page.getByLabel("Wochentag", { exact: true })).toHaveValue("Freitag");
+    await expect(page.getByLabel("Schuljahr", { exact: true })).toHaveValue("2025/26");
+    await page.getByLabel("Titel", { exact: true }).fill("Neuer Freitagskurs");
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations[0].data).toMatchObject({
+      title: "Neuer Freitagskurs",
+      schoolYear: "2025/26",
+      weekday: "Freitag",
+    });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}
+
+test("Wochenplan sortiert nur innerhalb des gewählten Tages", async ({ page }) => {
+  const records = [
+    record("afternoonProgramSettings", { activeSchoolYear: "2026/27" }, "afternoon-program"),
+    record(
+      "afternoonOffers",
+      { title: "Erstes Angebot", weekday: "Montag", schoolYear: "2026/27", position: 10 },
+      "erstes",
+    ),
+    record(
+      "afternoonOffers",
+      { title: "Zweites Angebot", weekday: "Montag", schoolYear: "2026/27", position: 20 },
+      "zweites",
+    ),
+    record(
+      "afternoonOffers",
+      { title: "Anderer Tag", weekday: "Dienstag", schoolYear: "2026/27", position: 10 },
+      "anderer-tag",
+    ),
+  ];
+  const requests = await mock(page, records);
+  await page.goto("/?collection=afternoonOffers");
+  await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+  await page.getByRole("button", { name: "Zweites Angebot nach oben", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].mutations.map((mutation) => [mutation.id, mutation.data.position])).toEqual([
+    ["zweites", 1],
+    ["erstes", 2],
+  ]);
+  expect(requests[0].mutations.every((mutation) => mutation.data.weekday === "Montag")).toBe(true);
+});
+
 test("mobile Navigation und Inline-Bearbeitung passen ohne horizontalen Überlauf", async ({
   page,
 }) => {
@@ -1592,7 +1704,7 @@ for (const viewport of [
     await expect(page.getByRole("button", { name: "Gespeichert ✓" })).toBeDisabled();
     await page.reload();
     await expect(
-      page.getByRole("heading", { name: "Unser neuer Kennenlerntag", exact: true }),
+      page.getByRole("heading", { name: "Unser neuer Kennenlerntag", exact: true, level: 1 }),
     ).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeDisabled();
     await page.getByRole("button", { name: "Zurück zu Termine →", exact: true }).click();
@@ -1657,7 +1769,9 @@ test("neue Einträge und Dateien bleiben vor Veröffentlichung auffindbar; Fehle
     },
   });
   await page.goto("/?collection=downloads&id=neue-datei");
-  await expect(page.getByRole("heading", { name: "Neue Unterlage", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Neue Unterlage", exact: true, level: 1 }),
+  ).toBeVisible();
   await expect(page.getByRole("link", { name: "PDF ansehen ↗", exact: true })).toHaveAttribute(
     "href",
     "/api/uploads/preview",
@@ -1669,7 +1783,9 @@ test("neue Einträge und Dateien bleiben vor Veröffentlichung auffindbar; Fehle
   });
   await page.getByRole("button", { name: "Problem ansehen" }).click();
   await page.getByRole("button", { name: "Neue Unterlage ansehen" }).click();
-  await expect(page.getByRole("heading", { name: "Neue Unterlage", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Neue Unterlage", exact: true, level: 1 }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Erneut versuchen", exact: true }).click();
   await expect.poll(() => retries).toBe(1);
   await expect(page.getByRole("button", { name: "Gespeichert ✓" })).toBeVisible();

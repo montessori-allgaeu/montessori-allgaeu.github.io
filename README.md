@@ -76,6 +76,16 @@ Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleist
 
 Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
 
+Stellen und Spendentexte werden im Seitenlayout bearbeitet. Bei Spenden lässt sich zwischen
+Spendenseite und Startseitenhinweis wechseln; Suchmaschinenangaben liegen unter Einstellungen.
+Kosten sowie Öffnungs- und Schließzeiten verwenden kompakte Tabellen. Das Nachmittagsprogramm
+zeigt Angebote nach Wochentag mit Klassenstufen; allgemeine Kurswahl- und Essensangaben bleiben
+separat erreichbar. Termine, Personen, Downloads und Aufnahmefristen zeigen während der Eingabe
+eine Vorschau. Die PDF-Vorschau rendert die erste Seite lokal im Browser mit einem erst bei Bedarf
+geladenen PDF.js-Modul; ein Link zum vollständigen Dokument bleibt bei Vorschaufehlern erreichbar.
+Vorschauen speichern oder veröffentlichen keine Eingaben. Datenformate und Rollenrechte bleiben
+für alle Ansichten gemeinsam im bisherigen Inhaltsmodell und Backend geregelt.
+
 Die Liste **Menschen** lädt statische WebP-Vorschaubilder mit 96 × 114 Pixeln. `build:admin`
 erzeugt sie aus den Team- und Elternbeiratsfotos; Vite stellt sie auch lokal bereit. Die
 Dateinamen enthalten einen Hash des Bildinhalts und dürfen ein Jahr unverändert im Browsercache
