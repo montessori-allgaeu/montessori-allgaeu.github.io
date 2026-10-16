@@ -1,4 +1,5 @@
 ---
+import "@/styles/job-posting.css";
 import { Check } from "@lucide/astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import CTASection from "@/components/CTASection.astro";
@@ -28,9 +29,9 @@ const jobSeo = createJobSeo(job);
   <section class="job-hero">
     <div class="container">
       <p class="eyebrow">{job.areaLabel}</p>
-      <h1>{job.title}</h1>
+      <h1 class="job-text">{job.title}</h1>
       <div class="job-hero__meta">
-        <p class="lead">{job.intro}</p>
+        <p class="lead job-text">{job.intro}</p>
         <div class="job-hero__facts">
           <span>{job.scheduleLabel}</span>
           <time datetime={job.datePosted}
@@ -45,7 +46,7 @@ const jobSeo = createJobSeo(job);
     <div class="container grid-2">
       <div><p class="eyebrow">Über uns</p><h2>Ein Ort für eigenständiges Lernen.</h2></div>
       <div class="job-about__copy">
-        {job.about.map((paragraph) => <p>{paragraph}</p>)}
+        {job.about.map((paragraph) => <p class="job-text">{paragraph}</p>)}
       </div>
     </div>
   </section>
@@ -60,7 +61,7 @@ const jobSeo = createJobSeo(job);
             job.responsibilities.map((item) => (
               <li>
                 <Check size={19} aria-hidden="true" />
-                {item}
+                <span class="job-text">{item}</span>
               </li>
             ))
           }
@@ -74,7 +75,7 @@ const jobSeo = createJobSeo(job);
             job.profile.map((item) => (
               <li>
                 <Check size={19} aria-hidden="true" />
-                {item}
+                <span class="job-text">{item}</span>
               </li>
             ))
           }
@@ -90,92 +91,22 @@ const jobSeo = createJobSeo(job);
       </div>
       <div>
         <ul class="editorial-list">
-          {job.benefits.map((item) => <li>{item}</li>)}
+          {job.benefits.map((item) => <li class="job-text">{item}</li>)}
         </ul>
       </div>
     </div>
   </section>
 
-  <CTASection
-    eyebrow="Interesse?"
-    title={job.closingTitle}
-    text={job.closingText}
-    primaryHref={`mailto:${contact.careersEmail}?subject=${mailSubject}`}
-    primaryLabel="Per E-Mail bewerben"
-    primaryRevealLabel="Bewerbungsadresse anzeigen"
-    secondaryHref={`mailto:${contact.careersEmail}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
-    secondaryLabel="Erst kennenlernen"
-  />
+  <div class="job-application">
+    <CTASection
+      eyebrow="Interesse?"
+      title={job.closingTitle}
+      text={job.closingText}
+      primaryHref={`mailto:${contact.careersEmail}?subject=${mailSubject}`}
+      primaryLabel="Per E-Mail bewerben"
+      primaryRevealLabel="Bewerbungsadresse anzeigen"
+      secondaryHref={`mailto:${contact.careersEmail}?subject=${encodeURIComponent(`Kennenlernen: ${job.title}`)}`}
+      secondaryLabel="Erst kennenlernen"
+    />
+  </div>
 </BaseLayout>
-
-<style>
-  .job-hero {
-    padding: clamp(4rem, 8vw, 8rem) 0 clamp(4rem, 7vw, 7rem);
-    border-bottom: 1px solid var(--color-line);
-  }
-
-  .job-hero h1 {
-    max-width: 64rem;
-    overflow-wrap: anywhere;
-    hyphens: auto;
-  }
-
-  .job-hero__meta {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 3rem;
-    align-items: end;
-  }
-
-  .job-hero__facts {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: flex-end;
-    color: var(--color-muted);
-    font-size: 0.875rem;
-  }
-
-  .job-hero__facts span {
-    font-weight: 600;
-  }
-
-  .job-content h2 {
-    font-size: clamp(2rem, 4vw, 3.4rem);
-  }
-
-  .job-about__copy p:first-child {
-    margin-top: 0;
-  }
-
-  .job-checks {
-    margin: 2rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .job-checks li {
-    display: grid;
-    grid-template-columns: 1.5rem minmax(0, 1fr);
-    gap: 0.75rem;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--color-line);
-    color: var(--color-text);
-  }
-
-  .job-checks svg {
-    margin-top: 0.3rem;
-    color: var(--color-link);
-  }
-
-  @media (max-width: 700px) {
-    .job-hero__meta {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .job-hero__facts {
-      align-items: flex-start;
-    }
-  }
-</style>

@@ -56,6 +56,8 @@ Neue Termine bieten unter **Ähnlichen Termin übernehmen** bis zu fünf passend
 
 Die Felder eines Eintrags sind sofort bearbeitbar. **Speichern** in der festen Leiste am unteren Bildschirmrand übernimmt alle Änderungen gemeinsam. Optionale, bisher unbenutzte Angaben stehen unter **Weitere Angaben ergänzen**. Bis zum Speichern bleiben Eingaben nur im geöffneten Browser; beim Verlassen geänderter Inhalte erscheint eine Warnung.
 
+Stellenangebote werden direkt im Aufbau der öffentlichen Stellenanzeige bearbeitet. Überschrift, Einleitung, Absätze, Listen und Bewerbungstexte sind anklickbar; die feste Gestaltung bleibt erhalten. Absätze und Listenpunkte lassen sich hinzufügen, verschieben und entfernen. **Einstellungen** enthält Bereich, Team, Beschäftigungsumfang, Start, Beschäftigungsarten für Google und die optionale Bewerbungsfrist. Das Veröffentlichungsdatum wird automatisch gesetzt und bei späteren Änderungen erhalten; beim Verwenden einer Vorlage erhält die neue Stelle das aktuelle Datum. Es ist kein bearbeitbares Feld. Datumsangaben werden im ISO-Format `JJJJ-MM-TT` gespeichert und an Google übergeben.
+
 In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.
 
 ### Prüfung und Auslieferung

@@ -18,6 +18,7 @@ import {
 import { api, errorText, RequestError } from "./api";
 import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
+import { JobEditor } from "./JobEditor";
 import { Access, Profile } from "./Access";
 import {
   recordKey,
@@ -567,6 +568,8 @@ export function App() {
       const data = { ...current.data };
       if (value === undefined) delete data[key];
       else data[key] = value;
+      if (current.collection === "jobs" && key === "visible" && value === true && !data.datePosted)
+        data.datePosted = today();
       if (current.collection === "kindergartenFeeSettings" && Array.isArray(data.rows))
         data.rows = data.rows.map((row) => {
           if (!row || typeof row !== "object" || Array.isArray(row)) return row;
@@ -1039,7 +1042,11 @@ export function App() {
                   {definition.label}
                   {editor.baseVersion === null ? " · Neu" : ""}
                 </p>
-                <h1>{titleOf(editor.data, definition.label)}</h1>
+                <h1>
+                  {editor.collection === "jobs"
+                    ? "Stellenanzeige bearbeiten"
+                    : titleOf(editor.data, definition.label)}
+                </h1>
               </div>
             </div>
             <div className="save-controls" role="region" aria-label="Änderungen speichern">
@@ -1252,63 +1259,87 @@ export function App() {
                   Termin ankündigen möchtest.
                 </p>
               )}
-            <div
-              className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
-            >
-              {definition.fields
-                .filter((field) => field.key !== "visible" && field.key !== "position")
-                .filter((field) => !field.optional || editor.original[field.key] !== undefined)
-                .map((field) => (
+            {editor.collection === "jobs" ? (
+              <JobEditor
+                key={recordKey(editor)}
+                data={editor.data}
+                fields={definition.fields}
+                onChange={(key, value) => updateField(recordKey(editor), key, value)}
+                disabled={editingLocked || !!conflict}
+                renderField={(field) => (
                   <EditableField
-                    key={`${recordKey(editor)}:${field.key}`}
+                    key={field.key}
                     field={field}
                     value={editor.data[field.key]}
                     onChange={(value) => updateField(recordKey(editor), field.key, value)}
                     collection={editor.collection}
                     role={session.user.role}
-                    originalValue={editor.original[field.key]}
-                    mediaVersions={editor.mediaVersions}
                     onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
-                    onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
-                    context={editor.data}
-                    onUploadBusy={uploadBusy}
                     previews={previews}
+                    context={editor.data}
                     disabled={editingLocked || !!conflict}
                   />
-                ))}
-              {definition.fields.some(
-                (field) => field.optional && editor.original[field.key] === undefined,
-              ) && (
-                <details className="optional-fields">
-                  <summary>Weitere Angaben ergänzen</summary>
-                  {definition.fields
-                    .filter(
-                      (field) =>
-                        field.optional &&
-                        editor.original[field.key] === undefined &&
-                        field.key !== "visible",
-                    )
-                    .map((field) => (
-                      <EditableField
-                        key={`${recordKey(editor)}:${field.key}`}
-                        field={field}
-                        value={editor.data[field.key]}
-                        onChange={(value) => updateField(recordKey(editor), field.key, value)}
-                        collection={editor.collection}
-                        role={session.user.role}
-                        originalValue={editor.original[field.key]}
-                        mediaVersions={editor.mediaVersions}
-                        onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
-                        onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
-                        context={editor.data}
-                        onUploadBusy={uploadBusy}
-                        previews={previews}
-                        disabled={editingLocked}
-                      />
-                    ))}
-                </details>
-              )}
-            </div>
+                )}
+              />
+            ) : (
+              <div
+                className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
+              >
+                {definition.fields
+                  .filter((field) => field.key !== "visible" && field.key !== "position")
+                  .filter((field) => !field.optional || editor.original[field.key] !== undefined)
+                  .map((field) => (
+                    <EditableField
+                      key={`${recordKey(editor)}:${field.key}`}
+                      field={field}
+                      value={editor.data[field.key]}
+                      onChange={(value) => updateField(recordKey(editor), field.key, value)}
+                      collection={editor.collection}
+                      role={session.user.role}
+                      originalValue={editor.original[field.key]}
+                      mediaVersions={editor.mediaVersions}
+                      onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
+                      onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
+                      context={editor.data}
+                      onUploadBusy={uploadBusy}
+                      previews={previews}
+                      disabled={editingLocked || !!conflict}
+                    />
+                  ))}
+                {definition.fields.some(
+                  (field) => field.optional && editor.original[field.key] === undefined,
+                ) && (
+                  <details className="optional-fields">
+                    <summary>Weitere Angaben ergänzen</summary>
+                    {definition.fields
+                      .filter(
+                        (field) =>
+                          field.optional &&
+                          editor.original[field.key] === undefined &&
+                          field.key !== "visible",
+                      )
+                      .map((field) => (
+                        <EditableField
+                          key={`${recordKey(editor)}:${field.key}`}
+                          field={field}
+                          value={editor.data[field.key]}
+                          onChange={(value) => updateField(recordKey(editor), field.key, value)}
+                          collection={editor.collection}
+                          role={session.user.role}
+                          originalValue={editor.original[field.key]}
+                          mediaVersions={editor.mediaVersions}
+                          onUpload={(upload, path) => acceptUpload(recordKey(editor), path, upload)}
+                          onDiscardUpload={(path) => discardUpload(recordKey(editor), path)}
+                          context={editor.data}
+                          onUploadBusy={uploadBusy}
+                          previews={previews}
+                          disabled={editingLocked}
+                        />
+                      ))}
+                  </details>
+                )}
+              </div>
+            )}
             {!definition.singleton && editor.baseVersion !== null && (
               <div className="record-actions">
                 <button

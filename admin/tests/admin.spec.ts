@@ -212,7 +212,7 @@ test("optionale Angaben bleiben während der Eingabe erreichbar", async ({ page 
   delete job.data.team;
   await mock(page, [job]);
   await page.goto("/?collection=jobs&id=test-eintrag");
-  await page.getByText("Weitere Angaben ergänzen", { exact: true }).click();
+  await page.getByText("Einstellungen", { exact: true }).click();
   const input = page.getByRole("textbox", {
     name: "Team, Lerngruppe oder Klassenstufen",
     exact: true,
@@ -220,6 +220,132 @@ test("optionale Angaben bleiben während der Eingabe erreichbar", async ({ page 
   await input.pressSequentially("Klasse 5–7");
   await expect(input).toHaveValue("Klasse 5–7");
   await expect(input).toBeFocused();
+  await expect(page.locator(".job-preview .eyebrow").first()).toHaveText(
+    "Kindergarten · Klasse 5–7",
+  );
+});
+
+const jobData = {
+  title: "Pädagogische Fachkraft",
+  intro: "Kinder aufmerksam begleiten.",
+  about: ["Eine gemeinsame Monte.", "Eigenständig lernen."],
+  responsibilities: ["Kinder begleiten", "Im Team lernen"],
+  profile: ["Pädagogische Ausbildung"],
+  benefits: ["Montessori-Diplom"],
+  closingTitle: "Lernen wir uns kennen.",
+  closingText: "Wir freuen uns auf dich.",
+  scope: "Teilzeit",
+  datePosted: "2026-09-01",
+};
+
+for (const viewport of [
+  { width: 1440, height: 1000 },
+  { width: 390, height: 844 },
+]) {
+  test(`Stellenanzeige direkt bearbeiten und unverändert datieren (${viewport.width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const job = record("jobs", jobData);
+    const requests = await mock(page, [job]);
+    await page.goto("/?collection=jobs&id=test-eintrag");
+    await expect(page.getByLabel("Ursprünglich veröffentlicht am")).toHaveCount(0);
+    await page
+      .getByRole("textbox", { name: "Stellenbezeichnung", exact: true })
+      .fill("Erzieher:in");
+    await page
+      .getByRole("textbox", { name: "Einleitung", exact: true })
+      .fill("Gemeinsam wachsen.\nMit Raum für eigene Ideen.");
+    await page
+      .getByRole("textbox", { name: "Über uns: Absatz 1", exact: true })
+      .fill("Ein Ort für Kinder & Erwachsene.");
+    await page.getByRole("button", { name: "Aufgaben: Eintrag 2 nach oben", exact: true }).click();
+    await expect(
+      page.getByRole("textbox", { name: "Aufgaben: Listenpunkt 1", exact: true }),
+    ).toHaveValue("Im Team lernen");
+    await page.getByRole("button", { name: "Aufgaben: Eintrag 2 entfernen", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Aufgaben: Listenpunkt hinzufügen", exact: true })
+      .click();
+    await page
+      .getByRole("textbox", { name: "Aufgaben: Listenpunkt 2", exact: true })
+      .fill("Materialien vorbereiten");
+    await page
+      .getByRole("textbox", { name: "Profil: Listenpunkt 1", exact: true })
+      .fill("Montessori-Erfahrung");
+    await page
+      .getByRole("textbox", { name: "Das erwartet dich bei uns: Listenpunkt 1", exact: true })
+      .fill("Bezahlte Fortbildungen");
+    await page
+      .getByRole("textbox", { name: "Überschrift Bewerbung", exact: true })
+      .fill("Komm zur Monte.");
+    await page
+      .getByRole("textbox", { name: "Einladung zur Bewerbung", exact: true })
+      .fill("Erzähl uns von dir.");
+    await page.getByText("Einstellungen", { exact: true }).click();
+    await page.getByRole("textbox", { name: "Start", exact: true }).fill("Nach Vereinbarung");
+    await page.getByLabel("Bewerbung möglich bis", { exact: true }).fill("2027-01-31");
+    await expect(page.locator(".job-hero__facts")).toContainText("31. Januar 2027");
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations[0]).toMatchObject({
+      baseVersion: "version-1",
+      data: {
+        ...jobData,
+        title: "Erzieher:in",
+        intro: "Gemeinsam wachsen.\nMit Raum für eigene Ideen.",
+        about: ["Ein Ort für Kinder & Erwachsene.", "Eigenständig lernen."],
+        responsibilities: ["Im Team lernen", "Materialien vorbereiten"],
+        profile: ["Montessori-Erfahrung"],
+        benefits: ["Bezahlte Fortbildungen"],
+        closingTitle: "Komm zur Monte.",
+        closingText: "Erzähl uns von dir.",
+        start: "Nach Vereinbarung",
+        validThrough: "2027-01-31",
+      },
+    });
+    await expect(
+      page.getByRole("textbox", { name: "Stellenbezeichnung", exact: true }),
+    ).toBeDisabled();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    expect(errors).toEqual([]);
+  });
+}
+
+test("Stellenvorlagen bekommen automatisch das neue Veröffentlichungsdatum", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-10-16T12:00:00Z") });
+  const requests = await mock(page, [record("jobs", jobData)]);
+  await page.goto("/?collection=jobs&id=test-eintrag");
+  await page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }).click();
+  await expect(page.getByLabel("Ursprünglich veröffentlicht am")).toHaveCount(0);
+  await expect(page.getByRole("textbox", { name: "Stellenbezeichnung", exact: true })).toHaveValue(
+    "Pädagogische Fachkraft (Kopie)",
+  );
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].mutations[0]).toMatchObject({
+    baseVersion: null,
+    data: { datePosted: "2026-10-16", responsibilities: jobData.responsibilities },
+  });
+});
+
+test("eine erstmals eingeblendete Stelle erhält automatisch ihr Veröffentlichungsdatum", async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date("2026-10-16T12:00:00Z") });
+  const job = record("jobs", { ...jobData, visible: false });
+  delete job.data.datePosted;
+  const requests = await mock(page, [job]);
+  await page.goto("/?collection=jobs&id=test-eintrag");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Wieder einblenden", exact: true }).click();
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].mutations[0].data).toMatchObject({ visible: true, datePosted: "2026-10-16" });
 });
 
 test("wartet auf Upload und übernimmt Dateiverweis und Uploadkennung gemeinsam", async ({

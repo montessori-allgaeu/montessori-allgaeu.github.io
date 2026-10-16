@@ -69,6 +69,19 @@ describe("JobPosting structured data", () => {
     expect(posting.description).toContain("Beschäftigungsumfang: Testumfang");
   });
 
+  it("preserves editor line breaks without interpreting pasted HTML", () => {
+    const posting = createJobPosting(
+      {
+        ...job,
+        intro: "Zeile eins\n<script>Text</script>",
+        responsibilities: ["Kinder begleiten\nIm Team lernen"],
+      },
+      address,
+    );
+    expect(posting.description).toContain("<p>Zeile eins<br>&lt;script&gt;Text&lt;/script&gt;</p>");
+    expect(posting.description).toContain("<li>Kinder begleiten<br>Im Team lernen</li>");
+  });
+
   it("includes a known application deadline in the metadata and full description", () => {
     const posting = createJobPosting({ ...job, validThrough: "2030-02-28" }, address);
 

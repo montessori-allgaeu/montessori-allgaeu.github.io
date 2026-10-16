@@ -1,0 +1,219 @@
+@import "../../src/styles/job-posting.css";
+
+.job-editor-toolbar {
+  margin-bottom: 24px;
+}
+.job-editor-toolbar > p {
+  font-size: 13px;
+  color: var(--muted);
+}
+.job-settings {
+  border-block: 1px solid var(--line);
+}
+.job-settings > summary {
+  padding-block: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.job-settings > .hint {
+  margin-block: 8px 0;
+}
+.job-settings .editable-field:last-child {
+  border-bottom: 0;
+}
+.job-preview {
+  container-type: inline-size;
+  border: 1px solid var(--line);
+  --color-line: #d8d0c6;
+  --color-muted: #687064;
+  --color-text: #3a4638;
+  --color-link: #98431c;
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.job-preview .container {
+  width: calc(100% - 48px);
+  margin-inline: auto;
+}
+.job-preview .section {
+  padding-block: clamp(48px, 9cqw, 100px);
+}
+.job-preview .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(32px, 6cqw, 72px);
+  align-items: start;
+}
+.job-preview .grid-2 > * {
+  min-width: 0;
+}
+.job-preview h1,
+.job-preview h2 {
+  color: var(--forest);
+  font-family: "Unica One", sans-serif;
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.job-preview h1 {
+  margin-bottom: 26px;
+  font-size: clamp(50.4px, 7cqw, 105.6px);
+}
+.job-preview h2 {
+  margin-bottom: 22px;
+  font-size: clamp(37.6px, 5cqw, 72px);
+}
+.job-preview .job-content h2 {
+  font-size: clamp(32px, 4cqw, 54.4px);
+}
+.job-preview .eyebrow {
+  color: var(--color-link);
+  font-size: 12.48px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin-bottom: 16px;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.job-preview .lead {
+  max-width: 688px;
+  font-size: clamp(17.92px, 1.7cqw, 21.6px);
+  line-height: 1.65;
+}
+.job-preview .section--light {
+  background: var(--surface);
+}
+.job-preview .section--brand {
+  background: var(--forest);
+  color: #fffdfa;
+}
+.job-preview .section--brand h2,
+.job-preview .section--brand .eyebrow {
+  color: inherit;
+}
+.job-preview textarea.job-inline-text {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.job-inline-text::placeholder {
+  color: inherit;
+  opacity: 0.6;
+}
+.job-inline-text:hover:not(:disabled) {
+  outline: 1px dashed currentColor;
+  outline-offset: 5px;
+}
+.job-preview .job-inline-text:focus {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 5px;
+}
+.job-preview .section--brand .job-inline-text:focus {
+  outline-color: #d7a24b;
+}
+.job-preview .job-hero__meta {
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 30%);
+}
+.job-preview .job-hero__facts {
+  text-align: right;
+}
+.job-paragraphs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.job-paragraphs > li + li {
+  margin-top: 16px;
+}
+.job-list-entry {
+  min-width: 0;
+}
+.job-preview .job-check {
+  color: var(--color-link);
+}
+.job-item-actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.job-item-actions button {
+  min-width: 32px;
+  min-height: 32px;
+  border: 0;
+  background: transparent;
+  padding: 4px 8px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.job-item-actions button:hover:not(:disabled) {
+  color: var(--color-link);
+  background: var(--surface);
+}
+.job-add-item {
+  margin-top: 12px;
+  min-height: 44px;
+  font-size: 13px;
+}
+.job-preview .editorial-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.job-preview .editorial-list > li {
+  position: relative;
+  padding: 11px 0 11px 23px;
+  border-bottom: 1px solid var(--color-line);
+}
+.job-preview .editorial-list > li::before {
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--terracotta);
+}
+.job-preview-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 14px;
+}
+.job-preview-buttons span {
+  border: 1px solid #fffdfa;
+  padding: 12px 16px;
+}
+.job-preview-buttons span:first-child {
+  color: var(--forest);
+  background: #fffdfa;
+}
+@container (max-width: 700px) {
+  .job-preview .container {
+    width: calc(100% - 32px);
+  }
+  .job-preview .grid-2,
+  .job-preview .job-hero__meta {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .job-preview .job-hero__facts {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

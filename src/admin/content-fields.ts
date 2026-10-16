@@ -118,8 +118,7 @@ export const contentFieldDefinitions = [
         key: "employmentType",
         label: "Beschäftigungsarten für Google",
         type: "multiselect",
-        description:
-          "Alle passenden Beschäftigungsarten auswählen. Für einen Bundesfreiwilligendienst gilt „Freiwilligendienst oder Ehrenamt“.",
+        description: "Alle passenden Beschäftigungsarten auswählen.",
         options: [
           {
             value: "FULL_TIME",

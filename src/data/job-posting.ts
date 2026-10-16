@@ -33,11 +33,11 @@ function escapeHtml(value: string): string {
 }
 
 function paragraph(value: string): string {
-  return `<p>${escapeHtml(value)}</p>`;
+  return `<p>${escapeHtml(value).replaceAll("\n", "<br>")}</p>`;
 }
 
 function list(items: string[]): string {
-  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item).replaceAll("\n", "<br>")}</li>`).join("")}</ul>`;
 }
 
 function createDescription(job: JobPostingJob): string {
