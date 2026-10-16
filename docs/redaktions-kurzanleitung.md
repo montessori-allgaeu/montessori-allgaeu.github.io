@@ -6,7 +6,7 @@
 
 Wähle **Mit Passkey anmelden** und bestätige auf deinem Gerät, zum Beispiel mit Fingerabdruck, Gesichtserkennung oder Geräte-PIN. Du brauchst weder einen Benutzernamen noch eine E-Mail-Adresse oder ein Passwort.
 
-Beim ersten Mal erhältst du von einem Admin einen persönlichen Einrichtungslink. Öffne ihn innerhalb von 24 Stunden und folge der Anleitung. Unter **Dein Zugang** kannst du später einen weiteren Passkey hinzufügen.
+Beim ersten Mal erhältst du von einem Admin einen persönlichen Einrichtungslink. Öffne ihn innerhalb von 14 Tagen und folge der Anleitung. Unter **Dein Zugang** kannst du später einen weiteren Passkey hinzufügen.
 
 ## Ändern und speichern
 

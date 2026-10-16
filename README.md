@@ -93,7 +93,7 @@ bleiben. Eine ungecachte Zuordnung der Git-Bildversionen wird nach Veröffentlic
 damit ersetzte Fotos auch in bereits geöffneten Verwaltungen erscheinen. Die größere Fotoansicht
 im Editor und private Vorschauen laufender Uploads verwenden weiterhin die Verwaltungs-API.
 
-Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
+Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Neue Einrichtungslinks für Einladungen und das Ersetzen von Passkeys sind einmalig innerhalb von 14 Tagen nutzbar. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
 Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.
 

@@ -1,11 +1,11 @@
 import { env, exports } from "cloudflare:workers";
 import { reset, runInDurableObject } from "cloudflare:test";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import type { Env } from "./env";
 import { hash, randomToken } from "./http";
 import { Store } from "./store";
 import { testPasskey } from "./test-passkey";
-import type { SessionInfo } from "../src/admin/types";
+import type { InvitationResult, SessionInfo } from "../src/admin/types";
 import { Auth } from "./auth";
 
 declare module "cloudflare:workers" {
@@ -14,6 +14,7 @@ declare module "cloudflare:workers" {
 const origin = "https://verwaltung.example.test";
 const worker = exports.default;
 afterEach(async () => {
+  vi.restoreAllMocks();
   await reset();
 });
 async function api(
@@ -242,6 +243,48 @@ test("last usable admin and own last passkey cannot be removed; deactivation imm
     ).status,
   ).toBe(401);
 });
+
+test.each(["invitation", "passkey reset"])(
+  "%s links remain usable for exactly 14 days",
+  async (kind) => {
+    const admin = await enroll();
+    const manager = kind === "passkey reset" ? await enroll("content-manager") : undefined;
+    const before = Date.now();
+    const response = await api(
+      manager ? `access/${manager.userId}/reset` : "invitations",
+      manager ? {} : { name: "New person", role: "content-manager" },
+      admin.cookies,
+      admin.info.csrfToken,
+    );
+    const after = Date.now();
+    expect(response.status).toBe(201);
+    const invitation = await response.json<InvitationResult>();
+    const expires = Date.parse(invitation.expiresAt);
+    const fourteenDays = 14 * 24 * 60 * 60 * 1000;
+    expect(expires).toBeGreaterThanOrEqual(before + fourteenDays);
+    expect(expires).toBeLessThanOrEqual(after + fourteenDays);
+    const token = new URLSearchParams(new URL(invitation.url).hash.slice(1)).get("invite")!;
+
+    await runInDurableObject(env.ADMIN.getByName("monte"), async (_instance, ctx) => {
+      const auth = new Auth(new Store(ctx.storage.sql), env);
+      const request = new Request(`${origin}/api/enroll/options`, {
+        method: "POST",
+        headers: { Origin: origin },
+      });
+      const now = vi.spyOn(Date, "now").mockReturnValue(expires - 1);
+      try {
+        expect((await auth.enrollOptions(request, { token })).status).toBe(200);
+        now.mockReturnValue(expires);
+        await expect(auth.enrollOptions(request, { token })).rejects.toMatchObject({
+          status: 410,
+          code: "invite_expired",
+        });
+      } finally {
+        now.mockRestore();
+      }
+    });
+  },
+);
 
 test("sensitive access changes require recent authentication and expired invitations stay unusable", async () => {
   const account = await enroll();

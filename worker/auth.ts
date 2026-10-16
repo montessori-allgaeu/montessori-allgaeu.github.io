@@ -581,7 +581,7 @@ export class Auth {
   private async createInvitation(user: User): Promise<InvitationResult> {
     const token = randomToken();
     const tokenHash = await hash(token);
-    const expires = Date.now() + DAY;
+    const expires = Date.now() + 14 * DAY;
     const invitation: Invitation = {
       id: crypto.randomUUID(),
       userId: user.id,

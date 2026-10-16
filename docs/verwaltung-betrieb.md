@@ -76,9 +76,9 @@ Website und Verwaltung können bei einem Teilfehler vorübergehend unterschiedli
 
 ## Zugänge, Einladungen und verlorene Geräte
 
-Admins verwalten Personen unter **Zugänge**. Einladungen gelten einmalig für 24 Stunden; ihre Links werden persönlich weitergegeben. Mehrere Passkeys pro Person sind möglich. Die Rolle Content Manager bearbeitet alle freigegebenen Inhalte außer Spendenempfänger, Bank, IBAN und BIC. Nur Admins verwalten Zugänge und Rollen.
+Admins verwalten Personen unter **Zugänge**. Neue Einladungen gelten einmalig für 14 Tage ab Erstellung; ihre Links werden persönlich weitergegeben. Bereits ausgestellte Links behalten ihr gespeichertes Ablaufdatum. Mehrere Passkeys pro Person sind möglich. Die Rolle Content Manager bearbeitet alle freigegebenen Inhalte außer Spendenempfänger, Bank, IBAN und BIC. Nur Admins verwalten Zugänge und Rollen.
 
-**Passkeys ersetzen** sperrt die bisherigen Passkeys und Sitzungen und erzeugt einen neuen Einrichtungslink. Der letzte aktive Admin kann weder deaktiviert noch herabgestuft werden. Bank- und Zugangsänderungen verlangen eine aktuelle Passkey-Bestätigung. Sitzungen enden nach sieben Tagen Inaktivität oder spätestens nach 30 Tagen.
+**Passkeys ersetzen** sperrt die bisherigen Passkeys und Sitzungen und erzeugt einen neuen, ebenfalls 14 Tage gültigen Einrichtungslink. Der letzte aktive Admin kann weder deaktiviert noch herabgestuft werden. Bank- und Zugangsänderungen verlangen eine aktuelle Passkey-Bestätigung. Sitzungen enden nach sieben Tagen Inaktivität oder spätestens nach 30 Tagen.
 
 ### Erster Admin oder Verlust sämtlicher Admin-Passkeys
 
