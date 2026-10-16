@@ -28,6 +28,7 @@ import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor
 import { ContentEditor } from "./ContentEditor";
 import { AfternoonWeek } from "./AfternoonWeek";
 import { SortableRecordList } from "./SortableRecordList";
+import { PublicationNotice } from "./PublicationNotice";
 import { Access, Profile } from "./Access";
 import {
   recordKey,
@@ -299,7 +300,6 @@ export function App() {
   const [conflictMediaVersions, setConflictMediaVersions] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
-  const [sortingSection, setSortingSection] = useState<string | null>(null);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
   editorRef.current = editor;
@@ -499,7 +499,6 @@ export function App() {
   function navigate(next: string) {
     if (!leaveEditor()) return;
     setArea(next);
-    setSortingSection(null);
     setQuery("");
     setPast(false);
     setOfferYear("");
@@ -1044,20 +1043,15 @@ export function App() {
           </label>
           <span className="topbar-note">Einmal pflegen. Überall aktuell.</span>
         </div>
-        {((pendingCount > 0 && !(ongoing(currentChange) && pendingCount === 1)) ||
-          failedCount > 0) &&
-          area !== "Änderungen" && (
-            <div className={`publication-notice${failedCount ? " failed" : ""}`} role="status">
-              <span>
-                {failedCount
-                  ? `${failedCount === 1 ? "Eine gespeicherte Änderung konnte" : `${failedCount} gespeicherte Änderungen konnten`} nicht veröffentlicht werden.`
-                  : "Gespeichert. Die Website wird im Hintergrund aktualisiert."}
-              </span>
-              <button className="text-button" onClick={() => navigate("Änderungen")}>
-                {failedCount ? "Problem ansehen" : "Stand ansehen"}
-              </button>
-            </div>
-          )}
+        <PublicationNotice
+          visible={
+            ((pendingCount > 0 && !(ongoing(currentChange) && pendingCount === 1)) ||
+              failedCount > 0) &&
+            area !== "Änderungen"
+          }
+          failedCount={failedCount}
+          onOpen={() => navigate("Änderungen")}
+        />
         {error && (
           <div className="global-error" role="alert">
             <p>{error}</p>
@@ -1772,8 +1766,6 @@ export function App() {
                 );
                 return contentSections(item, records).map((section) => {
                   const entries = section.entries;
-                  const canSort = section.sortable && entries.length > 1;
-                  const sortable = canSort && sortingSection === section.key;
                   if (item.singleton)
                     return (
                       <div className="singleton-section" key={item.collection}>
@@ -1806,17 +1798,6 @@ export function App() {
                           <span className="subtle count">{entries.length}</span>
                         </h2>
                         <div className="row-actions">
-                          {canSort && (
-                            <button
-                              className="text-button"
-                              aria-pressed={sortable}
-                              onClick={() => {
-                                setSortingSection(sortable ? null : section.key);
-                              }}
-                            >
-                              {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
-                            </button>
-                          )}
                           <button
                             className="button secondary"
                             onClick={() => newRecord(item.collection, undefined, section.newValues)}
@@ -1825,12 +1806,6 @@ export function App() {
                           </button>
                         </div>
                       </div>
-                      {sortable && (
-                        <p className="hint">
-                          Am Griff ziehen oder mit den Pfeilen verschieben. Jede Änderung wird
-                          direkt gespeichert.
-                        </p>
-                      )}
                       {!entries.length ? (
                         <p className="empty-state">
                           {item.collection === "events"
@@ -1840,7 +1815,7 @@ export function App() {
                       ) : (
                         <SortableRecordList
                           entries={entries}
-                          sorting={sortable}
+                          sortable={section.sortable}
                           disabled={busy || pendingCount > 0}
                           onMove={moveRecord}
                         >
@@ -1924,7 +1899,7 @@ export function App() {
                     schoolYear: offerYear || currentYear,
                   })
                 }
-                onMove={(entries, from, to) => void moveRecord(entries, from, to)}
+                onMove={moveRecord}
                 statuses={Object.fromEntries(
                   recordList
                     .filter((record) => record.collection === "afternoonOffers")

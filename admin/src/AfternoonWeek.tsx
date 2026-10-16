@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { getContentDefinition } from "../../src/admin/content-model";
 import type { ContentListEntry } from "../../src/admin/content-sections";
 import type { ContentRecord } from "../../src/admin/types";
 import { recordKey, titleOf } from "./overview";
+import { SortableRecordList } from "./SortableRecordList";
 import "./afternoon-week.css";
 
 const weekdays = getContentDefinition("afternoonOffers").fields.find(
@@ -21,29 +21,19 @@ export function AfternoonWeek({
   disabled: boolean;
   onOpen: (record: ContentRecord) => void;
   onAdd: (weekday: string) => void;
-  onMove: (entries: ContentListEntry[], from: number, to: number) => void;
+  onMove: (entries: ContentListEntry[], from: number, to: number) => Promise<boolean>;
   statuses: Record<string, string>;
 }) {
-  const [sorting, setSorting] = useState(false);
   return (
     <section className="afternoon-week" aria-label="Nachmittagsangebote nach Wochentag">
       <div className="section-heading">
         <h2>
           Nachmittagsangebote <span className="subtle count">{records.length}</span>
         </h2>
-        <button
-          type="button"
-          className="text-button"
-          aria-pressed={sorting}
-          onClick={() => setSorting(!sorting)}
-        >
-          {sorting ? "Sortierung beenden" : "Reihenfolge ändern"}
-        </button>
       </div>
       <p className="hint">
-        Angebot öffnen, um Inhalt oder Wochentag zu ändern.
-        {sorting &&
-          " Mit den Pfeilen innerhalb eines Tages verschieben. Jede Änderung wird direkt gespeichert."}
+        Angebot öffnen, um Inhalt oder Wochentag zu ändern. Am Griff innerhalb eines Tages
+        verschieben. Die Reihenfolge wird direkt gespeichert.
       </p>
       <div className="week-days">
         {weekdays.map(({ value: weekday, label }) => {
@@ -63,41 +53,31 @@ export function AfternoonWeek({
             <section className="week-day" key={weekday} aria-label={label}>
               <h3>{label}</h3>
               {entries.length === 0 && <p className="hint">Noch keine Angebote</p>}
-              {entries.map(({ record, key }, index) => (
-                <article className="week-offer" key={key}>
-                  <button type="button" className="week-offer-open" onClick={() => onOpen(record)}>
-                    <strong>{titleOf(record.data)}</strong>
-                    <span>
-                      {record.data.gradeFrom === record.data.gradeTo
-                        ? `Klasse ${record.data.gradeFrom}`
-                        : `Klasse ${record.data.gradeFrom}–${record.data.gradeTo}`}
-                    </span>
-                    {statuses[key] && <small>{statuses[key]}</small>}
-                  </button>
-                  {sorting && entries.length > 1 && (
-                    <div className="row-actions">
-                      <button
-                        type="button"
-                        className="icon-button"
-                        disabled={disabled || index === 0}
-                        aria-label={`${titleOf(record.data)} nach oben`}
-                        onClick={() => onMove(entries, index, index - 1)}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        className="icon-button"
-                        disabled={disabled || index === entries.length - 1}
-                        aria-label={`${titleOf(record.data)} nach unten`}
-                        onClick={() => onMove(entries, index, index + 1)}
-                      >
-                        ↓
-                      </button>
-                    </div>
-                  )}
-                </article>
-              ))}
+              <SortableRecordList
+                entries={entries}
+                disabled={disabled}
+                onMove={onMove}
+                className="week-offers"
+                itemClassName="week-offer"
+              >
+                {({ record, key }) => (
+                  <>
+                    <button
+                      type="button"
+                      className="week-offer-open"
+                      onClick={() => onOpen(record)}
+                    >
+                      <strong>{titleOf(record.data)}</strong>
+                      <span>
+                        {record.data.gradeFrom === record.data.gradeTo
+                          ? `Klasse ${record.data.gradeFrom}`
+                          : `Klasse ${record.data.gradeFrom}–${record.data.gradeTo}`}
+                      </span>
+                      {statuses[key] && <small>{statuses[key]}</small>}
+                    </button>
+                  </>
+                )}
+              </SortableRecordList>
               <button
                 type="button"
                 className="text-button week-add"

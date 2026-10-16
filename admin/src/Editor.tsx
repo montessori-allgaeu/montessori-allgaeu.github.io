@@ -9,6 +9,7 @@ import type {
 import { calculateEffectiveFee, type EditorField } from "../../src/admin/content-model";
 import { errorText } from "./api";
 import { uploadMedia } from "./media";
+import { reorder, useSortable } from "./useSortable";
 
 export function humanValue(value: JsonValue | undefined): string {
   if (value === undefined || value === null || value === "") return "Noch nicht angegeben";
@@ -393,16 +394,17 @@ export function FieldInput(props: EditorProps) {
 
 function ListInput(props: EditorProps) {
   const { field, value, onChange, disabled } = props;
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const items = Array.isArray(value) ? value : [];
+  const [keys, setKeys] = useState(() => items.map(() => crypto.randomUUID()));
+  if (keys.length !== items.length)
+    setKeys(items.map((_, index) => keys[index] ?? crypto.randomUUID()));
   const sortable = field.sortable !== false;
   const itemField = field.item;
-  if (!itemField) return null;
+  const sort = useSortable({ keys, disabled: disabled || !sortable, onMove: move });
   function move(from: number, to: number) {
     if (!sortable || disabled || to < 0 || to >= items.length || from === to) return;
-    const next = [...items];
-    const [item] = next.splice(from, 1);
-    next.splice(to, 0, item);
+    const next = reorder(items, from, to);
+    setKeys(reorder(keys, from, to));
     onChange(
       next.map((entry, index) =>
         entry && typeof entry === "object" && !Array.isArray(entry) && "position" in entry
@@ -411,54 +413,20 @@ function ListInput(props: EditorProps) {
       ),
     );
   }
+  if (!itemField) return null;
   return (
-    <div className="list-editor">
+    <div className="list-editor" ref={sort.containerRef}>
       {items.map((item, index) => (
         <div
-          key={index}
-          className="list-entry"
-          onDragOver={(event) => {
-            if (sortable && dragIndex !== null) event.preventDefault();
-          }}
-          onDrop={(event) => {
-            event.preventDefault();
-            if (dragIndex !== null) move(dragIndex, index);
-            setDragIndex(null);
-          }}
+          key={keys[index]}
+          {...sort.itemProps(index)}
+          className={`list-entry ${sort.itemProps(index).className}`}
         >
           <div className="list-entry-toolbar">
-            <span
-              className="entry-number"
-              draggable={sortable && !disabled}
-              onDragStart={() => setDragIndex(index)}
-              onDragEnd={() => setDragIndex(null)}
-              title={sortable ? "Zum Verschieben ziehen" : undefined}
-            >
-              {sortable && "⋮⋮ "}
-              {index + 1}
-            </span>
+            <span className="entry-number">{index + 1}</span>
             <div className="row-actions">
               {sortable && (
-                <>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    disabled={disabled || index === 0}
-                    aria-label={`${field.label}: Eintrag ${index + 1} nach oben`}
-                    onClick={() => move(index, index - 1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    disabled={disabled || index === items.length - 1}
-                    aria-label={`${field.label}: Eintrag ${index + 1} nach unten`}
-                    onClick={() => move(index, index + 1)}
-                  >
-                    ↓
-                  </button>
-                </>
+                <button {...sort.handleProps(index, `${field.label}: Eintrag ${index + 1}`)} />
               )}
               <button
                 type="button"
@@ -469,8 +437,10 @@ function ListInput(props: EditorProps) {
                     window.confirm(
                       "Diesen Eintrag entfernen? Die Änderung wird erst mit Speichern übernommen.",
                     )
-                  )
+                  ) {
+                    setKeys(keys.filter((_, position) => position !== index));
                     onChange(items.filter((_, position) => position !== index));
+                  }
                 }}
               >
                 Entfernen
@@ -499,7 +469,10 @@ function ListInput(props: EditorProps) {
         type="button"
         className="button secondary"
         disabled={disabled || (field.max !== undefined && items.length >= field.max)}
-        onClick={() => onChange([...items, newFieldValue(itemField)])}
+        onClick={() => {
+          setKeys([...keys, crypto.randomUUID()]);
+          onChange([...items, newFieldValue(itemField)]);
+        }}
       >
         + {itemField.label === "Eintrag" ? "Eintrag" : itemField.label} hinzufügen
       </button>

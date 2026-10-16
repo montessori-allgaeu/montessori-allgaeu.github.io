@@ -90,11 +90,10 @@ for (const width of [1440, 390]) {
     await expect
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
       .toBe(true);
-    await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
     await page.screenshot({ path: info.outputPath("people.png"), fullPage: true });
   });
 
-  test(`Pfeile bewegen sofort, sperren weitere Anfragen und rollen Speicherfehler zurück (${width}px)`, async ({
+  test(`Ziehgriffe bewegen per Tastatur sofort, sperren weitere Anfragen und rollen Speicherfehler zurück (${width}px)`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -112,17 +111,16 @@ for (const width of [1440, 390]) {
     });
     await page.goto("/?collection=team");
     const section = page.getByRole("region", { name: /^Leitung/ });
-    await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
     await section
-      .getByRole("button", { name: "Berta Beispiel nach oben", exact: true })
-      .press("Enter");
+      .getByRole("button", { name: "Berta Beispiel ziehen", exact: true })
+      .press("Alt+ArrowUp");
     await expect(section.locator(".record-row strong")).toHaveText([
       "Berta Beispiel",
       "Anna Alpha",
       "Clara Christ",
     ]);
     await expect(
-      section.getByRole("button", { name: "Clara Christ nach oben", exact: true }),
+      section.getByRole("button", { name: "Clara Christ ziehen", exact: true }),
     ).toBeDisabled();
     await expect.poll(() => requests.length).toBe(1);
     release();
@@ -133,7 +131,7 @@ for (const width of [1440, 390]) {
       "Clara Christ",
     ]);
     await expect(
-      section.getByRole("button", { name: "Berta Beispiel nach oben", exact: true }),
+      section.getByRole("button", { name: "Berta Beispiel ziehen", exact: true }),
     ).toBeEnabled();
   });
 }
@@ -145,7 +143,6 @@ test("Ziehen zeigt den Zielplatz und speichert erst beim Loslassen innerhalb des
   const requests = await mock(page);
   await page.goto("/?collection=team");
   const section = page.getByRole("region", { name: /^Leitung/ });
-  await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
   const handle = await section.locator(".drag-handle").last().boundingBox();
   const first = await section.locator(".record-item").first().boundingBox();
   await page.mouse.move(handle!.x + handle!.width / 2, handle!.y + handle!.height / 2);
@@ -155,7 +152,7 @@ test("Ziehen zeigt den Zielplatz und speichert erst beim Loslassen innerhalb des
   });
   await page.mouse.move(first!.x + first!.width / 2, first!.y + first!.height / 2, { steps: 8 });
   await page.mouse.move(first!.x + first!.width / 2, first!.y + first!.height / 2 - 1);
-  await expect(section.locator(".record-item-dragged")).toContainText("Clara Christ");
+  await expect(section.locator(".sortable-dragged")).toContainText("Clara Christ");
   await expect
     .poll(() =>
       section
@@ -203,19 +200,54 @@ test("Abgebrochenes Ziehen verändert und speichert keine Reihenfolge", async ({
   const requests = await mock(page);
   await page.goto("/?collection=team");
   const section = page.getByRole("region", { name: /^Leitung/ });
-  await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
   const handle = await section.locator(".drag-handle").last().boundingBox();
   await page.mouse.move(handle!.x + 10, handle!.y + 10);
   await page.mouse.down();
   await page.mouse.move(handle!.x - 50, handle!.y - 100, { steps: 8 });
-  await expect(section.locator(".record-item-dragged")).toHaveCount(1);
+  await expect(section.locator(".sortable-dragged")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await page.mouse.up();
-  await expect(section.locator(".record-item-dragged")).toHaveCount(0);
+  await expect(section.locator(".sortable-dragged")).toHaveCount(0);
   await expect(section.locator(".record-row strong")).toHaveText([
     "Anna Alpha",
     "Berta Beispiel",
     "Clara Christ",
   ]);
   expect(requests).toHaveLength(0);
+});
+
+test.describe("Mobiles Ziehen", () => {
+  test.use({ viewport: { width: 390, height: 900 }, isMobile: true, hasTouch: true });
+  test("Touchgriff verschiebt ohne Sortiermodus und ohne die Seite zu scrollen", async ({
+    page,
+  }) => {
+    const requests = await mock(page);
+    await page.goto("/?collection=team");
+    const section = page.getByRole("region", { name: /^Leitung/ });
+    const handle = await section.locator(".drag-handle").last().boundingBox();
+    const source = await section.locator(".record-item").last().boundingBox();
+    const target = await section.locator(".record-item").first().boundingBox();
+    const x = handle!.x + handle!.width / 2;
+    const y = handle!.y + handle!.height / 2;
+    const offset = target!.y + target!.height / 2 - source!.y - source!.height / 2;
+    const scrollY = await page.evaluate(() => window.scrollY);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    for (let step = 1; step <= 8; step++)
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [{ x, y: y + (offset * step) / 8 }],
+      });
+    await expect(section.locator(".sortable-dragged")).toHaveCount(1);
+    expect(requests).toHaveLength(0);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await expect.poll(() => requests.length).toBe(1);
+    await expect(section.locator(".record-row strong")).toHaveText([
+      "Clara Christ",
+      "Anna Alpha",
+      "Berta Beispiel",
+    ]);
+    expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+    await cdp.detach();
+  });
 });

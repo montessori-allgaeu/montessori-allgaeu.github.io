@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { donationsSchema } from "../../src/admin/content-schemas";
 import type {
   Change,
@@ -78,6 +78,23 @@ async function mockDonations(page: Page, role: Role = "admin", locked = false) {
   await page.goto("/?collection=donations&id=page");
   await expect(page.getByRole("article", { name: "Spendenseite bearbeiten" })).toBeVisible();
   return requests;
+}
+
+async function dragItem(page: Page, handle: Locator, item: Locator, target: Locator) {
+  await handle.scrollIntoViewIfNeeded();
+  const grip = (await handle.boundingBox())!;
+  const source = (await item.boundingBox())!;
+  const destination = (await target.boundingBox())!;
+  const x = grip.x + grip.width / 2;
+  const y = grip.y + grip.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(
+    x + destination.x + destination.width / 2 - source.x - source.width / 2,
+    y + destination.y + destination.height / 2 - source.y - source.height / 2,
+    { steps: 12 },
+  );
+  await page.mouse.up();
 }
 
 for (const width of [1440, 1280, 390]) {
@@ -164,7 +181,7 @@ test("Spendeneditor speichert verschachtelte Texte, Reihenfolge und Einstellunge
   await page
     .getByRole("textbox", { name: "Warum Unterstützung wirkt: Absatz 1", exact: true })
     .fill("Ein neuer erster Absatz.");
-  await page.getByRole("button", { name: "Absatz 1 nach unten", exact: true }).click();
+  await page.getByRole("button", { name: "Absatz 1 ziehen", exact: true }).press("Alt+ArrowDown");
   await page.getByRole("button", { name: "Absatz 1 entfernen", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Absatz 1 entfernen", exact: true }),
@@ -179,7 +196,9 @@ test("Spendeneditor speichert verschachtelte Texte, Reihenfolge und Einstellunge
   await expect(
     page.getByRole("button", { name: "Förderschwerpunkt hinzufügen", exact: true }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Förderschwerpunkt 4 nach oben", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Förderschwerpunkt 4 ziehen", exact: true })
+    .press("Alt+ArrowUp");
   await page.getByRole("button", { name: "Förderschwerpunkt 1 entfernen", exact: true }).click();
   await page.getByRole("button", { name: "Hinweis auf der Startseite", exact: true }).click();
   await page
@@ -232,6 +251,55 @@ test("Spendeneditor speichert verschachtelte Texte, Reihenfolge und Einstellunge
     },
   });
 });
+
+for (const width of [1440, 390]) {
+  test(`Absätze und Förderschwerpunkte lassen sich direkt ziehen (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    const requests = await mockDonations(page);
+    await page
+      .getByRole("textbox", { name: "Warum Unterstützung wirkt: Absatz 1", exact: true })
+      .fill("Bearbeiteter Absatz bleibt beim Ziehen erhalten.");
+    const paragraphs = page.locator(".donation-paragraph");
+    await dragItem(
+      page,
+      page.getByRole("button", { name: "Absatz 1 ziehen", exact: true }),
+      paragraphs.nth(0),
+      paragraphs.nth(1),
+    );
+    await expect(
+      page.getByRole("textbox", { name: "Warum Unterstützung wirkt: Absatz 2", exact: true }),
+    ).toHaveValue("Bearbeiteter Absatz bleibt beim Ziehen erhalten.");
+    const projects = page.locator(".donation-projects > section");
+    await dragItem(
+      page,
+      page.getByRole("button", { name: "Förderschwerpunkt 1 ziehen", exact: true }),
+      projects.nth(0),
+      projects.nth(1),
+    );
+    await expect(
+      page.getByRole("textbox", { name: "Förderschwerpunkt 2: Titel", exact: true }),
+    ).toHaveValue(original.projects.items[0].title);
+    expect(requests).toHaveLength(0);
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations[0].data).toEqual({
+      ...original,
+      impact: {
+        ...original.impact,
+        paragraphs: [
+          original.impact.paragraphs[1],
+          "Bearbeiteter Absatz bleibt beim Ziehen erhalten.",
+        ],
+      },
+      projects: {
+        ...original.projects,
+        items: [original.projects.items[1], original.projects.items[0], original.projects.items[2]],
+      },
+    });
+  });
+}
 
 test("Content Manager behalten im Seiteneditor schreibgeschützte Bankdaten", async ({ page }) => {
   const requests = await mockDonations(page, "content-manager");

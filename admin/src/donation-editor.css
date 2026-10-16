@@ -257,7 +257,7 @@
   justify-content: flex-end;
   margin-top: 12px;
 }
-.donation-item-actions button {
+.donation-item-actions button:not(.drag-handle) {
   min-width: 44px;
   min-height: 44px;
   padding: 8px;

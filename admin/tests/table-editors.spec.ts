@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { parse } from "yaml";
 import { getContentDefinition } from "../../src/admin/content-model";
 import type { ChangeRequest, ContentCollection, ContentRecord } from "../../src/admin/types";
@@ -64,6 +64,23 @@ async function save(page: Page, requests: ChangeRequest[]) {
   return requests[0].mutations[0].data;
 }
 
+async function dragItem(page: Page, handle: Locator, item: Locator, target: Locator) {
+  await handle.scrollIntoViewIfNeeded();
+  const grip = (await handle.boundingBox())!;
+  const source = (await item.boundingBox())!;
+  const destination = (await target.boundingBox())!;
+  const x = grip.x + grip.width / 2;
+  const y = grip.y + grip.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(
+    x,
+    y + destination.y + destination.height / 2 - source.y - source.height / 2,
+    { steps: 12 },
+  );
+  await page.mouse.up();
+}
+
 for (const width of [1440, 390]) {
   test(`Beitragstabelle berechnet Zuschuss und erhält Zeilen beim Umsortieren (${width}px)`, async ({
     page,
@@ -82,9 +99,12 @@ for (const width of [1440, 390]) {
       .fill("120 €");
     await page.getByRole("textbox", { name: "Grundbeitrag", exact: true }).first().fill("205 €");
     await expect(table.locator(".computed-value").first()).toContainText("85 €");
-    await page
-      .getByRole("button", { name: "Beiträge nach Buchungszeit: Eintrag 1 nach unten" })
-      .click();
+    await dragItem(
+      page,
+      page.getByRole("button", { name: "Beiträge nach Buchungszeit: Eintrag 1 ziehen" }),
+      table.locator("tbody tr").nth(0),
+      table.locator("tbody tr").nth(1),
+    );
     await expect(
       table.locator("tbody tr").nth(1).getByRole("textbox", { name: "Grundbeitrag", exact: true }),
     ).toHaveValue("205 €");
@@ -181,10 +201,27 @@ for (const width of [1440, 390]) {
     await page
       .getByRole("textbox", { name: "Schulbüro: Zeit oder Ergänzung 1", exact: true })
       .fill("8:00–16:30 Uhr; nur nach Vereinbarung");
-    await page.getByRole("button", { name: "Schulbüro: Eintrag 2 nach oben" }).click();
+    await page.getByRole("button", { name: "Schulbüro: Eintrag 2 ziehen" }).press("Alt+ArrowUp");
     await page
       .getByRole("textbox", { name: "Verlängerte Betreuung 3, Ergänzung 2", exact: true })
       .fill("mit Nachmittag bis 16:30 Uhr");
+    const details = page
+      .getByRole("textbox", { name: "Verlängerte Betreuung 3, Ergänzung 1", exact: true })
+      .locator("..");
+    await dragItem(
+      page,
+      page.getByRole("button", {
+        name: "Verlängerte Betreuung 3, Ergänzung 1 ziehen",
+        exact: true,
+      }),
+      details,
+      page
+        .getByRole("textbox", { name: "Verlängerte Betreuung 3, Ergänzung 2", exact: true })
+        .locator(".."),
+    );
+    await expect(
+      page.getByRole("textbox", { name: "Verlängerte Betreuung 3, Ergänzung 1", exact: true }),
+    ).toHaveValue("mit Nachmittag bis 16:30 Uhr");
     await page
       .getByRole("table", { name: "Schließzeiten bearbeiten" })
       .getByRole("textbox", { name: "Zeitraum", exact: true })
@@ -212,7 +249,7 @@ for (const width of [1440, 390]) {
       {
         days: "Donnerstag",
         hours: "07:45 bis 13:00 Uhr",
-        details: ["mit Mittagessen bis 14:00 Uhr", "mit Nachmittag bis 16:30 Uhr"],
+        details: ["mit Nachmittag bis 16:30 Uhr", "mit Mittagessen bis 14:00 Uhr"],
       },
     ]);
   });

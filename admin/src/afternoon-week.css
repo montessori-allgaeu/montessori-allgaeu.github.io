@@ -15,10 +15,15 @@
   font-size: 16px;
 }
 .week-offer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding-block: 10px;
   border-bottom: 1px solid var(--line);
 }
 .week-offer-open {
+  min-width: 0;
+  flex: 1;
   border: 0;
   background: transparent;
   padding: 8px 0;
@@ -36,14 +41,6 @@
 .week-offer-open small {
   color: var(--muted);
   font-size: 12px;
-}
-.week-offer .row-actions {
-  justify-content: flex-end;
-  gap: 4px;
-}
-.week-offer .icon-button {
-  min-height: 36px;
-  min-width: 36px;
 }
 .week-add {
   margin-top: 14px;

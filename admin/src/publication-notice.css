@@ -1,0 +1,102 @@
+.publication-notice {
+  position: fixed;
+  z-index: 22;
+  top: 18px;
+  left: calc(var(--sidebar-width) + 24px);
+  right: 24px;
+  width: max-content;
+  max-width: calc(100vw - var(--sidebar-width) - 48px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border: 1px solid #43503d;
+  border-radius: 3px;
+  background: var(--forest);
+  color: var(--surface);
+  box-shadow: 0 8px 24px #1d2b1e26;
+  font-size: 13px;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(-6px);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 0s linear 180ms;
+}
+
+.publication-notice[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.publication-notice.failed {
+  border-color: var(--terracotta);
+  background: var(--terracotta);
+}
+
+.publication-notice-icon {
+  width: 22px;
+  height: 22px;
+  color: #e1ba83;
+}
+
+.publication-notice.failed .publication-notice-icon {
+  color: inherit;
+}
+
+.publication-notice-action {
+  min-height: 36px;
+  border: 0;
+  padding: 6px 0;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
+.publication-notice-action:hover {
+  text-decoration-thickness: 2px;
+}
+
+.publication-notice-action:focus-visible {
+  outline-color: var(--surface);
+}
+
+@media (max-width: 760px) {
+  .publication-notice {
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    max-width: calc(100vw - 24px);
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: start;
+    gap: 2px 10px;
+    padding: 12px 14px;
+  }
+
+  .publication-notice-action {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .publication-notice,
+  .publication-notice[data-visible="true"] {
+    transform: none;
+    transition: none;
+  }
+}

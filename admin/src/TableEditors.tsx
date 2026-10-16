@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { calculateEffectiveFee, type EditorField } from "../../src/admin/content-model";
 import type { ContentCollection, ContentData, JsonValue } from "../../src/admin/types";
 import type { ContentEditorProps } from "./content-editor";
 import { newFieldValue } from "./Editor";
+import { reorder, useSortable } from "./useSortable";
 import "./table-editors.css";
 
 function object(value: JsonValue | undefined): ContentData {
@@ -13,46 +14,54 @@ function list(value: JsonValue | undefined): JsonValue[] {
   return Array.isArray(value) ? value : [];
 }
 
+function useOrderedItems(
+  items: JsonValue[],
+  disabled: boolean,
+  onChange: (items: JsonValue[]) => void,
+) {
+  const [keys, setKeys] = useState(() => items.map(() => crypto.randomUUID()));
+  if (keys.length !== items.length)
+    setKeys(items.map((_, index) => keys[index] ?? crypto.randomUUID()));
+  const sort = useSortable({
+    keys,
+    disabled,
+    onMove: (from, to) => {
+      setKeys(reorder(keys, from, to));
+      onChange(reorder(items, from, to));
+    },
+  });
+  return {
+    keys,
+    sort,
+    append(item: JsonValue) {
+      setKeys([...keys, crypto.randomUUID()]);
+      onChange([...items, item]);
+    },
+    remove(index: number) {
+      setKeys(keys.filter((_, position) => position !== index));
+      onChange(items.filter((_, position) => position !== index));
+    },
+  };
+}
+
 function RowActions({
   field,
   items,
   index,
   disabled,
-  onChange,
+  onRemove,
+  handleProps,
 }: {
   field: EditorField;
   items: JsonValue[];
   index: number;
   disabled: boolean;
-  onChange: (items: JsonValue[]) => void;
+  onRemove: () => void;
+  handleProps?: ButtonHTMLAttributes<HTMLButtonElement>;
 }) {
-  function move(to: number) {
-    if (disabled || to < 0 || to >= items.length) return;
-    const next = [...items];
-    const [item] = next.splice(index, 1);
-    next.splice(to, 0, item);
-    onChange(next);
-  }
   return (
     <div className="compact-row-actions">
-      <button
-        type="button"
-        className="icon-button"
-        disabled={disabled || index === 0}
-        aria-label={`${field.label}: Eintrag ${index + 1} nach oben`}
-        onClick={() => move(index - 1)}
-      >
-        ↑
-      </button>
-      <button
-        type="button"
-        className="icon-button"
-        disabled={disabled || index === items.length - 1}
-        aria-label={`${field.label}: Eintrag ${index + 1} nach unten`}
-        onClick={() => move(index + 1)}
-      >
-        ↓
-      </button>
+      {handleProps && <button {...handleProps} />}
       <button
         type="button"
         className="icon-button danger-text"
@@ -67,7 +76,7 @@ function RowActions({
               "Diesen Eintrag entfernen? Die Änderung wird erst mit Speichern übernommen.",
             )
           )
-            onChange(items.filter((_, position) => position !== index));
+            onRemove();
         }}
       >
         ×
@@ -95,6 +104,8 @@ function CompactTable({
   disabled: boolean;
   onChange: (items: JsonValue[]) => void;
 }) {
+  const sortable = field.sortable !== false;
+  const { keys, sort, append, remove } = useOrderedItems(items, disabled || !sortable, onChange);
   return (
     <section className="table-editor-section" aria-label={field.label}>
       <h3>{field.label}</h3>
@@ -113,9 +124,9 @@ function CompactTable({
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody ref={sort.containerRef}>
           {items.map((item, index) => (
-            <tr key={index}>
+            <tr key={keys[index]} {...sort.itemProps(index)}>
               {columns.map((column) => (
                 <td key={column.key}>
                   <span className="compact-cell-label" aria-hidden="true">
@@ -125,7 +136,15 @@ function CompactTable({
                 </td>
               ))}
               <td className="compact-actions-cell">
-                <RowActions {...{ field, items, index, disabled, onChange }} />
+                <RowActions
+                  {...{ field, items, index, disabled }}
+                  onRemove={() => remove(index)}
+                  handleProps={
+                    sortable
+                      ? sort.handleProps(index, `${field.label}: Eintrag ${index + 1}`)
+                      : undefined
+                  }
+                />
               </td>
             </tr>
           ))}
@@ -137,7 +156,7 @@ function CompactTable({
         disabled={disabled || (field.max !== undefined && items.length >= field.max)}
         onClick={() => {
           if (!disabled && field.item && (field.max === undefined || items.length < field.max))
-            onChange([...items, newFieldValue(field.item)]);
+            append(newFieldValue(field.item));
         }}
       >
         + Eintrag hinzufügen
@@ -326,10 +345,16 @@ function CareDetails({
   onChange: (items: JsonValue[]) => void;
 }) {
   const disabled = editor.disabled || (field.adminOnly === true && editor.role !== "admin");
+  const sortable = field.sortable !== false;
+  const { keys, sort, append, remove } = useOrderedItems(items, disabled || !sortable, onChange);
   return (
-    <div className="compact-care-details">
+    <div className="compact-care-details" ref={sort.containerRef}>
       {items.map((item, index) => (
-        <div className="compact-care-detail" key={index}>
+        <div
+          key={keys[index]}
+          {...sort.itemProps(index)}
+          className={`compact-care-detail ${sort.itemProps(index).className}`}
+        >
           <input
             aria-label={`Verlängerte Betreuung ${rowIndex + 1}, Ergänzung ${index + 1}`}
             value={String(item ?? "")}
@@ -342,7 +367,18 @@ function CareDetails({
               )
             }
           />
-          <RowActions {...{ field, items, index, disabled, onChange }} />
+          <RowActions
+            {...{ field, items, index, disabled }}
+            onRemove={() => remove(index)}
+            handleProps={
+              sortable
+                ? sort.handleProps(
+                    index,
+                    `Verlängerte Betreuung ${rowIndex + 1}, Ergänzung ${index + 1}`,
+                  )
+                : undefined
+            }
+          />
         </div>
       ))}
       <button
@@ -351,7 +387,7 @@ function CareDetails({
         disabled={disabled || (field.max !== undefined && items.length >= field.max)}
         onClick={() => {
           if (!disabled && field.item && (field.max === undefined || items.length < field.max))
-            onChange([...items, newFieldValue(field.item)]);
+            append(newFieldValue(field.item));
         }}
       >
         + Ergänzung

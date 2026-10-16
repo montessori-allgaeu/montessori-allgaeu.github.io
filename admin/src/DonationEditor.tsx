@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, type ButtonHTMLAttributes } from "react";
 import { InlineText } from "./InlineText";
+import { reorder, useSortable } from "./useSortable";
 import type { ContentData, JsonValue } from "../../src/admin/types";
 import donationImage from "../../src/assets/images/editorial/donations-material-work.webp?url";
 import type { ContentEditorProps } from "./content-editor";
@@ -23,7 +24,7 @@ function ItemActions({
   count,
   minimum,
   disabled,
-  onMove,
+  handleProps,
   onRemove,
 }: {
   label: string;
@@ -31,27 +32,12 @@ function ItemActions({
   count: number;
   minimum: number;
   disabled: boolean;
-  onMove: (offset: number) => void;
+  handleProps: ButtonHTMLAttributes<HTMLButtonElement>;
   onRemove: () => void;
 }) {
   return (
     <div className="donation-item-actions" role="group" aria-label={`${label} ${index + 1}`}>
-      <button
-        type="button"
-        aria-label={`${label} ${index + 1} nach oben`}
-        disabled={disabled || index === 0}
-        onClick={() => onMove(-1)}
-      >
-        ↑
-      </button>
-      <button
-        type="button"
-        aria-label={`${label} ${index + 1} nach unten`}
-        disabled={disabled || index === count - 1}
-        onClick={() => onMove(1)}
-      >
-        ↓
-      </button>
+      <button {...handleProps} />
       <button
         type="button"
         aria-label={`${label} ${index + 1} entfernen`}
@@ -78,6 +64,20 @@ export function DonationEditor({
     paragraphs.map(() => crypto.randomUUID()),
   );
   const [projectKeys, setProjectKeys] = useState(() => projects.map(() => crypto.randomUUID()));
+  if (paragraphKeys.length !== paragraphs.length)
+    setParagraphKeys(paragraphs.map((_, index) => paragraphKeys[index] ?? crypto.randomUUID()));
+  if (projectKeys.length !== projects.length)
+    setProjectKeys(projects.map((_, index) => projectKeys[index] ?? crypto.randomUUID()));
+  const paragraphSort = useSortable({
+    keys: paragraphKeys,
+    disabled,
+    onMove: (from, to) => moveItem("impact", from, to),
+  });
+  const projectSort = useSortable({
+    keys: projectKeys,
+    disabled,
+    onMove: (from, to) => moveItem("projects", from, to),
+  });
 
   function fieldAt(section: string, key?: string) {
     const group = fields.find((field) => field.key === section);
@@ -102,11 +102,9 @@ export function DonationEditor({
       />
     );
   }
-  function moveItem(section: "impact" | "projects", index: number, offset: number) {
-    const values = [...(section === "impact" ? paragraphs : projects)];
-    const keys = [...(section === "impact" ? paragraphKeys : projectKeys)];
-    [values[index], values[index + offset]] = [values[index + offset], values[index]];
-    [keys[index], keys[index + offset]] = [keys[index + offset], keys[index]];
+  function moveItem(section: "impact" | "projects", from: number, to: number) {
+    const values = reorder(section === "impact" ? paragraphs : projects, from, to);
+    const keys = reorder(section === "impact" ? paragraphKeys : projectKeys, from, to);
     if (section === "impact") setParagraphKeys(keys);
     else setProjectKeys(keys);
     change(section, section === "impact" ? "paragraphs" : "items", values);
@@ -168,39 +166,45 @@ export function DonationEditor({
               <div className="split__content">
                 <div className="eyebrow">{text("impact", "eyebrow")}</div>
                 <h2>{text("impact", "title")}</h2>
-                {paragraphs.map((paragraph, index) => (
-                  <div className="donation-paragraph" key={paragraphKeys[index] ?? index}>
-                    <InlineText
-                      className="donation-inline-text"
-                      label={`Warum Unterstützung wirkt: Absatz ${index + 1}`}
-                      value={String(paragraph)}
-                      disabled={disabled}
-                      onChange={(value) =>
-                        change(
-                          "impact",
-                          "paragraphs",
-                          paragraphs.map((entry, i) => (i === index ? value : entry)),
-                        )
-                      }
-                    />
-                    <ItemActions
-                      label="Absatz"
-                      index={index}
-                      count={paragraphs.length}
-                      minimum={paragraphField.min ?? 0}
-                      disabled={disabled}
-                      onMove={(offset) => moveItem("impact", index, offset)}
-                      onRemove={() => {
-                        setParagraphKeys(paragraphKeys.filter((_, i) => i !== index));
-                        change(
-                          "impact",
-                          "paragraphs",
-                          paragraphs.filter((_, i) => i !== index),
-                        );
-                      }}
-                    />
-                  </div>
-                ))}
+                <div ref={paragraphSort.containerRef}>
+                  {paragraphs.map((paragraph, index) => (
+                    <div
+                      key={paragraphKeys[index]}
+                      {...paragraphSort.itemProps(index)}
+                      className={`donation-paragraph ${paragraphSort.itemProps(index).className}`}
+                    >
+                      <InlineText
+                        className="donation-inline-text"
+                        label={`Warum Unterstützung wirkt: Absatz ${index + 1}`}
+                        value={String(paragraph)}
+                        disabled={disabled}
+                        onChange={(value) =>
+                          change(
+                            "impact",
+                            "paragraphs",
+                            paragraphs.map((entry, i) => (i === index ? value : entry)),
+                          )
+                        }
+                      />
+                      <ItemActions
+                        label="Absatz"
+                        index={index}
+                        count={paragraphs.length}
+                        minimum={paragraphField.min ?? 0}
+                        disabled={disabled}
+                        handleProps={paragraphSort.handleProps(index, `Absatz ${index + 1}`)}
+                        onRemove={() => {
+                          setParagraphKeys(paragraphKeys.filter((_, i) => i !== index));
+                          change(
+                            "impact",
+                            "paragraphs",
+                            paragraphs.filter((_, i) => i !== index),
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
                 <button
                   type="button"
                   className="donation-add-item secondary"
@@ -229,11 +233,12 @@ export function DonationEditor({
                   <h2>{text("projects", "title")}</h2>
                   <div className="donation-copy">{text("projects", "intro")}</div>
                 </div>
-                <div className="editorial-cards donation-projects">
+                <div className="editorial-cards donation-projects" ref={projectSort.containerRef}>
                   {projects.map((project, index) => (
                     <section
-                      className="editorial-card"
-                      key={projectKeys[index] ?? index}
+                      key={projectKeys[index]}
+                      {...projectSort.itemProps(index)}
+                      className={`editorial-card ${projectSort.itemProps(index).className}`}
                       aria-label={`Förderschwerpunkt ${index + 1}`}
                     >
                       <p className="eyebrow">{String(index + 1).padStart(2, "0")}</p>
@@ -275,7 +280,10 @@ export function DonationEditor({
                         count={projects.length}
                         minimum={projectField.min ?? 0}
                         disabled={disabled}
-                        onMove={(offset) => moveItem("projects", index, offset)}
+                        handleProps={projectSort.handleProps(
+                          index,
+                          `Förderschwerpunkt ${index + 1}`,
+                        )}
                         onRemove={() => {
                           setProjectKeys(projectKeys.filter((_, i) => i !== index));
                           change(

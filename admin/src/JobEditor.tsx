@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { InlineText } from "./InlineText";
+import { reorder, useSortable } from "./useSortable";
 import type { ContentData, JsonValue } from "../../src/admin/types";
 import type { EditorField } from "../../src/admin/content-model";
 import { formatGermanLongDate } from "../../src/data/content-utils";
@@ -21,19 +22,21 @@ function InlineList({
   benefits?: boolean;
 }) {
   const [keys, setKeys] = useState(() => values.map(() => crypto.randomUUID()));
-  function move(index: number, offset: number) {
-    const next = [...values];
-    const nextKeys = [...keys];
-    [next[index], next[index + offset]] = [next[index + offset], next[index]];
-    [nextKeys[index], nextKeys[index + offset]] = [nextKeys[index + offset], nextKeys[index]];
-    setKeys(nextKeys);
-    onChange(next);
+  if (keys.length !== values.length)
+    setKeys(values.map((_, index) => keys[index] ?? crypto.randomUUID()));
+  const sort = useSortable({ keys, disabled, onMove: move });
+  function move(from: number, to: number) {
+    setKeys(reorder(keys, from, to));
+    onChange(reorder(values, from, to));
   }
   return (
     <div className="job-inline-list">
-      <ul className={paragraphs ? "job-paragraphs" : benefits ? "editorial-list" : "job-checks"}>
+      <ul
+        ref={sort.containerRef}
+        className={paragraphs ? "job-paragraphs" : benefits ? "editorial-list" : "job-checks"}
+      >
         {values.map((value, index) => (
-          <li key={keys[index] ?? index}>
+          <li key={keys[index]} {...sort.itemProps(index)}>
             {!paragraphs && !benefits && (
               <span className="job-check" aria-hidden="true">
                 ✓
@@ -47,28 +50,7 @@ function InlineList({
                 disabled={disabled}
               />
               <div className="job-item-actions">
-                <div
-                  className="job-item-move"
-                  role="group"
-                  aria-label={`${label}: Eintrag ${index + 1} verschieben`}
-                >
-                  <button
-                    type="button"
-                    aria-label={`${label}: Eintrag ${index + 1} nach oben`}
-                    disabled={disabled || index === 0}
-                    onClick={() => move(index, -1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`${label}: Eintrag ${index + 1} nach unten`}
-                    disabled={disabled || index === values.length - 1}
-                    onClick={() => move(index, 1)}
-                  >
-                    ↓
-                  </button>
-                </div>
+                <button {...sort.handleProps(index, `${label}: Eintrag ${index + 1}`)} />
                 <button
                   type="button"
                   aria-label={`${label}: Eintrag ${index + 1} entfernen`}

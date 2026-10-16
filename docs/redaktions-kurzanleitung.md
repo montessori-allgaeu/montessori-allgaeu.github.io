@@ -57,10 +57,13 @@ Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernomm
   pflegen. Ergänzungen wie „nicht besetzt“ oder verlängerte Betreuung bleiben möglich.
 - **Termine und Menschen:** Die Vorschau zeigt die aktuellen Eingaben. Bei Menschen mit mehreren
   Rollen siehst du die Darstellung in den einzelnen Bereichen.
-- **Personen sortieren:** In der Übersicht beim gewünschten Bereich **Reihenfolge ändern** wählen.
-  Am Griff ziehen oder die Pfeile verwenden. Die Liste zeigt den neuen Platz sofort; bei einem
-  Speicherfehler kehrt sie zur bisherigen Reihenfolge zurück. Während der Veröffentlichung sind
-  weitere Verschiebungen gesperrt. Positionszahlen müssen nicht im Personenformular gepflegt werden.
+- **Reihenfolge ändern:** Einträge direkt am dauerhaft sichtbaren Griff ziehen – in Übersichten,
+  Wochenplan, Tabellen und Formularlisten. Mit der Tastatur den Griff fokussieren und **Alt +
+  Pfeil nach oben/unten** verwenden. In Übersichten wird die Reihenfolge sofort gespeichert;
+  Änderungen in Formularen werden über **Speichern** übernommen. Bei einem Speicherfehler kehrt
+  die Übersicht zur bisherigen Reihenfolge zurück. Während der Veröffentlichung sind weitere
+  Verschiebungen gesperrt. Der Hinweis zum Veröffentlichungsstand blendet sich oben als Overlay ein,
+  ohne die Seite zu verschieben.
 - **Downloads:** Die erste PDF-Seite und die Downloadzeile prüfen. Bei einem Austausch bleibt
   der vorhandene Dateilink erhalten. Über **PDF ansehen** kannst du das ganze Dokument öffnen.
 - **Aufnahme:** Jahr auswählen, Anmeldeschluss setzen und den vollständigen Satz in der Vorschau

@@ -660,38 +660,22 @@ strong {
     24px/1 "Unica One",
     sans-serif;
 }
-.record-list-dragging .record-item {
-  transition: transform 160ms ease-out;
+.sortable-item {
   position: relative;
-  background: var(--paper);
 }
-.record-item-dragged {
+.sortable-moving {
+  transition: transform 160ms ease-out;
+}
+.sortable-dragged {
   z-index: 2;
   box-shadow: 0 4px 14px #1d2b1e26;
-}
-.record-list-dragging .record-item-dragged {
-  transition: none;
   background: var(--surface);
-}
-.record-drop-slot {
-  position: absolute;
-  left: 0;
-  right: 0;
-  border: 2px dashed var(--terracotta);
-  pointer-events: none;
+  transition: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .record-list-dragging .record-item {
+  .sortable-moving {
     transition: none;
   }
-}
-.sort-controls {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.sort-controls .icon-button {
-  border: 0;
 }
 .drag-handle {
   display: grid;
@@ -943,19 +927,7 @@ strong {
   align-items: center;
   margin-top: 32px;
 }
-.publication-notice {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 20px;
-  padding: 14px 0;
-  border-bottom: 1px solid #d7a24b;
-  font-size: 13px;
-}
-.publication-notice.failed {
-  color: #98431c;
-}
+
 .operation-banner {
   border-left: 3px solid #d7a24b;
   background: #eee9db;
@@ -1319,14 +1291,6 @@ strong {
   .record-thumb {
     width: 40px;
     height: 48px;
-  }
-  .sort-controls {
-    flex-direction: column;
-    gap: 0;
-  }
-  .sort-controls .icon-button {
-    height: 44px;
-    width: 44px;
   }
   .editor-heading {
     gap: 0;

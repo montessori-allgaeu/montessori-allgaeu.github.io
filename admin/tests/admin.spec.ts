@@ -388,7 +388,9 @@ for (const viewport of [
     await page
       .getByRole("textbox", { name: "Über uns: Absatz 1", exact: true })
       .fill("Ein Ort für Kinder & Erwachsene.");
-    await page.getByRole("button", { name: "Aufgaben: Eintrag 2 nach oben", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Aufgaben: Eintrag 2 ziehen", exact: true })
+      .press("Alt+ArrowUp");
     await expect(
       page.getByRole("textbox", { name: "Aufgaben: Listenpunkt 1", exact: true }),
     ).toHaveValue("Im Team lernen");
@@ -557,10 +559,12 @@ for (const width of [1440, 390]) {
       "Klasse 5–7",
     );
     await expect(page.getByText("Vorjahreskurs", { exact: true })).toHaveCount(0);
-    await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).press("Enter");
     await expect(
-      page.getByRole("button", { name: "Sortierung beenden", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
+      page.getByRole("button", { name: "Montagswerkstatt ziehen", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reihenfolge ändern", exact: true })).toHaveCount(
+      0,
+    );
     await page.screenshot({ path: `test-results/afternoon-week-${width}.png`, fullPage: true });
     await page.getByLabel("Angebote für", { exact: true }).selectOption("2025/26");
     await expect(page.getByRole("region", { name: "Mittwoch", exact: true })).toContainText(
@@ -604,8 +608,9 @@ test("Wochenplan sortiert nur innerhalb des gewählten Tages", async ({ page }) 
   ];
   const requests = await mock(page, records);
   await page.goto("/?collection=afternoonOffers");
-  await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
-  await page.getByRole("button", { name: "Zweites Angebot nach oben", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Zweites Angebot ziehen", exact: true })
+    .press("Alt+ArrowUp");
   await expect.poll(() => requests.length).toBe(1);
   expect(requests[0].mutations.map((mutation) => [mutation.id, mutation.data.position])).toEqual([
     ["zweites", 1],
@@ -1007,9 +1012,7 @@ test("Terminvorlage übernimmt Angaben und bewahrt das gewählte neue Datum", as
   expect(requests[0].mutations[0].data.date).toBe("2099-05-20");
 });
 
-test("Sortierpfeile erscheinen nur im angeforderten Modus und speichern die neue Reihenfolge", async ({
-  page,
-}) => {
+test("Dauerhafte Ziehgriffe speichern Downloads ohne Sortiermodus", async ({ page }) => {
   const first = record(
     "downloads",
     { title: "Erstes PDF", file: "/downloads/first.pdf", position: 1 },
@@ -1023,18 +1026,19 @@ test("Sortierpfeile erscheinen nur im angeforderten Modus und speichern die neue
   const requests = await mock(page, [first, second]);
   await page.goto("/");
   await page.getByRole("button", { name: "PDF ersetzen", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Zweites PDF ziehen", exact: true })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Zweites PDF nach oben", exact: true }),
+    page.getByRole("button", {
+      name: /nach oben|nach unten|Reihenfolge ändern|Sortierung beenden/,
+    }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
-  await page.getByRole("button", { name: "Zweites PDF nach oben", exact: true }).click();
+  await page.getByRole("button", { name: "Zweites PDF ziehen", exact: true }).press("Alt+ArrowUp");
   await expect.poll(() => requests.length).toBe(1);
   expect(requests[0].mutations.map((item) => [item.id, item.data.position])).toEqual([
     ["second", 1],
     ["first", 2],
   ]);
-  await page.getByRole("button", { name: "Sortierung beenden", exact: true }).click();
-  await expect(page.locator(".sort-controls")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Zweites PDF ziehen", exact: true })).toBeVisible();
 });
 
 for (const viewport of [
@@ -1074,8 +1078,7 @@ for (const viewport of [
     await expect(page.getByRole("region", { name: /^Leitung/ })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath("menschen-uebersicht.png") });
     const primary = page.getByRole("region", { name: /^Primaria · Pädagogische Assistenzen/ });
-    const sort = primary.getByRole("button", { name: "Reihenfolge ändern", exact: true });
-    if (await sort.count()) await sort.click();
+    await expect(primary.locator(".drag-handle")).not.toHaveCount(0);
     await primary.scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath("menschen-sortierung.png") });
     const council = page.getByRole("region", { name: /^Elternbeirat Kindergarten/ });
@@ -1150,13 +1153,14 @@ for (const viewport of [
     ]);
     await expect(assistants.locator(".record-row strong")).toHaveText(["Pia Assistenz"]);
     await expect(board.locator(".record-row strong")).toHaveText(["Berta Beispiel", "Maria Monte"]);
-    await leadership.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
-    await expect(primary.locator(".sort-controls")).toHaveCount(0);
+    await expect(primary.locator(".drag-handle")).toHaveCount(2);
     await page.screenshot({ path: testInfo.outputPath("menschen.png"), fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await leadership.getByRole("button", { name: "Berta Beispiel nach oben", exact: true }).click();
+    await leadership
+      .getByRole("button", { name: "Berta Beispiel ziehen", exact: true })
+      .press("Alt+ArrowUp");
     await expect.poll(() => requests.length).toBe(1);
     expect(requests[0].mutations).toEqual([
       {
@@ -1195,8 +1199,7 @@ for (const viewport of [
       "Berta Beispiel",
       "Maria Monte",
     ]);
-    await board.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
-    await expect(board.getByRole("button", { name: "Maria Monte nach oben" })).toBeDisabled();
+    await expect(board.getByRole("button", { name: "Maria Monte ziehen" })).toBeDisabled();
   });
 }
 
@@ -1217,8 +1220,7 @@ for (const area of ["Kindergarten", "Schule"]) {
     const requests = await mock(page, records);
     await page.goto("/?collection=parentCouncil");
     const section = page.getByRole("region", { name: new RegExp(`^Elternbeirat ${area}`) });
-    await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
-    await section.getByRole("button", { name: "Zora nach oben" }).click();
+    await section.getByRole("button", { name: "Zora ziehen" }).press("Alt+ArrowUp");
     await expect.poll(() => requests.length).toBe(1);
     expect(requests[0].mutations.map((mutation) => [mutation.id, mutation.data.position])).toEqual([
       [`${area.toLowerCase()}-zora`, 1],
@@ -1716,7 +1718,7 @@ for (const viewport of [
       .getByRole("textbox", { name: "Titel", exact: true })
       .fill("Noch nicht gespeicherte Eingabe");
     published = true;
-    await expect(page.locator(".publication-notice")).toHaveCount(0, { timeout: 8000 });
+    await expect(page.locator(".publication-notice")).toBeHidden({ timeout: 8000 });
     await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
       "Noch nicht gespeicherte Eingabe",
     );
