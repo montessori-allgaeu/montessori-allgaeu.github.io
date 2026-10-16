@@ -232,6 +232,7 @@ test("accepts an atomic edit and makes retries idempotent without queuing duplic
       "saved",
       "status",
       "summary",
+      "targets",
       "updatedAt",
     ]);
     expect(listed.changes[0]).not.toHaveProperty("attempt");
@@ -330,9 +331,11 @@ test("uploads are private, belong to their uploader and can bind to only one cha
     expect((await publishing.uploadPreview(upload.id, other)).status).toBe(200);
     const operation = store.get<Change>(`change:${result.id}`)!;
     store.put(`change:${result.id}`, { ...operation, status: "published" });
-    expect(
-      (await publishing.list().json<{ changes: Change[] }>()).changes[0].saved,
-    ).toBeUndefined();
+    const published = (await publishing.list().json<{ changes: Change[] }>()).changes[0];
+    expect(published.saved).toBeUndefined();
+    expect(published.targets).toEqual(
+      input.mutations.map(({ collection, id }) => ({ collection, id })),
+    );
     await expect(
       publishing.submit({ ...input, requestId: crypto.randomUUID() }, owner, session(owner)),
     ).rejects.toMatchObject({ status: 400, code: "upload_missing" });

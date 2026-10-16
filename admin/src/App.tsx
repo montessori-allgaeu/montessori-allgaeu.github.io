@@ -16,8 +16,18 @@ import {
   calculateEffectiveFee,
 } from "../../src/admin/content-model";
 import { api, errorText, RequestError } from "./api";
+import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
 import { Access, Profile } from "./Access";
+import {
+  recordKey,
+  titleOf,
+  today,
+  eventDate,
+  nextEvents,
+  recentContent,
+  eventTemplates,
+} from "./overview";
 import { activeMedia, discardMedia, selectMedia, uploadMedia, type PendingMedia } from "./media";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
@@ -57,10 +67,6 @@ const statusLabels: Record<Change["status"], string> = {
 const ongoing = (change: Change | undefined) =>
   change && ["queued", "checking", "committed"].includes(change.status);
 const isVisible = (record: ContentRecord) => record.data.visible !== false;
-const titleOf = (data: ContentData, fallback = "Neuer Eintrag") =>
-  String(data.title || data.name || fallback);
-const recordKey = (record: { collection: string; id: string }) =>
-  `${record.collection}:${record.id}`;
 const makeId = (data: ContentData) =>
   `${
     titleOf(data, "eintrag")
@@ -79,8 +85,6 @@ function readSeenFailures(): string[] {
     return [];
   }
 }
-const today = () =>
-  new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(new Date());
 function initialArea() {
   const collection = new URLSearchParams(location.search).get("collection");
   return (
@@ -88,24 +92,6 @@ function initialArea() {
     "Übersicht"
   );
 }
-function readRecents(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem("monte-recent-areas") ?? "[]") as string[];
-  } catch {
-    return [];
-  }
-}
-function rememberArea(area: string) {
-  try {
-    const next = [area, ...readRecents().filter((entry) => entry !== area)]
-      .filter((entry) => areas.includes(entry))
-      .slice(0, 4);
-    localStorage.setItem("monte-recent-areas", JSON.stringify(next));
-  } catch {
-    /* Navigation also works without browser storage. */
-  }
-}
-
 type EditState = ContentMutation & {
   original: ContentData;
   pendingMedia: PendingMedia;
@@ -290,6 +276,7 @@ export function App() {
   const [conflictMediaVersions, setConflictMediaVersions] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
+  const [sortingCollection, setSortingCollection] = useState<ContentCollection | null>(null);
   const [dragged, setDragged] = useState<string | null>(null);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
@@ -484,26 +471,26 @@ export function App() {
   function navigate(next: string) {
     if (!leaveEditor()) return;
     setArea(next);
+    setSortingCollection(null);
     setQuery("");
     setArchive(false);
     setPast(false);
     setOfferYear("");
     setMobileNav(false);
-    rememberArea(next);
     history.replaceState(null, "", location.pathname);
-    document.getElementById("main-content")?.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }
   function openRecord(record: ContentRecord) {
     if (!leaveEditor()) return false;
     setArea(getContentDefinition(record.collection).area);
     setEditor(toEdit(record, snapshot?.mediaVersions ?? {}, pendingChange(record, changes)));
     setQuery("");
+    window.scrollTo(0, 0);
     history.replaceState(
       null,
       "",
       `?collection=${encodeURIComponent(record.collection)}&id=${encodeURIComponent(record.id)}`,
     );
-    rememberArea(getContentDefinition(record.collection).area);
     return true;
   }
   async function replacePdf(record: ContentRecord, file: File) {
@@ -553,7 +540,8 @@ export function App() {
             snapshot?.records.filter((record) => record.collection === collection).length ?? 0,
         });
     if (source) {
-      if (typeof data.title === "string") data.title += " (Kopie)";
+      if (typeof data.title === "string" && collection !== "events") data.title += " (Kopie)";
+      if (collection === "events") data.date = today();
       if (typeof data.name === "string") data.name += " (Kopie)";
       if (collection === "jobs") data.datePosted = today();
       data.visible = true;
@@ -844,7 +832,13 @@ export function App() {
       )
     : [];
   const areaDefinitions = contentDefinitions.filter((item) => item.area === area);
-  const recentAreas = readRecents();
+  const recent = recentContent(recordList, changes);
+  const upcoming = nextEvents(recordList);
+  const usage = editor ? contentUsage(editor, recordList) : null;
+  const templates =
+    editor?.collection === "events" && editor.baseVersion === null
+      ? eventTemplates(recordList, String(editor.data.title ?? ""))
+      : [];
   const currentYear = String(
     recordList.find((record) => record.collection === "afternoonProgramSettings")?.data
       .activeSchoolYear ?? "",
@@ -1085,7 +1079,31 @@ export function App() {
                       : "Speichern"}
               </button>
             </div>
-            <p className="used-on">Wird verwendet: {definition.usedOn.join(" · ")}</p>
+            {usage && (
+              <div className="used-on">
+                {usage.pages.length > 0 && (
+                  <>
+                    Verknüpft mit:{" "}
+                    {usage.pages.map((page, index) => (
+                      <span key={page.href}>
+                        {index > 0 && " · "}
+                        <a
+                          href={`https://montessori-allgaeu.de${page.href}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {page.label} ↗
+                        </a>
+                      </span>
+                    ))}
+                  </>
+                )}
+                {usage.note && <span>{usage.note}</span>}
+                {dirty && usage.pages.length > 0 && (
+                  <span className="usage-note">Links zeigen den veröffentlichten Stand.</span>
+                )}
+              </div>
+            )}
             {currentChange && (
               <div className={`operation-banner ${currentChange.status}`} role="status">
                 <strong>{statusLabels[currentChange.status]}</strong>
@@ -1178,6 +1196,62 @@ export function App() {
                 }}
               />
             )}
+            {templates.length > 0 && (
+              <details className="event-templates">
+                <summary>Ähnlichen Termin übernehmen</summary>
+                <p className="hint">
+                  Titel, Kategorie, Uhrzeit, Ort und Beschreibung übernehmen. Dein ausgewähltes
+                  Datum bleibt erhalten.
+                </p>
+                <label>
+                  Vorhandenen Termin auswählen
+                  <select
+                    aria-label="Termin als Vorlage"
+                    value=""
+                    disabled={editingLocked}
+                    onChange={(event) => {
+                      const source = templates.find(
+                        (record) => record.id === event.currentTarget.value,
+                      );
+                      if (!source) return;
+                      const owner = recordKey(editor);
+                      setEditor((current) =>
+                        current && recordKey(current) === owner
+                          ? {
+                              ...current,
+                              data: {
+                                ...current.data,
+                                ...Object.fromEntries(
+                                  ["title", "category", "time", "location", "description"].map(
+                                    (key) => [key, source.data[key]],
+                                  ),
+                                ),
+                              },
+                              requestId: crypto.randomUUID(),
+                            }
+                          : current,
+                      );
+                    }}
+                  >
+                    <option value="">Bitte auswählen …</option>
+                    {templates.map((record) => (
+                      <option key={record.id} value={record.id}>
+                        {titleOf(record.data)} · {eventDate(String(record.data.date))}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </details>
+            )}
+            {editor.collection === "events" &&
+              typeof editor.data.date === "string" &&
+              editor.data.date &&
+              editor.data.date < today() && (
+                <p className="editor-notice">
+                  Dieser Termin liegt in der Vergangenheit. Prüfe das Datum, wenn du einen neuen
+                  Termin ankündigen möchtest.
+                </p>
+              )}
             <div
               className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
             >
@@ -1465,39 +1539,109 @@ export function App() {
                 Team aktualisieren
               </button>
             </div>
-            {recentAreas.length > 0 && (
-              <div className="recent-areas">
-                <span>Zuletzt verwendet</span>
-                {recentAreas.map((item) => (
-                  <button className="text-button" key={item} onClick={() => navigate(item)}>
-                    {item} →
+            <div className="dashboard-columns">
+              <section aria-labelledby="recent-heading">
+                <div className="section-heading">
+                  <h2 id="recent-heading">Zuletzt bearbeitet</h2>
+                  <button className="text-button" onClick={() => navigate("Änderungen")}>
+                    Alle Änderungen →
                   </button>
-                ))}
-              </div>
-            )}
-            <div className="area-grid">
-              {areas.map((item, index) => (
-                <button className="area-tile" key={item} onClick={() => navigate(item)}>
-                  <span className="area-number">0{index + 1}</span>
-                  <h2>{item}</h2>
-                  <p>{areaDescriptions[item]}</p>
-                  <span className="tile-arrow" aria-hidden="true">
-                    ↗
-                  </span>
-                </button>
-              ))}
+                </div>
+                <div className="record-list">
+                  {recent.length ? (
+                    recent.map(({ record, change, mutation }) => (
+                      <button
+                        className="record-row dashboard-row"
+                        key={recordKey(record)}
+                        onClick={() => {
+                          if (
+                            mutation &&
+                            (change.status === "failed" || change.status === "conflict")
+                          )
+                            openSavedChange(change, mutation);
+                          else openRecord(record);
+                        }}
+                      >
+                        <span>
+                          <strong>
+                            {titleOf(
+                              mutation?.data ?? record.data,
+                              getContentDefinition(record.collection).label,
+                            )}
+                          </strong>
+                          <small>
+                            {getContentDefinition(record.collection).label} ·{" "}
+                            {new Date(change.createdAt).toLocaleString("de-DE", {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              timeZone: "Europe/Berlin",
+                            })}
+                          </small>
+                          {change.status !== "published" && (
+                            <small className={`change-state ${change.status}`}>
+                              {statusLabels[change.status]}
+                            </small>
+                          )}
+                          {!isVisible(record) && <small>Ausgeblendet</small>}
+                        </span>
+                        <span className="record-arrow" aria-hidden="true">
+                          →
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="empty-state">
+                      Hier erscheinen Inhalte, sobald jemand aus dem Team speichert.
+                    </p>
+                  )}
+                </div>
+              </section>
+              <section aria-labelledby="upcoming-heading">
+                <div className="section-heading">
+                  <h2 id="upcoming-heading">Nächste Termine</h2>
+                  <button className="text-button" onClick={() => navigate("Termine")}>
+                    Alle Termine →
+                  </button>
+                </div>
+                <div className="record-list">
+                  {upcoming.length ? (
+                    upcoming.map((record) => (
+                      <button
+                        className="record-row dashboard-row"
+                        key={recordKey(record)}
+                        onClick={() => openRecord(record)}
+                      >
+                        <span>
+                          <small className="event-date">
+                            <time dateTime={String(record.data.date)}>
+                              {eventDate(String(record.data.date))}
+                            </time>
+                            {record.data.time ? ` · ${record.data.time}` : ""}
+                          </small>
+                          <strong>{titleOf(record.data)}</strong>
+                          {record.data.location ? (
+                            <small>{String(record.data.location)}</small>
+                          ) : null}
+                          {pendingChange(record, changes) && (
+                            <small>Gespeichert · Website wird aktualisiert</small>
+                          )}
+                        </span>
+                        <span className="record-arrow" aria-hidden="true">
+                          →
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="empty-state">
+                      Noch keine kommenden Termine. Über „Termin hinzufügen“ legst du den nächsten
+                      an.
+                    </p>
+                  )}
+                </div>
+              </section>
             </div>
-            <div className="section-heading">
-              <h2>Letzte Änderungen</h2>
-              <button className="text-button" onClick={() => navigate("Änderungen")}>
-                Alle ansehen →
-              </button>
-            </div>
-            <ChangeList
-              changes={changes.slice(0, 4)}
-              onRetry={(change) => void retry(change)}
-              onOpen={openSavedChange}
-            />
           </section>
         ) : (
           <section className="page-content">
@@ -1582,7 +1726,11 @@ export function App() {
                 records = records.filter(
                   (record) => record.data.schoolYear === (offerYear || currentYear),
                 );
-              const sortable = item.fields.some((field) => field.key === "position") && !archive;
+              const canSort =
+                item.fields.some((field) => field.key === "position") &&
+                !archive &&
+                records.length > 1;
+              const sortable = canSort && sortingCollection === item.collection;
               if (item.singleton)
                 return (
                   <div className="singleton-section" key={item.collection}>
@@ -1590,7 +1738,11 @@ export function App() {
                       <button className="singleton-link" onClick={() => openRecord(records[0])}>
                         <div>
                           <h2>{item.label}</h2>
-                          <p>{item.usedOn.join(" · ")}</p>
+                          <p>
+                            {contentUsage(records[0], recordList)
+                              .pages.map((page) => page.label)
+                              .join(" · ")}
+                          </p>
                         </div>
                         <span aria-hidden="true">→</span>
                       </button>
@@ -1606,10 +1758,32 @@ export function App() {
                       {item.label}
                       <span className="subtle count">{records.length}</span>
                     </h2>
-                    <button className="button secondary" onClick={() => newRecord(item.collection)}>
-                      + Hinzufügen
-                    </button>
+                    <div className="row-actions">
+                      {canSort && (
+                        <button
+                          className="text-button"
+                          aria-pressed={sortable}
+                          onClick={() => {
+                            setSortingCollection(sortable ? null : item.collection);
+                            setDragged(null);
+                          }}
+                        >
+                          {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+                        </button>
+                      )}
+                      <button
+                        className="button secondary"
+                        onClick={() => newRecord(item.collection)}
+                      >
+                        + Hinzufügen
+                      </button>
+                    </div>
                   </div>
+                  {sortable && (
+                    <p className="hint">
+                      Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
+                    </p>
+                  )}
                   {!records.length ? (
                     <p className="empty-state">
                       {item.collection === "events"
@@ -1645,7 +1819,9 @@ export function App() {
                               <strong>{titleOf(record.data)}</strong>
                               <small>
                                 {[
-                                  record.data.date,
+                                  record.data.date
+                                    ? eventDate(String(record.data.date))
+                                    : undefined,
                                   record.data.time,
                                   record.data.area,
                                   record.data.weekday,

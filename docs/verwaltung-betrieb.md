@@ -48,6 +48,12 @@ Die Worker-Konfiguration allein bestätigt weder Custom-Domain-Bindungen noch Na
 
 ### Inhalte bearbeiten
 
+Die Übersicht zeigt häufige Aktionen, **Zuletzt bearbeitet** und die vier nächsten sichtbaren Termine ab dem aktuellen Berliner Datum. Die letzten fünf unterschiedlichen Inhalte werden aus den letzten 50 gespeicherten Aufträgen des Teams ermittelt, einschließlich laufender und fehlgeschlagener Veröffentlichungen. Veröffentlichten Aufträgen bleiben dafür nur ihre Inhaltskennungen zugeordnet; historische Inhaltsfassungen und temporäre Medienvorschauen werden weiterhin nicht ausgeliefert. Ein Klick öffnet den aktuellen Inhalt oder bei Fehlern die gespeicherten Eingaben zur Korrektur.
+
+Neue Termine bieten unter **Ähnlichen Termin übernehmen** bis zu fünf passende vorhandene Vorlagen an. Bereits eingegebener Titeltext grenzt die Auswahl ein. Die Übernahme kopiert Titel, Kategorie, Uhrzeit, Ort und Beschreibung; das gewählte neue Datum bleibt erhalten. Beim Kopieren eines bestehenden Termins wird das Datum auf heute gesetzt und muss geprüft werden. Vergangene Daten erhalten einen Hinweis. Sortierpfeile in Inhaltslisten erscheinen erst nach **Reihenfolge ändern**; eine Verschiebung speichert weiterhin unmittelbar.
+
+**Verknüpft mit** führt zu den passenden öffentlichen Seiten. Download-Verknüpfungen hängen vom konkreten Dokument ab, Vorstandsrollen zusätzlich von der Zuordnung und Nachmittagsangebote vom aktiven Schuljahr. Bei Kennenlernterminen wird dieselbe Auswahlregel wie auf der Website verwendet. Diese Zuordnung wird in `src/admin/content-usage.ts` gepflegt und bei Änderungen an den öffentlichen Inhaltsverknüpfungen angepasst.
+
 Die Felder eines Eintrags sind sofort bearbeitbar. **Speichern** in der festen Leiste am unteren Bildschirmrand übernimmt alle Änderungen gemeinsam. Optionale, bisher unbenutzte Angaben stehen unter **Weitere Angaben ergänzen**. Bis zum Speichern bleiben Eingaben nur im geöffneten Browser; beim Verlassen geänderter Inhalte erscheint eine Warnung.
 
 In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.

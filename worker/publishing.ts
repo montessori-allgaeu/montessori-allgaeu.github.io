@@ -103,7 +103,8 @@ export class Publishing {
               }),
             ),
           };
-    return { id, status, createdAt, updatedAt, summary, error, commit, runUrl, saved };
+    const targets = operation.mutations.map(({ collection, id }) => ({ collection, id }));
+    return { id, status, createdAt, updatedAt, summary, error, commit, runUrl, targets, saved };
   }
   list() {
     return json({

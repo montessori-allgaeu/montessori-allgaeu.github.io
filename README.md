@@ -74,6 +74,8 @@ Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** b
 
 Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleiste bleibt am unteren Bildschirmrand erreichbar. Unter **Downloads** öffnet **PDF ersetzen** direkt die Dateiauswahl. Danach kann die neue PDF geprüft und zusammen mit Titel oder weiteren Angaben gespeichert werden. Beim Austausch bleibt der bestehende Dateilink erhalten.
 
+Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten sichtbaren Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
+
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
 Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.

@@ -41,7 +41,6 @@ export type ContentDefinition = {
   collection: ContentCollection;
   label: string;
   area: string;
-  usedOn: string[];
   directory: string;
   singleton?: string;
   fields: EditorField[];

@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { activeMedia, discardMedia, selectMedia } from "../src/media";
+import { nextEvents, eventTemplates } from "../src/overview";
 import { getContentDefinition } from "../../src/admin/content-model";
 import type {
   Change,
@@ -512,18 +513,232 @@ test("Admin erstellt einen Einrichtungslink mit der standardmäßigen Content-Ma
   await expect(page.getByRole("button", { name: "Deaktivieren", exact: true })).toBeDisabled();
 });
 
-test("Übersicht ist auf Desktop und Mobil sichtbar und enthält die vollständige Navigation", async ({
+test("Übersicht zeigt konkrete Aktionen und Termine; alle Bereiche bleiben im Menü erreichbar", async ({
   page,
 }, testInfo) => {
   await mock(page, [event]);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Was steht heute an?" })).toBeVisible();
-  await expect(page.locator(".area-tile")).toHaveCount(9);
+  await expect(page.getByRole("heading", { name: "Zuletzt bearbeitet" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Nächste Termine" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "+ Termin hinzufügen", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "PDF ersetzen", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Team aktualisieren", exact: true })).toBeVisible();
+  await expect(page.locator(".area-tile")).toHaveCount(0);
+  await expect(
+    page.locator(".sidebar").getByRole("button", { name: "Kosten", exact: true }),
+  ).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("desktop.png"), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Menü öffnen", exact: true }).click();
+  await expect(
+    page.locator(".sidebar").getByRole("button", { name: "Kosten", exact: true }),
+  ).toBeVisible();
+  await page
+    .locator(".mobile-header")
+    .getByRole("button", { name: "Menü schließen", exact: true })
+    .click();
   await page.screenshot({ path: testInfo.outputPath("mobile.png"), fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("zuletzt bearbeitete Inhalte sind eindeutig, bleiben nach Neuladen erhalten und öffnen den aktuellen Stand", async ({
+  page,
+}) => {
+  const document = record(
+    "downloads",
+    { title: "Aktuelle Unterlagen", file: "/downloads/info.pdf" },
+    "info",
+  );
+  const activity: Change[] = [
+    {
+      ...change("published"),
+      id: "older",
+      createdAt: "2026-10-14T10:00:00Z",
+      targets: [{ collection: event.collection, id: event.id }],
+    },
+    {
+      ...change("published"),
+      id: "newest",
+      createdAt: "2026-10-16T10:00:00Z",
+      targets: [{ collection: document.collection, id: document.id }],
+    },
+    {
+      ...change("published"),
+      id: "middle",
+      createdAt: "2026-10-15T10:00:00Z",
+      targets: [{ collection: event.collection, id: event.id }],
+    },
+  ];
+  await mock(page, [event, document], {
+    route: async (route, path) => {
+      if (path !== "/changes") return false;
+      await route.fulfill({ json: { changes: activity } });
+      return true;
+    },
+  });
+  await page.goto("/");
+  const recent = page.getByRole("region", { name: "Zuletzt bearbeitet" });
+  await expect(recent.locator(".record-row")).toHaveCount(2);
+  await expect(recent.locator(".record-row").first()).toContainText("Aktuelle Unterlagen");
+  await page.reload();
+  await recent.getByRole("button", { name: /Aktuelle Unterlagen/ }).click();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+    "Aktuelle Unterlagen",
+  );
+  await expect(page).toHaveURL(/collection=downloads&id=info/);
+});
+
+test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene sowie ausgeblendete aus", async ({
+  page,
+}) => {
+  const past = record("events", { title: "Vergangener Termin", date: "2020-01-01" }, "past");
+  const hidden = record(
+    "events",
+    { title: "Ausgeblendeter Termin", date: "2099-01-01", visible: false },
+    "hidden",
+  );
+  const saved: Change = {
+    ...change(),
+    saved: {
+      mutations: [
+        {
+          collection: event.collection,
+          id: event.id,
+          baseVersion: event.version,
+          data: { ...event.data, title: "Gespeicherter Termin", date: "2099-01-02" },
+        },
+      ],
+      previews: {},
+    },
+  };
+  await mock(page, [event, past, hidden], {
+    route: async (route, path) => {
+      if (path !== "/changes") return false;
+      await route.fulfill({ json: { changes: [saved] } });
+      return true;
+    },
+  });
+  await page.goto("/");
+  const upcoming = page.getByRole("region", { name: "Nächste Termine" });
+  await expect(upcoming.locator(".record-row")).toHaveCount(1);
+  await expect(upcoming).toContainText("Gespeicherter Termin");
+  await expect(upcoming.locator("time")).toHaveAttribute("datetime", "2099-01-02");
+  await upcoming.getByRole("button", { name: /Gespeicherter Termin/ }).click();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeDisabled();
+});
+
+test("fehlgeschlagene neue Inhalte bleiben von der Übersicht aus korrigierbar", async ({
+  page,
+}) => {
+  const failed: Change = {
+    ...change("failed"),
+    targets: [{ collection: "events", id: "new-event" }],
+    saved: {
+      mutations: [
+        {
+          collection: "events",
+          id: "new-event",
+          baseVersion: null,
+          data: { ...event.data, title: "Noch zu korrigieren" },
+        },
+      ],
+      previews: {},
+    },
+  };
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path !== "/changes") return false;
+      await route.fulfill({ json: { changes: [failed] } });
+      return true;
+    },
+  });
+  await page.goto("/");
+  await page
+    .getByRole("region", { name: "Zuletzt bearbeitet" })
+    .getByRole("button", { name: /Noch zu korrigieren/ })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Eingaben überarbeiten", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+    "Noch zu korrigieren",
+  );
+});
+
+test("Terminauswahl verwendet Berliner Datum und sinnvolle Vorlagen ohne Duplikate", () => {
+  const old = record("events", { title: "Elternabend", date: "2026-10-15" }, "old");
+  const future = record("events", { title: "Elternabend", date: "2026-11-15" }, "future");
+  const current = record("events", { title: "Heute", date: "2026-10-16" }, "current");
+  const hidden = record(
+    "events",
+    { title: "Versteckt", date: "2026-12-01", visible: false },
+    "hidden",
+  );
+  expect(
+    nextEvents([future, old, hidden, current], new Date("2026-10-15T22:30:00Z")).map(
+      (record) => record.id,
+    ),
+  ).toEqual(["current", "future"]);
+  expect(
+    eventTemplates([old, future, hidden, current], "Eltern").map((record) => record.id),
+  ).toEqual(["future"]);
+});
+
+test("Terminvorlage übernimmt Angaben und bewahrt das gewählte neue Datum", async ({ page }) => {
+  const past = record("events", { ...event.data, date: "2020-01-01" });
+  const requests = await mock(page, [past]);
+  await page.goto("/");
+  await page.getByRole("button", { name: "+ Termin hinzufügen", exact: true }).click();
+  await page.getByLabel("Datum", { exact: true }).fill("2099-05-20");
+  await page.getByText("Ähnlichen Termin übernehmen", { exact: true }).click();
+  await page.getByRole("combobox", { name: "Termin als Vorlage" }).selectOption(past.id);
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+    String(past.data.title),
+  );
+  await expect(page.getByRole("textbox", { name: "Uhrzeit", exact: true })).toHaveValue(
+    String(past.data.time),
+  );
+  await expect(page.getByLabel("Datum", { exact: true })).toHaveValue("2099-05-20");
+  expect(requests).toHaveLength(0);
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].mutations[0].baseVersion).toBeNull();
+  expect(requests[0].mutations[0].id).not.toBe(past.id);
+  expect(requests[0].mutations[0].data.date).toBe("2099-05-20");
+});
+
+test("Sortierpfeile erscheinen nur im angeforderten Modus und speichern die neue Reihenfolge", async ({
+  page,
+}) => {
+  const first = record(
+    "downloads",
+    { title: "Erstes PDF", file: "/downloads/first.pdf", position: 1 },
+    "first",
+  );
+  const second = record(
+    "downloads",
+    { title: "Zweites PDF", file: "/downloads/second.pdf", position: 2 },
+    "second",
+  );
+  const requests = await mock(page, [first, second]);
+  await page.goto("/");
+  await page.getByRole("button", { name: "PDF ersetzen", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Zweites PDF nach oben", exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+  await page.getByRole("button", { name: "Zweites PDF nach oben", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  expect(requests[0].mutations.map((item) => [item.id, item.data.position])).toEqual([
+    ["second", 1],
+    ["first", 2],
+  ]);
+  await page.getByRole("button", { name: "Sortierung beenden", exact: true }).click();
+  await expect(page.locator(".sort-controls")).toHaveCount(0);
 });
 
 function uploadForm(route: Route) {

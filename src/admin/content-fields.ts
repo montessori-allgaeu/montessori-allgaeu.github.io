@@ -5,7 +5,6 @@ export const contentFieldDefinitions = [
     collection: "events",
     label: "Termine",
     area: "Termine",
-    usedOn: ["Termine", "Startseite", "Aufnahme"],
     directory: "src/content/events",
     fields: [
       {
@@ -75,7 +74,6 @@ export const contentFieldDefinitions = [
     collection: "jobs",
     label: "Stellenangebote",
     area: "Stellen",
-    usedOn: ["Karriere", "Stellenseiten"],
     directory: "src/content/jobs",
     fields: [
       {
@@ -265,7 +263,6 @@ export const contentFieldDefinitions = [
     collection: "afternoonOffers",
     label: "Nachmittagsangebote",
     area: "Ganztag & Essen",
-    usedOn: ["Ganztag"],
     directory: "src/content/afternoon-offers",
     fields: [
       {
@@ -369,7 +366,6 @@ export const contentFieldDefinitions = [
     collection: "team",
     label: "Team",
     area: "Menschen",
-    usedOn: ["Team", "Verein", "Impressum"],
     directory: "src/content/team",
     fields: [
       {
@@ -489,7 +485,6 @@ export const contentFieldDefinitions = [
     collection: "parentCouncil",
     label: "Elternbeirat",
     area: "Menschen",
-    usedOn: ["Elternbeirat"],
     directory: "src/content/parent-council",
     fields: [
       {
@@ -546,7 +541,6 @@ export const contentFieldDefinitions = [
     collection: "downloads",
     label: "Downloads",
     area: "Downloads",
-    usedOn: ["Downloads", "Aufnahme", "Kosten", "Verein", "Spenden"],
     directory: "src/content/downloads",
     fields: [
       {
@@ -614,7 +608,6 @@ export const contentFieldDefinitions = [
     collection: "donations",
     label: "Spendenseite",
     area: "Spenden",
-    usedOn: ["Spenden", "Startseite"],
     directory: "src/content/donations",
     singleton: "page",
     fields: [
@@ -938,7 +931,6 @@ export const contentFieldDefinitions = [
     collection: "contactSettings",
     label: "Kontakt & Anschrift",
     area: "Kontakt & Zeiten",
-    usedOn: ["Kontakt", "Footer", "Aufnahme", "Karriere", "Impressum", "Datenschutz"],
     directory: "src/content/settings",
     singleton: "contact",
     fields: [
@@ -1016,7 +1008,6 @@ export const contentFieldDefinitions = [
     collection: "openingHoursSettings",
     label: "Öffnungszeiten",
     area: "Kontakt & Zeiten",
-    usedOn: ["Kontakt", "Kindergarten", "Schule"],
     directory: "src/content/settings",
     singleton: "opening-hours",
     fields: [
@@ -1142,7 +1133,6 @@ export const contentFieldDefinitions = [
     collection: "kindergartenAdmissionSettings",
     label: "Aufnahme Kindergarten",
     area: "Aufnahme",
-    usedOn: ["Aufnahme Kindergarten"],
     directory: "src/content/settings",
     singleton: "kindergarten-admission",
     fields: [
@@ -1163,7 +1153,6 @@ export const contentFieldDefinitions = [
     collection: "schoolAdmissionSettings",
     label: "Aufnahme Schule",
     area: "Aufnahme",
-    usedOn: ["Aufnahme Schule"],
     directory: "src/content/settings",
     singleton: "school-admission",
     fields: [
@@ -1184,7 +1173,6 @@ export const contentFieldDefinitions = [
     collection: "mealSettings",
     label: "Mittagessen",
     area: "Ganztag & Essen",
-    usedOn: ["Ganztag"],
     directory: "src/content/settings",
     singleton: "meals",
     fields: [
@@ -1217,7 +1205,6 @@ export const contentFieldDefinitions = [
     collection: "afternoonProgramSettings",
     label: "Ganztag & Kurswahl",
     area: "Ganztag & Essen",
-    usedOn: ["Ganztag"],
     directory: "src/content/settings",
     singleton: "afternoon-program",
     fields: [
@@ -1257,7 +1244,6 @@ export const contentFieldDefinitions = [
     collection: "schoolFeeSettings",
     label: "Schulgeld",
     area: "Kosten",
-    usedOn: ["Kosten"],
     directory: "src/content/settings",
     singleton: "school-fees",
     fields: [
@@ -1295,7 +1281,6 @@ export const contentFieldDefinitions = [
     collection: "kindergartenFeeSettings",
     label: "Kindergartenbeiträge",
     area: "Kosten",
-    usedOn: ["Kosten"],
     directory: "src/content/settings",
     singleton: "kindergarten-fees",
     fields: [
@@ -1350,7 +1335,6 @@ export const contentFieldDefinitions = [
     collection: "communityContributionSettings",
     label: "Einlage, Elternarbeit & Verein",
     area: "Kosten",
-    usedOn: ["Kosten"],
     directory: "src/content/settings",
     singleton: "community-contributions",
     fields: [
