@@ -76,7 +76,7 @@ Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 - Ausschließlich Free-Tarife: statische Auslieferung ohne vorgeschaltete Worker-Ausführung, Verwaltungs-API nur unter `/api/*`, kostenlose GitHub-Standard-Runner. Keine automatischen Tarifwechsel oder kostenpflichtigen Erweiterungen.
 - Canonical Domain: `https://montessori-allgaeu.de`.
 - Pushes auf `main` lösen `.github/workflows/publish.yml` aus: vollständige Prüfungen, Builds und Cloudflare-Deployment. Speichern in der Verwaltung verwendet denselben geprüften Veröffentlichungsweg.
-- GitHub Pages und externer Pages-CMS-Zugriff werden erst nach dokumentierter Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen DNS-TTLs abgeschaltet. Der Codewechsel allein bestätigt keine externe Abschaltung.
+- GitHub Pages und die ausschließlich für dieses Repository installierte Pages-CMS-App sind seit dem 16. Oktober 2026 extern abgeschaltet. Max hat den produktiven Betrieb akzeptiert und auf die zusätzliche Wartefrist sowie einen gesonderten Content-Manager-Praxistest verzichtet. GitHub-Repository, Actions und die App „Monte Verwaltung Allgaeu“ bleiben für Cloudflare-Veröffentlichungen erforderlich. Rückfall und Abschaltnachweise stehen in `docs/verwaltung-betrieb.md`.
 - Einrichtung, Wiederherstellung und DNS-Rückfall stehen in `docs/verwaltung-betrieb.md`.
 - In der Codex-Sandbox können `git push`-Kommandos wegen DNS/Netzwerk-Auflösung scheitern; falls wiederholt „Could not resolve hostname github.com“ erscheint, im externen/ausgenommenen Kontext erneut ausführen (Retry).
 - `git commit` bleibt lokal und ist von dieser Sandbox-Network-Schwäche unabhängig.

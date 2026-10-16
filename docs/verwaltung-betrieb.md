@@ -153,22 +153,22 @@ Den gesicherten vollständigen Ausgangsbestand, den Registrarauftrag und die Erg
 
 ### Rückfall
 
-Bei Webhosting-Problemen zuerst den letzten bekannten funktionierenden Cloudflare-Stand wiederherstellen. Solange GitHub Pages als Rückfall bereitsteht, alternativ die neuen Web-Domainbindungen entfernen und die gesicherten bisherigen GitHub-Ziele samt Proxy-Einstellung wiederherstellen. GitHub-Pages-Domain und Zertifikat müssen dafür weiterhin gültig sein. Mail-DNS bleibt unverändert.
+Bei Webhosting-Problemen den letzten bekannten funktionierenden Cloudflare-Stand wiederherstellen. GitHub Pages ist seit dem 16. Oktober 2026 abgeschaltet und steht nicht mehr als unmittelbar nutzbarer Rückfall bereit. Alte GitHub-IP-Adressen deshalb nicht als funktionierendes Hostingziel wieder einsetzen. Code, Inhalte und Historie bleiben im Repository erhalten; sie ermöglichen einen erneuten geprüften Build und ein Cloudflare-Deployment. Mail-DNS bleibt unverändert.
 
 Bei einem grundlegenden Fehler der DNS-Übernahme die gesicherten bisherigen Nameserver und die dazu passende DNSSEC-/DS-Konfiguration wiederherstellen. Auch ein Rückfall unterliegt DNS-TTLs; er ist keine sofortige weltweite Umschaltung. Die ursprüngliche Zone deshalb nicht vor Ablauf des Übergangs löschen.
 
-## Produktivabnahme und ausstehende Abschaltung
+## Produktivabnahme und abgeschaltete Altsysteme
 
-Der Abschluss benötigt den Nachweis funktionierender öffentlicher Seiten, Admin-Anmeldung, Inhaltsveröffentlichung, Rollenprüfung, Uploads, Mailzustellung und Rückfallmöglichkeit. Zusätzlich müssen vollständige CI, Desktop-/Mobilprüfung und unabhängiger Sicherheitsreview abgeschlossen sein.
+Am 16. Oktober 2026 hat Max den produktiven Betrieb akzeptiert und ausdrücklich auf eine zusätzliche Wartefrist sowie einen gesonderten Content-Manager-Praxistest vor der Abschaltung verzichtet. Die unabhängige Prüfung der Abschaltung ergab keine verbleibende technische Abhängigkeit vom alten Hosting oder der alten CMS-App. Restliche DNS-Caches können noch zeitweise alte Ziele enthalten; eine weltweit abgeschlossene Cache-Erneuerung wurde nicht behauptet.
 
-**Die externe Abschaltung von GitHub Pages und der Entzug des Pages-CMS-App-Zugriffs sind bis zur dokumentierten Produktivabnahme, mindestens 48 Stunden stabilem Betrieb und Ablauf der bisherigen relevanten DNS-TTLs offen.** Die Entfernung von `.pages.yml` oder des alten Deployment-Workflows erledigt diese externen Schritte nicht.
+Die externen Schritte wurden anschließend ausgeführt und geprüft:
 
-Nach erfüllten Voraussetzungen:
+1. GitHub Pages wurde über **Unpublish site** abgeschaltet und die Custom-Domain-Zuordnung entfernt. Die bisherige `github.io`-Adresse liefert HTTP 404. Der GitHub-Pages-Deployment-Workflow ist entfernt; die verbleibende leere Pages-Einstellungsseite veröffentlicht ohne einen neuen Pages-Workflow nichts.
+2. Die App **Pages CMS** wurde vollständig deinstalliert. Ihre Installation hatte ausschließlich Zugriff auf das Monte-Repository. Die separate App **Monte Verwaltung Allgaeu** bleibt installiert und wird weiterhin für die Veröffentlichung benötigt.
+3. Die aktiven Workflows sind **Quality checks** und **Publish Monte**. Als Repository-Secret ist nur das weiterhin benötigte `CLOUDFLARE_API_TOKEN` vorhanden; es gab keine alten Hosting-Secrets zu entfernen.
+4. Nach der Abschaltung lieferten Website, Verwaltung und ein veröffentlichter PDF-Download HTTP 200 mit gültigem HTTPS. `www` leitete mit Pfad und Parametern auf die Hauptdomain weiter. Beide Cloudflare-Deployments meldeten denselben Commit. Die Abschaltung änderte keine Mail-DNS-Einträge.
 
-1. GitHub Pages in den Repository-Einstellungen abschalten und alte Domainbindungen entfernen.
-2. Der Pages-CMS-App den Zugriff ausschließlich auf dieses Repository entziehen.
-3. Veraltete Hosting-Secrets und ausschließlich dafür benötigte Berechtigungen entfernen.
-4. Domains, Mail und beide Cloudflare-Versionen erneut prüfen; Abschlussdatum und Ergebnisse im privaten Betriebsnachweis festhalten.
+Screenshots, Zeitpunkt, DNS-Prüfungen und Versionsnachweise liegen im privaten Betriebsnachweis. Die noch ausstehende DNSSEC-Hinterlegung für `.de` bei Host Europe ist davon unabhängig; für `.com` bleibt DNSSEC ausgeschaltet.
 
 ## Fehlerdiagnose
 
