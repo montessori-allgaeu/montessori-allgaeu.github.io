@@ -1,4 +1,6 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { activeMedia, discardMedia, selectMedia } from "../src/media";
 import { nextEvents, eventTemplates } from "../src/overview";
 import { getContentDefinition } from "../../src/admin/content-model";
@@ -48,7 +50,11 @@ const change = (status: Change["status"] = "checking"): Change => ({
 async function mock(
   page: Page,
   records: ContentRecord[],
-  options: { role?: Role; route?: (route: Route, path: string) => Promise<boolean> } = {},
+  options: {
+    role?: Role;
+    mediaVersions?: Record<string, string>;
+    route?: (route: Route, path: string) => Promise<boolean>;
+  } = {},
 ) {
   const requests: ChangeRequest[] = [];
   await page.route("**/api/**", async (route) => {
@@ -60,17 +66,19 @@ async function mock(
         json: {
           revision: "revision-1",
           records,
-          mediaVersions: Object.fromEntries(
-            records.flatMap((entry) =>
-              Object.values(entry.data)
-                .filter(
-                  (value): value is string =>
-                    typeof value === "string" &&
-                    (value.startsWith("../../assets/") || value.startsWith("/downloads/")),
-                )
-                .map((value) => [value, "media-version-1"]),
+          mediaVersions:
+            options.mediaVersions ??
+            Object.fromEntries(
+              records.flatMap((entry) =>
+                Object.values(entry.data)
+                  .filter(
+                    (value): value is string =>
+                      typeof value === "string" &&
+                      (value.startsWith("../../assets/") || value.startsWith("/downloads/")),
+                  )
+                  .map((value) => [value, "media-version-1"]),
+              ),
             ),
-          ),
         } satisfies EditableContentSnapshot,
       });
     if (path === "/changes" && route.request().method() === "GET")
@@ -91,6 +99,97 @@ async function editEvent(page: Page) {
   await page.goto("/?collection=events&id=test-eintrag");
   await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Unser neuer Kennenlerntag");
 }
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`lädt statische Profilvorschauen ohne Medien-API bei ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const images = [
+      ["team", "alexandra-riefle.webp", "Alexandra Riefle"],
+      ["parent-council", "angela-guenther.webp", "Angela Günther"],
+    ];
+    const records: ContentRecord[] = [];
+    const mediaVersions: Record<string, string> = {};
+    for (const [directory, filename, name] of images) {
+      const path = `../../assets/images/${directory}/${filename}`;
+      const bytes = await readFile(
+        new URL(`../../src/assets/images/${directory}/${filename}`, import.meta.url),
+      );
+      mediaVersions[path] = createHash("sha1")
+        .update(`blob ${bytes.length}\0`)
+        .update(bytes)
+        .digest("hex");
+      records.push(
+        record(directory === "team" ? "team" : "parentCouncil", { name, image: path }, filename),
+      );
+    }
+    const mediaRequests: string[] = [];
+    page.on("request", (request) => {
+      if (new URL(request.url()).pathname === "/api/media") mediaRequests.push(request.url());
+    });
+    await mock(page, records, { mediaVersions });
+    await page.goto("/?collection=team");
+    const thumbnails = page.locator("img.record-thumb");
+    await expect(thumbnails).toHaveCount(2);
+    for (const thumbnail of await thumbnails.all()) {
+      await thumbnail.scrollIntoViewIfNeeded();
+      await expect(thumbnail).toHaveAttribute("src", /^\/profile-thumbnails\/[a-f0-9]{64}\.webp$/);
+      await expect
+        .poll(() =>
+          thumbnail.evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight]),
+        )
+        .toEqual([96, 114]);
+    }
+    expect(mediaRequests).toEqual([]);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
+      .toBe(true);
+    await page.screenshot({
+      path: `test-results/profile-thumbnails-${viewport.width}.png`,
+      fullPage: true,
+    });
+  });
+}
+
+test("holt nach Veröffentlichung neue Vorschaubilder auch ohne Neuladen der Verwaltung", async ({
+  page,
+}) => {
+  const image = "../../assets/images/team/alexandra-riefle.webp";
+  const bytes = await readFile(
+    new URL("../../src/assets/images/team/alexandra-riefle.webp", import.meta.url),
+  );
+  const version = createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
+  const person = record("team", { name: "Alexandra Riefle", image });
+  let published = false;
+  await mock(page, [person], {
+    mediaVersions: { [image]: version },
+    route: async (route, path) => {
+      if (path !== "/changes") return false;
+      await route.fulfill({ json: { changes: [change(published ? "published" : "committed")] } });
+      return true;
+    },
+  });
+  await page.route("**/profile-thumbnails.json", async (route) => {
+    if (published) await route.continue();
+    else await route.fulfill({ json: {} });
+  });
+  const mediaRequests: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/api/media") mediaRequests.push(request.url());
+  });
+  await page.goto("/?collection=team");
+  await expect(page.locator("span.record-thumb")).toHaveCount(1);
+  expect(mediaRequests).toEqual([]);
+  published = true;
+  const thumbnail = page.locator("img.record-thumb");
+  await expect(thumbnail).toHaveCount(1, { timeout: 8000 });
+  await expect.poll(() => thumbnail.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(96);
+  expect(mediaRequests).toEqual([]);
+});
 
 test("bestätigt Speichern sofort und unterscheidet die spätere Veröffentlichung", async ({
   page,

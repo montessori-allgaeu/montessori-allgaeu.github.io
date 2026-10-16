@@ -76,6 +76,13 @@ Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleist
 
 Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten sichtbaren Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
 
+Die Liste **Menschen** lädt statische WebP-Vorschaubilder mit 96 × 114 Pixeln. `build:admin`
+erzeugt sie aus den Team- und Elternbeiratsfotos; Vite stellt sie auch lokal bereit. Die
+Dateinamen enthalten einen Hash des Bildinhalts und dürfen ein Jahr unverändert im Browsercache
+bleiben. Eine ungecachte Zuordnung der Git-Bildversionen wird nach Veröffentlichungen neu geladen,
+damit ersetzte Fotos auch in bereits geöffneten Verwaltungen erscheinen. Die größere Fotoansicht
+im Editor und private Vorschauen laufender Uploads verwenden weiterhin die Verwaltungs-API.
+
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
 Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.

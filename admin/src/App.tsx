@@ -29,6 +29,7 @@ import {
   eventTemplates,
 } from "./overview";
 import { activeMedia, discardMedia, selectMedia, uploadMedia, type PendingMedia } from "./media";
+import { loadProfileThumbnails, ProfileThumbnail } from "./ProfileThumbnail";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
 if (capturedInvite) history.replaceState(null, "", `${location.pathname}${location.search}`);
@@ -260,6 +261,7 @@ export function App() {
   const [session, setSession] = useState<SessionInfo | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [snapshot, setSnapshot] = useState<EditableContentSnapshot | null>(null);
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [changes, setChanges] = useState<Change[]>([]);
   const [seenFailures, setSeenFailures] = useState(readSeenFailures);
   const [area, setArea] = useState(initialArea);
@@ -337,11 +339,13 @@ export function App() {
   }, []);
 
   const refresh = useCallback(async () => {
-    const [content, result] = await Promise.all([
+    const [content, result, images] = await Promise.all([
       api.request<EditableContentSnapshot>("/content"),
       api.request<{ changes: Change[] }>("/changes"),
+      loadProfileThumbnails(),
     ]);
     setSnapshot(content);
+    setThumbnails(images);
     setChanges(result.changes);
     changesRef.current = result.changes;
     return content;
@@ -386,9 +390,13 @@ export function App() {
               "published",
         );
         if (newlyPublished) {
-          const content = await api.request<EditableContentSnapshot>("/content");
+          const [content, images] = await Promise.all([
+            api.request<EditableContentSnapshot>("/content"),
+            loadProfileThumbnails(),
+          ]);
           if (before !== changesRef.current) return;
           setSnapshot(content);
+          setThumbnails(images);
           const current = editorRef.current;
           if (
             current &&
@@ -1808,11 +1816,12 @@ export function App() {
                         >
                           <button className="record-row" onClick={() => openRecord(record)}>
                             {typeof record.data.image === "string" && (
-                              <img
-                                className="record-thumb"
-                                alt=""
-                                loading="lazy"
-                                src={`/api/media?path=${encodeURIComponent(record.data.image)}&collection=${encodeURIComponent(record.collection)}`}
+                              <ProfileThumbnail
+                                src={
+                                  pendingChange(record, changes)?.saved?.previews[
+                                    record.data.image
+                                  ] ?? thumbnails[snapshot?.mediaVersions[record.data.image] ?? ""]
+                                }
                               />
                             )}
                             <span>
