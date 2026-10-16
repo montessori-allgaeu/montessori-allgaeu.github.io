@@ -826,6 +826,88 @@ test("Admin erstellt einen Einrichtungslink mit der standardmäßigen Content-Ma
   await expect(page.getByRole("button", { name: "Deaktivieren", exact: true })).toBeDisabled();
 });
 
+for (const width of [1440, 390]) {
+  for (const passkeyCount of [0, 1]) {
+    test(`erneuert den Einrichtungslink eines deaktivierten Zugangs mit ${passkeyCount} Passkeys bei ${width}px`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      let target = {
+        ...session().user,
+        id: "inactive-person",
+        name: "Nathanael Pohl",
+        active: false,
+        passkeyCount,
+      };
+      const invitation = {
+        id: "renewed-invitation",
+        userId: target.id,
+        name: target.name,
+        role: target.role,
+        expiresAt: "2099-10-15T12:00:00Z",
+        url: "https://verwaltung.example.test/#invite=renewed-test",
+      };
+      let invitations: (typeof invitation)[] = [];
+      const resets: string[] = [];
+      await mock(page, [], {
+        route: async (route, path) => {
+          if (path === "/access") {
+            await route.fulfill({ json: { users: [session().user, target], invitations } });
+            return true;
+          }
+          if (path === `/access/${target.id}/reset`) {
+            resets.push(route.request().method());
+            target = { ...target, passkeyCount: 0 };
+            invitations = [invitation];
+            await route.fulfill({ json: invitation });
+            return true;
+          }
+          return false;
+        },
+      });
+      await page.goto("/");
+      if (width < 800) await page.getByRole("button", { name: "Menü öffnen" }).click();
+      await page.getByRole("button", { name: "Zugänge", exact: true }).click();
+      const ownRow = page.locator(".access-row").filter({ hasText: "Monte Test" });
+      await expect(ownRow.getByRole("button", { name: "Passkeys ersetzen" })).toBeDisabled();
+      const row = page.locator(".access-row").filter({ hasText: target.name });
+      const renew = row.getByRole("button", {
+        name: /Passkeys ersetzen|Einrichtungslink erneuern/,
+      });
+      await expect(renew).toBeEnabled();
+      await expect(renew).toHaveText("Einrichtungslink erneuern");
+      await renew.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath("access-renew.png"), fullPage: true });
+      page.once("dialog", (dialog) => dialog.dismiss());
+      await renew.click();
+      expect(resets).toEqual([]);
+      page.once("dialog", async (dialog) => {
+        expect(dialog.message()).toContain(target.name);
+        expect(dialog.message()).toContain("Einrichtungslinks, Passkeys und Sitzungen");
+        await dialog.accept();
+      });
+      await renew.click();
+      await expect(
+        page.getByRole("textbox", { name: "Einrichtungslink", exact: true }),
+      ).toHaveValue(invitation.url);
+      expect(resets).toEqual(["POST"]);
+      await expect(page.locator(".access-row")).toHaveCount(2);
+      await expect(row).toContainText("Deaktiviert");
+      await expect(row.getByRole("combobox")).toHaveValue("admin");
+      await expect(
+        page.getByRole("heading", { name: "Offene Einladungen", exact: true }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+      await page.screenshot({
+        path: testInfo.outputPath("access-renew-result.png"),
+        fullPage: true,
+      });
+    });
+  }
+}
+
 test("Übersicht zeigt konkrete Aktionen und Termine; alle Bereiche bleiben im Menü erreichbar", async ({
   page,
 }, testInfo) => {

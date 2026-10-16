@@ -168,6 +168,10 @@ test("content managers cannot invite, change roles or reset accesses; every muta
   const account = await enroll("content-manager");
   expect((await api("access", undefined, account.cookies)).status).toBe(403);
   expect(
+    (await api(`access/${account.userId}/reset`, {}, account.cookies, account.info.csrfToken))
+      .status,
+  ).toBe(403);
+  expect(
     (
       await api(
         "invitations",
@@ -243,6 +247,79 @@ test("last usable admin and own last passkey cannot be removed; deactivation imm
     ).status,
   ).toBe(401);
 });
+
+test.each([false, true])(
+  "renews a disabled access with existing passkey: %s without duplicating or prematurely activating it",
+  async (hasPasskey) => {
+    const admin = await enroll();
+    const target = hasPasskey
+      ? await enroll("content-manager")
+      : await seedInvitation("content-manager");
+    if (hasPasskey)
+      expect(
+        (
+          await api(
+            `access/${target.userId}`,
+            { active: false },
+            admin.cookies,
+            admin.info.csrfToken,
+            "PATCH",
+          )
+        ).status,
+      ).toBe(200);
+    const path = `access/${target.userId}/reset`;
+    expect((await api(path, {}, admin.cookies)).status).toBe(403);
+    const first = await api(path, {}, admin.cookies, admin.info.csrfToken);
+    expect(first.status).toBe(201);
+    const previous = await first.json<InvitationResult>();
+    const response = await api(path, {}, admin.cookies, admin.info.csrfToken);
+    expect(response.status).toBe(201);
+    const invitation = await response.json<InvitationResult>();
+    expect(invitation).toMatchObject({
+      userId: target.userId,
+      name: "Testperson",
+      role: "content-manager",
+    });
+    expect(invitation.url).not.toBe(previous.url);
+    const previousToken = new URLSearchParams(new URL(previous.url).hash.slice(1)).get("invite")!;
+    expect((await api("enroll/options", { token: previousToken })).status).toBe(410);
+    expect((await api("enroll/options", { token: target.token })).status).toBe(410);
+    const access = await (
+      await api("access", undefined, admin.cookies)
+    ).json<{ users: SessionInfo["user"][]; invitations: InvitationResult[] }>();
+    expect(access.users).toHaveLength(2);
+    expect(access.users.find((user) => user.id === target.userId)).toMatchObject({
+      active: false,
+      passkeyCount: 0,
+      role: "content-manager",
+    });
+    expect(access.invitations).toHaveLength(1);
+    expect(access.invitations[0].id).toBe(invitation.id);
+    const token = new URLSearchParams(new URL(invitation.url).hash.slice(1)).get("invite")!;
+    const start = await api("enroll/options", { token });
+    expect(start.status).toBe(200);
+    const options = await start.json<{ challengeId: string; options: { challenge: string } }>();
+    const replacementKey = await testPasskey();
+    const finish = await api(
+      "enroll/verify",
+      {
+        token,
+        challengeId: options.challengeId,
+        response: await replacementKey.register(options.options.challenge),
+        label: "Neues Gerät",
+      },
+      responseCookie(start),
+    );
+    expect(finish.status).toBe(200);
+    expect((await finish.json<SessionInfo>()).user).toMatchObject({
+      id: target.userId,
+      active: true,
+      passkeyCount: 1,
+      role: "content-manager",
+    });
+    expect((await api("enroll/options", { token })).status).toBe(410);
+  },
+);
 
 test.each(["invitation", "passkey reset"])(
   "%s links remain usable for exactly 14 days",

@@ -311,11 +311,11 @@ export function Access({ session }: { session: SessionInfo }) {
                   </button>
                   <button
                     className="text-button"
-                    disabled={busy || !user.active || user.id === session.user.id}
+                    disabled={busy || user.id === session.user.id}
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Zugang für ${user.name} wiederherstellen? Alle bisherigen Passkeys und Sitzungen werden gesperrt.`,
+                          `Neuen Einrichtungslink für ${user.name} erstellen? Bisherige Einrichtungslinks, Passkeys und Sitzungen werden ungültig.`,
                         )
                       )
                         void action(
@@ -329,7 +329,7 @@ export function Access({ session }: { session: SessionInfo }) {
                         );
                     }}
                   >
-                    Passkeys ersetzen
+                    {user.active ? "Passkeys ersetzen" : "Einrichtungslink erneuern"}
                   </button>
                   <button
                     className="text-button danger-text"

@@ -30,6 +30,9 @@ async function temporaryDirectory() {
 async function repository() {
   const directory = await temporaryDirectory();
   git(directory, ["init", "--quiet"]);
+  // Disposable fixtures must not start background Git maintenance during cleanup.
+  git(directory, ["config", "maintenance.auto", "false"]);
+  git(directory, ["config", "gc.auto", "0"]);
   git(directory, ["config", "user.name", "Publishing test"]);
   git(directory, ["config", "user.email", "publisher@example.invalid"]);
   await writeFile(join(directory, "fixture.txt"), "initial\n");

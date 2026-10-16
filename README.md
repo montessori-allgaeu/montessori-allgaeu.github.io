@@ -95,6 +95,8 @@ im Editor und private Vorschauen laufender Uploads verwenden weiterhin die Verwa
 
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Neue Einrichtungslinks für Einladungen und das Ersetzen von Passkeys sind einmalig innerhalb von 14 Tagen nutzbar. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
+Bei deaktivierten Zugängen erzeugt **Einrichtungslink erneuern** einen neuen Link für dieselbe Person, auch wenn noch kein Passkey eingerichtet wurde. Bisherige Links und Passkeys werden ungültig; Name und Rolle bleiben erhalten. Der Zugang wird erst nach erfolgreicher Passkey-Einrichtung aktiv.
+
 Unter **Zugänge → Zugang löschen** können Admins unbenutzte und bereits verwendete Zugänge samt Passkeys, Sitzungen und Einladungslinks endgültig entfernen. Der letzte aktive Admin bleibt geschützt; bisherige Inhalte und Änderungsprotokolle bleiben erhalten.
 
 Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.
