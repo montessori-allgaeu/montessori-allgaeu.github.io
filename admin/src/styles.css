@@ -606,6 +606,7 @@ strong {
   cursor: pointer;
 }
 .record-list {
+  position: relative;
   border-top: 1px solid var(--line);
 }
 .record-item {
@@ -627,7 +628,7 @@ strong {
 .record-row:hover {
   background: var(--surface);
 }
-.record-row > span:first-of-type {
+.record-description {
   flex: 1;
   min-width: 0;
 }
@@ -649,6 +650,41 @@ strong {
   flex-shrink: 0;
   background: #e2e3d8;
 }
+.record-thumb-initials {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--surface);
+  background: var(--forest);
+  font:
+    24px/1 "Unica One",
+    sans-serif;
+}
+.record-list-dragging .record-item {
+  transition: transform 160ms ease-out;
+  position: relative;
+  background: var(--paper);
+}
+.record-item-dragged {
+  z-index: 2;
+  box-shadow: 0 4px 14px #1d2b1e26;
+}
+.record-list-dragging .record-item-dragged {
+  transition: none;
+  background: var(--surface);
+}
+.record-drop-slot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border: 2px dashed var(--terracotta);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .record-list-dragging .record-item {
+    transition: none;
+  }
+}
 .sort-controls {
   display: flex;
   align-items: center;
@@ -658,10 +694,28 @@ strong {
   border: 0;
 }
 .drag-handle {
-  padding: 7px 4px;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
   color: var(--muted);
   font-size: 19px;
   cursor: grab;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+  user-select: none;
+}
+.drag-handle:not(:disabled):hover {
+  background: var(--surface);
+  color: var(--terracotta);
+}
+.drag-handle:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.drag-handle:active {
+  cursor: grabbing;
 }
 .singleton-section {
   margin: 0;
@@ -1271,11 +1325,8 @@ strong {
     gap: 0;
   }
   .sort-controls .icon-button {
-    height: 30px;
-    width: 30px;
-  }
-  .drag-handle {
-    display: none;
+    height: 44px;
+    width: 44px;
   }
   .editor-heading {
     gap: 0;

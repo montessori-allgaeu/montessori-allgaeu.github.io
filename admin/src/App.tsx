@@ -27,6 +27,7 @@ import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
 import { ContentEditor } from "./ContentEditor";
 import { AfternoonWeek } from "./AfternoonWeek";
+import { SortableRecordList } from "./SortableRecordList";
 import { Access, Profile } from "./Access";
 import {
   recordKey,
@@ -299,7 +300,6 @@ export function App() {
   const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
   const [sortingSection, setSortingSection] = useState<string | null>(null);
-  const [dragged, setDragged] = useState<string | null>(null);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
   editorRef.current = editor;
@@ -776,9 +776,10 @@ export function App() {
       busy ||
       changes.some((change) => ongoing(change))
     )
-      return;
+      return false;
     const change = await submit(reorderMutations(entries, from, to), [], crypto.randomUUID());
     if (change) setError("");
+    return !!change;
   }
   function startYearPlan() {
     if (!snapshot || !leaveEditor()) return;
@@ -1091,7 +1092,7 @@ export function App() {
                   key={recordKey(record)}
                   onClick={() => openRecord(record)}
                 >
-                  <span>
+                  <span className="record-description">
                     <strong>
                       {titleOf(record.data, getContentDefinition(record.collection).label)}
                     </strong>
@@ -1617,7 +1618,7 @@ export function App() {
                           else openRecord(record);
                         }}
                       >
-                        <span>
+                        <span className="record-description">
                           <strong>
                             {titleOf(
                               mutation?.data ?? record.data,
@@ -1667,7 +1668,7 @@ export function App() {
                         key={recordKey(record)}
                         onClick={() => openRecord(record)}
                       >
-                        <span>
+                        <span className="record-description">
                           <small className="event-date">
                             <time dateTime={String(record.data.date)}>
                               {eventDate(String(record.data.date))}
@@ -1811,7 +1812,6 @@ export function App() {
                               aria-pressed={sortable}
                               onClick={() => {
                                 setSortingSection(sortable ? null : section.key);
-                                setDragged(null);
                               }}
                             >
                               {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
@@ -1827,7 +1827,8 @@ export function App() {
                       </div>
                       {sortable && (
                         <p className="hint">
-                          Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
+                          Am Griff ziehen oder mit den Pfeilen verschieben. Jede Änderung wird
+                          direkt gespeichert.
                         </p>
                       )}
                       {!entries.length ? (
@@ -1837,33 +1838,32 @@ export function App() {
                             : "Hier sind noch keine Einträge."}
                         </p>
                       ) : (
-                        <div className="record-list">
-                          {entries.map(({ record, key, role }, index) => (
-                            <article
-                              className="record-item"
-                              key={key}
-                              onDragOver={(event) => {
-                                if (dragged) event.preventDefault();
-                              }}
-                              onDrop={(event) => {
-                                event.preventDefault();
-                                const from = entries.findIndex((entry) => entry.key === dragged);
-                                if (from >= 0 && sortable) void moveRecord(entries, from, index);
-                                setDragged(null);
-                              }}
-                            >
+                        <SortableRecordList
+                          entries={entries}
+                          sorting={sortable}
+                          disabled={busy || pendingCount > 0}
+                          onMove={moveRecord}
+                        >
+                          {({ record, role }) => (
+                            <>
                               <button className="record-row" onClick={() => openRecord(record)}>
-                                {typeof record.data.image === "string" && (
+                                {(record.collection === "team" ||
+                                  record.collection === "parentCouncil") && (
                                   <ProfileThumbnail
+                                    name={String(record.data.name)}
                                     src={
-                                      pendingChange(record, changes)?.saved?.previews[
-                                        record.data.image
-                                      ] ??
-                                      thumbnails[snapshot?.mediaVersions[record.data.image] ?? ""]
+                                      typeof record.data.image === "string"
+                                        ? (pendingChange(record, changes)?.saved?.previews[
+                                            record.data.image
+                                          ] ??
+                                          thumbnails[
+                                            snapshot?.mediaVersions[record.data.image] ?? ""
+                                          ])
+                                        : undefined
                                     }
                                   />
                                 )}
-                                <span>
+                                <span className="record-description">
                                   <strong>{titleOf(record.data)}</strong>
                                   <small>
                                     {[
@@ -1901,41 +1901,9 @@ export function App() {
                                   onSelect={(file) => void replacePdf(record, file)}
                                 />
                               )}
-                              {sortable && (
-                                <div className="sort-controls">
-                                  <span
-                                    className="drag-handle"
-                                    draggable={!busy}
-                                    onDragStart={() => setDragged(key)}
-                                    onDragEnd={() => setDragged(null)}
-                                    title="Zum Verschieben ziehen"
-                                    aria-hidden="true"
-                                  >
-                                    ⋮⋮
-                                  </span>
-                                  <button
-                                    className="icon-button"
-                                    disabled={busy || index === 0 || pendingCount > 0}
-                                    aria-label={`${titleOf(record.data)} nach oben`}
-                                    onClick={() => void moveRecord(entries, index, index - 1)}
-                                  >
-                                    ↑
-                                  </button>
-                                  <button
-                                    className="icon-button"
-                                    disabled={
-                                      busy || index === entries.length - 1 || pendingCount > 0
-                                    }
-                                    aria-label={`${titleOf(record.data)} nach unten`}
-                                    onClick={() => void moveRecord(entries, index, index + 1)}
-                                  >
-                                    ↓
-                                  </button>
-                                </div>
-                              )}
-                            </article>
-                          ))}
-                        </div>
+                            </>
+                          )}
+                        </SortableRecordList>
                       )}
                     </section>
                   );

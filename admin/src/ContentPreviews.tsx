@@ -38,14 +38,6 @@ function Fields({ props, className = "" }: { props: ContentEditorProps; classNam
           {optional.map((field) => props.renderField(field))}
         </details>
       )}
-      {props.fields.some((field) => field.key === "position") && (
-        <details className="content-placement-settings">
-          <summary>Reihenfolge auf der Website</summary>
-          {props.fields
-            .filter((field) => field.key === "position")
-            .map((field) => props.renderField(field))}
-        </details>
-      )}
     </div>
   );
 }

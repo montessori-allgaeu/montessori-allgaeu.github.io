@@ -357,6 +357,7 @@ export const contentFieldDefinitions = [
         key: "assignments",
         label: "Rollen und Bereiche",
         type: "list",
+        sortable: false,
         item: {
           key: "item",
           label: "Eintrag",
@@ -436,6 +437,7 @@ export const contentFieldDefinitions = [
               key: "position",
               label: "Position innerhalb des Bereichs",
               type: "number",
+              hidden: true,
               description:
                 "10 steht weiter oben als 20. Bei gleicher Position wird alphabetisch sortiert.",
               defaultValue: 50,

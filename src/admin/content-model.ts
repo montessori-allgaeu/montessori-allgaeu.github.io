@@ -32,6 +32,8 @@ export type EditorField = {
   item?: EditorField;
   defaultValue?: JsonValue;
   adminOnly?: boolean;
+  hidden?: boolean;
+  sortable?: boolean;
   min?: number;
   max?: number;
   showWhen?: { field: string; values: string[] };

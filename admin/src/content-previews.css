@@ -21,12 +21,6 @@
 .content-admission-fields > * {
   grid-column: auto;
 }
-.content-placement-settings > summary {
-  padding-block: 16px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-}
 .content-preview {
   min-width: 0;
   container-type: inline-size;

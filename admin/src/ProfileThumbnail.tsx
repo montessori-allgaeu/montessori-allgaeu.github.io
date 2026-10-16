@@ -12,10 +12,20 @@ export async function loadProfileThumbnails(): Promise<Record<string, string>> {
   return manifestSchema.parse(await response.json());
 }
 
-export function ProfileThumbnail({ src }: { src: string | undefined }) {
+export function ProfileThumbnail({ src, name }: { src: string | undefined; name: string }) {
   const [failed, setFailed] = useState<string>();
   // New uploads may not be published yet. Never fall back to one original-image API call per row.
-  if (!src || failed === src) return <span className="record-thumb" aria-hidden="true" />;
+  if (!src || failed === src)
+    return (
+      <span className="record-thumb record-thumb-initials" aria-hidden="true">
+        {name
+          .split(/\s+/)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()}
+      </span>
+    );
   return (
     <img
       className="record-thumb"

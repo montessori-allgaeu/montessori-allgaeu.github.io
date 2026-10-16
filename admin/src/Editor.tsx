@@ -251,7 +251,7 @@ export function FieldInput(props: EditorProps) {
     return (
       <div className="nested-fields">
         {fields
-          .filter((child) => shown(child, object))
+          .filter((child) => !child.hidden && shown(child, object))
           .map((child) => (
             <div className="input-field" key={child.key}>
               <div className="field-label">
@@ -395,10 +395,11 @@ function ListInput(props: EditorProps) {
   const { field, value, onChange, disabled } = props;
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const items = Array.isArray(value) ? value : [];
+  const sortable = field.sortable !== false;
   const itemField = field.item;
   if (!itemField) return null;
   function move(from: number, to: number) {
-    if (to < 0 || to >= items.length || from === to) return;
+    if (!sortable || disabled || to < 0 || to >= items.length || from === to) return;
     const next = [...items];
     const [item] = next.splice(from, 1);
     next.splice(to, 0, item);
@@ -417,7 +418,7 @@ function ListInput(props: EditorProps) {
           key={index}
           className="list-entry"
           onDragOver={(event) => {
-            if (dragIndex !== null) event.preventDefault();
+            if (sortable && dragIndex !== null) event.preventDefault();
           }}
           onDrop={(event) => {
             event.preventDefault();
@@ -428,32 +429,37 @@ function ListInput(props: EditorProps) {
           <div className="list-entry-toolbar">
             <span
               className="entry-number"
-              draggable={!disabled}
+              draggable={sortable && !disabled}
               onDragStart={() => setDragIndex(index)}
               onDragEnd={() => setDragIndex(null)}
-              title="Zum Verschieben ziehen"
+              title={sortable ? "Zum Verschieben ziehen" : undefined}
             >
-              ⋮⋮ {index + 1}
+              {sortable && "⋮⋮ "}
+              {index + 1}
             </span>
             <div className="row-actions">
-              <button
-                type="button"
-                className="icon-button"
-                disabled={disabled || index === 0}
-                aria-label={`${field.label}: Eintrag ${index + 1} nach oben`}
-                onClick={() => move(index, index - 1)}
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                className="icon-button"
-                disabled={disabled || index === items.length - 1}
-                aria-label={`${field.label}: Eintrag ${index + 1} nach unten`}
-                onClick={() => move(index, index + 1)}
-              >
-                ↓
-              </button>
+              {sortable && (
+                <>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    disabled={disabled || index === 0}
+                    aria-label={`${field.label}: Eintrag ${index + 1} nach oben`}
+                    onClick={() => move(index, index - 1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    disabled={disabled || index === items.length - 1}
+                    aria-label={`${field.label}: Eintrag ${index + 1} nach unten`}
+                    onClick={() => move(index, index + 1)}
+                  >
+                    ↓
+                  </button>
+                </>
+              )}
               <button
                 type="button"
                 className="text-button danger-text"
