@@ -1437,3 +1437,45 @@ strong {
 .rename-form input {
   margin-top: 7px;
 }
+
+.people-drop-target {
+  position: relative;
+  min-height: 76px;
+}
+.people-drop-target > .empty-state {
+  padding: 24px 12px;
+  margin: 0;
+}
+.people-drop-available {
+  outline: 1px dashed var(--muted);
+  outline-offset: -1px;
+}
+.people-drop-active {
+  outline: 2px solid var(--terracotta);
+  outline-offset: -2px;
+}
+.people-drop-indicator {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  border-top: 2px solid var(--terracotta);
+  pointer-events: none;
+}
+.people-drop-indicator > span {
+  display: inline-block;
+  position: absolute;
+  left: 12px;
+  bottom: 2px;
+  max-width: calc(100% - 24px);
+  padding: 3px 8px;
+  background: var(--forest);
+  color: var(--surface);
+  font-size: 12px;
+}
+.people-drop-indicator.rejected {
+  border-color: transparent;
+}
+.people-drop-indicator.rejected > span {
+  background: var(--terracotta);
+}

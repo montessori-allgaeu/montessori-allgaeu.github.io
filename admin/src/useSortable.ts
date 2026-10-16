@@ -20,6 +20,7 @@ type Drag = {
   dy: number;
   active: boolean;
   grid: boolean;
+  external: boolean;
   bounds: Bounds[];
 };
 
@@ -35,10 +36,17 @@ export function useSortable({
   keys,
   disabled,
   onMove,
+  transfer,
 }: {
   keys: string[];
   disabled: boolean;
   onMove: (from: number, to: number) => void;
+  transfer?: {
+    begin: (index: number) => void;
+    over: (x: number, y: number) => boolean;
+    drop: (x: number, y: number) => boolean;
+    cancel: () => void;
+  };
 }) {
   const containerRef = useRef<HTMLElement>(null);
   const nodes = useRef(new Map<string, HTMLElement>());
@@ -47,8 +55,8 @@ export function useSortable({
   const dragRef = useRef<Drag | null>(null);
   const [dragState, setDrag] = useState<Drag | null>(null);
   const order = JSON.stringify(keys);
-  const latest = useRef({ order, disabled });
-  latest.current = { order, disabled };
+  const latest = useRef({ order, disabled, transfer });
+  latest.current = { order, disabled, transfer };
   const drag = dragState?.order === order && !disabled ? dragState : null;
 
   function boundsOf(node: HTMLElement): Bounds {
@@ -89,6 +97,7 @@ export function useSortable({
     cancelAnimationFrame(frame.current);
     dragRef.current = null;
     setDrag(null);
+    latest.current.transfer?.cancel();
   }
   function update(clientX: number, clientY: number) {
     const current = dragRef.current;
@@ -112,7 +121,8 @@ export function useSortable({
         distance(bounds) < distance(current.bounds[closest]) ? index : closest,
       0,
     );
-    dragRef.current = { ...current, dx, dy, clientX, clientY, active, to };
+    const external = active ? (latest.current.transfer?.over(clientX, clientY) ?? false) : false;
+    dragRef.current = { ...current, dx, dy, clientX, clientY, active, to, external };
     if (active) setDrag(dragRef.current);
   }
   function autoScroll() {
@@ -141,7 +151,7 @@ export function useSortable({
     const shifted = reorder(
       keys.map((_, index) => index),
       drag.from,
-      drag.to,
+      drag.external ? drag.from : drag.to,
     );
     let top = drag.bounds[0].top;
     shifted.forEach((original, target) => {
@@ -178,11 +188,12 @@ export function useSortable({
       type: "button",
       className: "drag-handle",
       children: "⋮⋮",
-      disabled: disabled || keys.length < 2,
+      disabled: disabled || (keys.length < 2 && !transfer),
       "aria-label": `${label} ziehen`,
       title: "Zum Verschieben ziehen. Tastatur: Alt + Pfeil nach oben oder unten.",
       onPointerDown: (event) => {
-        if (disabled || keys.length < 2 || event.button !== 0 || !event.isPrimary) return;
+        if (disabled || (keys.length < 2 && !transfer) || event.button !== 0 || !event.isPrimary)
+          return;
         event.currentTarget.setPointerCapture(event.pointerId);
         const bounds = keys.map((key) => {
           const node = nodes.current.get(key)!;
@@ -200,9 +211,11 @@ export function useSortable({
           dx: 0,
           dy: 0,
           active: false,
+          external: false,
           grid: bounds.some((rect) => Math.abs(rect.left - bounds[0].left) > 10),
           bounds,
         };
+        transfer?.begin(index);
       },
       onPointerMove: (event) => {
         if (!dragRef.current) return;
@@ -214,7 +227,12 @@ export function useSortable({
       onPointerUp: (event) => {
         const current = dragRef.current;
         const bounds = containerRef.current!.getBoundingClientRect();
+        const transferred =
+          current?.active && current.order === order && !latest.current.disabled
+            ? latest.current.transfer?.drop(event.clientX, event.clientY)
+            : false;
         if (
+          !transferred &&
           current?.active &&
           current.order === order &&
           event.clientX >= bounds.left &&

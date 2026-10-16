@@ -64,6 +64,12 @@ Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernomm
   die Übersicht zur bisherigen Reihenfolge zurück. Während der Veröffentlichung sind weitere
   Verschiebungen gesperrt. Der Hinweis zum Veröffentlichungsstand blendet sich oben als Overlay ein,
   ohne die Seite zu verschieben.
+- **Personen zwischen Bereichen verschieben:** Eine Person am Griff in den gewünschten Bereich
+  ziehen und an der markierten Stelle loslassen, auch wenn der Bereich noch leer ist. Bei
+  Teammitgliedern wechselt nur die gezogene Rolle; weitere Rollen bleiben erhalten. Beim
+  Elternbeirat wechselt die Zuordnung zwischen Kindergarten und Schule. Die Änderung wird direkt
+  gespeichert. Bereits vorhandene Zielrollen und Wechsel zwischen Team und Elternbeirat sind
+  ausgeschlossen; der Hinweis beim Ziehen erklärt den Grund.
 - **Downloads:** Die erste PDF-Seite und die Downloadzeile prüfen. Bei einem Austausch bleibt
   der vorhandene Dateilink erhalten. Über **PDF ansehen** kannst du das ganze Dokument öffnen.
 - **Aufnahme:** Jahr auswählen, Anmeldeschluss setzen und den vollständigen Satz in der Vorschau

@@ -20,6 +20,8 @@ import {
 import {
   contentSections,
   reorderMutations,
+  transferMutations,
+  type ContentSection,
   type ContentListEntry,
 } from "../../src/admin/content-sections";
 import { api, errorText, RequestError } from "./api";
@@ -28,6 +30,7 @@ import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor
 import { ContentEditor } from "./ContentEditor";
 import { AfternoonWeek } from "./AfternoonWeek";
 import { SortableRecordList } from "./SortableRecordList";
+import { PeopleTransferProvider } from "./PeopleTransfer";
 import { PublicationNotice } from "./PublicationNotice";
 import { Access, Profile } from "./Access";
 import {
@@ -286,6 +289,8 @@ export function App() {
   const [snapshot, setSnapshot] = useState<EditableContentSnapshot | null>(null);
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [changes, setChanges] = useState<Change[]>([]);
+  const [movingPeople, setMovingPeople] = useState<ContentMutation[]>([]);
+  const transferring = useRef(false);
   const [seenFailures, setSeenFailures] = useState(readSeenFailures);
   const [area, setArea] = useState(initialArea);
   const [query, setQuery] = useState("");
@@ -780,6 +785,25 @@ export function App() {
     if (change) setError("");
     return !!change;
   }
+  async function transferPeople(
+    source: ContentSection,
+    target: ContentSection,
+    key: string,
+    index: number,
+  ) {
+    if (busy || transferring.current || changesRef.current.some(ongoing)) return;
+    transferring.current = true;
+    try {
+      const mutations = transferMutations(source, target, key, index);
+      setMovingPeople(mutations);
+      await submit(mutations, [], crypto.randomUUID());
+    } catch (cause) {
+      setError(errorText(cause));
+    } finally {
+      setMovingPeople([]);
+      transferring.current = false;
+    }
+  }
   function startYearPlan() {
     if (!snapshot || !leaveEditor()) return;
     const settings = snapshot.records.find(
@@ -880,7 +904,10 @@ export function App() {
     );
   if (!session || invite) return <Login invite={invite} onEnrolled={() => setInvite(null)} />;
   const definition = editor ? getContentDefinition(editor.collection) : null;
-  const recordList = editorialRecords(snapshot?.records ?? [], changes);
+  const recordList = editorialRecords(snapshot?.records ?? [], changes).map((record) => {
+    const mutation = movingPeople.find((item) => recordKey(item) === recordKey(record));
+    return mutation ? { ...record, data: mutation.data } : record;
+  });
   const searched = query.trim().toLocaleLowerCase("de-DE");
   const matches = searched
     ? recordList.filter((record) =>
@@ -1752,138 +1779,153 @@ export function App() {
                 </select>
               </label>
             )}
-            {areaDefinitions
-              .filter((item) => item.collection !== "afternoonOffers")
-              .flatMap((item) => {
-                let records = recordList.filter((record) => record.collection === item.collection);
-                if (item.collection === "events" && !past)
-                  records = records.filter((record) => String(record.data.date ?? "") >= today());
-                records = [...records].sort((left, right) =>
-                  item.collection === "events"
-                    ? String(left.data.date).localeCompare(String(right.data.date))
-                    : Number(left.data.position ?? 0) - Number(right.data.position ?? 0) ||
-                      titleOf(left.data).localeCompare(titleOf(right.data), "de"),
-                );
-                return contentSections(item, records).map((section) => {
-                  const entries = section.entries;
-                  if (item.singleton)
-                    return (
-                      <div className="singleton-section" key={item.collection}>
-                        {records[0] ? (
-                          <button className="singleton-link" onClick={() => openRecord(records[0])}>
-                            <div>
-                              <h2>{item.label}</h2>
-                              <p>
-                                {contentUsage(records[0], recordList)
-                                  .pages.map((page) => page.label)
-                                  .join(" · ")}
-                              </p>
-                            </div>
-                            <span aria-hidden="true">→</span>
-                          </button>
-                        ) : (
-                          <p className="error">{item.label} konnte nicht geladen werden.</p>
-                        )}
-                      </div>
-                    );
-                  return (
-                    <section
-                      className={`collection-section${section.newValues ? " people-section" : ""}`}
-                      key={section.key}
-                      aria-labelledby={`heading-${section.key}`}
-                    >
-                      <div className="section-heading">
-                        <h2 id={`heading-${section.key}`}>
-                          {section.label}
-                          <span className="subtle count">{entries.length}</span>
-                        </h2>
-                        <div className="row-actions">
-                          <button
-                            className="button secondary"
-                            onClick={() => newRecord(item.collection, undefined, section.newValues)}
-                          >
-                            + Hinzufügen
-                          </button>
+            <PeopleTransferProvider
+              disabled={busy || pendingCount > 0}
+              onTransfer={(source, target, key, index) => {
+                void transferPeople(source, target, key, index);
+              }}
+            >
+              {areaDefinitions
+                .filter((item) => item.collection !== "afternoonOffers")
+                .flatMap((item) => {
+                  let records = recordList.filter(
+                    (record) => record.collection === item.collection,
+                  );
+                  if (item.collection === "events" && !past)
+                    records = records.filter((record) => String(record.data.date ?? "") >= today());
+                  records = [...records].sort((left, right) =>
+                    item.collection === "events"
+                      ? String(left.data.date).localeCompare(String(right.data.date))
+                      : Number(left.data.position ?? 0) - Number(right.data.position ?? 0) ||
+                        titleOf(left.data).localeCompare(titleOf(right.data), "de"),
+                  );
+                  return contentSections(item, records).map((section) => {
+                    const entries = section.entries;
+                    if (item.singleton)
+                      return (
+                        <div className="singleton-section" key={item.collection}>
+                          {records[0] ? (
+                            <button
+                              className="singleton-link"
+                              onClick={() => openRecord(records[0])}
+                            >
+                              <div>
+                                <h2>{item.label}</h2>
+                                <p>
+                                  {contentUsage(records[0], recordList)
+                                    .pages.map((page) => page.label)
+                                    .join(" · ")}
+                                </p>
+                              </div>
+                              <span aria-hidden="true">→</span>
+                            </button>
+                          ) : (
+                            <p className="error">{item.label} konnte nicht geladen werden.</p>
+                          )}
                         </div>
-                      </div>
-                      {!entries.length ? (
-                        <p className="empty-state">
-                          {item.collection === "events"
-                            ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
-                            : "Hier sind noch keine Einträge."}
-                        </p>
-                      ) : (
-                        <SortableRecordList
-                          entries={entries}
-                          sortable={section.sortable}
-                          disabled={busy || pendingCount > 0}
-                          onMove={moveRecord}
-                        >
-                          {({ record, role }) => (
-                            <>
-                              <button className="record-row" onClick={() => openRecord(record)}>
-                                {(record.collection === "team" ||
-                                  record.collection === "parentCouncil") && (
-                                  <ProfileThumbnail
-                                    name={String(record.data.name)}
-                                    src={
-                                      typeof record.data.image === "string"
-                                        ? (pendingChange(record, changes)?.saved?.previews[
-                                            record.data.image
-                                          ] ??
-                                          thumbnails[
-                                            snapshot?.mediaVersions[record.data.image] ?? ""
-                                          ])
-                                        : undefined
+                      );
+                    return (
+                      <section
+                        className={`collection-section${section.newValues ? " people-section" : ""}`}
+                        key={section.key}
+                        aria-labelledby={`heading-${section.key}`}
+                      >
+                        <div className="section-heading">
+                          <h2 id={`heading-${section.key}`}>
+                            {section.label}
+                            <span className="subtle count">{entries.length}</span>
+                          </h2>
+                          <div className="row-actions">
+                            <button
+                              className="button secondary"
+                              onClick={() =>
+                                newRecord(item.collection, undefined, section.newValues)
+                              }
+                            >
+                              + Hinzufügen
+                            </button>
+                          </div>
+                        </div>
+                        {!entries.length && !section.newValues ? (
+                          <p className="empty-state">
+                            {item.collection === "events"
+                              ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
+                              : "Hier sind noch keine Einträge."}
+                          </p>
+                        ) : (
+                          <SortableRecordList
+                            entries={entries}
+                            section={section.newValues ? section : undefined}
+                            sortable={section.sortable}
+                            disabled={busy || pendingCount > 0}
+                            onMove={moveRecord}
+                          >
+                            {({ record, role }) => (
+                              <>
+                                <button className="record-row" onClick={() => openRecord(record)}>
+                                  {(record.collection === "team" ||
+                                    record.collection === "parentCouncil") && (
+                                    <ProfileThumbnail
+                                      name={String(record.data.name)}
+                                      src={
+                                        typeof record.data.image === "string"
+                                          ? (pendingChange(record, changes)?.saved?.previews[
+                                              record.data.image
+                                            ] ??
+                                            thumbnails[
+                                              snapshot?.mediaVersions[record.data.image] ?? ""
+                                            ])
+                                          : undefined
+                                      }
+                                    />
+                                  )}
+                                  <span className="record-description">
+                                    <strong>{titleOf(record.data)}</strong>
+                                    <small>
+                                      {[
+                                        record.data.date
+                                          ? eventDate(String(record.data.date))
+                                          : undefined,
+                                        record.data.time,
+                                        record.data.area,
+                                        record.data.weekday,
+                                        record.data.schoolYear,
+                                        role ?? record.data.role,
+                                        record.data.group,
+                                      ]
+                                        .filter(Boolean)
+                                        .map(String)
+                                        .join(" · ")}
+                                      {item.collection === "afternoonOffers" &&
+                                      record.data.schoolYear !== currentYear
+                                        ? " · Früheres / anderes Schuljahr"
+                                        : ""}
+                                    </small>
+                                  </span>
+                                  <span className="record-arrow" aria-hidden="true">
+                                    →
+                                  </span>
+                                </button>
+                                {item.collection === "downloads" && (
+                                  <PdfReplaceInput
+                                    title={titleOf(record.data)}
+                                    disabled={
+                                      busy ||
+                                      uploadsInProgress > 0 ||
+                                      !!pendingChange(record, changes)
                                     }
+                                    onSelect={(file) => void replacePdf(record, file)}
                                   />
                                 )}
-                                <span className="record-description">
-                                  <strong>{titleOf(record.data)}</strong>
-                                  <small>
-                                    {[
-                                      record.data.date
-                                        ? eventDate(String(record.data.date))
-                                        : undefined,
-                                      record.data.time,
-                                      record.data.area,
-                                      record.data.weekday,
-                                      record.data.schoolYear,
-                                      role ?? record.data.role,
-                                      record.data.group,
-                                    ]
-                                      .filter(Boolean)
-                                      .map(String)
-                                      .join(" · ")}
-                                    {item.collection === "afternoonOffers" &&
-                                    record.data.schoolYear !== currentYear
-                                      ? " · Früheres / anderes Schuljahr"
-                                      : ""}
-                                  </small>
-                                </span>
-                                <span className="record-arrow" aria-hidden="true">
-                                  →
-                                </span>
-                              </button>
-                              {item.collection === "downloads" && (
-                                <PdfReplaceInput
-                                  title={titleOf(record.data)}
-                                  disabled={
-                                    busy ||
-                                    uploadsInProgress > 0 ||
-                                    !!pendingChange(record, changes)
-                                  }
-                                  onSelect={(file) => void replacePdf(record, file)}
-                                />
-                              )}
-                            </>
-                          )}
-                        </SortableRecordList>
-                      )}
-                    </section>
-                  );
-                });
-              })}
+                              </>
+                            )}
+                          </SortableRecordList>
+                        )}
+                      </section>
+                    );
+                  });
+                })}
+            </PeopleTransferProvider>
             {area === "Ganztag & Essen" && (
               <AfternoonWeek
                 records={recordList.filter(

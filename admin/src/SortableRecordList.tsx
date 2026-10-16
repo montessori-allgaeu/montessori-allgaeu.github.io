@@ -1,7 +1,8 @@
 import { useRef, useState, type ReactNode } from "react";
-import type { ContentListEntry } from "../../src/admin/content-sections";
+import type { ContentListEntry, ContentSection } from "../../src/admin/content-sections";
 import { titleOf } from "./overview";
 import { reorder, useSortable } from "./useSortable";
+import { usePeopleTransfer } from "./PeopleTransfer";
 
 /** Collection ordering is shown immediately and persisted by the existing change API. */
 export function SortableRecordList({
@@ -12,6 +13,7 @@ export function SortableRecordList({
   children,
   className = "record-list",
   itemClassName = "record-item",
+  section,
 }: {
   entries: ContentListEntry[];
   sortable?: boolean;
@@ -20,13 +22,16 @@ export function SortableRecordList({
   children: (entry: ContentListEntry) => ReactNode;
   className?: string;
   itemClassName?: string;
+  section?: ContentSection;
 }) {
   const committing = useRef(false);
   const [optimistic, setOptimistic] = useState<ContentListEntry[] | null>(null);
   const [message, setMessage] = useState("");
   const visible = optimistic ?? entries;
+  const transfer = usePeopleTransfer(section);
   const sort = useSortable({
     keys: visible.map((entry) => entry.key),
+    transfer: transfer?.gesture,
     disabled: disabled || optimistic !== null || !sortable,
     onMove: (from, to) => {
       void move(from, to);
@@ -52,7 +57,17 @@ export function SortableRecordList({
   }
   return (
     <>
-      <div ref={sort.containerRef} className={className}>
+      <div
+        ref={(node) => {
+          sort.containerRef(node);
+          transfer?.register(node);
+        }}
+        className={`${className}${transfer?.className ?? ""}`}
+      >
+        {section && !visible.length && (
+          <p className="empty-state">Hier sind noch keine Einträge.</p>
+        )}
+        {transfer?.indicator}
         {visible.map((entry, index) => {
           const props = sort.itemProps(index);
           return (
