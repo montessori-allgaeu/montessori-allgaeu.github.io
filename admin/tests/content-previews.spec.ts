@@ -159,6 +159,27 @@ for (const width of [1440, 390]) {
   });
 }
 
+for (const [collection, width] of [
+  ["team", 1440],
+  ["parentCouncil", 390],
+] as const) {
+  test(`${collection}: Porträt ist ohne vorhandenes Foto direkt sichtbar (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const person = record(collection, { name: "Johanna Beispiel" });
+    delete person.data.image;
+    await mock(page, [person]);
+    await page.goto(`/?collection=${collection}&id=preview-test`);
+    await expect(page.getByRole("button", { name: "Foto auswählen", exact: true })).toBeVisible();
+    await expect(page.locator("details.optional-fields .field-image")).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "Vorschau der Person" })).toContainText("JB");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+}
+
 test("Elternbeirat zeigt Bereich und neue optionale Rolle unmittelbar", async ({ page }) => {
   const council = record("parentCouncil", { name: "Mira Muster", area: "Kindergarten" });
   delete council.data.role;

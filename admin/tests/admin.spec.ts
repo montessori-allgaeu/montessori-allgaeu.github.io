@@ -1423,7 +1423,7 @@ for (const kind of ["new", "existing"] as const) {
     await page.goto("/?collection=team&id=test-eintrag");
     if (kind === "new") {
       await page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }).click();
-      await page.getByText("Weitere Angaben ergänzen", { exact: true }).click();
+      await expect(page.getByRole("button", { name: "Foto ersetzen", exact: true })).toBeVisible();
     }
     await page.locator('input[type="file"]').setInputFiles(testImage("erste.png"));
     await expect(page.locator(".media-editor img")).toHaveAttribute("src", "/api/uploads/upload-1");

@@ -24,10 +24,21 @@ function mediaUrl(props: ContentEditorProps, path: string) {
   );
 }
 
-function Fields({ props, className = "" }: { props: ContentEditorProps; className?: string }) {
+function Fields({
+  props,
+  className = "",
+  alwaysVisible = [],
+}: {
+  props: ContentEditorProps;
+  className?: string;
+  alwaysVisible?: string[];
+}) {
   const fields = props.fields.filter((field) => field.key !== "position");
   const optional = fields.filter(
-    (field) => field.optional && props.originalData[field.key] === undefined,
+    (field) =>
+      field.optional &&
+      props.originalData[field.key] === undefined &&
+      !alwaysVisible.includes(field.key),
   );
   return (
     <div className={`content-compact-fields ${className}`}>
@@ -227,7 +238,7 @@ export function PersonEditor(props: ContentEditorProps) {
 
   return (
     <div className="content-preview-editor">
-      <Fields props={props} />
+      <Fields props={props} alwaysVisible={["image"]} />
       <section className="content-preview" aria-label="Vorschau der Person">
         <p className="content-preview-label">So erscheint die Person auf der Website</p>
         <div className="content-person-placements">
