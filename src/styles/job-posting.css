@@ -63,6 +63,19 @@
   color: var(--color-link);
 }
 
+@media (min-width: 701px) {
+  .job-content.grid-2 {
+    row-gap: 0;
+  }
+
+  .job-content > div {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    align-self: stretch;
+  }
+}
+
 @media (max-width: 700px) {
   .job-hero__meta {
     grid-template-columns: 1fr;

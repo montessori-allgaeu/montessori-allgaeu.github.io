@@ -238,6 +238,25 @@ const jobData = {
   datePosted: "2026-09-01",
 };
 
+test("Aufgaben und Profil beginnen trotz unterschiedlich langer Überschriften auf gleicher Höhe", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1593, height: 1243 });
+  await mock(page, [record("jobs", jobData)]);
+  await page.goto("/?collection=jobs&id=test-eintrag");
+  const lists = page.locator(".job-content .job-checks");
+  await expect(lists).toHaveCount(2);
+  await expect
+    .poll(async () => {
+      const [tasks, profile] = await Promise.all([
+        lists.nth(0).boundingBox(),
+        lists.nth(1).boundingBox(),
+      ]);
+      return Math.abs(tasks!.y - profile!.y);
+    })
+    .toBeLessThan(1);
+});
+
 for (const viewport of [
   { width: 1440, height: 1000 },
   { width: 390, height: 844 },

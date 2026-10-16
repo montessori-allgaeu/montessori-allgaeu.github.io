@@ -93,22 +93,28 @@ function InlineList({
                 disabled={disabled}
               />
               <div className="job-item-actions">
-                <button
-                  type="button"
-                  aria-label={`${label}: Eintrag ${index + 1} nach oben`}
-                  disabled={disabled || index === 0}
-                  onClick={() => move(index, -1)}
+                <div
+                  className="job-item-move"
+                  role="group"
+                  aria-label={`${label}: Eintrag ${index + 1} verschieben`}
                 >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  aria-label={`${label}: Eintrag ${index + 1} nach unten`}
-                  disabled={disabled || index === values.length - 1}
-                  onClick={() => move(index, 1)}
-                >
-                  ↓
-                </button>
+                  <button
+                    type="button"
+                    aria-label={`${label}: Eintrag ${index + 1} nach oben`}
+                    disabled={disabled || index === 0}
+                    onClick={() => move(index, -1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`${label}: Eintrag ${index + 1} nach unten`}
+                    disabled={disabled || index === values.length - 1}
+                    onClick={() => move(index, 1)}
+                  >
+                    ↓
+                  </button>
+                </div>
                 <button
                   type="button"
                   aria-label={`${label}: Eintrag ${index + 1} entfernen`}

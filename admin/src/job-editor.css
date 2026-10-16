@@ -67,6 +67,9 @@
 .job-preview .job-content h2 {
   font-size: clamp(32px, 4cqw, 54.4px);
 }
+.job-preview .job-content {
+  row-gap: 0;
+}
 .job-preview .eyebrow {
   color: var(--color-link);
   font-size: 12.48px;
@@ -146,8 +149,10 @@
 }
 .job-item-actions {
   display: flex;
-  gap: 4px;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-left: auto;
   margin-top: 8px;
 }
 .job-item-actions button {
@@ -158,6 +163,20 @@
   padding: 4px 8px;
   color: var(--color-muted);
   font-size: 12px;
+}
+.job-item-move {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+}
+.job-item-actions .job-item-move button {
+  min-width: 28px;
+  min-height: 28px;
+  padding: 4px;
+  font-size: 16px;
+  line-height: 1;
+}
+.job-item-move button + button {
+  border-left: 1px solid var(--color-line);
 }
 .job-item-actions button:hover:not(:disabled) {
   color: var(--color-link);
@@ -215,5 +234,12 @@
   .job-preview .job-hero__facts {
     align-items: flex-start;
     text-align: left;
+  }
+  .job-preview .job-content {
+    row-gap: 24px;
+  }
+  .job-preview .job-content > div {
+    display: block;
+    grid-row: auto;
   }
 }
