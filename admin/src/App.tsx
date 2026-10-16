@@ -11,6 +11,7 @@ import type {
   UploadResult,
 } from "../../src/admin/types";
 import {
+  canDeleteContent,
   contentDefinitions,
   getContentDefinition,
   calculateEffectiveFee,
@@ -67,7 +68,10 @@ const statusLabels: Record<Change["status"], string> = {
 };
 const ongoing = (change: Change | undefined) =>
   change && ["queued", "checking", "committed"].includes(change.status);
-const isVisible = (record: ContentRecord) => record.data.visible !== false;
+const changeStatusLabel = (change: Change) =>
+  change.deleted && change.status === "published"
+    ? "Von der Website entfernt"
+    : statusLabels[change.status];
 const makeId = (data: ContentData) =>
   `${
     titleOf(data, "eintrag")
@@ -121,8 +125,10 @@ function editorialRecords(records: ContentRecord[], changes: Change[]): ContentR
   // The API orders newest first. Apply older pending changes first.
   for (const change of [...changes].reverse()) {
     if (!ongoing(change)) continue;
-    for (const mutation of change.saved?.mutations ?? [])
-      result.set(recordKey(mutation), { ...mutation, version: mutation.baseVersion ?? "" });
+    for (const mutation of change.saved?.mutations ?? []) {
+      if (mutation.delete) result.delete(recordKey(mutation));
+      else result.set(recordKey(mutation), { ...mutation, version: mutation.baseVersion ?? "" });
+    }
   }
   return [...result.values()];
 }
@@ -223,7 +229,7 @@ function ChangeList({
             <span className={`status-dot ${change.status}`} aria-hidden="true" />
             <div>
               <strong>{change.summary || "Website aktualisieren"}</strong>
-              <p className={`change-state ${change.status}`}>{statusLabels[change.status]}</p>
+              <p className={`change-state ${change.status}`}>{changeStatusLabel(change)}</p>
               {change.error && <p className="error-detail">{change.error}</p>}
               {change.saved && (change.status === "failed" || change.status === "conflict") && (
                 <div className="row-actions">
@@ -271,7 +277,6 @@ export function App() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
-  const [archive, setArchive] = useState(false);
   const [past, setPast] = useState(false);
   const [offerYear, setOfferYear] = useState("");
   const [uploadsInProgress, setUploadsInProgress] = useState(0);
@@ -481,7 +486,6 @@ export function App() {
     setArea(next);
     setSortingCollection(null);
     setQuery("");
-    setArchive(false);
     setPast(false);
     setOfferYear("");
     setMobileNav(false);
@@ -521,8 +525,19 @@ export function App() {
       uploadBusy(false);
     }
   }
-  function openSavedChange(change: Change, mutation: ContentMutation) {
+  async function openSavedChange(change: Change, mutation: ContentMutation) {
     if (!leaveEditor()) return;
+    if (mutation.delete) {
+      try {
+        const content = await refresh();
+        const record = content.records.find((item) => recordKey(item) === recordKey(mutation));
+        if (record) openRecord(record);
+        else setError("Dieser Eintrag ist bereits gelöscht.");
+      } catch (cause) {
+        setError(errorText(cause));
+      }
+      return;
+    }
     setArea(getContentDefinition(mutation.collection).area);
     setQuery("");
     setEditor(
@@ -552,7 +567,6 @@ export function App() {
       if (collection === "events") data.date = today();
       if (typeof data.name === "string") data.name += " (Kopie)";
       if (collection === "jobs") data.datePosted = today();
-      data.visible = true;
     }
     const id = makeId(data);
     setArea(definition.area);
@@ -630,7 +644,10 @@ export function App() {
           try {
             const latest = await api.request<EditableContentSnapshot>("/content");
             const record = latest.records.find((entry) => recordKey(entry) === recordKey(current));
-            if (record) {
+            if (mutations.some((mutation) => mutation.delete)) {
+              setSnapshot(latest);
+              setEditor(record ? toEdit(record, latest.mediaVersions) : null);
+            } else if (record) {
               setConflict(record);
               setConflictMediaVersions(latest.mediaVersions);
             }
@@ -642,6 +659,34 @@ export function App() {
       return null;
     } finally {
       setBusy(false);
+    }
+  }
+  async function deleteRecord() {
+    if (!editor || !canDeleteContent(editor) || editor.baseVersion === null) return;
+    if (
+      !window.confirm(
+        `„${titleOf(editor.data)}“ löschen? Der Eintrag wird aus der Verwaltung und von der Website entfernt. Nicht gespeicherte Änderungen werden verworfen.`,
+      )
+    )
+      return;
+    const change = await submit(
+      [
+        {
+          collection: editor.collection,
+          id: editor.id,
+          baseVersion: editor.baseVersion,
+          data: editor.original,
+          delete: true,
+        },
+      ],
+      [],
+      editor.requestId,
+    );
+    if (change) {
+      setEditor(null);
+      setConflict(null);
+      history.replaceState(null, "", location.pathname);
+      window.scrollTo(0, 0);
     }
   }
   async function save() {
@@ -743,10 +788,7 @@ export function App() {
       : active;
     const offers = snapshot.records
       .filter(
-        (record) =>
-          record.collection === "afternoonOffers" &&
-          record.data.schoolYear === active &&
-          isVisible(record),
+        (record) => record.collection === "afternoonOffers" && record.data.schoolYear === active,
       )
       .map((record) => {
         const data = { ...structuredClone(record.data), schoolYear: nextYear };
@@ -1004,7 +1046,6 @@ export function App() {
                     <small>
                       {getContentDefinition(record.collection).area} ·{" "}
                       {getContentDefinition(record.collection).label}
-                      {!isVisible(record) ? " · Ausgeblendet" : ""}
                     </small>
                   </span>
                   <span aria-hidden="true">→</span>
@@ -1264,7 +1305,7 @@ export function App() {
               className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
             >
               {definition.fields
-                .filter((field) => field.key !== "visible" && field.key !== "position")
+                .filter((field) => field.key !== "position")
                 .filter((field) => !field.optional || editor.original[field.key] !== undefined)
                 .map((field) => (
                   <EditableField
@@ -1290,12 +1331,7 @@ export function App() {
                 <details className="optional-fields">
                   <summary>Weitere Angaben ergänzen</summary>
                   {definition.fields
-                    .filter(
-                      (field) =>
-                        field.optional &&
-                        editor.original[field.key] === undefined &&
-                        field.key !== "visible",
-                    )
+                    .filter((field) => field.optional && editor.original[field.key] === undefined)
                     .map((field) => (
                       <EditableField
                         key={`${recordKey(editor)}:${field.key}`}
@@ -1338,22 +1374,19 @@ export function App() {
                 >
                   Als Vorlage verwenden
                 </button>
-                <button
-                  className="text-button danger-text"
-                  disabled={editingLocked}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        editor.data.visible === false
-                          ? "Diesen Eintrag wieder auf der Website anzeigen? Bitte anschließend speichern."
-                          : "Diesen Eintrag ausblenden? Er bleibt in der Verwaltung erhalten. Bitte anschließend speichern.",
-                      )
-                    )
-                      updateField(recordKey(editor), "visible", editor.data.visible === false);
-                  }}
-                >
-                  {editor.data.visible === false ? "Wieder einblenden" : "Ausblenden"}
-                </button>
+                {canDeleteContent(editor) ? (
+                  <button
+                    className="text-button danger-text"
+                    disabled={editingLocked || !!conflict}
+                    onClick={() => void deleteRecord()}
+                  >
+                    Löschen
+                  </button>
+                ) : (
+                  <p className="hint">
+                    Dieses Dokument ist fest verknüpft und kann ersetzt werden.
+                  </p>
+                )}
               </div>
             )}
           </section>
@@ -1463,9 +1496,7 @@ export function App() {
                 </summary>
                 <div className="year-offer-fields">
                   {getContentDefinition("afternoonOffers")
-                    .fields.filter(
-                      (field) => !["schoolYear", "position", "visible"].includes(field.key),
-                    )
+                    .fields.filter((field) => !["schoolYear", "position"].includes(field.key))
                     .map((field) => (
                       <div className="input-field" key={field.key}>
                         <div className="field-label">{field.label}</div>
@@ -1589,10 +1620,9 @@ export function App() {
                           </small>
                           {change.status !== "published" && (
                             <small className={`change-state ${change.status}`}>
-                              {statusLabels[change.status]}
+                              {changeStatusLabel(change)}
                             </small>
                           )}
-                          {!isVisible(record) && <small>Ausgeblendet</small>}
                         </span>
                         <span className="record-arrow" aria-hidden="true">
                           →
@@ -1656,43 +1686,35 @@ export function App() {
             <p className="eyebrow">Website pflegen</p>
             <h1>{area}</h1>
             <p className="page-intro">{areaDescriptions[area]}</p>
-            <div className="collection-tools">
-              {areaDefinitions.some((item) => !item.singleton) && (
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={archive}
-                    onChange={(event) => setArchive(event.currentTarget.checked)}
-                  />
-                  Ausgeblendete anzeigen
-                </label>
-              )}
-              {area === "Termine" && (
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={past}
-                    onChange={(event) => setPast(event.currentTarget.checked)}
-                  />
-                  Vergangene anzeigen
-                </label>
-              )}
-              {area === "Ganztag & Essen" && (
-                <button
-                  className="button secondary"
-                  disabled={changes.some(
-                    (change) =>
-                      ongoing(change) &&
-                      change.saved?.mutations.some(
-                        (mutation) => mutation.collection === "afternoonProgramSettings",
-                      ),
-                  )}
-                  onClick={startYearPlan}
-                >
-                  Programm für neues Schuljahr übernehmen
-                </button>
-              )}
-            </div>
+            {(area === "Termine" || area === "Ganztag & Essen") && (
+              <div className="collection-tools">
+                {area === "Termine" && (
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={past}
+                      onChange={(event) => setPast(event.currentTarget.checked)}
+                    />
+                    Vergangene anzeigen
+                  </label>
+                )}
+                {area === "Ganztag & Essen" && (
+                  <button
+                    className="button secondary"
+                    disabled={changes.some(
+                      (change) =>
+                        ongoing(change) &&
+                        change.saved?.mutations.some(
+                          (mutation) => mutation.collection === "afternoonProgramSettings",
+                        ),
+                    )}
+                    onClick={startYearPlan}
+                  >
+                    Programm für neues Schuljahr übernehmen
+                  </button>
+                )}
+              </div>
+            )}
             {area === "Ganztag & Essen" && (
               <label className="year-filter">
                 Angebote für
@@ -1719,9 +1741,7 @@ export function App() {
               </label>
             )}
             {areaDefinitions.map((item) => {
-              let records = recordList
-                .filter((record) => record.collection === item.collection)
-                .filter((record) => archive || isVisible(record));
+              let records = recordList.filter((record) => record.collection === item.collection);
               if (item.collection === "events" && !past)
                 records = records.filter((record) => String(record.data.date ?? "") >= today());
               records = [...records].sort((left, right) =>
@@ -1735,9 +1755,7 @@ export function App() {
                   (record) => record.data.schoolYear === (offerYear || currentYear),
                 );
               const canSort =
-                item.fields.some((field) => field.key === "position") &&
-                !archive &&
-                records.length > 1;
+                item.fields.some((field) => field.key === "position") && records.length > 1;
               const sortable = canSort && sortingCollection === item.collection;
               if (item.singleton)
                 return (
@@ -1796,13 +1814,13 @@ export function App() {
                     <p className="empty-state">
                       {item.collection === "events"
                         ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
-                        : "Hier sind noch keine sichtbaren Einträge."}
+                        : "Hier sind noch keine Einträge."}
                     </p>
                   ) : (
                     <div className="record-list">
                       {records.map((record, index) => (
                         <article
-                          className={`record-item${!isVisible(record) ? " hidden-record" : ""}`}
+                          className="record-item"
                           key={recordKey(record)}
                           onDragOver={(event) => {
                             if (dragged) event.preventDefault();
@@ -1845,7 +1863,6 @@ export function App() {
                                 record.data.schoolYear !== currentYear
                                   ? " · Früheres / anderes Schuljahr"
                                   : ""}
-                                {!isVisible(record) ? " · Ausgeblendet" : ""}
                               </small>
                             </span>
                             <span className="record-arrow" aria-hidden="true">

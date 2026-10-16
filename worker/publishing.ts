@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  canDeleteContent,
   getContentDefinition,
   getContentPath,
   mediaRepositoryPath,
@@ -104,8 +105,21 @@ export class Publishing {
               }),
             ),
           };
+    const deleted = operation.mutations.every((mutation) => mutation.delete) ? true : undefined;
     const targets = operation.mutations.map(({ collection, id }) => ({ collection, id }));
-    return { id, status, createdAt, updatedAt, summary, error, commit, runUrl, targets, saved };
+    return {
+      id,
+      status,
+      createdAt,
+      updatedAt,
+      summary,
+      error,
+      commit,
+      runUrl,
+      targets,
+      saved,
+      deleted,
+    };
   }
   list() {
     return json({
@@ -170,9 +184,17 @@ export class Publishing {
         "content_conflict",
         "Dieser Inhalt wurde inzwischen geändert. Bitte neu laden und die Änderung erneut prüfen.",
       );
+      requireCondition(
+        !mutation.delete || (before && canDeleteContent(mutation)),
+        400,
+        "deletion_invalid",
+        "Dieser Eintrag wird auf der Website benötigt und darf nicht gelöscht werden.",
+      );
       const parsed = {
         ...mutation,
-        data: parseContent(mutation.collection, mutation.id, mutation.data),
+        data: mutation.delete
+          ? before!.data
+          : parseContent(mutation.collection, mutation.id, mutation.data),
       };
       if (changesBankDetails(parsed, before?.data)) {
         requireAdmin(user);
@@ -200,6 +222,7 @@ export class Publishing {
       requireCondition(
         mutations.some(
           (m) =>
+            !m.delete &&
             ["team", "parentCouncil", "downloads"].includes(m.collection) &&
             (m.data.image ===
               mediaValue(
@@ -228,7 +251,7 @@ export class Publishing {
     const candidate = {
       records: [
         ...current.records.filter((r) => !paths.has(getContentPath(r.collection, r.id))),
-        ...mutations.map((m) => ({ ...m, version: m.baseVersion ?? "" })),
+        ...mutations.filter((m) => !m.delete).map((m) => ({ ...m, version: m.baseVersion ?? "" })),
       ],
     };
     const media = new Set([...current.files.keys(), ...uploads.map((u) => u.path)]);
@@ -252,7 +275,7 @@ export class Publishing {
       status: "queued",
       createdAt: now,
       updatedAt: now,
-      summary: `${areas.join(", ")} · ${mutations.length} ${mutations.length === 1 ? "Eintrag" : "Einträge"}`,
+      summary: `${areas.join(", ")} · ${mutations.length} ${mutations.length === 1 ? "Eintrag" : "Einträge"}${mutations.every((mutation) => mutation.delete) ? " löschen" : ""}`,
       fingerprint,
       dispatchCount: 0,
       bankChange,

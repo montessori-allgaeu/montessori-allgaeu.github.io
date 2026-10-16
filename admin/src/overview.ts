@@ -19,12 +19,7 @@ export function eventDate(date: string, now = new Date()) {
 
 export function nextEvents(records: ContentRecord[], now = new Date()) {
   return records
-    .filter(
-      (record) =>
-        record.collection === "events" &&
-        record.data.visible !== false &&
-        String(record.data.date) >= today(now),
-    )
+    .filter((record) => record.collection === "events" && String(record.data.date) >= today(now))
     .sort(
       (a, b) =>
         String(a.data.date).localeCompare(String(b.data.date)) ||
@@ -35,6 +30,7 @@ export function nextEvents(records: ContentRecord[], now = new Date()) {
 
 export function recentContent(records: ContentRecord[], changes: Change[]) {
   const byKey = new Map(records.map((record) => [recordKey(record), record]));
+  const seen = new Set<string>();
   const recent = new Map<
     string,
     { record: ContentRecord; change: Change; mutation?: ContentMutation }
@@ -42,8 +38,10 @@ export function recentContent(records: ContentRecord[], changes: Change[]) {
   for (const change of [...changes].sort((a, b) => b.createdAt.localeCompare(a.createdAt))) {
     for (const target of change.targets ?? change.saved?.mutations ?? []) {
       const key = recordKey(target);
-      if (recent.has(key)) continue;
+      if (seen.has(key)) continue;
+      seen.add(key);
       const mutation = change.saved?.mutations.find((item) => recordKey(item) === key);
+      if (mutation?.delete || change.deleted) continue;
       const record =
         byKey.get(key) ?? (mutation && { ...mutation, version: mutation.baseVersion ?? "" });
       if (record) recent.set(key, { record, change, mutation });
@@ -54,7 +52,7 @@ export function recentContent(records: ContentRecord[], changes: Change[]) {
 
 export function eventTemplates(records: ContentRecord[], title: string) {
   const candidates = records
-    .filter((record) => record.collection === "events" && record.data.visible !== false)
+    .filter((record) => record.collection === "events")
     .sort((a, b) => String(b.data.date).localeCompare(String(a.data.date)));
   const unique = new Map<string, ContentRecord>();
   for (const record of candidates)

@@ -646,9 +646,6 @@ strong {
   flex-shrink: 0;
   background: #e2e3d8;
 }
-.hidden-record .record-row strong {
-  color: var(--muted);
-}
 .sort-controls {
   display: flex;
   align-items: center;

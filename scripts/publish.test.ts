@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
@@ -15,6 +15,7 @@ import {
   PublishConflict,
   publishOperationSchema,
   readContentSnapshot,
+  safeRemove,
   safeWrite,
   StaleRelease,
   type PublishOperation,
@@ -79,7 +80,17 @@ afterEach(async () => {
 describe("atomic content publication", () => {
   let current: Awaited<ReturnType<typeof readContentSnapshot>>;
   beforeAll(async () => {
-    current = await readContentSnapshot(process.cwd());
+    const directory = await repository();
+    for (const path of [
+      "src/content",
+      "public/downloads",
+      "src/assets/images/team",
+      "src/assets/images/parent-council",
+    ])
+      await cp(resolve(path), join(directory, path), { recursive: true });
+    git(directory, ["add", "src", "public"]);
+    git(directory, ["commit", "--quiet", "-m", "Current content fixture"]);
+    current = await readContentSnapshot(directory);
   });
   function operation(): PublishOperation {
     const event = current.snapshot.records.find((record) => record.collection === "events")!;
@@ -145,9 +156,7 @@ describe("atomic content publication", () => {
   });
 
   it("requires the current media blob when replacing a PDF", () => {
-    const record = current.snapshot.records.find(
-      (entry) => entry.collection === "downloads" && entry.data.visible,
-    )!;
+    const record = current.snapshot.records.find((entry) => entry.collection === "downloads")!;
     const path = `public${record.data.file}`;
     const change: PublishOperation = {
       id: randomUUID(),
@@ -235,6 +244,37 @@ describe("atomic content publication", () => {
     });
     expect(() => planOperation(change, current.snapshot, current.media)).toThrow(
       "Nachmittagsangebot",
+    );
+  });
+
+  it("plans record deletion and rejects stale, absent or required records", () => {
+    const change = operation();
+    change.mutations[0].delete = true;
+    const result = planOperation(change, current.snapshot, current.media);
+    expect(result.files[0]).toMatchObject({
+      path: `src/content/events/${change.mutations[0].id}.yml`,
+      delete: true,
+    });
+    change.mutations[0].baseVersion = "0".repeat(40);
+    expect(() => planOperation(change, current.snapshot, current.media)).toThrow(PublishConflict);
+    change.mutations[0].id = "absent";
+    change.mutations[0].baseVersion = null;
+    expect(() => planOperation(change, current.snapshot, current.media)).toThrow(
+      /darf nicht gelöscht/,
+    );
+    for (const record of current.snapshot.records.filter(
+      (item) => item.collection === "contactSettings" || item.id === "absichtserklaerung-schule",
+    )) {
+      change.mutations = [{ ...record, baseVersion: record.version, delete: true }];
+      expect(() => planOperation(change, current.snapshot, current.media)).toThrow(
+        /darf nicht gelöscht/,
+      );
+    }
+    change.mutations = current.snapshot.records
+      .filter((record) => record.collection === "afternoonOffers")
+      .map((record) => ({ ...record, baseVersion: record.version, delete: true }));
+    expect(() => planOperation(change, current.snapshot, current.media)).toThrow(
+      /Nachmittagsangebot/,
     );
   });
 
@@ -407,7 +447,22 @@ describe("integrity and retry safety", () => {
       "Verknüpfungen",
     );
     await expect(safeWrite(directory, "../escape.txt", "changed")).rejects.toThrow("außerhalb");
+    await expect(safeRemove(directory, "media/protected.txt")).rejects.toThrow("Verknüpfungen");
+    await expect(safeRemove(directory, "../escape.txt")).rejects.toThrow("außerhalb");
     expect(await readFile(join(outside, "protected.txt"), "utf8")).toBe("unchanged");
+  });
+
+  it("removes a content file without deleting its reusable media", async () => {
+    const directory = await temporaryDirectory();
+    await safeWrite(directory, "src/content/downloads/test.yml", "title: Test");
+    await safeWrite(directory, "public/downloads/test.pdf", "%PDF-fixture");
+    await safeRemove(directory, "src/content/downloads/test.yml");
+    await expect(readFile(join(directory, "src/content/downloads/test.yml"))).rejects.toMatchObject(
+      { code: "ENOENT" },
+    );
+    expect(await readFile(join(directory, "public/downloads/test.pdf"), "utf8")).toBe(
+      "%PDF-fixture",
+    );
   });
 
   it("enforces Free file count and size at the deploy boundary", async () => {

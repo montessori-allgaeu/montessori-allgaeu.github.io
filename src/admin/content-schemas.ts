@@ -1,11 +1,6 @@
 import { z } from "zod";
 
-const publicationStatusField = {
-  visible: z.boolean().default(true),
-};
-
 const publicationFields = {
-  ...publicationStatusField,
   position: z.number().int().positive(),
 };
 
@@ -42,7 +37,7 @@ const teamAssignment = z.discriminatedUnion("group", [
 ]);
 
 export const jobsSchema = z
-  .object({
+  .strictObject({
     title: z.string().min(1),
     area: z.enum(["Kindergarten", "Schule", "Kindergarten oder Schule"]),
     team: z.string().min(1).optional(),
@@ -62,7 +57,7 @@ export const jobsSchema = z
       )
       .min(1),
     start: z.string().min(1).optional(),
-    datePosted: optionalIsoDateField,
+    datePosted: isoDateField,
     validThrough: optionalIsoDateField,
     intro: z.string().min(1),
     about: z.array(z.string().min(1)).min(1),
@@ -72,10 +67,6 @@ export const jobsSchema = z
     closingTitle: z.string().min(1),
     closingText: z.string().min(1),
     ...publicationFields,
-  })
-  .refine(({ datePosted, visible }) => !visible || Boolean(datePosted), {
-    message: "Veröffentlichte Stellen benötigen das Datum ihrer ersten Veröffentlichung.",
-    path: ["datePosted"],
   })
   .refine(
     ({ datePosted, validThrough }) => !datePosted || !validThrough || validThrough >= datePosted,
@@ -90,7 +81,6 @@ export const createTeamSchema = <T extends z.ZodType>(image: T) =>
     name: z.string().min(1),
     assignments: z.array(teamAssignment).min(1),
     image: image.optional(),
-    ...publicationStatusField,
   });
 
 export const createParentCouncilSchema = <T extends z.ZodType>(image: T) =>
@@ -115,7 +105,6 @@ export const eventsSchema = z.strictObject({
   time: z.string().min(1),
   location: z.string().min(1),
   description: z.string().min(1),
-  visible: z.boolean().default(true),
 });
 
 export const downloadsSchema = z.strictObject({
@@ -133,7 +122,7 @@ export const downloadsSchema = z.strictObject({
 });
 
 export const afternoonOffersSchema = z
-  .object({
+  .strictObject({
     title: z.string().min(1),
     schoolYear: schoolYearField,
     weekday: z.enum(["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"]),

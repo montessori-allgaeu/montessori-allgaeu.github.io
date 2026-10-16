@@ -4,16 +4,10 @@ import { createSeoPage, type SeoPage } from "./seo";
 
 const jobSeoTitles: Record<string, string> = {
   "fachlehrkraft-musik": "Fachlehrer:in Musik in Oberstaufen",
-  "paedagogische-fachkraft-kindergarten-teilzeit":
-    "Erzieher:in im Montessori-Kindergarten · Teilzeit",
-  "paedagogische-fachkraft-kindergarten": "Erzieher:in im Montessori-Kindergarten",
 };
 
 const jobSeoLabels: Record<string, string> = {
   "fachlehrkraft-musik": "Fachlehrer:in Musik",
-  "paedagogische-fachkraft-kindergarten-teilzeit":
-    "Erzieher:in im Montessori-Kindergarten · Teilzeit",
-  "paedagogische-fachkraft-kindergarten": "Erzieher:in im Montessori-Kindergarten",
 };
 
 export function createJobSeo(job: Job): SeoPage {

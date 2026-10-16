@@ -37,6 +37,7 @@ export type ContentMutation = {
   id: string;
   baseVersion: string | null;
   data: ContentData;
+  delete?: true;
 };
 export type ChangeRequest = {
   requestId: string;
@@ -51,6 +52,7 @@ export type Change = {
   createdAt: string;
   updatedAt: string;
   summary: string;
+  deleted?: true;
   error?: string;
   commit?: string;
   runUrl?: string;
