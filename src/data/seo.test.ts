@@ -95,7 +95,6 @@ describe("central SEO metadata", () => {
       benefits: ["Gestaltungsfreiheit"],
       closingTitle: "Wir freuen uns auf dich.",
       closingText: "Bewirb dich bei uns.",
-      visible: true,
       position: 10,
       slug: "lernbegleitung",
       areaLabel: "Schule",

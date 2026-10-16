@@ -1,7 +1,11 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { parse } from "yaml";
 import { expect, test, type Page, type Route } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { activeMedia, discardMedia, selectMedia } from "../src/media";
-import { nextEvents, eventTemplates } from "../src/overview";
-import { getContentDefinition } from "../../src/admin/content-model";
+import { nextEvents, eventTemplates, recentContent } from "../src/overview";
+import { getContentDefinition, parseContent } from "../../src/admin/content-model";
 import type {
   Change,
   ChangeRequest,
@@ -28,7 +32,10 @@ function record(
     collection,
     id,
     version: "version-1",
-    data: { ...getContentDefinition(collection).defaults(), ...data },
+    data:
+      collection === "team"
+        ? parseContent(collection, id, { ...getContentDefinition(collection).defaults(), ...data })
+        : { ...getContentDefinition(collection).defaults(), ...data },
   };
 }
 const event = record("events", {
@@ -48,7 +55,11 @@ const change = (status: Change["status"] = "checking"): Change => ({
 async function mock(
   page: Page,
   records: ContentRecord[],
-  options: { role?: Role; route?: (route: Route, path: string) => Promise<boolean> } = {},
+  options: {
+    role?: Role;
+    mediaVersions?: Record<string, string>;
+    route?: (route: Route, path: string) => Promise<boolean>;
+  } = {},
 ) {
   const requests: ChangeRequest[] = [];
   await page.route("**/api/**", async (route) => {
@@ -60,17 +71,19 @@ async function mock(
         json: {
           revision: "revision-1",
           records,
-          mediaVersions: Object.fromEntries(
-            records.flatMap((entry) =>
-              Object.values(entry.data)
-                .filter(
-                  (value): value is string =>
-                    typeof value === "string" &&
-                    (value.startsWith("../../assets/") || value.startsWith("/downloads/")),
-                )
-                .map((value) => [value, "media-version-1"]),
+          mediaVersions:
+            options.mediaVersions ??
+            Object.fromEntries(
+              records.flatMap((entry) =>
+                Object.values(entry.data)
+                  .filter(
+                    (value): value is string =>
+                      typeof value === "string" &&
+                      (value.startsWith("../../assets/") || value.startsWith("/downloads/")),
+                  )
+                  .map((value) => [value, "media-version-1"]),
+              ),
             ),
-          ),
         } satisfies EditableContentSnapshot,
       });
     if (path === "/changes" && route.request().method() === "GET")
@@ -91,6 +104,101 @@ async function editEvent(page: Page) {
   await page.goto("/?collection=events&id=test-eintrag");
   await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Unser neuer Kennenlerntag");
 }
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`lädt statische Profilvorschauen ohne Medien-API bei ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const images = [
+      ["team", "alexandra-riefle.webp", "Alexandra Riefle"],
+      ["parent-council", "angela-guenther.webp", "Angela Günther"],
+    ];
+    const records: ContentRecord[] = [];
+    const mediaVersions: Record<string, string> = {};
+    for (const [directory, filename, name] of images) {
+      const path = `../../assets/images/${directory}/${filename}`;
+      const bytes = await readFile(
+        new URL(`../../src/assets/images/${directory}/${filename}`, import.meta.url),
+      );
+      mediaVersions[path] = createHash("sha1")
+        .update(`blob ${bytes.length}\0`)
+        .update(bytes)
+        .digest("hex");
+      records.push(
+        record(
+          directory === "team" ? "team" : "parentCouncil",
+          { name, image: path },
+          filename.replace(/\.[^.]+$/, ""),
+        ),
+      );
+    }
+    const mediaRequests: string[] = [];
+    page.on("request", (request) => {
+      if (new URL(request.url()).pathname === "/api/media") mediaRequests.push(request.url());
+    });
+    await mock(page, records, { mediaVersions });
+    await page.goto("/?collection=team");
+    const thumbnails = page.locator("img.record-thumb");
+    await expect(thumbnails).toHaveCount(2);
+    for (const thumbnail of await thumbnails.all()) {
+      await thumbnail.scrollIntoViewIfNeeded();
+      await expect(thumbnail).toHaveAttribute("src", /^\/profile-thumbnails\/[a-f0-9]{64}\.webp$/);
+      await expect
+        .poll(() =>
+          thumbnail.evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight]),
+        )
+        .toEqual([96, 114]);
+    }
+    expect(mediaRequests).toEqual([]);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
+      .toBe(true);
+    await page.screenshot({
+      path: `test-results/profile-thumbnails-${viewport.width}.png`,
+      fullPage: true,
+    });
+  });
+}
+
+test("holt nach Veröffentlichung neue Vorschaubilder auch ohne Neuladen der Verwaltung", async ({
+  page,
+}) => {
+  const image = "../../assets/images/team/alexandra-riefle.webp";
+  const bytes = await readFile(
+    new URL("../../src/assets/images/team/alexandra-riefle.webp", import.meta.url),
+  );
+  const version = createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex");
+  const person = record("team", { name: "Alexandra Riefle", image });
+  let published = false;
+  await mock(page, [person], {
+    mediaVersions: { [image]: version },
+    route: async (route, path) => {
+      if (path !== "/changes") return false;
+      await route.fulfill({ json: { changes: [change(published ? "published" : "committed")] } });
+      return true;
+    },
+  });
+  await page.route("**/profile-thumbnails.json", async (route) => {
+    if (published) await route.continue();
+    else await route.fulfill({ json: {} });
+  });
+  const mediaRequests: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/api/media") mediaRequests.push(request.url());
+  });
+  await page.goto("/?collection=team");
+  await expect(page.locator("span.record-thumb")).toHaveCount(1);
+  expect(mediaRequests).toEqual([]);
+  published = true;
+  const thumbnail = page.locator("img.record-thumb");
+  await expect(thumbnail).toHaveCount(1, { timeout: 8000 });
+  await expect.poll(() => thumbnail.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(96);
+  expect(mediaRequests).toEqual([]);
+});
 
 test("bestätigt Speichern sofort und unterscheidet die spätere Veröffentlichung", async ({
   page,
@@ -352,62 +460,6 @@ test("Stellenvorlagen bekommen automatisch das neue Veröffentlichungsdatum", as
   });
 });
 
-test("eine erstmals eingeblendete Stelle erhält automatisch ihr Veröffentlichungsdatum", async ({
-  page,
-}) => {
-  await page.clock.install({ time: new Date("2026-10-16T12:00:00Z") });
-  const job = record("jobs", { ...jobData, visible: false });
-  delete job.data.datePosted;
-  const requests = await mock(page, [job]);
-  await page.goto("/?collection=jobs&id=test-eintrag");
-  page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Wieder einblenden", exact: true }).click();
-  await page.getByRole("button", { name: "Speichern", exact: true }).click();
-  await expect.poll(() => requests.length).toBe(1);
-  expect(requests[0].mutations[0].data).toMatchObject({ visible: true, datePosted: "2026-10-16" });
-});
-
-test("wartet auf Upload und übernimmt Dateiverweis und Uploadkennung gemeinsam", async ({
-  page,
-}) => {
-  let releaseUpload: (() => void) | undefined;
-  const uploaded = new Promise<void>((resolve) => {
-    releaseUpload = resolve;
-  });
-  const person = record("team", {
-    name: "Maria Monte",
-    image: "../../assets/images/team/alt.webp",
-  });
-  const requests = await mock(page, [person], {
-    route: async (route, path) => {
-      if (path !== "/uploads") return false;
-      await uploaded;
-      await route.fulfill({
-        json: {
-          id: "upload-1",
-          value: "../../assets/images/team/neu.webp",
-          previewUrl: "/api/media?path=neu",
-        },
-      });
-      return true;
-    },
-  });
-  await page.goto("/?collection=team&id=test-eintrag");
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "neu.png",
-    mimeType: "image/png",
-    buffer: Buffer.from("89504e470d0a1a0a", "hex"),
-  });
-  await expect(page.getByText("Datei wird hochgeladen …")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Datei lädt …" })).toBeDisabled();
-  releaseUpload!();
-  await expect(page.getByText("neu.webp", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Speichern", exact: true }).click();
-  await expect.poll(() => requests.length).toBe(1);
-  expect(requests[0].uploadIds).toEqual(["upload-1"]);
-  expect(requests[0].mutations[0].data.image).toBe("../../assets/images/team/neu.webp");
-});
-
 test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) => {
   const settings = record(
     "afternoonProgramSettings",
@@ -417,14 +469,13 @@ test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) 
   const first = record("afternoonOffers", {
     title: "Werkstatt",
     schoolYear: "2026/27",
-    visible: true,
   });
-  const hidden = record(
+  const previousYear = record(
     "afternoonOffers",
-    { title: "Verstecktes Angebot", schoolYear: "2026/27", visible: false },
-    "versteckt",
+    { title: "Früheres Angebot", schoolYear: "2025/26" },
+    "frueher",
   );
-  const requests = await mock(page, [settings, first, hidden]);
+  const requests = await mock(page, [settings, first, previousYear]);
   await page.goto("/");
   await page
     .locator(".sidebar")
@@ -434,7 +485,7 @@ test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) 
   await expect(page.getByRole("textbox", { name: "Neues Schuljahr", exact: true })).toHaveValue(
     "2027/28",
   );
-  await expect(page.getByText("Verstecktes Angebot", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Früheres Angebot", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Programm speichern", exact: true }).click();
   await expect.poll(() => requests.length).toBe(1);
   expect(requests[0].mutations).toHaveLength(2);
@@ -496,7 +547,7 @@ for (const viewport of [
     }
     // The last action must not be covered by the fixed bar at the end of the page.
     const lastAction = (await page
-      .getByRole("button", { name: "Ausblenden", exact: true })
+      .getByRole("button", { name: "Löschen", exact: true })
       .boundingBox())!;
     expect(lastAction.y + lastAction.height).toBeLessThan((await bar.boundingBox())!.y);
     await bar.getByRole("button", { name: "Speichern", exact: true }).click();
@@ -511,7 +562,7 @@ test("neuer Termin zeigt Eingabefelder ohne Warnung für unberührte Vorgaben", 
   await page.getByRole("button", { name: "+ Termin hinzufügen", exact: true }).click();
   await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeEditable();
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Ausblenden", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Löschen", exact: true })).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }),
   ).toHaveCount(0);
@@ -737,15 +788,10 @@ test("zuletzt bearbeitete Inhalte sind eindeutig, bleiben nach Neuladen erhalten
   await expect(page).toHaveURL(/collection=downloads&id=info/);
 });
 
-test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene sowie ausgeblendete aus", async ({
+test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene aus", async ({
   page,
 }) => {
   const past = record("events", { title: "Vergangener Termin", date: "2020-01-01" }, "past");
-  const hidden = record(
-    "events",
-    { title: "Ausgeblendeter Termin", date: "2099-01-01", visible: false },
-    "hidden",
-  );
   const saved: Change = {
     ...change(),
     saved: {
@@ -760,7 +806,7 @@ test("Übersicht berücksichtigt gespeicherte Termine und schließt vergangene s
       previews: {},
     },
   };
-  await mock(page, [event, past, hidden], {
+  await mock(page, [event, past], {
     route: async (route, path) => {
       if (path !== "/changes") return false;
       await route.fulfill({ json: { changes: [saved] } });
@@ -818,19 +864,12 @@ test("Terminauswahl verwendet Berliner Datum und sinnvolle Vorlagen ohne Duplika
   const old = record("events", { title: "Elternabend", date: "2026-10-15" }, "old");
   const future = record("events", { title: "Elternabend", date: "2026-11-15" }, "future");
   const current = record("events", { title: "Heute", date: "2026-10-16" }, "current");
-  const hidden = record(
-    "events",
-    { title: "Versteckt", date: "2026-12-01", visible: false },
-    "hidden",
-  );
   expect(
-    nextEvents([future, old, hidden, current], new Date("2026-10-15T22:30:00Z")).map(
-      (record) => record.id,
-    ),
+    nextEvents([future, old, current], new Date("2026-10-15T22:30:00Z")).map((record) => record.id),
   ).toEqual(["current", "future"]);
-  expect(
-    eventTemplates([old, future, hidden, current], "Eltern").map((record) => record.id),
-  ).toEqual(["future"]);
+  expect(eventTemplates([old, future, current], "Eltern").map((record) => record.id)).toEqual([
+    "future",
+  ]);
 });
 
 test("Terminvorlage übernimmt Angaben und bewahrt das gewählte neue Datum", async ({ page }) => {
@@ -884,6 +923,212 @@ test("Sortierpfeile erscheinen nur im angeforderten Modus und speichern die neue
   ]);
   await page.getByRole("button", { name: "Sortierung beenden", exact: true }).click();
   await expect(page.locator(".sort-controls")).toHaveCount(0);
+});
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`Menschen zeigt die aktuellen Personen ohne Überlauf (${viewport.width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const records = (["team", "parentCouncil"] as const).flatMap((collection) => {
+      const directory = getContentDefinition(collection).directory;
+      return readdirSync(directory)
+        .filter((name) => name.endsWith(".yml"))
+        .map((file) => ({
+          collection,
+          id: file.slice(0, -4),
+          version: "current-version",
+          data: parseContent(
+            collection,
+            file.slice(0, -4),
+            parse(readFileSync(`${directory}/${file}`, "utf8")),
+          ),
+        }));
+    });
+    const mediaVersions: Record<string, string> = {};
+    for (const record of records) {
+      if (typeof record.data.image !== "string") continue;
+      const bytes = readFileSync(`src/${record.data.image.slice(6)}`);
+      mediaVersions[record.data.image] = createHash("sha1")
+        .update(`blob ${bytes.length}\0`)
+        .update(bytes)
+        .digest("hex");
+    }
+    await mock(page, records, { mediaVersions });
+    await page.goto("/?collection=team");
+    await expect(page.getByRole("region", { name: /^Leitung/ })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath("menschen-uebersicht.png") });
+    const primary = page.getByRole("region", { name: /^Primaria · Pädagogische Assistenzen/ });
+    const sort = primary.getByRole("button", { name: "Reihenfolge ändern", exact: true });
+    if (await sort.count()) await sort.click();
+    await primary.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath("menschen-sortierung.png") });
+    const council = page.getByRole("region", { name: /^Elternbeirat Kindergarten/ });
+    await council.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath("menschen-elternbeirat.png") });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+
+  test(`Menschen sortiert Aufgaben getrennt und behält sie nach Neuladen (${viewport.width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const maria = record(
+      "team",
+      {
+        name: "Maria Monte",
+        assignments: [
+          { group: "Leitung", role: "Schulleitung", position: 10 },
+          { group: "Primaria", section: "Klassenleitungen", role: "Primaria A", position: 30 },
+          { group: "Vorstand", role: "Vorsitz", position: 20 },
+        ],
+      },
+      "maria",
+    );
+    const berta = record(
+      "team",
+      {
+        name: "Berta Beispiel",
+        assignments: [
+          { group: "Leitung", position: 20 },
+          { group: "Primaria", section: "Klassenleitungen", position: 10 },
+          { group: "Vorstand", position: 10 },
+        ],
+      },
+      "berta",
+    );
+    const assistant = record(
+      "team",
+      {
+        name: "Pia Assistenz",
+        assignments: [{ group: "Primaria", section: "Pädagogische Assistenzen", position: 10 }],
+      },
+      "pia",
+    );
+    let saved: Change | undefined;
+    const requests = await mock(page, [maria, berta, assistant], {
+      route: async (route, path) => {
+        if (path !== "/changes") return false;
+        if (route.request().method() === "POST") {
+          const request = route.request().postDataJSON() as ChangeRequest;
+          requests.push(request);
+          saved = { ...change(), saved: { mutations: request.mutations, previews: {} } };
+          await route.fulfill({ json: saved });
+        } else await route.fulfill({ json: { changes: saved ? [saved] : [] } });
+        return true;
+      },
+    });
+    await page.goto("/?collection=team");
+    const leadership = page.getByRole("region", { name: /^Leitung/ });
+    const primary = page.getByRole("region", { name: /^Primaria · Klassenleitungen/ });
+    const assistants = page.getByRole("region", { name: /^Primaria · Pädagogische Assistenzen/ });
+    const board = page.getByRole("region", { name: /^Vorstand/ });
+    await expect(leadership.locator(".record-row strong")).toHaveText([
+      "Maria Monte",
+      "Berta Beispiel",
+    ]);
+    await expect(primary.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await expect(assistants.locator(".record-row strong")).toHaveText(["Pia Assistenz"]);
+    await expect(board.locator(".record-row strong")).toHaveText(["Berta Beispiel", "Maria Monte"]);
+    await leadership.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await expect(primary.locator(".sort-controls")).toHaveCount(0);
+    await page.screenshot({ path: testInfo.outputPath("menschen.png"), fullPage: true });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await leadership.getByRole("button", { name: "Berta Beispiel nach oben", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations).toEqual([
+      {
+        collection: "team",
+        id: "berta",
+        baseVersion: berta.version,
+        data: {
+          ...berta.data,
+          assignments: [
+            { group: "Leitung", position: 1 },
+            { group: "Primaria", section: "Klassenleitungen", position: 10 },
+            { group: "Vorstand", position: 10 },
+          ],
+        },
+      },
+      {
+        collection: "team",
+        id: "maria",
+        baseVersion: maria.version,
+        data: {
+          ...maria.data,
+          assignments: [
+            { group: "Leitung", role: "Schulleitung", position: 2 },
+            { group: "Primaria", section: "Klassenleitungen", role: "Primaria A", position: 30 },
+            { group: "Vorstand", role: "Vorsitz", position: 20 },
+          ],
+        },
+      },
+    ]);
+    await page.reload();
+    await expect(leadership.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await expect(primary.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await board.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await expect(board.getByRole("button", { name: "Maria Monte nach oben" })).toBeDisabled();
+  });
+}
+
+for (const area of ["Kindergarten", "Schule"]) {
+  test(`Elternbeirat ${area} speichert nur seine eigene Reihenfolge`, async ({ page }) => {
+    const records = ["Kindergarten", "Schule"].flatMap((group) => [
+      record(
+        "parentCouncil",
+        { name: "Anna", area: group, position: 10 },
+        `${group.toLowerCase()}-anna`,
+      ),
+      record(
+        "parentCouncil",
+        { name: "Zora", area: group, position: 20 },
+        `${group.toLowerCase()}-zora`,
+      ),
+    ]);
+    const requests = await mock(page, records);
+    await page.goto("/?collection=parentCouncil");
+    const section = page.getByRole("region", { name: new RegExp(`^Elternbeirat ${area}`) });
+    await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await section.getByRole("button", { name: "Zora nach oben" }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations.map((mutation) => [mutation.id, mutation.data.position])).toEqual([
+      [`${area.toLowerCase()}-zora`, 1],
+      [`${area.toLowerCase()}-anna`, 2],
+    ]);
+    expect(requests[0].mutations.every((mutation) => mutation.data.area === area)).toBe(true);
+  });
+}
+
+test("Menschen fügt Personen im ausgewählten Bereich hinzu", async ({ page }) => {
+  await mock(page, []);
+  await page.goto("/?collection=team");
+  await page
+    .getByRole("region", { name: /^Sekundaria · Pädagogische Assistenzen/ })
+    .getByRole("button", { name: "+ Hinzufügen" })
+    .click();
+  await expect(page.getByRole("combobox", { name: "Bereich", exact: true })).toHaveValue(
+    "Sekundaria",
+  );
+  await expect(page.getByRole("combobox", { name: "Untergruppe", exact: true })).toHaveValue(
+    "Pädagogische Assistenzen",
+  );
 });
 
 function uploadForm(route: Route) {
@@ -1497,5 +1742,220 @@ for (const recovery of ["new", "replacement", "expired"] as const) {
     accepted = false;
     await page.reload();
     await expect(page.getByRole("button", { name: "Problem ansehen" })).toHaveCount(0);
+  });
+}
+
+for (const width of [1440, 390]) {
+  test(`Löschen bestätigt die Entfernung, bleibt nach Neuladen wirksam und meldet Veröffentlichung (${width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    let saved: Change | undefined;
+    let published = false;
+    const requests = await mock(page, [event], {
+      role: "content-manager",
+      route: async (route, path) => {
+        if (path === "/changes") {
+          if (route.request().method() === "POST") {
+            const input: ChangeRequest = route.request().postDataJSON();
+            requests.push(input);
+            saved = {
+              ...change(),
+              deleted: true,
+              summary: "Termine · 1 Eintrag löschen",
+              saved: { mutations: input.mutations, previews: {} },
+            };
+            await route.fulfill({ json: saved });
+          } else
+            await route.fulfill({
+              json: {
+                changes: saved
+                  ? [
+                      {
+                        ...saved,
+                        status: published ? "published" : "checking",
+                        saved: published ? undefined : saved.saved,
+                      },
+                    ]
+                  : [],
+              },
+            });
+          return true;
+        }
+        if (path === "/content" && published) {
+          await route.fulfill({ json: { revision: "revision-2", records: [], mediaVersions: {} } });
+          return true;
+        }
+        return false;
+      },
+    });
+    await page.goto("/?collection=events&id=test-eintrag");
+    const remove = page.getByRole("button", { name: "Löschen", exact: true });
+    await expect(remove).toBeVisible();
+    await remove.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: testInfo.outputPath("delete.png"), fullPage: true });
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await remove.click();
+    expect(requests).toHaveLength(0);
+    await expect(remove).toBeVisible();
+    page.once("dialog", (dialog) => dialog.accept());
+    await remove.click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0]).toMatchObject({
+      mutations: [{ collection: "events", id: event.id, baseVersion: event.version, delete: true }],
+      uploadIds: [],
+    });
+    await expect(page.locator(".record-row")).toHaveCount(0);
+    await page.reload();
+    await expect(page.locator(".record-row")).toHaveCount(0);
+    await expect(page.getByRole("checkbox", { name: "Ausgeblendete anzeigen" })).toHaveCount(0);
+    if (width < 800) await page.getByRole("button", { name: "Menü öffnen" }).click();
+    await page
+      .locator(".sidebar")
+      .getByRole("button", { name: /^Änderungen(?: \d+)?$/ })
+      .click();
+    await expect(page.getByText("Termine · 1 Eintrag löschen", { exact: true })).toBeVisible();
+    published = true;
+    await expect(page.getByText("Von der Website entfernt", { exact: true })).toBeVisible({
+      timeout: 8000,
+    });
+    await expect(page.getByText("Auf der Website sichtbar", { exact: true })).toHaveCount(0);
+  });
+}
+
+test("alle wiederholbaren Bereiche bieten Löschen ohne Sichtbarkeitssteuerung; verknüpfte PDFs bleiben geschützt", async ({
+  page,
+}) => {
+  const records: ContentRecord[] = [
+    event,
+    record("jobs", { title: "Lernbegleitung" }),
+    record("team", { name: "Testperson" }),
+    record("parentCouncil", { name: "Elternvertretung" }),
+    record("downloads", { title: "Freie Unterlage", file: "/downloads/test.pdf" }),
+    record("afternoonOffers", { title: "Werkstatt", schoolYear: "2026/27" }),
+    record(
+      "downloads",
+      { title: "Pflichtunterlage", file: "/downloads/aufnahme.pdf" },
+      "absichtserklaerung-schule",
+    ),
+  ];
+  await mock(page, records);
+  for (const item of records) {
+    await page.goto(`/?collection=${item.collection}&id=${item.id}`);
+    await expect(page.getByRole("button", { name: "Löschen", exact: true })).toHaveCount(
+      item.id === "absichtserklaerung-schule" ? 0 : 1,
+    );
+    await expect(
+      page.getByRole("button", { name: /^(Ausblenden|Wieder einblenden)$/ }),
+    ).toHaveCount(0);
+    await expect(page.getByRole("checkbox", { name: "Auf der Website sichtbar" })).toHaveCount(0);
+  }
+});
+
+test("fehlgeschlagenes Löschen behält den Eintrag und wiederholt dieselbe Anfrage", async ({
+  page,
+}) => {
+  const ids: string[] = [];
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path !== "/changes" || route.request().method() !== "POST") return false;
+      ids.push(route.request().postDataJSON().requestId);
+      await route.fulfill({
+        status: 503,
+        json: { error: "Bitte erneut versuchen", code: "unavailable" },
+      });
+      return true;
+    },
+  });
+  await page.goto("/?collection=events&id=test-eintrag");
+  for (let i = 0; i < 2; i++) {
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Löschen", exact: true }).click();
+    await expect(page.getByRole("alert")).toContainText("Bitte erneut versuchen");
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+      event.data.title as string,
+    );
+  }
+  expect(ids).toHaveLength(2);
+  expect(ids[0]).toBe(ids[1]);
+});
+
+test("Löschkonflikt lädt den aktuellen Inhalt vor einer neuen Bestätigung", async ({ page }) => {
+  let conflicted = false;
+  const requests: ChangeRequest[] = [];
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path === "/content" && conflicted) {
+        await route.fulfill({
+          json: {
+            revision: "revision-2",
+            records: [
+              {
+                ...event,
+                version: "version-2",
+                data: { ...event.data, title: "Vom Team geändert" },
+              },
+            ],
+            mediaVersions: {},
+          },
+        });
+        return true;
+      }
+      if (path !== "/changes" || route.request().method() !== "POST") return false;
+      requests.push(route.request().postDataJSON());
+      if (!conflicted) {
+        conflicted = true;
+        await route.fulfill({
+          status: 409,
+          json: { error: "Inzwischen geändert", code: "content_conflict" },
+        });
+      } else await route.fulfill({ json: change() });
+      return true;
+    },
+  });
+  await page.goto("/?collection=events&id=test-eintrag");
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Löschen", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+    "Vom Team geändert",
+  );
+  expect(requests).toHaveLength(1);
+  await expect(page.locator(".conflict-panel")).toHaveCount(0);
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Löschen", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(2);
+  expect(requests[1].mutations[0]).toMatchObject({
+    baseVersion: "version-2",
+    delete: true,
+    data: { title: "Vom Team geändert" },
+  });
+});
+
+for (const status of ["checking", "published"] as const) {
+  test(`gelöschte Einträge erscheinen nicht über ältere Änderungen wieder in der Übersicht (${status})`, () => {
+    const mutation = {
+      collection: event.collection,
+      id: event.id,
+      baseVersion: event.version,
+      data: event.data,
+    };
+    const deletion: Change = {
+      ...change(status),
+      deleted: true,
+      targets: [mutation],
+      saved:
+        status === "published"
+          ? undefined
+          : { mutations: [{ ...mutation, delete: true }], previews: {} },
+    };
+    const older: Change = {
+      ...change("failed"),
+      createdAt: "2026-10-14T12:00:00Z",
+      saved: { mutations: [mutation], previews: {} },
+    };
+    expect(recentContent([], [deletion, older])).toEqual([]);
   });
 }

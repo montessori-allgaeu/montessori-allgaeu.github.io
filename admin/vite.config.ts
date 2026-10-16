@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
+import { profileThumbnails } from "../scripts/profile-thumbnails.ts";
 
 export default defineConfig({
   root: fileURLToPath(new URL(".", import.meta.url)),
-  plugins: [react()],
+  plugins: [react(), profileThumbnails(fileURLToPath(new URL("..", import.meta.url)))],
   build: {
     outDir: "../dist-admin",
     emptyOutDir: true,

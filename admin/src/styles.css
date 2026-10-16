@@ -515,6 +515,9 @@ strong {
   gap: 16px;
   margin: 30px 0 14px;
 }
+.people-section .section-heading {
+  flex-wrap: wrap;
+}
 .section-heading h2 {
   margin: 0;
 }
@@ -645,9 +648,6 @@ strong {
   object-fit: cover;
   flex-shrink: 0;
   background: #e2e3d8;
-}
-.hidden-record .record-row strong {
-  color: var(--muted);
 }
 .sort-controls {
   display: flex;
@@ -1236,6 +1236,11 @@ strong {
   }
   .quick-actions .button:first-child {
     width: 100%;
+  }
+  .people-section .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
   .section-heading h2 {
     font-size: 25px;

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { legacyRedirects } from "../src/data/legacy";
-import { hasVisibleJobs } from "./content-data";
+import { hasJobs } from "./content-data";
 
 const keyPages = [
   "/",
@@ -751,7 +751,7 @@ test("local search pages expose their intended introductions and trust facts", a
     ],
     [
       "/arbeiten-bei-uns/stellen/",
-      hasVisibleJobs
+      hasJobs
         ? "Hier findest du aktuelle Stellenangebote an unserer Montessori-Schule und unserem Montessori-Kindergarten in Oberstaufen"
         : "Aktuell haben wir keine offenen Stellen.",
     ],

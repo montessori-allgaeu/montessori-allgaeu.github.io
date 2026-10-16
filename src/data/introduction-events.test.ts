@@ -5,7 +5,6 @@ const openDay = {
   title: "Tag der offenen Tür",
   date: "2026-11-15",
   category: "Kennenlernen",
-  visible: true,
 };
 const infoEvening = {
   ...openDay,
@@ -18,7 +17,6 @@ describe("next introduction event", () => {
   it("selects the earliest published introduction event without changing the source order", () => {
     const events = [
       infoEvening,
-      { ...openDay, date: "2026-11-01", visible: false },
       { ...openDay, date: "2026-11-02", category: "Monte-Gemeinschaft & Freunde" },
       { ...openDay, date: "2026-09-01" },
       openDay,
@@ -56,8 +54,5 @@ describe("next introduction event", () => {
   it("returns no event when none is eligible", () => {
     expect(getNextIntroductionEvent([], new Date("2026-11-15T12:00:00Z"))).toBeUndefined();
     expect(getNextIntroductionEvent([openDay], new Date("2026-11-16T12:00:00Z"))).toBeUndefined();
-    expect(
-      getNextIntroductionEvent([{ ...openDay, visible: false }], new Date("2026-11-01T12:00:00Z")),
-    ).toBeUndefined();
   });
 });

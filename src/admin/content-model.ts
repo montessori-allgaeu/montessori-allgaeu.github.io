@@ -170,6 +170,13 @@ export const linkedDownloadIds = [
 ] as const;
 export type LinkedDownloadId = (typeof linkedDownloadIds)[number];
 
+export function canDeleteContent(record: { collection: ContentCollection; id: string }): boolean {
+  return (
+    !getContentDefinition(record.collection).singleton &&
+    !(record.collection === "downloads" && linkedDownloadIds.some((id) => id === record.id))
+  );
+}
+
 export function mediaRepositoryPath(collection: ContentCollection, value: string): string {
   if (collection === "downloads" && /^\/downloads\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.pdf$/.test(value))
     return `public${value}`;
@@ -210,31 +217,21 @@ export function validateContentSnapshot(
     !records.some(
       (record) =>
         record.collection === "afternoonOffers" &&
-        record.data.visible &&
         record.data.schoolYear === program.data.activeSchoolYear,
     )
   ) {
     throw new Error(
-      `Für das aktive Schuljahr ${program.data.activeSchoolYear} muss mindestens ein sichtbares Nachmittagsangebot vorhanden sein.`,
+      `Für das aktive Schuljahr ${program.data.activeSchoolYear} muss mindestens ein Nachmittagsangebot vorhanden sein.`,
     );
   }
   for (const id of linkedDownloadIds) {
-    if (
-      !records.some(
-        (record) => record.collection === "downloads" && record.id === id && record.data.visible,
-      )
-    )
+    if (!records.some((record) => record.collection === "downloads" && record.id === id))
       throw new Error(
-        `Das verknüpfte Dokument „${id}“ wird auf der Website benötigt und muss sichtbar bleiben.`,
+        `Das verknüpfte Dokument „${id}“ wird auf der Website benötigt und darf nicht gelöscht werden.`,
       );
   }
   for (const record of records) {
-    const value =
-      record.collection === "downloads"
-        ? record.data.visible
-          ? record.data.file
-          : undefined
-        : record.data.image;
+    const value = record.collection === "downloads" ? record.data.file : record.data.image;
     if (
       typeof value === "string" &&
       !availableMedia.has(mediaRepositoryPath(record.collection, value))

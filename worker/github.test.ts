@@ -1,7 +1,11 @@
 import { env } from "cloudflare:workers";
 import { exportJWK, exportPKCS8, generateKeyPair, jwtVerify, SignJWT } from "jose";
 import { afterEach, beforeAll, beforeEach, expect, test, vi } from "vitest";
-import { contentDefinitions, getContentPath } from "../src/admin/content-model";
+import {
+  contentDefinitions,
+  createContentDefaults,
+  getContentPath,
+} from "../src/admin/content-model";
 import { contentCollections } from "../src/admin/types";
 import type { Env } from "./env";
 import { GitHub, verifyRunner } from "./github";
@@ -10,6 +14,18 @@ const sources = import.meta.glob<string>("../src/content/**/*.yml", {
   eager: true,
   query: "?raw",
   import: "default",
+});
+sources["../src/content/jobs/fixture.yml"] = JSON.stringify({
+  ...createContentDefaults("jobs"),
+  title: "Teststelle",
+  scope: "Teilzeit",
+  intro: "Kinder begleiten",
+  about: ["Monte"],
+  responsibilities: ["Begleiten"],
+  profile: ["Erfahrung"],
+  benefits: ["Team"],
+  closingTitle: "Melde dich",
+  closingText: "Wir freuen uns",
 });
 const files = Object.entries(sources).map(([path, text], index) => ({
   path: path.slice(3),
@@ -24,6 +40,7 @@ let privateKey: string;
 let publicJwk: Awaited<ReturnType<typeof exportJWK>>;
 let requests: { path: string; init?: RequestInit }[];
 let truncated = false;
+let emptyJobs = false;
 let missingGraphqlBlob = false;
 
 beforeAll(async () => {
@@ -39,6 +56,7 @@ beforeAll(async () => {
 beforeEach(() => {
   requests = [];
   truncated = false;
+  emptyJobs = false;
   missingGraphqlBlob = false;
   vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     const url = new URL(input instanceof Request ? input.url : String(input));
@@ -57,13 +75,15 @@ beforeEach(() => {
     if (url.pathname.endsWith(`/git/trees/${head}`))
       return Response.json({
         truncated,
-        tree: files.map(({ path, sha, text }) => ({
-          path,
-          sha,
-          size: new TextEncoder().encode(text).length,
-          mode: "100644",
-          type: "blob",
-        })),
+        tree: files
+          .filter((file) => !emptyJobs || !file.path.startsWith("src/content/jobs/"))
+          .map(({ path, sha, text }) => ({
+            path,
+            sha,
+            size: new TextEncoder().encode(text).length,
+            mode: "100644",
+            type: "blob",
+          })),
       });
     if (url.pathname === "/graphql") {
       const query = JSON.parse(String(init?.body)).query as string;
@@ -158,6 +178,7 @@ test("refuses incomplete trees and missing content blobs instead of returning pa
     code: "tree_size",
   });
   truncated = false;
+  emptyJobs = false;
   missingGraphqlBlob = true;
   await expect(new GitHub(settings()).snapshot()).rejects.toMatchObject({
     status: 503,
@@ -243,4 +264,14 @@ test("rejects an unsigned bearer value", async () => {
     status: 401,
     code: "runner_auth",
   });
+});
+
+test("accepts an empty jobs collection after its last entry is deleted", async () => {
+  emptyJobs = true;
+  const snapshot = await new GitHub(settings()).snapshot();
+  expect(snapshot.records.filter((record) => record.collection === "jobs")).toEqual([]);
+  expect(snapshot.records).toHaveLength(files.length - 1);
+  expect(new Set(snapshot.records.map((record) => record.collection))).toEqual(
+    new Set(contentCollections.filter((collection) => collection !== "jobs")),
+  );
 });

@@ -13,8 +13,6 @@ export function contentUsage(
   records: ContentRecord[],
   now = new Date(),
 ): { pages: Page[]; note?: string } {
-  if (record.data.visible === false)
-    return { pages: [], note: "Ausgeblendet. Dieser Eintrag erscheint nicht auf der Website." };
   switch (record.collection) {
     case "events": {
       const next = getNextIntroductionEvent(
@@ -25,7 +23,6 @@ export function contentUsage(
             title: String(item.data.title),
             date: String(item.data.date),
             category: String(item.data.category),
-            visible: item.data.visible !== false,
           })),
         now,
       );

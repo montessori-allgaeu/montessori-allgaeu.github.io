@@ -169,7 +169,13 @@ function change(record = records.find((record) => record.collection === "events"
     uploadIds: [],
   };
 }
-type Context = { publishing: Publishing; store: Store; auth: Auth; storage: DurableObjectStorage };
+type Context = {
+  publishing: Publishing;
+  github: GitHub;
+  store: Store;
+  auth: Auth;
+  storage: DurableObjectStorage;
+};
 async function withPublishing(callback: (context: Context) => Promise<void>) {
   return runInDurableObject(
     env.ADMIN.getByName(crypto.randomUUID()),
@@ -187,15 +193,10 @@ async function withPublishing(callback: (context: Context) => Promise<void>) {
       };
       const store = new Store(context.storage.sql);
       const auth = new Auth(store, settings);
-      const publishing = new Publishing(
-        store,
-        settings,
-        new GitHub(settings),
-        auth,
-        context.storage,
-      );
+      const github = new GitHub(settings);
+      const publishing = new Publishing(store, settings, github, auth, context.storage);
       try {
-        await callback({ publishing, store, auth, storage: context.storage });
+        await callback({ publishing, github, store, auth, storage: context.storage });
       } finally {
         await context.storage.deleteAlarm();
       }
@@ -213,6 +214,148 @@ function pdfRequest(replace?: string, baseVersion?: string) {
   if (baseVersion) data.set("baseVersion", baseVersion);
   return new Request(`${origin}/api/uploads`, { method: "POST", body: data });
 }
+
+function imageRequest(
+  extension: "jpg" | "png" | "webp",
+  replace: string,
+  baseVersion?: string,
+  kind = "team",
+) {
+  const signatures = {
+    jpg: [0xff, 0xd8, 0xff],
+    png: [137, 80, 78, 71, 13, 10, 26, 10],
+    webp: [82, 73, 70, 70, 0, 0, 0, 0, 87, 69, 66, 80],
+  };
+  const data = new FormData();
+  data.set("kind", kind);
+  data.set("file", new File([new Uint8Array(signatures[extension])], `portrait.${extension}`));
+  data.set("replace", replace);
+  if (baseVersion) data.set("baseVersion", baseVersion);
+  return new Request(`${origin}/api/uploads`, { method: "POST", body: data });
+}
+
+test.each(
+  (["team", "parentCouncil"] as const).flatMap((kind) =>
+    ["jpg", "jpeg", "png", "webp"].flatMap((originalExtension) =>
+      (["jpg", "png", "webp"] as const).map((extension) => ({
+        kind,
+        originalExtension,
+        extension,
+      })),
+    ),
+  ),
+)(
+  "replaces $kind $originalExtension portraits with $extension and preserves uploaded bytes",
+  async ({ kind, originalExtension, extension }) => {
+    await withPublishing(async ({ publishing, github, store }) => {
+      const owner = user();
+      const snapshot = await github.snapshot();
+      const source = snapshot.records.find(
+        (entry) => entry.collection === kind && entry.data.image,
+      )!;
+      const oldPath = mediaRepositoryPath(kind, source.data.image as string);
+      const original = (source.data.image as string).replace(/\.[^.]+$/, `.${originalExtension}`);
+      const originalPath = mediaRepositoryPath(kind, original);
+      snapshot.files.set(originalPath, { ...snapshot.files.get(oldPath)!, path: originalPath });
+      const record = { ...source, data: { ...source.data, image: original } };
+      snapshot.records = snapshot.records.map((entry) => (entry === source ? record : entry));
+      vi.spyOn(github, "snapshot").mockResolvedValue(snapshot);
+      const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
+      const upload = await (
+        await publishing.upload(
+          imageRequest(extension, original, baseline.mediaVersions[original], kind),
+          owner,
+        )
+      ).json<UploadResult>();
+      const sameFormat = originalExtension.replace("jpeg", "jpg") === extension;
+      if (sameFormat) expect(upload.value).toBe(original);
+      else {
+        expect(upload.value).not.toBe(original);
+        expect(upload.value).toMatch(new RegExp(`\\.${extension}$`));
+      }
+      const preview = await publishing.uploadPreview(upload.id, owner);
+      expect(preview.headers.get("content-type")).toBe(
+        extension === "jpg" ? "image/jpeg" : `image/${extension}`,
+      );
+      expect(await preview.arrayBuffer()).toEqual(await env.UPLOADS.get(upload.id, "arrayBuffer"));
+      const input = change(record);
+      input.mutations[0].data.image = upload.value;
+      input.uploadIds = [upload.id];
+      store.put(`user:${owner.id}`, owner);
+      const response = await publishing.submit(input, owner, session(owner));
+      expect(response.status).toBe(202);
+      expect(store.list("change:")).toHaveLength(1);
+      const saved = await response.json<Change>();
+      await publishing.tick();
+      const operation = await (
+        await run(publishing, await runnerRequest(saved.id, dispatches.at(-1)!.inputs.attempt))
+      ).json<{ uploads: { path: string; baseVersion: string | null; replacement?: unknown }[] }>();
+      expect(operation.uploads[0]).toMatchObject({
+        path: mediaRepositoryPath(kind, upload.value),
+        baseVersion: sameFormat ? baseline.mediaVersions[original] : null,
+      });
+      expect(operation.uploads[0].replacement).toEqual(
+        sameFormat
+          ? undefined
+          : {
+              path: originalPath,
+              baseVersion: baseline.mediaVersions[original],
+            },
+      );
+    });
+  },
+);
+
+test("checks the original portrait baseline before staging a different format", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const owner = user();
+    const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
+    const original = baseline.records.find(
+      (entry) => entry.collection === "team" && String(entry.data.image).endsWith(".webp"),
+    )!.data.image as string;
+    await expect(publishing.upload(imageRequest("png", original), owner)).rejects.toMatchObject({
+      status: 409,
+      code: "media_conflict",
+    });
+    mediaVersionOverride = "e".repeat(40);
+    await expect(
+      publishing.upload(imageRequest("jpg", original, baseline.mediaVersions[original]), owner),
+    ).rejects.toMatchObject({ status: 409, code: "media_conflict" });
+    await expect(
+      publishing.upload(
+        imageRequest("png", "../../assets/images/team/missing.webp", "a".repeat(40)),
+        owner,
+      ),
+    ).rejects.toMatchObject({ status: 409, code: "replace_missing" });
+    expect(store.list("upload:")).toHaveLength(0);
+  });
+});
+
+test("refuses a format-changing portrait replacement when the source changes after upload", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const owner = user();
+    const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
+    const record = baseline.records.find(
+      (entry) => entry.collection === "team" && String(entry.data.image).endsWith(".webp"),
+    )!;
+    const original = record.data.image as string;
+    const upload = await (
+      await publishing.upload(
+        imageRequest("png", original, baseline.mediaVersions[original]),
+        owner,
+      )
+    ).json<UploadResult>();
+    mediaVersionOverride = "e".repeat(40);
+    const input = change(record);
+    input.mutations[0].data.image = upload.value;
+    input.uploadIds = [upload.id];
+    await expect(publishing.submit(input, owner, session(owner))).rejects.toMatchObject({
+      status: 409,
+      code: "media_conflict",
+    });
+    expect(store.list("change:")).toHaveLength(0);
+  });
+});
 
 test("accepts an atomic edit and makes retries idempotent without queuing duplicate work", async () => {
   await withPublishing(async ({ publishing, store, storage }) => {
@@ -315,9 +458,7 @@ test("uploads are private, belong to their uploader and can bind to only one cha
       code: "upload_missing",
     });
     expect((await publishing.uploadPreview(upload.id, user("admin"))).status).toBe(200);
-    const input = change(
-      records.find((record) => record.collection === "downloads" && record.data.visible)!,
-    );
+    const input = change(records.find((record) => record.collection === "downloads")!);
     input.mutations[0].data.file = upload.value;
     input.uploadIds = [upload.id];
     await expect(publishing.submit(input, other, session(other))).rejects.toMatchObject({
@@ -346,7 +487,7 @@ test("uploads are private, belong to their uploader and can bind to only one cha
 test("refuses a PDF replacement when the original file changed after upload", async () => {
   await withPublishing(async ({ publishing, store }) => {
     const owner = user();
-    const record = records.find((entry) => entry.collection === "downloads" && entry.data.visible)!;
+    const record = records.find((entry) => entry.collection === "downloads")!;
     const original = record.data.file as string;
     const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
     const upload = await (
@@ -369,9 +510,7 @@ test("rejects stale or missing media baselines before staging a replacement", as
   await withPublishing(async ({ publishing, store }) => {
     const owner = user();
     const baseline = await (await publishing.content()).json<EditableContentSnapshot>();
-    const record = baseline.records.find(
-      (entry) => entry.collection === "downloads" && entry.data.visible,
-    )!;
+    const record = baseline.records.find((entry) => entry.collection === "downloads")!;
     const original = record.data.file as string;
     expect(baseline.mediaVersions[original]).toMatch(/^[a-f0-9]{40}$/);
     await expect(publishing.upload(pdfRequest(original), owner)).rejects.toMatchObject({
@@ -546,5 +685,68 @@ test("an admin retry preserves the original request identity and invalidates the
       await run(publishing, await runnerRequest(job.id, nextAttempt, "457"))
     ).json<{ commit: string }>();
     expect(retried.commit).toBe("a".repeat(40));
+  });
+});
+
+test("accepts versioned deletion once and rejects missing, protected and program-breaking deletions", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const account = user();
+    const input = change();
+    input.mutations[0].delete = true;
+    const first = await (await publishing.submit(input, account, session(account))).json<Change>();
+    expect(first).toMatchObject({
+      status: "queued",
+      deleted: true,
+      saved: { mutations: [{ delete: true }] },
+    });
+    const repeated = await (
+      await publishing.submit(input, account, session(account))
+    ).json<Change>();
+    expect(repeated.id).toBe(first.id);
+    expect(store.list("change:")).toHaveLength(1);
+    for (const record of records.filter(
+      (item) =>
+        item.collection === "contactSettings" ||
+        item.collection === "donations" ||
+        item.id === "absichtserklaerung-schule",
+    )) {
+      const invalid = change(record);
+      invalid.mutations[0].delete = true;
+      await expect(publishing.submit(invalid, account, session(account))).rejects.toMatchObject({
+        status: 400,
+        code: "deletion_invalid",
+      });
+    }
+    const stale = change();
+    stale.mutations[0].delete = true;
+    stale.mutations[0].baseVersion = "0".repeat(40);
+    await expect(publishing.submit(stale, account, session(account))).rejects.toMatchObject({
+      status: 409,
+    });
+    const absent = change();
+    absent.mutations[0] = {
+      ...absent.mutations[0],
+      id: "missing",
+      baseVersion: null,
+      delete: true,
+    };
+    await expect(publishing.submit(absent, account, session(account))).rejects.toMatchObject({
+      status: 400,
+    });
+    const program = change();
+    program.mutations = records
+      .filter((record) => record.collection === "afternoonOffers")
+      .map((record) => ({
+        collection: record.collection,
+        id: record.id,
+        baseVersion: record.version,
+        data: record.data,
+        delete: true,
+      }));
+    await expect(publishing.submit(program, account, session(account))).rejects.toMatchObject({
+      status: 400,
+      code: "content_invalid",
+    });
+    expect(store.list("change:")).toHaveLength(1);
   });
 });

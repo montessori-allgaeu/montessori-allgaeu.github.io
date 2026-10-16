@@ -11,10 +11,16 @@ import type {
   UploadResult,
 } from "../../src/admin/types";
 import {
+  canDeleteContent,
   contentDefinitions,
   getContentDefinition,
   calculateEffectiveFee,
 } from "../../src/admin/content-model";
+import {
+  contentSections,
+  reorderMutations,
+  type ContentListEntry,
+} from "../../src/admin/content-sections";
 import { api, errorText, RequestError } from "./api";
 import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
@@ -30,6 +36,7 @@ import {
   eventTemplates,
 } from "./overview";
 import { activeMedia, discardMedia, selectMedia, uploadMedia, type PendingMedia } from "./media";
+import { loadProfileThumbnails, ProfileThumbnail } from "./ProfileThumbnail";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
 if (capturedInvite) history.replaceState(null, "", `${location.pathname}${location.search}`);
@@ -67,7 +74,10 @@ const statusLabels: Record<Change["status"], string> = {
 };
 const ongoing = (change: Change | undefined) =>
   change && ["queued", "checking", "committed"].includes(change.status);
-const isVisible = (record: ContentRecord) => record.data.visible !== false;
+const changeStatusLabel = (change: Change) =>
+  change.deleted && change.status === "published"
+    ? "Von der Website entfernt"
+    : statusLabels[change.status];
 const makeId = (data: ContentData) =>
   `${
     titleOf(data, "eintrag")
@@ -121,8 +131,10 @@ function editorialRecords(records: ContentRecord[], changes: Change[]): ContentR
   // The API orders newest first. Apply older pending changes first.
   for (const change of [...changes].reverse()) {
     if (!ongoing(change)) continue;
-    for (const mutation of change.saved?.mutations ?? [])
-      result.set(recordKey(mutation), { ...mutation, version: mutation.baseVersion ?? "" });
+    for (const mutation of change.saved?.mutations ?? []) {
+      if (mutation.delete) result.delete(recordKey(mutation));
+      else result.set(recordKey(mutation), { ...mutation, version: mutation.baseVersion ?? "" });
+    }
   }
   return [...result.values()];
 }
@@ -223,7 +235,7 @@ function ChangeList({
             <span className={`status-dot ${change.status}`} aria-hidden="true" />
             <div>
               <strong>{change.summary || "Website aktualisieren"}</strong>
-              <p className={`change-state ${change.status}`}>{statusLabels[change.status]}</p>
+              <p className={`change-state ${change.status}`}>{changeStatusLabel(change)}</p>
               {change.error && <p className="error-detail">{change.error}</p>}
               {change.saved && (change.status === "failed" || change.status === "conflict") && (
                 <div className="row-actions">
@@ -261,6 +273,7 @@ export function App() {
   const [session, setSession] = useState<SessionInfo | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [snapshot, setSnapshot] = useState<EditableContentSnapshot | null>(null);
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const [changes, setChanges] = useState<Change[]>([]);
   const [seenFailures, setSeenFailures] = useState(readSeenFailures);
   const [area, setArea] = useState(initialArea);
@@ -270,14 +283,13 @@ export function App() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
-  const [archive, setArchive] = useState(false);
   const [past, setPast] = useState(false);
   const [offerYear, setOfferYear] = useState("");
   const [uploadsInProgress, setUploadsInProgress] = useState(0);
   const [conflictMediaVersions, setConflictMediaVersions] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
-  const [sortingCollection, setSortingCollection] = useState<ContentCollection | null>(null);
+  const [sortingSection, setSortingSection] = useState<string | null>(null);
   const [dragged, setDragged] = useState<string | null>(null);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
@@ -338,11 +350,13 @@ export function App() {
   }, []);
 
   const refresh = useCallback(async () => {
-    const [content, result] = await Promise.all([
+    const [content, result, images] = await Promise.all([
       api.request<EditableContentSnapshot>("/content"),
       api.request<{ changes: Change[] }>("/changes"),
+      loadProfileThumbnails(),
     ]);
     setSnapshot(content);
+    setThumbnails(images);
     setChanges(result.changes);
     changesRef.current = result.changes;
     return content;
@@ -387,9 +401,13 @@ export function App() {
               "published",
         );
         if (newlyPublished) {
-          const content = await api.request<EditableContentSnapshot>("/content");
+          const [content, images] = await Promise.all([
+            api.request<EditableContentSnapshot>("/content"),
+            loadProfileThumbnails(),
+          ]);
           if (before !== changesRef.current) return;
           setSnapshot(content);
+          setThumbnails(images);
           const current = editorRef.current;
           if (
             current &&
@@ -472,9 +490,8 @@ export function App() {
   function navigate(next: string) {
     if (!leaveEditor()) return;
     setArea(next);
-    setSortingCollection(null);
+    setSortingSection(null);
     setQuery("");
-    setArchive(false);
     setPast(false);
     setOfferYear("");
     setMobileNav(false);
@@ -514,8 +531,19 @@ export function App() {
       uploadBusy(false);
     }
   }
-  function openSavedChange(change: Change, mutation: ContentMutation) {
+  async function openSavedChange(change: Change, mutation: ContentMutation) {
     if (!leaveEditor()) return;
+    if (mutation.delete) {
+      try {
+        const content = await refresh();
+        const record = content.records.find((item) => recordKey(item) === recordKey(mutation));
+        if (record) openRecord(record);
+        else setError("Dieser Eintrag ist bereits gelöscht.");
+      } catch (cause) {
+        setError(errorText(cause));
+      }
+      return;
+    }
     setArea(getContentDefinition(mutation.collection).area);
     setQuery("");
     setEditor(
@@ -526,7 +554,11 @@ export function App() {
       ),
     );
   }
-  function newRecord(collection: ContentCollection, source?: ContentRecord) {
+  function newRecord(
+    collection: ContentCollection,
+    source?: ContentRecord,
+    newValues?: ContentData,
+  ) {
     if (!leaveEditor()) return;
     const definition = getContentDefinition(collection);
     const data = source
@@ -545,8 +577,8 @@ export function App() {
       if (collection === "events") data.date = today();
       if (typeof data.name === "string") data.name += " (Kopie)";
       if (collection === "jobs") data.datePosted = today();
-      data.visible = true;
     }
+    if (newValues) Object.assign(data, newValues);
     const id = makeId(data);
     setArea(definition.area);
     setEditor({
@@ -568,8 +600,6 @@ export function App() {
       const data = { ...current.data };
       if (value === undefined) delete data[key];
       else data[key] = value;
-      if (current.collection === "jobs" && key === "visible" && value === true && !data.datePosted)
-        data.datePosted = today();
       if (current.collection === "kindergartenFeeSettings" && Array.isArray(data.rows))
         data.rows = data.rows.map((row) => {
           if (!row || typeof row !== "object" || Array.isArray(row)) return row;
@@ -625,7 +655,10 @@ export function App() {
           try {
             const latest = await api.request<EditableContentSnapshot>("/content");
             const record = latest.records.find((entry) => recordKey(entry) === recordKey(current));
-            if (record) {
+            if (mutations.some((mutation) => mutation.delete)) {
+              setSnapshot(latest);
+              setEditor(record ? toEdit(record, latest.mediaVersions) : null);
+            } else if (record) {
               setConflict(record);
               setConflictMediaVersions(latest.mediaVersions);
             }
@@ -637,6 +670,34 @@ export function App() {
       return null;
     } finally {
       setBusy(false);
+    }
+  }
+  async function deleteRecord() {
+    if (!editor || !canDeleteContent(editor) || editor.baseVersion === null) return;
+    if (
+      !window.confirm(
+        `„${titleOf(editor.data)}“ löschen? Der Eintrag wird aus der Verwaltung und von der Website entfernt. Nicht gespeicherte Änderungen werden verworfen.`,
+      )
+    )
+      return;
+    const change = await submit(
+      [
+        {
+          collection: editor.collection,
+          id: editor.id,
+          baseVersion: editor.baseVersion,
+          data: editor.original,
+          delete: true,
+        },
+      ],
+      [],
+      editor.requestId,
+    );
+    if (change) {
+      setEditor(null);
+      setConflict(null);
+      history.replaceState(null, "", location.pathname);
+      window.scrollTo(0, 0);
     }
   }
   async function save() {
@@ -698,28 +759,16 @@ export function App() {
       setBusy(false);
     }
   }
-  async function moveRecord(records: ContentRecord[], from: number, to: number) {
+  async function moveRecord(entries: ContentListEntry[], from: number, to: number) {
     if (
       from === to ||
       to < 0 ||
-      to >= records.length ||
+      to >= entries.length ||
       busy ||
       changes.some((change) => ongoing(change))
     )
       return;
-    const sorted = [...records];
-    const [record] = sorted.splice(from, 1);
-    sorted.splice(to, 0, record);
-    const change = await submit(
-      sorted.map((item, index) => ({
-        collection: item.collection,
-        id: item.id,
-        baseVersion: item.version,
-        data: { ...item.data, position: index + 1 },
-      })),
-      [],
-      crypto.randomUUID(),
-    );
+    const change = await submit(reorderMutations(entries, from, to), [], crypto.randomUUID());
     if (change) setError("");
   }
   function startYearPlan() {
@@ -738,10 +787,7 @@ export function App() {
       : active;
     const offers = snapshot.records
       .filter(
-        (record) =>
-          record.collection === "afternoonOffers" &&
-          record.data.schoolYear === active &&
-          isVisible(record),
+        (record) => record.collection === "afternoonOffers" && record.data.schoolYear === active,
       )
       .map((record) => {
         const data = { ...structuredClone(record.data), schoolYear: nextYear };
@@ -999,7 +1045,6 @@ export function App() {
                     <small>
                       {getContentDefinition(record.collection).area} ·{" "}
                       {getContentDefinition(record.collection).label}
-                      {!isVisible(record) ? " · Ausgeblendet" : ""}
                     </small>
                   </span>
                   <span aria-hidden="true">→</span>
@@ -1286,7 +1331,7 @@ export function App() {
                 className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
               >
                 {definition.fields
-                  .filter((field) => field.key !== "visible" && field.key !== "position")
+                  .filter((field) => field.key !== "position")
                   .filter((field) => !field.optional || editor.original[field.key] !== undefined)
                   .map((field) => (
                     <EditableField
@@ -1312,12 +1357,7 @@ export function App() {
                   <details className="optional-fields">
                     <summary>Weitere Angaben ergänzen</summary>
                     {definition.fields
-                      .filter(
-                        (field) =>
-                          field.optional &&
-                          editor.original[field.key] === undefined &&
-                          field.key !== "visible",
-                      )
+                      .filter((field) => field.optional && editor.original[field.key] === undefined)
                       .map((field) => (
                         <EditableField
                           key={`${recordKey(editor)}:${field.key}`}
@@ -1361,22 +1401,19 @@ export function App() {
                 >
                   Als Vorlage verwenden
                 </button>
-                <button
-                  className="text-button danger-text"
-                  disabled={editingLocked}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        editor.data.visible === false
-                          ? "Diesen Eintrag wieder auf der Website anzeigen? Bitte anschließend speichern."
-                          : "Diesen Eintrag ausblenden? Er bleibt in der Verwaltung erhalten. Bitte anschließend speichern.",
-                      )
-                    )
-                      updateField(recordKey(editor), "visible", editor.data.visible === false);
-                  }}
-                >
-                  {editor.data.visible === false ? "Wieder einblenden" : "Ausblenden"}
-                </button>
+                {canDeleteContent(editor) ? (
+                  <button
+                    className="text-button danger-text"
+                    disabled={editingLocked || !!conflict}
+                    onClick={() => void deleteRecord()}
+                  >
+                    Löschen
+                  </button>
+                ) : (
+                  <p className="hint">
+                    Dieses Dokument ist fest verknüpft und kann ersetzt werden.
+                  </p>
+                )}
               </div>
             )}
           </section>
@@ -1486,9 +1523,7 @@ export function App() {
                 </summary>
                 <div className="year-offer-fields">
                   {getContentDefinition("afternoonOffers")
-                    .fields.filter(
-                      (field) => !["schoolYear", "position", "visible"].includes(field.key),
-                    )
+                    .fields.filter((field) => !["schoolYear", "position"].includes(field.key))
                     .map((field) => (
                       <div className="input-field" key={field.key}>
                         <div className="field-label">{field.label}</div>
@@ -1612,10 +1647,9 @@ export function App() {
                           </small>
                           {change.status !== "published" && (
                             <small className={`change-state ${change.status}`}>
-                              {statusLabels[change.status]}
+                              {changeStatusLabel(change)}
                             </small>
                           )}
-                          {!isVisible(record) && <small>Ausgeblendet</small>}
                         </span>
                         <span className="record-arrow" aria-hidden="true">
                           →
@@ -1679,43 +1713,35 @@ export function App() {
             <p className="eyebrow">Website pflegen</p>
             <h1>{area}</h1>
             <p className="page-intro">{areaDescriptions[area]}</p>
-            <div className="collection-tools">
-              {areaDefinitions.some((item) => !item.singleton) && (
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={archive}
-                    onChange={(event) => setArchive(event.currentTarget.checked)}
-                  />
-                  Ausgeblendete anzeigen
-                </label>
-              )}
-              {area === "Termine" && (
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={past}
-                    onChange={(event) => setPast(event.currentTarget.checked)}
-                  />
-                  Vergangene anzeigen
-                </label>
-              )}
-              {area === "Ganztag & Essen" && (
-                <button
-                  className="button secondary"
-                  disabled={changes.some(
-                    (change) =>
-                      ongoing(change) &&
-                      change.saved?.mutations.some(
-                        (mutation) => mutation.collection === "afternoonProgramSettings",
-                      ),
-                  )}
-                  onClick={startYearPlan}
-                >
-                  Programm für neues Schuljahr übernehmen
-                </button>
-              )}
-            </div>
+            {(area === "Termine" || area === "Ganztag & Essen") && (
+              <div className="collection-tools">
+                {area === "Termine" && (
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={past}
+                      onChange={(event) => setPast(event.currentTarget.checked)}
+                    />
+                    Vergangene anzeigen
+                  </label>
+                )}
+                {area === "Ganztag & Essen" && (
+                  <button
+                    className="button secondary"
+                    disabled={changes.some(
+                      (change) =>
+                        ongoing(change) &&
+                        change.saved?.mutations.some(
+                          (mutation) => mutation.collection === "afternoonProgramSettings",
+                        ),
+                    )}
+                    onClick={startYearPlan}
+                  >
+                    Programm für neues Schuljahr übernehmen
+                  </button>
+                )}
+              </div>
+            )}
             {area === "Ganztag & Essen" && (
               <label className="year-filter">
                 Angebote für
@@ -1741,10 +1767,8 @@ export function App() {
                 </select>
               </label>
             )}
-            {areaDefinitions.map((item) => {
-              let records = recordList
-                .filter((record) => record.collection === item.collection)
-                .filter((record) => archive || isVisible(record));
+            {areaDefinitions.flatMap((item) => {
+              let records = recordList.filter((record) => record.collection === item.collection);
               if (item.collection === "events" && !past)
                 records = records.filter((record) => String(record.data.date ?? "") >= today());
               records = [...records].sort((left, right) =>
@@ -1757,168 +1781,175 @@ export function App() {
                 records = records.filter(
                   (record) => record.data.schoolYear === (offerYear || currentYear),
                 );
-              const canSort =
-                item.fields.some((field) => field.key === "position") &&
-                !archive &&
-                records.length > 1;
-              const sortable = canSort && sortingCollection === item.collection;
-              if (item.singleton)
-                return (
-                  <div className="singleton-section" key={item.collection}>
-                    {records[0] ? (
-                      <button className="singleton-link" onClick={() => openRecord(records[0])}>
-                        <div>
-                          <h2>{item.label}</h2>
-                          <p>
-                            {contentUsage(records[0], recordList)
-                              .pages.map((page) => page.label)
-                              .join(" · ")}
-                          </p>
-                        </div>
-                        <span aria-hidden="true">→</span>
-                      </button>
-                    ) : (
-                      <p className="error">{item.label} konnte nicht geladen werden.</p>
-                    )}
-                  </div>
-                );
-              return (
-                <section className="collection-section" key={item.collection}>
-                  <div className="section-heading">
-                    <h2>
-                      {item.label}
-                      <span className="subtle count">{records.length}</span>
-                    </h2>
-                    <div className="row-actions">
-                      {canSort && (
-                        <button
-                          className="text-button"
-                          aria-pressed={sortable}
-                          onClick={() => {
-                            setSortingCollection(sortable ? null : item.collection);
-                            setDragged(null);
-                          }}
-                        >
-                          {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+              return contentSections(item, records).map((section) => {
+                const entries = section.entries;
+                const canSort = section.sortable && entries.length > 1;
+                const sortable = canSort && sortingSection === section.key;
+                if (item.singleton)
+                  return (
+                    <div className="singleton-section" key={item.collection}>
+                      {records[0] ? (
+                        <button className="singleton-link" onClick={() => openRecord(records[0])}>
+                          <div>
+                            <h2>{item.label}</h2>
+                            <p>
+                              {contentUsage(records[0], recordList)
+                                .pages.map((page) => page.label)
+                                .join(" · ")}
+                            </p>
+                          </div>
+                          <span aria-hidden="true">→</span>
                         </button>
+                      ) : (
+                        <p className="error">{item.label} konnte nicht geladen werden.</p>
                       )}
-                      <button
-                        className="button secondary"
-                        onClick={() => newRecord(item.collection)}
-                      >
-                        + Hinzufügen
-                      </button>
                     </div>
-                  </div>
-                  {sortable && (
-                    <p className="hint">
-                      Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
-                    </p>
-                  )}
-                  {!records.length ? (
-                    <p className="empty-state">
-                      {item.collection === "events"
-                        ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
-                        : "Hier sind noch keine sichtbaren Einträge."}
-                    </p>
-                  ) : (
-                    <div className="record-list">
-                      {records.map((record, index) => (
-                        <article
-                          className={`record-item${!isVisible(record) ? " hidden-record" : ""}`}
-                          key={recordKey(record)}
-                          onDragOver={(event) => {
-                            if (dragged) event.preventDefault();
-                          }}
-                          onDrop={(event) => {
-                            event.preventDefault();
-                            const from = records.findIndex((entry) => recordKey(entry) === dragged);
-                            if (from >= 0 && sortable) void moveRecord(records, from, index);
-                            setDragged(null);
-                          }}
+                  );
+                return (
+                  <section
+                    className={`collection-section${section.newValues ? " people-section" : ""}`}
+                    key={section.key}
+                    aria-labelledby={`heading-${section.key}`}
+                  >
+                    <div className="section-heading">
+                      <h2 id={`heading-${section.key}`}>
+                        {section.label}
+                        <span className="subtle count">{entries.length}</span>
+                      </h2>
+                      <div className="row-actions">
+                        {canSort && (
+                          <button
+                            className="text-button"
+                            aria-pressed={sortable}
+                            onClick={() => {
+                              setSortingSection(sortable ? null : section.key);
+                              setDragged(null);
+                            }}
+                          >
+                            {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+                          </button>
+                        )}
+                        <button
+                          className="button secondary"
+                          onClick={() => newRecord(item.collection, undefined, section.newValues)}
                         >
-                          <button className="record-row" onClick={() => openRecord(record)}>
-                            {typeof record.data.image === "string" && (
-                              <img
-                                className="record-thumb"
-                                alt=""
-                                loading="lazy"
-                                src={`/api/media?path=${encodeURIComponent(record.data.image)}&collection=${encodeURIComponent(record.collection)}`}
+                          + Hinzufügen
+                        </button>
+                      </div>
+                    </div>
+                    {sortable && (
+                      <p className="hint">
+                        Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
+                      </p>
+                    )}
+                    {!entries.length ? (
+                      <p className="empty-state">
+                        {item.collection === "events"
+                          ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
+                          : "Hier sind noch keine Einträge."}
+                      </p>
+                    ) : (
+                      <div className="record-list">
+                        {entries.map(({ record, key, role }, index) => (
+                          <article
+                            className="record-item"
+                            key={key}
+                            onDragOver={(event) => {
+                              if (dragged) event.preventDefault();
+                            }}
+                            onDrop={(event) => {
+                              event.preventDefault();
+                              const from = entries.findIndex((entry) => entry.key === dragged);
+                              if (from >= 0 && sortable) void moveRecord(entries, from, index);
+                              setDragged(null);
+                            }}
+                          >
+                            <button className="record-row" onClick={() => openRecord(record)}>
+                              {typeof record.data.image === "string" && (
+                                <ProfileThumbnail
+                                  src={
+                                    pendingChange(record, changes)?.saved?.previews[
+                                      record.data.image
+                                    ] ??
+                                    thumbnails[snapshot?.mediaVersions[record.data.image] ?? ""]
+                                  }
+                                />
+                              )}
+                              <span>
+                                <strong>{titleOf(record.data)}</strong>
+                                <small>
+                                  {[
+                                    record.data.date
+                                      ? eventDate(String(record.data.date))
+                                      : undefined,
+                                    record.data.time,
+                                    record.data.area,
+                                    record.data.weekday,
+                                    record.data.schoolYear,
+                                    role ?? record.data.role,
+                                    record.data.group,
+                                  ]
+                                    .filter(Boolean)
+                                    .map(String)
+                                    .join(" · ")}
+                                  {item.collection === "afternoonOffers" &&
+                                  record.data.schoolYear !== currentYear
+                                    ? " · Früheres / anderes Schuljahr"
+                                    : ""}
+                                </small>
+                              </span>
+                              <span className="record-arrow" aria-hidden="true">
+                                →
+                              </span>
+                            </button>
+                            {item.collection === "downloads" && (
+                              <PdfReplaceInput
+                                title={titleOf(record.data)}
+                                disabled={
+                                  busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
+                                }
+                                onSelect={(file) => void replacePdf(record, file)}
                               />
                             )}
-                            <span>
-                              <strong>{titleOf(record.data)}</strong>
-                              <small>
-                                {[
-                                  record.data.date
-                                    ? eventDate(String(record.data.date))
-                                    : undefined,
-                                  record.data.time,
-                                  record.data.area,
-                                  record.data.weekday,
-                                  record.data.schoolYear,
-                                  record.data.role,
-                                  record.data.group,
-                                ]
-                                  .filter(Boolean)
-                                  .map(String)
-                                  .join(" · ")}
-                                {item.collection === "afternoonOffers" &&
-                                record.data.schoolYear !== currentYear
-                                  ? " · Früheres / anderes Schuljahr"
-                                  : ""}
-                                {!isVisible(record) ? " · Ausgeblendet" : ""}
-                              </small>
-                            </span>
-                            <span className="record-arrow" aria-hidden="true">
-                              →
-                            </span>
-                          </button>
-                          {item.collection === "downloads" && (
-                            <PdfReplaceInput
-                              title={titleOf(record.data)}
-                              disabled={
-                                busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
-                              }
-                              onSelect={(file) => void replacePdf(record, file)}
-                            />
-                          )}
-                          {sortable && (
-                            <div className="sort-controls">
-                              <span
-                                className="drag-handle"
-                                draggable={!busy}
-                                onDragStart={() => setDragged(recordKey(record))}
-                                onDragEnd={() => setDragged(null)}
-                                title="Zum Verschieben ziehen"
-                                aria-hidden="true"
-                              >
-                                ⋮⋮
-                              </span>
-                              <button
-                                className="icon-button"
-                                disabled={busy || index === 0 || pendingCount > 0}
-                                aria-label={`${titleOf(record.data)} nach oben`}
-                                onClick={() => void moveRecord(records, index, index - 1)}
-                              >
-                                ↑
-                              </button>
-                              <button
-                                className="icon-button"
-                                disabled={busy || index === records.length - 1 || pendingCount > 0}
-                                aria-label={`${titleOf(record.data)} nach unten`}
-                                onClick={() => void moveRecord(records, index, index + 1)}
-                              >
-                                ↓
-                              </button>
-                            </div>
-                          )}
-                        </article>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              );
+                            {sortable && (
+                              <div className="sort-controls">
+                                <span
+                                  className="drag-handle"
+                                  draggable={!busy}
+                                  onDragStart={() => setDragged(key)}
+                                  onDragEnd={() => setDragged(null)}
+                                  title="Zum Verschieben ziehen"
+                                  aria-hidden="true"
+                                >
+                                  ⋮⋮
+                                </span>
+                                <button
+                                  className="icon-button"
+                                  disabled={busy || index === 0 || pendingCount > 0}
+                                  aria-label={`${titleOf(record.data)} nach oben`}
+                                  onClick={() => void moveRecord(entries, index, index - 1)}
+                                >
+                                  ↑
+                                </button>
+                                <button
+                                  className="icon-button"
+                                  disabled={
+                                    busy || index === entries.length - 1 || pendingCount > 0
+                                  }
+                                  aria-label={`${titleOf(record.data)} nach unten`}
+                                  onClick={() => void moveRecord(entries, index, index + 1)}
+                                >
+                                  ↓
+                                </button>
+                              </div>
+                            )}
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                );
+              });
             })}
           </section>
         )}
