@@ -2077,3 +2077,137 @@ for (const status of ["checking", "published"] as const) {
     expect(recentContent([], [deletion, older])).toEqual([]);
   });
 }
+
+for (const width of [1440, 390]) {
+  for (const active of [false, true]) {
+    test(`löscht ${active ? "benutzte" : "unbenutzte"} Zugänge nach Bestätigung bei ${width}px`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      const target = {
+        ...session("content-manager").user,
+        id: "departing-person",
+        name: "Ehemalige Kollegin",
+        active,
+        passkeyCount: active ? 1 : 0,
+      };
+      const invitation = {
+        id: "invite-delete",
+        userId: target.id,
+        name: target.name,
+        role: target.role,
+        expiresAt: "2099-10-15T12:00:00Z",
+        url: "https://verwaltung.example.test/#invite=delete-test",
+      };
+      let users = active ? [session().user, target] : [session().user];
+      let invitations: (typeof invitation)[] = [];
+      let deletes = 0;
+      await mock(page, [event], {
+        route: async (route, path) => {
+          if (path === "/access") {
+            await route.fulfill({ json: { users, invitations } });
+            return true;
+          }
+          if (path === "/invitations") {
+            users = [session().user, target];
+            invitations = [invitation];
+            await route.fulfill({ json: invitation });
+            return true;
+          }
+          if (path === `/access/${target.id}` && route.request().method() === "DELETE") {
+            deletes++;
+            users = [session().user];
+            invitations = [];
+            await route.fulfill({ json: { ok: true } });
+            return true;
+          }
+          return false;
+        },
+      });
+      await page.goto("/");
+      if (width < 800) await page.getByRole("button", { name: "Menü öffnen" }).click();
+      await page.getByRole("button", { name: "Zugänge", exact: true }).click();
+      if (!active) {
+        await page.getByRole("textbox", { name: "Name", exact: true }).fill(target.name);
+        await page.getByRole("button", { name: "Einrichtungslink erstellen", exact: true }).click();
+        await expect(
+          page.getByRole("textbox", { name: "Einrichtungslink", exact: true }),
+        ).toBeVisible();
+      }
+      const ownRow = page.locator(".access-row").filter({ hasText: "Monte Test" });
+      await expect(
+        ownRow.getByRole("button", { name: "Zugang löschen", exact: true }),
+      ).toBeDisabled();
+      const row = page.locator(".access-row").filter({ hasText: target.name });
+      const remove = row.getByRole("button", { name: "Zugang löschen", exact: true });
+      await expect(remove).toBeVisible();
+      await remove.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath("access-delete.png"), fullPage: true });
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+      page.once("dialog", (dialog) => dialog.dismiss());
+      await remove.click();
+      await expect(row).toBeVisible();
+      expect(deletes).toBe(0);
+      page.once("dialog", async (dialog) => {
+        expect(dialog.message()).toContain(target.name);
+        expect(dialog.message()).toContain("Passkeys, Sitzungen und Einladungslinks");
+        await dialog.accept();
+      });
+      await remove.click();
+      await expect(row).toHaveCount(0);
+      await expect(page.getByText("Zugang gelöscht.", { exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("textbox", { name: "Einrichtungslink", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByRole("heading", { name: "Offene Einladungen", exact: true }),
+      ).toHaveCount(0);
+      expect(deletes).toBe(1);
+    });
+  }
+}
+
+test("das Löschen des eigenen Zugangs meldet ab, wenn ein weiterer Admin bleibt", async ({
+  page,
+}) => {
+  let deleted = false;
+  await mock(page, [event], {
+    route: async (route, path) => {
+      if (path === "/access") {
+        await route.fulfill({
+          json: {
+            users: [
+              session().user,
+              { ...session().user, id: "other-admin", name: "Weitere Admin" },
+            ],
+            invitations: [],
+          },
+        });
+        return true;
+      }
+      if (path === "/access/person-1" && route.request().method() === "DELETE") {
+        deleted = true;
+        await route.fulfill({ json: { ok: true } });
+        return true;
+      }
+      return false;
+    },
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Zugänge", exact: true }).click();
+  page.once("dialog", async (dialog) => {
+    expect(dialog.message()).toContain("Du wirst abgemeldet.");
+    await dialog.accept();
+  });
+  await page
+    .locator(".access-row")
+    .filter({ hasText: "Monte Test" })
+    .getByRole("button", { name: "Zugang löschen", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Mit Passkey anmelden", exact: true }),
+  ).toBeVisible();
+  expect(deleted).toBe(true);
+});

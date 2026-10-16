@@ -80,6 +80,8 @@ Admins verwalten Personen unter **Zugänge**. Neue Einladungen gelten einmalig f
 
 **Passkeys ersetzen** sperrt die bisherigen Passkeys und Sitzungen und erzeugt einen neuen, ebenfalls 14 Tage gültigen Einrichtungslink. Der letzte aktive Admin kann weder deaktiviert noch herabgestuft werden. Bank- und Zugangsänderungen verlangen eine aktuelle Passkey-Bestätigung. Sitzungen enden nach sieben Tagen Inaktivität oder spätestens nach 30 Tagen.
 
+**Zugang löschen** entfernt nach Bestätigung unbenutzte und bereits verwendete Zugänge samt Passkeys, Sitzungen und Einladungslinks. Nur Admins mit aktueller Passkey-Bestätigung dürfen löschen; der letzte aktive Admin mit Passkey bleibt geschützt. Wer den eigenen Zugang löscht, wird abgemeldet. Frühere Inhaltsänderungen und bestehende Protokolle bleiben erhalten; die Löschung wird mit den bisherigen internen Benutzer-IDs protokolliert. Ein erneuter Zugang erfordert eine neue Einladung.
+
 ### Erster Admin oder Verlust sämtlicher Admin-Passkeys
 
 Dieser Weg ist ausschließlich für die technische Betreuung mit authentifiziertem Cloudflare-Zugang bestimmt. Für eine Wiederherstellung wird die bestehende Admin-ID benötigt. Diese ID bei der Einrichtung aus `/api/me` beziehungsweise `/api/access` privat festhalten; sie gehört nicht in dieses öffentliche Dokument.

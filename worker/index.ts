@@ -112,6 +112,8 @@ export class MonteAdmin extends DurableObject<Env> {
     if (invitation && method === "DELETE")
       return this.auth.cancelInvite(invitation[1], user, session);
     const access = /^\/api\/access\/([a-f0-9-]{36})(\/reset)?$/.exec(path);
+    if (access && !access[2] && method === "DELETE")
+      return this.auth.deleteAccess(access[1], user, session);
     if (access && !access[2] && method === "PATCH")
       return this.auth.patchAccess(access[1], await readJson(request), user, session);
     if (access && access[2] && method === "POST")

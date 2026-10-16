@@ -148,6 +148,7 @@ export function Access({ session }: { session: SessionInfo }) {
     setNotice("");
     try {
       await run();
+      if (!api.session) return;
       await load();
       setNotice(success);
     } catch (cause) {
@@ -348,6 +349,27 @@ export function Access({ session }: { session: SessionInfo }) {
                     }}
                   >
                     {user.active ? "Deaktivieren" : "Aktivieren"}
+                  </button>
+                  <button
+                    className="text-button danger-text"
+                    disabled={busy || lastAdmin}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Zugang von ${user.name} endgültig löschen? Alle Passkeys, Sitzungen und Einladungslinks werden ungültig. Bisherige Inhaltsänderungen und das Änderungsprotokoll bleiben erhalten.${user.id === session.user.id ? " Du wirst abgemeldet." : ""}`,
+                        )
+                      )
+                        void action(async () => {
+                          await api.request(`/access/${encodeURIComponent(user.id)}`, {
+                            method: "DELETE",
+                          });
+                          if (link?.userId === user.id) setLink(null);
+                          if (editingName === user.id) setEditingName(null);
+                          if (user.id === session.user.id) api.setSession(null);
+                        }, "Zugang gelöscht.");
+                    }}
+                  >
+                    Zugang löschen
                   </button>
                 </div>
                 {editingName === user.id && (

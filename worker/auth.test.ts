@@ -379,3 +379,179 @@ test("technical recovery replaces ten lost keys only after successful verificati
   });
   expect((await api("me", undefined, account.cookies)).status).toBe(401);
 });
+
+test.each(["unused", "used", "deactivated", "admin"])(
+  "deleting a %s access removes credentials and links while preserving history and other users",
+  async (state) => {
+    const admin = await enroll();
+    const target =
+      state === "unused"
+        ? await seedInvitation("content-manager")
+        : await enroll(state === "admin" ? "admin" : "content-manager");
+    if (state === "deactivated") {
+      expect(
+        (
+          await api(
+            `access/${target.userId}`,
+            { active: false },
+            admin.cookies,
+            admin.info.csrfToken,
+            "PATCH",
+          )
+        ).status,
+      ).toBe(200);
+    }
+    const token = randomToken();
+    const tokenHash = await hash(token);
+    await runInDurableObject(env.ADMIN.getByName("monte"), (_instance, ctx) => {
+      const store = new Store(ctx.storage.sql);
+      store.put(
+        `invite:${tokenHash}`,
+        {
+          id: crypto.randomUUID(),
+          userId: target.userId,
+          tokenHash,
+          name: "Testperson",
+          role: "content-manager",
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
+        },
+        Date.now() + 60_000,
+      );
+      store.put("audit:previous", {
+        actor: target.userId,
+        action: "content_saved",
+        target: "previous",
+      });
+      store.put("change:previous", { ownerId: target.userId, status: "published" });
+    });
+    const enrollment = await api("enroll/options", { token });
+    const registration = await enrollment.json<{
+      challengeId: string;
+      options: { challenge: string };
+    }>();
+    const newKey = await testPasskey();
+    const registered = await newKey.register(registration.options.challenge);
+    const authentication = await api("auth/options", {});
+    const challenge = await authentication.json<{
+      challengeId: string;
+      options: { challenge: string };
+    }>();
+
+    const removed = await api(
+      `access/${target.userId}`,
+      undefined,
+      admin.cookies,
+      admin.info.csrfToken,
+      "DELETE",
+    );
+    expect(removed.status).toBe(200);
+    const access = await (
+      await api("access", undefined, admin.cookies)
+    ).json<{ users: { id: string }[]; invitations: { userId: string }[] }>();
+    expect(access.users.map((u) => u.id)).toEqual([admin.userId]);
+    expect(access.invitations).toEqual([]);
+    expect((await api("me", undefined, admin.cookies)).status).toBe(200);
+    expect((await api("enroll/options", { token })).status).toBe(410);
+    expect(
+      (
+        await api(
+          "enroll/verify",
+          { token, challengeId: registration.challengeId, response: registered },
+          responseCookie(enrollment),
+        )
+      ).status,
+    ).toBe(410);
+    if ("cookies" in target) {
+      expect((await api("me", undefined, target.cookies)).status).toBe(401);
+      const response = await target.key.authenticate(challenge.options.challenge, target.userId);
+      expect(
+        (
+          await api(
+            "auth/verify",
+            { challengeId: challenge.challengeId, response },
+            responseCookie(authentication),
+          )
+        ).status,
+      ).toBe(401);
+    }
+    await runInDurableObject(env.ADMIN.getByName("monte"), (_instance, ctx) => {
+      const store = new Store(ctx.storage.sql);
+      expect(store.get(`user:${target.userId}`)).toBeUndefined();
+      for (const prefix of ["key:", "session:", "invite:", "challenge:"]) {
+        expect(
+          store
+            .list<{ userId?: string }>(prefix)
+            .filter(([, value]) => value.userId === target.userId),
+        ).toEqual([]);
+      }
+      expect(store.get("change:previous")).toEqual({ ownerId: target.userId, status: "published" });
+      expect(store.get("audit:previous")).toEqual({
+        actor: target.userId,
+        action: "content_saved",
+        target: "previous",
+      });
+      expect(store.list("audit:").map(([, value]) => value)).toContainEqual(
+        expect.objectContaining({
+          actor: admin.userId,
+          action: "access_deleted",
+          target: target.userId,
+        }),
+      );
+    });
+  },
+);
+
+test("access deletion requires admin, CSRF, same origin and fresh authentication", async () => {
+  const admin = await enroll();
+  const manager = await enroll("content-manager");
+  const target = await seedInvitation("content-manager");
+  const path = `access/${target.userId}`;
+  expect((await api(path, undefined, "", undefined, "DELETE")).status).toBe(401);
+  expect(
+    (await api(path, undefined, manager.cookies, manager.info.csrfToken, "DELETE")).status,
+  ).toBe(403);
+  expect((await api(path, undefined, admin.cookies, undefined, "DELETE")).status).toBe(403);
+  expect(
+    (
+      await api(
+        path,
+        undefined,
+        admin.cookies,
+        admin.info.csrfToken,
+        "DELETE",
+        "https://evil.example",
+      )
+    ).status,
+  ).toBe(403);
+  await runInDurableObject(env.ADMIN.getByName("monte"), (_instance, ctx) => {
+    const store = new Store(ctx.storage.sql);
+    for (const [id, value] of store.list<{ userId: string; verifiedAt: number }>("session:"))
+      if (value.userId === admin.userId)
+        store.put(id, { ...value, verifiedAt: Date.now() - 5 * 60_000 });
+  });
+  expect((await api(path, undefined, admin.cookies, admin.info.csrfToken, "DELETE")).status).toBe(
+    428,
+  );
+  const access = await (
+    await api("access", undefined, admin.cookies)
+  ).json<{ users: { id: string }[] }>();
+  expect(access.users.map((u) => u.id)).toContain(target.userId);
+});
+
+test("self deletion preserves the last usable admin and logs out a departing admin", async () => {
+  const admin = await enroll();
+  const path = `access/${admin.userId}`;
+  const blocked = await api(path, undefined, admin.cookies, admin.info.csrfToken, "DELETE");
+  expect(blocked.status).toBe(409);
+  expect(await blocked.json()).toMatchObject({ code: "last_admin" });
+  expect((await api("me", undefined, admin.cookies)).status).toBe(200);
+  const remaining = await enroll();
+  expect((await api(path, undefined, admin.cookies, admin.info.csrfToken, "DELETE")).status).toBe(
+    200,
+  );
+  expect((await api("me", undefined, admin.cookies)).status).toBe(401);
+  expect((await api("me", undefined, remaining.cookies)).status).toBe(200);
+  expect(
+    (await api(path, undefined, remaining.cookies, remaining.info.csrfToken, "DELETE")).status,
+  ).toBe(404);
+});

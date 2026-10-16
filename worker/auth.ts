@@ -644,6 +644,17 @@ export class Auth {
     this.audit(actor.id, "access_updated", id);
     return json({ ok: true });
   }
+  deleteAccess(id: string, actor: AccessUser, session: Session) {
+    requireAdmin(actor);
+    requireFresh(session.verifiedAt);
+    const user = this.user(id);
+    requireCondition(user, 404, "user_missing", "Zugang nicht gefunden.");
+    preserveLastAdmin(this.users(), user, { active: false });
+    this.revoke(id, true);
+    this.store.delete(`user:${id}`);
+    this.audit(actor.id, "access_deleted", id);
+    return json({ ok: true });
+  }
   async resetAccess(id: string, actor: AccessUser, session: Session) {
     requireAdmin(actor);
     requireFresh(session.verifiedAt);
