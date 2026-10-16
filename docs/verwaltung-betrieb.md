@@ -168,7 +168,7 @@ Die externen Schritte wurden anschließend ausgeführt und geprüft:
 3. Die aktiven Workflows sind **Quality checks** und **Publish Monte**. Als Repository-Secret ist nur das weiterhin benötigte `CLOUDFLARE_API_TOKEN` vorhanden; es gab keine alten Hosting-Secrets zu entfernen.
 4. Nach der Abschaltung lieferten Website, Verwaltung und ein veröffentlichter PDF-Download HTTP 200 mit gültigem HTTPS. `www` leitete mit Pfad und Parametern auf die Hauptdomain weiter. Beide Cloudflare-Deployments meldeten denselben Commit. Die Abschaltung änderte keine Mail-DNS-Einträge.
 
-Screenshots, Zeitpunkt, DNS-Prüfungen und Versionsnachweise liegen im privaten Betriebsnachweis. Die noch ausstehende DNSSEC-Hinterlegung für `.de` bei Host Europe ist davon unabhängig; für `.com` bleibt DNSSEC ausgeschaltet.
+Screenshots, Zeitpunkt, DNS-Prüfungen und Versionsnachweise liegen im privaten Betriebsnachweis. Host Europe hat die DNSSEC-Hinterlegung für `.de` am 16. Oktober 2026 um 10:55 Uhr bestätigt. Anschließend wurden der passende DS-Eintrag und die validierte Signaturkette über Cloudflare, Google und Quad9 geprüft; auch Verwaltungsadresse und MX-Eintrag lösen mit gültiger DNSSEC-Validierung auf. Dafür wurde die ausdrücklich freigegebene einmalige Bearbeitungsgebühr von 5 Euro beauftragt. Für `.com` bleibt DNSSEC ausgeschaltet.
 
 ## Fehlerdiagnose
 

@@ -154,7 +154,7 @@ Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runn
 
 ## DNS-Umstieg und Abschaltung des bisherigen Hostings
 
-Die vollständige vorhandene DNS-Zone wird zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer können beim bisherigen Anbieter bleiben. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden.
+Die vollständige vorhandene DNS-Zone wurde zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer bleiben bei Host Europe. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden. DNSSEC ist für `.de` seit dem 16. Oktober 2026 vollständig eingerichtet und über drei öffentliche Resolver validiert.
 
 Für `montessori-allgaeu.com` und `www.montessori-allgaeu.com` ist eine eigene Cloudflare-Single-Redirect-Regel auf die HTTPS-Hauptdomain konfiguriert, die Pfade und URL-Parameter erhält. Dafür sind kein zusätzlicher Worker und kein kostenpflichtiger Tarif nötig. DNSSEC bleibt für `.com` ausgeschaltet. Konfiguration, Abnahme und Rückfall stehen in der [Betriebsanleitung](docs/verwaltung-betrieb.md#weiterleitungsdomain-com); der tatsächliche Umstellungsstatus wird im privaten Betriebsnachweis dokumentiert.
 
