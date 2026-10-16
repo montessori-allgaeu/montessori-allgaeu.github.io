@@ -36,6 +36,7 @@ Kontaktdaten, Personen und Dokumente werden an allen passenden Stellen übernomm
 ## Häufige Aufgaben
 
 - **Termin oder Stelle anlegen:** Den Bereich öffnen und einen neuen Eintrag hinzufügen. Einen ähnlichen Eintrag kannst du duplizieren.
+- **Menschen sortieren:** Unter **Menschen** den passenden Bereich suchen und **Reihenfolge ändern** wählen. Mit den Pfeilen oder durch Ziehen verschieben; jede Änderung wird direkt gespeichert. Die Reihenfolge anderer Bereiche bleibt unverändert, auch wenn dieselbe Person dort ebenfalls erscheint.
 - **Foto ersetzen:** Die Person öffnen, beim Bild die neue Datei auswählen und speichern.
 - **PDF ersetzen:** Das Dokument unter **Downloads** öffnen und die Datei ersetzen. Die verknüpften Seiten verwenden danach die neue Fassung.
 - **Eintrag vorübergehend entfernen:** **Ausblenden** wählen und speichern. Über **Wieder einblenden** lässt er sich zurückholen. Die drei fest verknüpften Anmelde- und Beitrittsunterlagen müssen verfügbar bleiben; diese Dateien kannst du ersetzen.

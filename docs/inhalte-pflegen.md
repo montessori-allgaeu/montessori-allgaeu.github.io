@@ -20,7 +20,9 @@ Der Hinweis auf **Kennenlernen** wählt beim Seitenaufruf den nächsten sichtbar
 
 ### Menschen
 
-**Team** und **Elternbeirat** liegen gemeinsam im Bereich **Menschen**, verwenden aber getrennte Einträge. Teammitglieder können mehrere Rollen und Bereiche haben. Primaria und Sekundaria benötigen zusätzlich eine Zuordnung zu **Klassenleitungen** oder **Pädagogische Assistenzen**. Bei einem Bereichswechsel entfällt eine nicht mehr passende Untergruppe.
+**Menschen** zeigt die Bereiche der Website als einzelne Listen: Leitung, Kindergarten, Primaria, Sekundaria, Tertia, weitere pädagogische Mitarbeiter, Verwaltung, Vorstand sowie Elternbeirat Kindergarten und Elternbeirat Schule. Teammitglieder können mehrere Rollen und Bereiche haben. Primaria und Sekundaria sind zusätzlich nach **Klassenleitungen** und **Pädagogischen Assistenzen** getrennt; jede Aufgabe benötigt dort die passende Untergruppe. Bei einem Bereichswechsel entfällt eine nicht mehr passende Untergruppe.
+
+Über **Reihenfolge ändern** lässt sich jede Liste einzeln mit Pfeilen oder durch Ziehen sortieren. Jede Verschiebung wird direkt gespeichert und veröffentlicht. Bei Personen mit mehreren Aufgaben ändert sich nur die Position in der gewählten Liste. **Hinzufügen** füllt den jeweiligen Bereich und gegebenenfalls die Untergruppe vor. Namen, Fotos und weitere Aufgaben bleiben im gemeinsamen Personeneintrag; vorhandene Personen für zusätzliche Aufgaben deshalb öffnen statt neu anlegen. Mit **Ausgeblendete anzeigen** sind auch ausgeblendete Personen zu finden; die Sortierung ist dabei deaktiviert.
 
 Die Rolle **Vorstand** wird auch für Verein und Impressum verwendet. Personen deshalb nicht mehrfach anlegen. Fotos werden bei der Person ersetzt; ohne Foto erscheinen Initialen. Die Kontaktadressen des Elternbeirats werden zentral unter **Kontakt & Zeiten** geändert.
 

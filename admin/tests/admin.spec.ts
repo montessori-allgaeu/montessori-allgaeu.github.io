@@ -1,7 +1,9 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { parse } from "yaml";
 import { expect, test, type Page, type Route } from "@playwright/test";
 import { activeMedia, discardMedia, selectMedia } from "../src/media";
 import { nextEvents, eventTemplates } from "../src/overview";
-import { getContentDefinition } from "../../src/admin/content-model";
+import { getContentDefinition, parseContent } from "../../src/admin/content-model";
 import type {
   Change,
   ChangeRequest,
@@ -739,6 +741,229 @@ test("Sortierpfeile erscheinen nur im angeforderten Modus und speichern die neue
   ]);
   await page.getByRole("button", { name: "Sortierung beenden", exact: true }).click();
   await expect(page.locator(".sort-controls")).toHaveCount(0);
+});
+
+function savedPerson(data: ContentRecord["data"], id = "test-eintrag") {
+  const person = record("team", data, id);
+  person.data = parseContent("team", id, person.data);
+  return person;
+}
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`Menschen zeigt die aktuellen Personen ohne Überlauf (${viewport.width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const records = (["team", "parentCouncil"] as const).flatMap((collection) => {
+      const directory = getContentDefinition(collection).directory;
+      return readdirSync(directory)
+        .filter((name) => name.endsWith(".yml"))
+        .map((file) => ({
+          collection,
+          id: file.slice(0, -4),
+          version: "current-version",
+          data: parseContent(
+            collection,
+            file.slice(0, -4),
+            parse(readFileSync(`${directory}/${file}`, "utf8")),
+          ),
+        }));
+    });
+    await mock(page, records, {
+      route: async (route, path) => {
+        if (path !== "/media") return false;
+        const image = new URL(route.request().url()).searchParams.get("path")!;
+        await route.fulfill({ path: `src/${image.slice(6)}` });
+        return true;
+      },
+    });
+    await page.goto("/?collection=team");
+    await expect(page.getByRole("region", { name: /^Leitung/ })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath("menschen-uebersicht.png") });
+    const primary = page.getByRole("region", { name: /^Primaria · Pädagogische Assistenzen/ });
+    const sort = primary.getByRole("button", { name: "Reihenfolge ändern", exact: true });
+    if (await sort.count()) await sort.click();
+    await primary.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath("menschen-sortierung.png") });
+    const council = page.getByRole("region", { name: /^Elternbeirat Kindergarten/ });
+    await council.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath("menschen-elternbeirat.png") });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
+
+  test(`Menschen sortiert Aufgaben getrennt und behält sie nach Neuladen (${viewport.width}px)`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const maria = savedPerson(
+      {
+        name: "Maria Monte",
+        assignments: [
+          { group: "Leitung", role: "Schulleitung", position: 10 },
+          { group: "Primaria", section: "Klassenleitungen", role: "Primaria A", position: 30 },
+          { group: "Vorstand", role: "Vorsitz", position: 20 },
+        ],
+      },
+      "maria",
+    );
+    const berta = savedPerson(
+      {
+        name: "Berta Beispiel",
+        assignments: [
+          { group: "Leitung", position: 20 },
+          { group: "Primaria", section: "Klassenleitungen", position: 10 },
+          { group: "Vorstand", position: 10 },
+        ],
+      },
+      "berta",
+    );
+    const assistant = savedPerson(
+      {
+        name: "Pia Assistenz",
+        assignments: [{ group: "Primaria", section: "Pädagogische Assistenzen", position: 10 }],
+      },
+      "pia",
+    );
+    let saved: Change | undefined;
+    const requests = await mock(page, [maria, berta, assistant], {
+      route: async (route, path) => {
+        if (path !== "/changes") return false;
+        if (route.request().method() === "POST") {
+          const request = route.request().postDataJSON() as ChangeRequest;
+          requests.push(request);
+          saved = { ...change(), saved: { mutations: request.mutations, previews: {} } };
+          await route.fulfill({ json: saved });
+        } else await route.fulfill({ json: { changes: saved ? [saved] : [] } });
+        return true;
+      },
+    });
+    await page.goto("/?collection=team");
+    const leadership = page.getByRole("region", { name: /^Leitung/ });
+    const primary = page.getByRole("region", { name: /^Primaria · Klassenleitungen/ });
+    const assistants = page.getByRole("region", { name: /^Primaria · Pädagogische Assistenzen/ });
+    const board = page.getByRole("region", { name: /^Vorstand/ });
+    await expect(leadership.locator(".record-row strong")).toHaveText([
+      "Maria Monte",
+      "Berta Beispiel",
+    ]);
+    await expect(primary.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await expect(assistants.locator(".record-row strong")).toHaveText(["Pia Assistenz"]);
+    await expect(board.locator(".record-row strong")).toHaveText(["Berta Beispiel", "Maria Monte"]);
+    await leadership.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await expect(primary.locator(".sort-controls")).toHaveCount(0);
+    await page.screenshot({ path: testInfo.outputPath("menschen.png"), fullPage: true });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await leadership.getByRole("button", { name: "Berta Beispiel nach oben", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations).toEqual([
+      {
+        collection: "team",
+        id: "berta",
+        baseVersion: berta.version,
+        data: {
+          ...berta.data,
+          assignments: [
+            { group: "Leitung", position: 1 },
+            { group: "Primaria", section: "Klassenleitungen", position: 10 },
+            { group: "Vorstand", position: 10 },
+          ],
+        },
+      },
+      {
+        collection: "team",
+        id: "maria",
+        baseVersion: maria.version,
+        data: {
+          ...maria.data,
+          assignments: [
+            { group: "Leitung", role: "Schulleitung", position: 2 },
+            { group: "Primaria", section: "Klassenleitungen", role: "Primaria A", position: 30 },
+            { group: "Vorstand", role: "Vorsitz", position: 20 },
+          ],
+        },
+      },
+    ]);
+    await page.reload();
+    await expect(leadership.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await expect(primary.locator(".record-row strong")).toHaveText([
+      "Berta Beispiel",
+      "Maria Monte",
+    ]);
+    await board.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await expect(board.getByRole("button", { name: "Maria Monte nach oben" })).toBeDisabled();
+  });
+}
+
+for (const area of ["Kindergarten", "Schule"]) {
+  test(`Elternbeirat ${area} speichert nur seine eigene Reihenfolge`, async ({ page }) => {
+    const records = ["Kindergarten", "Schule"].flatMap((group) => [
+      record(
+        "parentCouncil",
+        { name: "Anna", area: group, position: 10 },
+        `${group.toLowerCase()}-anna`,
+      ),
+      record(
+        "parentCouncil",
+        { name: "Zora", area: group, position: 20 },
+        `${group.toLowerCase()}-zora`,
+      ),
+    ]);
+    const requests = await mock(page, records);
+    await page.goto("/?collection=parentCouncil");
+    const section = page.getByRole("region", { name: new RegExp(`^Elternbeirat ${area}`) });
+    await section.getByRole("button", { name: "Reihenfolge ändern", exact: true }).click();
+    await section.getByRole("button", { name: "Zora nach oben" }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations.map((mutation) => [mutation.id, mutation.data.position])).toEqual([
+      [`${area.toLowerCase()}-zora`, 1],
+      [`${area.toLowerCase()}-anna`, 2],
+    ]);
+    expect(requests[0].mutations.every((mutation) => mutation.data.area === area)).toBe(true);
+  });
+}
+
+test("Menschen fügt Personen im ausgewählten Bereich hinzu und zeigt ausgeblendete Aufgaben", async ({
+  page,
+}) => {
+  await mock(page, [
+    savedPerson({
+      name: "Verborgene Person",
+      visible: false,
+      assignments: [{ group: "Vorstand", position: 10 }],
+    }),
+  ]);
+  await page.goto("/?collection=team");
+  await expect(page.getByRole("button", { name: /Verborgene Person/ })).toHaveCount(0);
+  await page.getByLabel("Ausgeblendete anzeigen").check();
+  await expect(
+    page
+      .getByRole("region", { name: /^Vorstand/ })
+      .getByRole("button", { name: /Verborgene Person/ }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reihenfolge ändern" })).toHaveCount(0);
+  await page
+    .getByRole("region", { name: /^Sekundaria · Pädagogische Assistenzen/ })
+    .getByRole("button", { name: "+ Hinzufügen" })
+    .click();
+  await expect(page.getByRole("combobox", { name: "Bereich", exact: true })).toHaveValue(
+    "Sekundaria",
+  );
+  await expect(page.getByRole("combobox", { name: "Untergruppe", exact: true })).toHaveValue(
+    "Pädagogische Assistenzen",
+  );
 });
 
 function uploadForm(route: Route) {

@@ -3,31 +3,11 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
+import { teamGroups } from "@/data/team-groups";
 import { getTeam } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const team = await getTeam();
-const teamGroups = [
-  { name: "Leitung", slug: "leitung" },
-  { name: "Kindergarten", slug: "kindergarten" },
-  {
-    name: "Primaria",
-    slug: "primaria",
-    sections: ["Klassenleitungen", "Pädagogische Assistenzen"],
-  },
-  {
-    name: "Sekundaria",
-    slug: "sekundaria",
-    sections: ["Klassenleitungen", "Pädagogische Assistenzen"],
-  },
-  { name: "Tertia", slug: "tertia" },
-  {
-    name: "Fach- & Förderteam",
-    label: "Weitere pädagogische Mitarbeiter",
-    slug: "fach-foerderteam",
-  },
-  { name: "Verwaltung", slug: "verwaltung" },
-] as const;
 
 type TeamMember = (typeof team)[number];
 type TeamAssignment = TeamMember["assignments"][number];

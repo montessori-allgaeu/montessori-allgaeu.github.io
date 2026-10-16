@@ -15,6 +15,11 @@ import {
   getContentDefinition,
   calculateEffectiveFee,
 } from "../../src/admin/content-model";
+import {
+  contentSections,
+  reorderMutations,
+  type ContentListEntry,
+} from "../../src/admin/content-sections";
 import { api, errorText, RequestError } from "./api";
 import { contentUsage } from "../../src/admin/content-usage";
 import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
@@ -276,7 +281,7 @@ export function App() {
   const [conflictMediaVersions, setConflictMediaVersions] = useState<Record<string, string>>({});
   const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
-  const [sortingCollection, setSortingCollection] = useState<ContentCollection | null>(null);
+  const [sortingSection, setSortingSection] = useState<string | null>(null);
   const [dragged, setDragged] = useState<string | null>(null);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
@@ -471,7 +476,7 @@ export function App() {
   function navigate(next: string) {
     if (!leaveEditor()) return;
     setArea(next);
-    setSortingCollection(null);
+    setSortingSection(null);
     setQuery("");
     setArchive(false);
     setPast(false);
@@ -525,7 +530,11 @@ export function App() {
       ),
     );
   }
-  function newRecord(collection: ContentCollection, source?: ContentRecord) {
+  function newRecord(
+    collection: ContentCollection,
+    source?: ContentRecord,
+    newValues?: ContentData,
+  ) {
     if (!leaveEditor()) return;
     const definition = getContentDefinition(collection);
     const data = source
@@ -546,6 +555,7 @@ export function App() {
       if (collection === "jobs") data.datePosted = today();
       data.visible = true;
     }
+    if (newValues) Object.assign(data, newValues);
     const id = makeId(data);
     setArea(definition.area);
     setEditor({
@@ -695,28 +705,16 @@ export function App() {
       setBusy(false);
     }
   }
-  async function moveRecord(records: ContentRecord[], from: number, to: number) {
+  async function moveRecord(entries: ContentListEntry[], from: number, to: number) {
     if (
       from === to ||
       to < 0 ||
-      to >= records.length ||
+      to >= entries.length ||
       busy ||
       changes.some((change) => ongoing(change))
     )
       return;
-    const sorted = [...records];
-    const [record] = sorted.splice(from, 1);
-    sorted.splice(to, 0, record);
-    const change = await submit(
-      sorted.map((item, index) => ({
-        collection: item.collection,
-        id: item.id,
-        baseVersion: item.version,
-        data: { ...item.data, position: index + 1 },
-      })),
-      [],
-      crypto.randomUUID(),
-    );
+    const change = await submit(reorderMutations(entries, from, to), [], crypto.randomUUID());
     if (change) setError("");
   }
   function startYearPlan() {
@@ -1710,7 +1708,7 @@ export function App() {
                 </select>
               </label>
             )}
-            {areaDefinitions.map((item) => {
+            {areaDefinitions.flatMap((item) => {
               let records = recordList
                 .filter((record) => record.collection === item.collection)
                 .filter((record) => archive || isVisible(record));
@@ -1726,168 +1724,174 @@ export function App() {
                 records = records.filter(
                   (record) => record.data.schoolYear === (offerYear || currentYear),
                 );
-              const canSort =
-                item.fields.some((field) => field.key === "position") &&
-                !archive &&
-                records.length > 1;
-              const sortable = canSort && sortingCollection === item.collection;
-              if (item.singleton)
-                return (
-                  <div className="singleton-section" key={item.collection}>
-                    {records[0] ? (
-                      <button className="singleton-link" onClick={() => openRecord(records[0])}>
-                        <div>
-                          <h2>{item.label}</h2>
-                          <p>
-                            {contentUsage(records[0], recordList)
-                              .pages.map((page) => page.label)
-                              .join(" · ")}
-                          </p>
-                        </div>
-                        <span aria-hidden="true">→</span>
-                      </button>
-                    ) : (
-                      <p className="error">{item.label} konnte nicht geladen werden.</p>
-                    )}
-                  </div>
-                );
-              return (
-                <section className="collection-section" key={item.collection}>
-                  <div className="section-heading">
-                    <h2>
-                      {item.label}
-                      <span className="subtle count">{records.length}</span>
-                    </h2>
-                    <div className="row-actions">
-                      {canSort && (
-                        <button
-                          className="text-button"
-                          aria-pressed={sortable}
-                          onClick={() => {
-                            setSortingCollection(sortable ? null : item.collection);
-                            setDragged(null);
-                          }}
-                        >
-                          {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+              return contentSections(item, records).map((section) => {
+                const entries = section.entries;
+                const canSort = section.sortable && !archive && entries.length > 1;
+                const sortable = canSort && sortingSection === section.key;
+                if (item.singleton)
+                  return (
+                    <div className="singleton-section" key={item.collection}>
+                      {records[0] ? (
+                        <button className="singleton-link" onClick={() => openRecord(records[0])}>
+                          <div>
+                            <h2>{item.label}</h2>
+                            <p>
+                              {contentUsage(records[0], recordList)
+                                .pages.map((page) => page.label)
+                                .join(" · ")}
+                            </p>
+                          </div>
+                          <span aria-hidden="true">→</span>
                         </button>
+                      ) : (
+                        <p className="error">{item.label} konnte nicht geladen werden.</p>
                       )}
-                      <button
-                        className="button secondary"
-                        onClick={() => newRecord(item.collection)}
-                      >
-                        + Hinzufügen
-                      </button>
                     </div>
-                  </div>
-                  {sortable && (
-                    <p className="hint">
-                      Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
-                    </p>
-                  )}
-                  {!records.length ? (
-                    <p className="empty-state">
-                      {item.collection === "events"
-                        ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
-                        : "Hier sind noch keine sichtbaren Einträge."}
-                    </p>
-                  ) : (
-                    <div className="record-list">
-                      {records.map((record, index) => (
-                        <article
-                          className={`record-item${!isVisible(record) ? " hidden-record" : ""}`}
-                          key={recordKey(record)}
-                          onDragOver={(event) => {
-                            if (dragged) event.preventDefault();
-                          }}
-                          onDrop={(event) => {
-                            event.preventDefault();
-                            const from = records.findIndex((entry) => recordKey(entry) === dragged);
-                            if (from >= 0 && sortable) void moveRecord(records, from, index);
-                            setDragged(null);
-                          }}
+                  );
+                return (
+                  <section
+                    className={`collection-section${section.newValues ? " people-section" : ""}`}
+                    key={section.key}
+                    aria-labelledby={`heading-${section.key}`}
+                  >
+                    <div className="section-heading">
+                      <h2 id={`heading-${section.key}`}>
+                        {section.label}
+                        <span className="subtle count">{entries.length}</span>
+                      </h2>
+                      <div className="row-actions">
+                        {canSort && (
+                          <button
+                            className="text-button"
+                            aria-pressed={sortable}
+                            onClick={() => {
+                              setSortingSection(sortable ? null : section.key);
+                              setDragged(null);
+                            }}
+                          >
+                            {sortable ? "Sortierung beenden" : "Reihenfolge ändern"}
+                          </button>
+                        )}
+                        <button
+                          className="button secondary"
+                          onClick={() => newRecord(item.collection, undefined, section.newValues)}
                         >
-                          <button className="record-row" onClick={() => openRecord(record)}>
-                            {typeof record.data.image === "string" && (
-                              <img
-                                className="record-thumb"
-                                alt=""
-                                loading="lazy"
-                                src={`/api/media?path=${encodeURIComponent(record.data.image)}&collection=${encodeURIComponent(record.collection)}`}
+                          + Hinzufügen
+                        </button>
+                      </div>
+                    </div>
+                    {sortable && (
+                      <p className="hint">
+                        Mit den Pfeilen verschieben. Jede Änderung wird direkt gespeichert.
+                      </p>
+                    )}
+                    {!entries.length ? (
+                      <p className="empty-state">
+                        {item.collection === "events"
+                          ? "Keine kommenden Termine. Vergangene Termine lassen sich oben einblenden."
+                          : "Hier sind noch keine sichtbaren Einträge."}
+                      </p>
+                    ) : (
+                      <div className="record-list">
+                        {entries.map(({ record, key, role }, index) => (
+                          <article
+                            className={`record-item${!isVisible(record) ? " hidden-record" : ""}`}
+                            key={key}
+                            onDragOver={(event) => {
+                              if (dragged) event.preventDefault();
+                            }}
+                            onDrop={(event) => {
+                              event.preventDefault();
+                              const from = entries.findIndex((entry) => entry.key === dragged);
+                              if (from >= 0 && sortable) void moveRecord(entries, from, index);
+                              setDragged(null);
+                            }}
+                          >
+                            <button className="record-row" onClick={() => openRecord(record)}>
+                              {typeof record.data.image === "string" && (
+                                <img
+                                  className="record-thumb"
+                                  alt=""
+                                  loading="lazy"
+                                  src={`/api/media?path=${encodeURIComponent(record.data.image)}&collection=${encodeURIComponent(record.collection)}`}
+                                />
+                              )}
+                              <span>
+                                <strong>{titleOf(record.data)}</strong>
+                                <small>
+                                  {[
+                                    record.data.date
+                                      ? eventDate(String(record.data.date))
+                                      : undefined,
+                                    record.data.time,
+                                    record.data.area,
+                                    record.data.weekday,
+                                    record.data.schoolYear,
+                                    role ?? record.data.role,
+                                    record.data.group,
+                                  ]
+                                    .filter(Boolean)
+                                    .map(String)
+                                    .join(" · ")}
+                                  {item.collection === "afternoonOffers" &&
+                                  record.data.schoolYear !== currentYear
+                                    ? " · Früheres / anderes Schuljahr"
+                                    : ""}
+                                  {!isVisible(record) ? " · Ausgeblendet" : ""}
+                                </small>
+                              </span>
+                              <span className="record-arrow" aria-hidden="true">
+                                →
+                              </span>
+                            </button>
+                            {item.collection === "downloads" && (
+                              <PdfReplaceInput
+                                title={titleOf(record.data)}
+                                disabled={
+                                  busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
+                                }
+                                onSelect={(file) => void replacePdf(record, file)}
                               />
                             )}
-                            <span>
-                              <strong>{titleOf(record.data)}</strong>
-                              <small>
-                                {[
-                                  record.data.date
-                                    ? eventDate(String(record.data.date))
-                                    : undefined,
-                                  record.data.time,
-                                  record.data.area,
-                                  record.data.weekday,
-                                  record.data.schoolYear,
-                                  record.data.role,
-                                  record.data.group,
-                                ]
-                                  .filter(Boolean)
-                                  .map(String)
-                                  .join(" · ")}
-                                {item.collection === "afternoonOffers" &&
-                                record.data.schoolYear !== currentYear
-                                  ? " · Früheres / anderes Schuljahr"
-                                  : ""}
-                                {!isVisible(record) ? " · Ausgeblendet" : ""}
-                              </small>
-                            </span>
-                            <span className="record-arrow" aria-hidden="true">
-                              →
-                            </span>
-                          </button>
-                          {item.collection === "downloads" && (
-                            <PdfReplaceInput
-                              title={titleOf(record.data)}
-                              disabled={
-                                busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
-                              }
-                              onSelect={(file) => void replacePdf(record, file)}
-                            />
-                          )}
-                          {sortable && (
-                            <div className="sort-controls">
-                              <span
-                                className="drag-handle"
-                                draggable={!busy}
-                                onDragStart={() => setDragged(recordKey(record))}
-                                onDragEnd={() => setDragged(null)}
-                                title="Zum Verschieben ziehen"
-                                aria-hidden="true"
-                              >
-                                ⋮⋮
-                              </span>
-                              <button
-                                className="icon-button"
-                                disabled={busy || index === 0 || pendingCount > 0}
-                                aria-label={`${titleOf(record.data)} nach oben`}
-                                onClick={() => void moveRecord(records, index, index - 1)}
-                              >
-                                ↑
-                              </button>
-                              <button
-                                className="icon-button"
-                                disabled={busy || index === records.length - 1 || pendingCount > 0}
-                                aria-label={`${titleOf(record.data)} nach unten`}
-                                onClick={() => void moveRecord(records, index, index + 1)}
-                              >
-                                ↓
-                              </button>
-                            </div>
-                          )}
-                        </article>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              );
+                            {sortable && (
+                              <div className="sort-controls">
+                                <span
+                                  className="drag-handle"
+                                  draggable={!busy}
+                                  onDragStart={() => setDragged(key)}
+                                  onDragEnd={() => setDragged(null)}
+                                  title="Zum Verschieben ziehen"
+                                  aria-hidden="true"
+                                >
+                                  ⋮⋮
+                                </span>
+                                <button
+                                  className="icon-button"
+                                  disabled={busy || index === 0 || pendingCount > 0}
+                                  aria-label={`${titleOf(record.data)} nach oben`}
+                                  onClick={() => void moveRecord(entries, index, index - 1)}
+                                >
+                                  ↑
+                                </button>
+                                <button
+                                  className="icon-button"
+                                  disabled={
+                                    busy || index === entries.length - 1 || pendingCount > 0
+                                  }
+                                  aria-label={`${titleOf(record.data)} nach unten`}
+                                  onClick={() => void moveRecord(entries, index, index + 1)}
+                                >
+                                  ↓
+                                </button>
+                              </div>
+                            )}
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                );
+              });
             })}
           </section>
         )}
