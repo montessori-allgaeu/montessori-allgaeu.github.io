@@ -58,6 +58,8 @@ Die Felder eines Eintrags sind sofort bearbeitbar. **Speichern** in der festen L
 
 In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.
 
+**Foto ersetzen** akzeptiert JPG, PNG und WebP unabhängig vom bisherigen Fotoformat. Bei einem Formatwechsel erhält die Originaldatei einen neuen Pfad; Speichern übernimmt die neue Bildzuordnung gemeinsam mit dem Eintrag. Die bisherige Datei bleibt für mögliche andere Verwendungen erhalten. Änderungen am bisherigen Foto werden bis zur Veröffentlichung auf Konflikte geprüft. Die öffentliche Website erzeugt aus den Originalen automatisch optimierte WebP-Varianten in passenden Größen.
+
 ### Prüfung und Auslieferung
 
 Ein normaler Push auf `main` startet **Publish Monte**. Pull Requests erhalten ausschließlich die Qualitätsprüfung ohne Produktions-Secrets. Es gibt keine zusätzliche Cloudflare-Build-Pipeline.
@@ -131,7 +133,21 @@ Die letzte Zeile gilt nur, wenn das Recovery-Secret gesetzt wurde. Auch die priv
 4. Nameserver beim Registrar auf die dem Konto tatsächlich zugewiesenen Cloudflare-Nameserver umstellen. Alte Zone weiterhin betreiben. Autoritative Antworten sowie mindestens zwei unabhängige Resolver auf Vollständigkeit prüfen.
 5. Mailversand und Empfang mit ausdrücklich abgestimmten Testnachrichten prüfen. SPF-, DKIM- und DMARC-Ergebnisse in den empfangenen Nachrichten kontrollieren. Die bloße Existenz des MX-Eintrags ist kein Nachweis funktionierender Zustellung.
 6. Nach erfolgreichem Test die Webadressen an die geprüften Cloudflare-Deployments binden. Hauptdomain, `www`, Verwaltungsdomain, HTTPS, Downloads, alte Weiterleitungen und Passkey-Anmeldung kontrollieren.
-7. Nach erfolgreichem Wechsel DNSSEC bei Cloudflare aktivieren und den neuen DS-Eintrag beim Registrar korrekt hinterlegen. Erneut auf gültige Auflösung ohne `SERVFAIL` prüfen.
+7. Für `montessori-allgaeu.de` nach erfolgreichem Wechsel DNSSEC bei Cloudflare aktivieren und den neuen DS-Eintrag beim Registrar korrekt hinterlegen. Erneut auf gültige Auflösung ohne `SERVFAIL` prüfen. Für `montessori-allgaeu.com` bleibt DNSSEC auf ausdrücklichen Wunsch ausgeschaltet; dort keinen DS-Eintrag beauftragen.
+
+### Weiterleitungsdomain `.com`
+
+`montessori-allgaeu.com` wird im Cloudflare-Free-Tarif als eigene DNS-Zone verwaltet. Domainregistrierung und Mail bleiben bei Host Europe. Die Single-Redirect-Regel `COM auf DE weiterleiten` verwendet:
+
+- Filter: `http.host in {"montessori-allgaeu.com" "www.montessori-allgaeu.com"}`
+- Dynamisches Ziel: `concat("https://montessori-allgaeu.de", http.request.uri.path)`
+- Status: `301`, mit aktivierter Option **Preserve query string**.
+
+Beide Webadressen müssen den Cloudflare-Proxy verwenden. Die Regel benötigt keinen zusätzlichen Worker. Universal SSL stellt das kostenlose Zertifikat für die Hauptdomain und `www` nach Aktivierung der Zone bereit; ein gespeicherter Redirect allein bestätigt noch kein funktionierendes HTTPS. HTTP und HTTPS für beide Hosts einschließlich Unterseite und URL-Parametern prüfen, jeweils mit regulärer Zertifikatsvalidierung.
+
+Mail- und FTP-Adressen bleiben ohne HTTP-Proxy. Weil der Proxy die öffentlich aufgelöste Web-IP verändert, ersetzt der SPF-Eintrag den bisherigen Mechanismus `a` durch die bisherige erlaubte IPv4-Adresse: `v=spf1 ip4:80.237.130.178 mx include:spf.server-he.de -all`. MX und DKIM bleiben erhalten. Cloudflare beantwortet `_domainconnect` mit seinem eigenen Anbieter-Endpunkt; dieser Eintrag steuert keine Mailzustellung.
+
+Den gesicherten vollständigen Ausgangsbestand, den Registrarauftrag und die Ergebnisse der DNS-/HTTPS-Prüfungen im privaten Betriebsnachweis festhalten. Bei einem Rückfall auf die bisherigen Nameserver wird auch die bisherige Host-Europe-Weiterleitung wieder maßgeblich; deren HTTPS war vor dem Wechsel nicht erreichbar.
 
 ### Rückfall
 

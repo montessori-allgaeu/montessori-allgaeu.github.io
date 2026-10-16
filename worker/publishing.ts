@@ -38,6 +38,7 @@ type Upload = {
   size: number;
   contentType: string;
   baseVersion: string | null;
+  replacement?: { path: string; baseVersion: string };
   createdAt: number;
   changeId?: string;
 };
@@ -189,7 +190,9 @@ export class Publishing {
         "Eine hochgeladene Datei ist nicht mehr verfügbar. Bitte erneut hochladen.",
       );
       requireCondition(
-        (current.files.get(upload.path)?.sha ?? null) === upload.baseVersion,
+        (current.files.get(upload.path)?.sha ?? null) === upload.baseVersion &&
+          (!upload.replacement ||
+            current.files.get(upload.replacement.path)?.sha === upload.replacement.baseVersion),
         409,
         "media_conflict",
         "Diese Datei wurde inzwischen ersetzt. Bitte neu laden.",
@@ -320,26 +323,35 @@ export class Publishing {
       "Der temporäre Medienspeicher ist voll. Bitte laufende Veröffentlichungen abwarten.",
     );
     const id = crypto.randomUUID();
-    const replacement = form.get("replace");
+    const replace = form.get("replace");
+    const originalPath =
+      typeof replace === "string" && replace ? mediaRepositoryPath(kind, replace) : undefined;
+    const snapshot = await this.github.snapshot();
+    let replacement: Upload["replacement"];
+    if (originalPath) {
+      const originalVersion = snapshot.files.get(originalPath)?.sha;
+      requireCondition(
+        originalVersion,
+        409,
+        "replace_missing",
+        "Die zu ersetzende Datei wurde nicht gefunden.",
+      );
+      requireCondition(
+        form.get("baseVersion") === originalVersion,
+        409,
+        "media_conflict",
+        "Diese Datei wurde zwischenzeitlich geändert. Bitte den Inhalt neu laden.",
+      );
+      replacement = { path: originalPath, baseVersion: originalVersion };
+    }
+    const originalExtension = originalPath?.split(".").at(-1)?.toLowerCase().replace("jpeg", "jpg");
+    // Keep stable links for same-format replacements; changed formats need their own valid path.
     const path =
-      typeof replacement === "string" && replacement
-        ? mediaRepositoryPath(kind, replacement)
+      originalPath && originalExtension === format.extension
+        ? originalPath
         : newMediaPath(kind, file.name, id, format.extension);
     validateMedia(new Uint8Array(buffer), path, format.contentType);
-    const snapshot = await this.github.snapshot();
     const baseVersion = snapshot.files.get(path)?.sha ?? null;
-    requireCondition(
-      !replacement || baseVersion,
-      409,
-      "replace_missing",
-      "Die zu ersetzende Datei wurde nicht gefunden.",
-    );
-    requireCondition(
-      !replacement || form.get("baseVersion") === baseVersion,
-      409,
-      "media_conflict",
-      "Diese Datei wurde zwischenzeitlich geändert. Bitte den Inhalt neu laden.",
-    );
     const upload: Upload = {
       id,
       ownerId: user.id,
@@ -348,6 +360,7 @@ export class Publishing {
       sha256: await hash(buffer),
       contentType: format.contentType,
       baseVersion,
+      ...(replacement && path !== originalPath ? { replacement } : {}),
       createdAt: Date.now(),
     };
     await this.env.UPLOADS.put(id, buffer);
@@ -474,8 +487,8 @@ export class Publishing {
           "upload_missing",
           "Eine hochgeladene Datei ist abgelaufen. Bitte neu speichern.",
         );
-        const { path, sha256, size, contentType, baseVersion } = upload;
-        return { id, path, sha256, size, contentType, baseVersion };
+        const { path, sha256, size, contentType, baseVersion, replacement } = upload;
+        return { id, path, sha256, size, contentType, baseVersion, replacement };
       });
       return json({
         id: operation.id,
