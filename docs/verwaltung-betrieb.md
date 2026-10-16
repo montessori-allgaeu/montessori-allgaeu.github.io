@@ -58,6 +58,8 @@ Die Felder eines Eintrags sind sofort bearbeitbar. **Speichern** in der festen L
 
 In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.
 
+**Foto ersetzen** akzeptiert JPG, PNG und WebP unabhängig vom bisherigen Fotoformat. Bei einem Formatwechsel erhält die Originaldatei einen neuen Pfad; Speichern übernimmt die neue Bildzuordnung gemeinsam mit dem Eintrag. Die bisherige Datei bleibt für mögliche andere Verwendungen erhalten. Änderungen am bisherigen Foto werden bis zur Veröffentlichung auf Konflikte geprüft. Die öffentliche Website erzeugt aus den Originalen automatisch optimierte WebP-Varianten in passenden Größen.
+
 ### Prüfung und Auslieferung
 
 Ein normaler Push auf `main` startet **Publish Monte**. Pull Requests erhalten ausschließlich die Qualitätsprüfung ohne Produktions-Secrets. Es gibt keine zusätzliche Cloudflare-Build-Pipeline.

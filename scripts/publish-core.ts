@@ -40,6 +40,7 @@ export const publishOperationSchema = z.strictObject({
         size: z.number().int().positive().max(maximumUploadBytes),
         contentType: z.enum(["application/pdf", "image/jpeg", "image/png", "image/webp"]),
         baseVersion: commitSchema.nullable(),
+        replacement: z.strictObject({ path: z.string(), baseVersion: commitSchema }).optional(),
       }),
     )
     .max(50),
@@ -158,7 +159,10 @@ export function planOperation(
   for (const upload of operation.uploads) {
     if (paths.has(upload.path) || uploadIds.has(upload.id) || !referencedMedia.has(upload.path))
       throw new Error("Eine hochgeladene Datei gehört nicht zu den geänderten Inhalten.");
-    if ((media.get(upload.path) ?? null) !== upload.baseVersion)
+    if (
+      (media.get(upload.path) ?? null) !== upload.baseVersion ||
+      (upload.replacement && media.get(upload.replacement.path) !== upload.replacement.baseVersion)
+    )
       throw new PublishConflict(
         "Diese Datei wurde inzwischen ersetzt. Bitte den aktuellen Stand laden.",
       );

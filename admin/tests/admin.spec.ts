@@ -222,46 +222,56 @@ test("optionale Angaben bleiben während der Eingabe erreichbar", async ({ page 
   await expect(input).toBeFocused();
 });
 
-test("wartet auf Upload und übernimmt Dateiverweis und Uploadkennung gemeinsam", async ({
-  page,
-}) => {
-  let releaseUpload: (() => void) | undefined;
-  const uploaded = new Promise<void>((resolve) => {
-    releaseUpload = resolve;
+for (const [width, extension] of [
+  [1440, "jpg"],
+  [390, "png"],
+] as const) {
+  test(`ersetzt WebP durch ${extension}, wartet auf Upload und speichert den neuen Dateiverweis (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    let releaseUpload: (() => void) | undefined;
+    const uploaded = new Promise<void>((resolve) => {
+      releaseUpload = resolve;
+    });
+    const person = record("team", {
+      name: "Maria Monte",
+      image: "../../assets/images/team/alt.webp",
+    });
+    const requests = await mock(page, [person], {
+      route: async (route, path) => {
+        if (path !== "/uploads") return false;
+        expect(uploadForm(route)).toEqual({
+          replace: person.data.image,
+          baseVersion: "media-version-1",
+        });
+        await uploaded;
+        await route.fulfill({
+          json: {
+            id: "upload-1",
+            value: `../../assets/images/team/neu.${extension}`,
+            previewUrl: "/api/media?path=neu",
+          },
+        });
+        return true;
+      },
+    });
+    await page.goto("/?collection=team&id=test-eintrag");
+    await page.locator('input[type="file"]').setInputFiles({
+      name: `neu.${extension}`,
+      mimeType: extension === "jpg" ? "image/jpeg" : "image/png",
+      buffer: Buffer.from(extension === "jpg" ? "ffd8ff" : "89504e470d0a1a0a", "hex"),
+    });
+    await expect(page.getByText("Datei wird hochgeladen …")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Datei lädt …" })).toBeDisabled();
+    releaseUpload!();
+    await expect(page.getByText(`neu.${extension}`, { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].uploadIds).toEqual(["upload-1"]);
+    expect(requests[0].mutations[0].data.image).toBe(`../../assets/images/team/neu.${extension}`);
   });
-  const person = record("team", {
-    name: "Maria Monte",
-    image: "../../assets/images/team/alt.webp",
-  });
-  const requests = await mock(page, [person], {
-    route: async (route, path) => {
-      if (path !== "/uploads") return false;
-      await uploaded;
-      await route.fulfill({
-        json: {
-          id: "upload-1",
-          value: "../../assets/images/team/neu.webp",
-          previewUrl: "/api/media?path=neu",
-        },
-      });
-      return true;
-    },
-  });
-  await page.goto("/?collection=team&id=test-eintrag");
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "neu.png",
-    mimeType: "image/png",
-    buffer: Buffer.from("89504e470d0a1a0a", "hex"),
-  });
-  await expect(page.getByText("Datei wird hochgeladen …")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Datei lädt …" })).toBeDisabled();
-  releaseUpload!();
-  await expect(page.getByText("neu.webp", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Speichern", exact: true }).click();
-  await expect.poll(() => requests.length).toBe(1);
-  expect(requests[0].uploadIds).toEqual(["upload-1"]);
-  expect(requests[0].mutations[0].data.image).toBe("../../assets/images/team/neu.webp");
-});
+}
 
 test("stellt ein kopiertes Schuljahr mit Angeboten atomar um", async ({ page }) => {
   const settings = record(

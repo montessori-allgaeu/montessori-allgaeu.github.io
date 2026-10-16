@@ -176,6 +176,52 @@ describe("atomic content publication", () => {
     expect(planOperation(change, current.snapshot, current.media).paths).toContain(path);
   });
 
+  it.each(["jpg", "png"])(
+    "publishes a %s replacement only while both media baselines match",
+    (extension) => {
+      const record = current.snapshot.records.find(
+        (entry) => entry.collection === "team" && String(entry.data.image).endsWith(".webp"),
+      )!;
+      const originalPath = `src/${String(record.data.image).slice(6)}`;
+      const image = `../../assets/images/team/replacement.${extension}`;
+      const path = `src/assets/images/team/replacement.${extension}`;
+      const change = publishOperationSchema.parse({
+        id: randomUUID(),
+        requestId: randomUUID(),
+        mutations: [
+          {
+            collection: record.collection,
+            id: record.id,
+            baseVersion: record.version,
+            data: { ...record.data, image },
+          },
+        ],
+        uploads: [
+          {
+            id: randomUUID(),
+            path,
+            size: 20,
+            sha256: "a".repeat(64),
+            contentType: extension === "jpg" ? "image/jpeg" : "image/png",
+            baseVersion: null,
+            replacement: { path: originalPath, baseVersion: current.media.get(originalPath) },
+          },
+        ],
+      });
+      const plan = planOperation(change, current.snapshot, current.media);
+      expect(plan.files[0].data.image).toBe(image);
+      expect(plan.paths).toContain(path);
+      expect(plan.paths).not.toContain(originalPath);
+      const changed = new Map(current.media);
+      changed.set(originalPath, "e".repeat(40));
+      expect(() => planOperation(change, current.snapshot, changed)).toThrow(PublishConflict);
+      changed.delete(originalPath);
+      expect(() => planOperation(change, current.snapshot, changed)).toThrow(PublishConflict);
+      const collision = new Map(current.media).set(path, "e".repeat(40));
+      expect(() => planOperation(change, current.snapshot, collision)).toThrow(PublishConflict);
+    },
+  );
+
   it("checks cross-record invariants for the complete candidate snapshot", () => {
     const program = current.snapshot.records.find(
       (record) => record.collection === "afternoonProgramSettings",
