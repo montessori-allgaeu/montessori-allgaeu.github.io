@@ -16,9 +16,9 @@ import {
   calculateEffectiveFee,
 } from "../../src/admin/content-model";
 import { api, errorText, RequestError } from "./api";
-import { FieldInput, humanValue, InlineField } from "./Editor";
+import { FieldInput, humanValue, EditableField, PdfReplaceInput } from "./Editor";
 import { Access, Profile } from "./Access";
-import { activeMedia, discardMedia, selectMedia, type PendingMedia } from "./media";
+import { activeMedia, discardMedia, selectMedia, uploadMedia, type PendingMedia } from "./media";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
 if (capturedInvite) history.replaceState(null, "", `${location.pathname}${location.search}`);
@@ -494,7 +494,7 @@ export function App() {
     document.getElementById("main-content")?.scrollTo(0, 0);
   }
   function openRecord(record: ContentRecord) {
-    if (!leaveEditor()) return;
+    if (!leaveEditor()) return false;
     setArea(getContentDefinition(record.collection).area);
     setEditor(toEdit(record, snapshot?.mediaVersions ?? {}, pendingChange(record, changes)));
     setQuery("");
@@ -504,6 +504,27 @@ export function App() {
       `?collection=${encodeURIComponent(record.collection)}&id=${encodeURIComponent(record.id)}`,
     );
     rememberArea(getContentDefinition(record.collection).area);
+    return true;
+  }
+  async function replacePdf(record: ContentRecord, file: File) {
+    if (pendingChange(record, changes) || busy || uploadsInProgress || !openRecord(record)) return;
+    const owner = recordKey(record);
+    uploadBusy(true);
+    try {
+      const upload = await uploadMedia(
+        file,
+        record.collection,
+        "pdf",
+        record.data.file,
+        snapshot?.mediaVersions,
+      );
+      acceptUpload(owner, ["file"], upload);
+      updateField(owner, "file", upload.value);
+    } catch (cause) {
+      setError(errorText(cause));
+    } finally {
+      uploadBusy(false);
+    }
   }
   function openSavedChange(change: Change, mutation: ContentMutation) {
     if (!leaveEditor()) return;
@@ -544,7 +565,7 @@ export function App() {
       id,
       baseVersion: null,
       data,
-      original: {},
+      original: source ? {} : structuredClone(data),
       pendingMedia: {},
       mediaVersions: {},
       savedPreviews: {},
@@ -910,7 +931,7 @@ export function App() {
         />
       )}
       <main id="main-content" className="main-content" tabIndex={-1}>
-        <div className="topbar">
+        <div className={`topbar${editor ? " editing-topbar" : ""}`}>
           <label className="search-box">
             <span aria-hidden="true">⌕</span>
             <input
@@ -1026,9 +1047,12 @@ export function App() {
                 </p>
                 <h1>{titleOf(editor.data, definition.label)}</h1>
               </div>
-              <div className="save-controls">
-                <span aria-live="polite" className="save-hint">
-                  {ongoing(currentChange)
+            </div>
+            <div className="save-controls" role="region" aria-label="Änderungen speichern">
+              <span aria-live="polite" className="save-hint">
+                {uploadsInProgress > 0
+                  ? "Datei wird vorbereitet"
+                  : ongoing(currentChange)
                     ? "Website wird aktualisiert"
                     : currentChange?.status === "failed" || currentChange?.status === "conflict"
                       ? "Gespeichert · Bitte Veröffentlichung prüfen"
@@ -1036,27 +1060,30 @@ export function App() {
                         ? "Noch nicht gespeichert"
                         : currentChange?.status === "published"
                           ? "Auf der Website sichtbar"
-                          : "Alles gespeichert"}
-                </span>
-                <button
-                  className="button"
-                  disabled={
-                    saving ||
-                    needsFileReselection ||
-                    !dirty ||
-                    currentChange?.status === "conflict" ||
-                    currentChange?.status === "failed" ||
-                    !!conflict
-                  }
-                  onClick={() => void save()}
-                >
-                  {busy || uploadsInProgress > 0
+                          : editor.baseVersion === null
+                            ? "Neuen Eintrag ausfüllen"
+                            : "Alles gespeichert"}
+              </span>
+              <button
+                className="button"
+                disabled={
+                  saving ||
+                  needsFileReselection ||
+                  !dirty ||
+                  currentChange?.status === "conflict" ||
+                  currentChange?.status === "failed" ||
+                  !!conflict
+                }
+                onClick={() => void save()}
+              >
+                {uploadsInProgress > 0
+                  ? "Datei lädt …"
+                  : busy
                     ? "Wird gespeichert …"
                     : ongoing(currentChange) || (currentChange && !dirty)
                       ? "Gespeichert ✓"
                       : "Speichern"}
-                </button>
-              </div>
+              </button>
             </div>
             <p className="used-on">Wird verwendet: {definition.usedOn.join(" · ")}</p>
             {currentChange && (
@@ -1151,13 +1178,15 @@ export function App() {
                 }}
               />
             )}
-            <div className="editor-fields">
+            <div
+              className={`editor-fields${editor.collection === "events" ? " event-fields" : ""}`}
+            >
               {definition.fields
                 .filter((field) => field.key !== "visible" && field.key !== "position")
                 .filter((field) => !field.optional || editor.original[field.key] !== undefined)
                 .map((field) => (
-                  <InlineField
-                    key={`${recordKey(editor)}:${field.key}:${editor.operationId ?? "editing"}`}
+                  <EditableField
+                    key={`${recordKey(editor)}:${field.key}`}
                     field={field}
                     value={editor.data[field.key]}
                     onChange={(value) => updateField(recordKey(editor), field.key, value)}
@@ -1186,8 +1215,8 @@ export function App() {
                         field.key !== "visible",
                     )
                     .map((field) => (
-                      <InlineField
-                        key={`${recordKey(editor)}:${field.key}:${editor.operationId ?? "editing"}`}
+                      <EditableField
+                        key={`${recordKey(editor)}:${field.key}`}
                         field={field}
                         value={editor.data[field.key]}
                         onChange={(value) => updateField(recordKey(editor), field.key, value)}
@@ -1206,7 +1235,7 @@ export function App() {
                 </details>
               )}
             </div>
-            {!definition.singleton && (
+            {!definition.singleton && editor.baseVersion !== null && (
               <div className="record-actions">
                 <button
                   className="button secondary"
@@ -1254,6 +1283,13 @@ export function App() {
             <p className="eyebrow">Nachmittagsprogramm übernehmen</p>
             <div className="editor-heading">
               <h1>Neues Schuljahr</h1>
+            </div>
+            <div className="save-controls" role="region" aria-label="Änderungen speichern">
+              <span className="save-hint" aria-live="polite">
+                {yearPlan.operationId
+                  ? statusLabels[yearChange?.status ?? "checking"]
+                  : "Angebote prüfen und gemeinsam speichern"}
+              </span>
               <button
                 className="button"
                 disabled={busy || !!ongoing(yearChange) || !!yearPlan.operationId}
@@ -1631,6 +1667,15 @@ export function App() {
                               →
                             </span>
                           </button>
+                          {item.collection === "downloads" && (
+                            <PdfReplaceInput
+                              title={titleOf(record.data)}
+                              disabled={
+                                busy || uploadsInProgress > 0 || !!pendingChange(record, changes)
+                              }
+                              onSelect={(file) => void replacePdf(record, file)}
+                            />
+                          )}
                           {sortable && (
                             <div className="sort-controls">
                               <span

@@ -46,6 +46,14 @@ Die Worker-Konfiguration allein bestätigt weder Custom-Domain-Bindungen noch Na
 
 ## Automatische Veröffentlichung
 
+### Inhalte bearbeiten
+
+Die Felder eines Eintrags sind sofort bearbeitbar. **Speichern** in der festen Leiste am unteren Bildschirmrand übernimmt alle Änderungen gemeinsam. Optionale, bisher unbenutzte Angaben stehen unter **Weitere Angaben ergänzen**. Bis zum Speichern bleiben Eingaben nur im geöffneten Browser; beim Verlassen geänderter Inhalte erscheint eine Warnung.
+
+In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.
+
+### Prüfung und Auslieferung
+
 Ein normaler Push auf `main` startet **Publish Monte**. Pull Requests erhalten ausschließlich die Qualitätsprüfung ohne Produktions-Secrets. Es gibt keine zusätzliche Cloudflare-Build-Pipeline.
 
 Der Veröffentlichungsworkflow liest den aktuellen Stand von `main`, führt `npm run test:ci` aus, baut beide Anwendungen, prüft die Asset-Grenzen und veröffentlicht über Wrangler. Vor beiden Deployments prüft er erneut den aktuellen Git-Stand. `version.json` auf beiden Anwendungen bestätigt anschließend den tatsächlich veröffentlichten Commit. Fehlgeschlagene Prüfungen veröffentlichen nichts.

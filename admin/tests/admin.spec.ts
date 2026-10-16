@@ -88,7 +88,6 @@ async function mock(
 }
 async function editEvent(page: Page) {
   await page.goto("/?collection=events&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
   await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Unser neuer Kennenlerntag");
 }
 
@@ -126,6 +125,11 @@ test("bestätigt Speichern sofort und unterscheidet die spätere Veröffentlichu
   await expect(page.getByText("Auf der Website sichtbar", { exact: true }).first()).toBeVisible({
     timeout: 8000,
   });
+  const title = page.getByRole("textbox", { name: "Titel", exact: true });
+  await title.fill("");
+  await expect(title).toBeFocused();
+  await title.pressSequentially("Nächste Änderung");
+  await expect(title).toHaveValue("Nächste Änderung");
 });
 
 test("behält Eingaben bei Serverfehler und verwendet bei Wiederholung dieselbe Auftragskennung", async ({
@@ -208,9 +212,6 @@ test("optionale Angaben bleiben während der Eingabe erreichbar", async ({ page 
   await mock(page, [job]);
   await page.goto("/?collection=jobs&id=test-eintrag");
   await page.getByText("Weitere Angaben ergänzen", { exact: true }).click();
-  await page
-    .getByRole("button", { name: "Bearbeiten: Team, Lerngruppe oder Klassenstufen", exact: true })
-    .click();
   const input = page.getByRole("textbox", {
     name: "Team, Lerngruppe oder Klassenstufen",
     exact: true,
@@ -246,14 +247,13 @@ test("wartet auf Upload und übernimmt Dateiverweis und Uploadkennung gemeinsam"
     },
   });
   await page.goto("/?collection=team&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
   await page.locator('input[type="file"]').setInputFiles({
     name: "neu.png",
     mimeType: "image/png",
     buffer: Buffer.from("89504e470d0a1a0a", "hex"),
   });
   await expect(page.getByText("Datei wird hochgeladen …")).toBeVisible();
-  await expect(page.getByRole("button", { name: /Wird gespeichert/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Datei lädt …" })).toBeDisabled();
   releaseUpload!();
   await expect(page.getByText("neu.webp", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
@@ -314,12 +314,69 @@ test("mobile Navigation und Inline-Bearbeitung passen ohne horizontalen Überlau
   await page.getByRole("button", { name: "Menü öffnen" }).click();
   await page.locator(".sidebar").getByRole("button", { name: "Termine", exact: true }).click();
   await page.getByRole("button", { name: /Tag der offenen Tür/ }).click();
-  await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
   await page
     .getByRole("textbox", { name: "Titel", exact: true })
     .fill("Ein sehr langer Terminname zum gemeinsamen Kennenlernen");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeVisible();
+});
+
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+  { width: 320, height: 568 },
+]) {
+  test(`Felder sind sofort bearbeitbar und Speichern bleibt beim Scrollen erreichbar (${viewport.width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const requests = await mock(page, [event]);
+    await page.goto("/?collection=events&id=test-eintrag");
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeEditable();
+    await expect(page.getByRole("button", { name: /^Bearbeiten:|^Fertig$/ })).toHaveCount(0);
+    await page
+      .getByRole("textbox", { name: "Beschreibung", exact: true })
+      .fill("Unser gemeinsamer Kennenlerntag");
+    const bar = page.getByRole("region", { name: "Änderungen speichern" });
+    for (const position of [0, 500, 2000]) {
+      await page.evaluate((top) => window.scrollTo(0, top), position);
+      await expect(bar.getByRole("button", { name: "Speichern", exact: true })).toBeInViewport();
+      const bounds = (await bar.boundingBox())!;
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
+      expect(bounds.y).toBeGreaterThan(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+    // The last action must not be covered by the fixed bar at the end of the page.
+    const lastAction = (await page
+      .getByRole("button", { name: "Ausblenden", exact: true })
+      .boundingBox())!;
+    expect(lastAction.y + lastAction.height).toBeLessThan((await bar.boundingBox())!.y);
+    await bar.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations[0].data.description).toBe("Unser gemeinsamer Kennenlerntag");
+  });
+}
+
+test("neuer Termin zeigt Eingabefelder ohne Warnung für unberührte Vorgaben", async ({ page }) => {
+  await mock(page, [event]);
+  await page.goto("/");
+  await page.getByRole("button", { name: "+ Termin hinzufügen", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeEditable();
+  await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Ausblenden", exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }),
+  ).toHaveCount(0);
+  let confirmation = false;
+  page.on("dialog", async (dialog) => {
+    confirmation = true;
+    await dialog.dismiss();
+  });
+  await page.getByRole("button", { name: "← Termine", exact: true }).click();
+  await expect(page.locator(".record-row")).toBeVisible();
+  expect(confirmation).toBe(false);
 });
 
 test("Einrichtungslink bleibt unter React StrictMode erhalten und verschwindet sofort aus der URL", async ({
@@ -374,7 +431,6 @@ test("Content Manager ändern redaktionellen Spendentext ohne bearbeitbare Konto
   );
   const requests = await mock(page, [donation], { role: "content-manager" });
   await page.goto("/?collection=donations&id=page");
-  await page.getByRole("button", { name: "Bearbeiten: Direkte Spende", exact: true }).click();
   await expect(page.getByRole("textbox", { name: "IBAN", exact: true })).toHaveCount(0);
   await expect(page.getByRole("textbox", { name: "Empfänger", exact: true })).toHaveCount(0);
   await expect(page.getByText("Nur Admins können diese Angabe ändern.")).toHaveCount(4);
@@ -409,9 +465,6 @@ test("Kindergartenbeiträge berechnen den effektiven Betrag direkt beim Bearbeit
   );
   const requests = await mock(page, [fees]);
   await page.goto("/?collection=kindergartenFeeSettings&id=kindergarten-fees");
-  await page
-    .getByRole("button", { name: "Bearbeiten: Beiträge nach Buchungszeit", exact: true })
-    .click();
   await page.getByRole("textbox", { name: "Grundbeitrag", exact: true }).fill("175 €");
   await expect(page.locator(".computed-value")).toContainText("75 €");
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
@@ -478,6 +531,150 @@ function uploadForm(route: Route) {
   const value = (name: string) => new RegExp(`name="${name}"\\r\\n\\r\\n([^\\r]+)`).exec(body)?.[1];
   return { replace: value("replace"), baseVersion: value("baseVersion") };
 }
+for (const viewport of [
+  { width: 1440, height: 900 },
+  { width: 390, height: 844 },
+]) {
+  test(`PDF direkt aus der Liste ersetzen behält den Link und speichert erst nach Bestätigung (${viewport.width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    const original = "/downloads/anmeldung.pdf";
+    const document = record("downloads", { title: "Anmeldung", file: original });
+    let upload: Route | undefined;
+    const requests = await mock(page, [document], {
+      route: async (route, path) => {
+        if (path !== "/uploads") return false;
+        upload = route;
+        return true;
+      },
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: "PDF ersetzen", exact: true }).click();
+    const chooser = page.getByLabel("PDF ersetzen: Anmeldung", { exact: true });
+    await expect(chooser).toBeEnabled();
+    await chooser.setInputFiles({
+      name: "anmeldung-neu.pdf",
+      mimeType: "application/pdf",
+      buffer: Buffer.from("%PDF-1.7\n"),
+    });
+    await expect.poll(() => !!upload).toBe(true);
+    expect(uploadForm(upload!)).toEqual({ replace: original, baseVersion: "media-version-1" });
+    await expect(page.getByRole("button", { name: "Datei lädt …", exact: true })).toBeDisabled();
+    expect(requests).toHaveLength(0);
+    await upload!.fulfill({
+      json: { id: "replacement", value: original, previewUrl: "/api/uploads/replacement" },
+    });
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toHaveValue(
+      "Anmeldung",
+    );
+    await expect(page.getByRole("link", { name: "PDF ansehen ↗" })).toHaveAttribute(
+      "href",
+      "/api/uploads/replacement",
+    );
+    await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
+    expect(requests).toHaveLength(0);
+    await page.getByRole("button", { name: "Speichern", exact: true }).click();
+    await expect.poll(() => requests.length).toBe(1);
+    expect(requests[0].mutations[0]).toMatchObject({
+      collection: "downloads",
+      id: document.id,
+      baseVersion: "version-1",
+      data: document.data,
+    });
+    expect(requests[0].uploadIds).toEqual(["replacement"]);
+    await page.getByRole("button", { name: "Zurück zu Downloads →", exact: true }).click();
+    await expect(page.getByLabel("PDF ersetzen: Anmeldung", { exact: true })).toBeDisabled();
+  });
+}
+
+test("fehlgeschlagener PDF-Austausch aus der Liste lässt den vorhandenen Eintrag unverändert", async ({
+  page,
+}) => {
+  const original = "/downloads/info.pdf";
+  const document = record("downloads", { title: "Informationen", file: original });
+  const requests = await mock(page, [document], {
+    route: async (route, path) => {
+      if (path !== "/uploads") return false;
+      await route.fulfill({
+        status: 503,
+        json: { error: "Upload nicht verfügbar", code: "unavailable" },
+      });
+      return true;
+    },
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "PDF ersetzen", exact: true }).click();
+  await page.getByLabel("PDF ersetzen: Informationen").setInputFiles({
+    name: "neu.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.7\n"),
+  });
+  await expect(page.getByRole("alert")).toContainText("Upload nicht verfügbar");
+  await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
+  await expect(page.getByRole("link", { name: "PDF ansehen ↗" })).toHaveAttribute(
+    "href",
+    `https://montessori-allgaeu.de${original}`,
+  );
+  expect(requests).toHaveLength(0);
+});
+
+test("PDF lässt sich direkt nach einer Veröffentlichung erneut austauschen", async ({ page }) => {
+  const original = "/downloads/info.pdf";
+  const document = record("downloads", { title: "Informationen", file: original });
+  let published = false;
+  let upload: Route | undefined;
+  const requests = await mock(page, [document], {
+    route: async (route, path) => {
+      if (path === "/changes" && route.request().method() === "GET") {
+        await route.fulfill({
+          json: { changes: requests.length ? [change(published ? "published" : "checking")] : [] },
+        });
+        return true;
+      }
+      if (path === "/content" && published) {
+        await route.fulfill({
+          json: {
+            revision: "revision-2",
+            records: [{ ...document, version: "version-2", data: requests[0].mutations[0].data }],
+            mediaVersions: { [original]: "media-version-1" },
+          },
+        });
+        return true;
+      }
+      if (path === "/uploads") {
+        upload = route;
+        return true;
+      }
+      return false;
+    },
+  });
+  await page.goto("/?collection=downloads&id=test-eintrag");
+  await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Neue Informationen");
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(1);
+  published = true;
+  await expect(page.getByText("Auf der Website sichtbar", { exact: true }).first()).toBeVisible({
+    timeout: 8000,
+  });
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "neu.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.7\n"),
+  });
+  await expect.poll(() => !!upload).toBe(true);
+  await upload!.fulfill({
+    json: { id: "second-upload", value: original, previewUrl: "/api/uploads/second" },
+  });
+  await expect(page.getByRole("link", { name: "PDF ansehen ↗" })).toHaveAttribute(
+    "href",
+    "/api/uploads/second",
+  );
+  await page.getByRole("button", { name: "Speichern", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(2);
+  expect(requests[1].uploadIds).toEqual(["second-upload"]);
+  expect(requests[1].mutations[0].baseVersion).toBe("version-2");
+});
 const testImage = (name: string) => ({
   name,
   mimeType: "image/png",
@@ -509,12 +706,8 @@ for (const kind of ["new", "existing"] as const) {
       await page.getByRole("button", { name: "Als Vorlage verwenden", exact: true }).click();
       await page.getByText("Weitere Angaben ergänzen", { exact: true }).click();
     }
-    await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
     await page.locator('input[type="file"]').setInputFiles(testImage("erste.png"));
     await expect(page.locator(".media-editor img")).toHaveAttribute("src", "/api/uploads/upload-1");
-    // Close and reopen the field to prove the original replacement target survives remounts.
-    await page.getByRole("button", { name: "Fertig", exact: true }).click();
-    await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
     await page.locator('input[type="file"]').setInputFiles(testImage("zweite.png"));
     await expect(page.locator(".media-editor img")).toHaveAttribute("src", "/api/uploads/upload-2");
     await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
@@ -555,7 +748,6 @@ test("eine verspätete Uploadantwort überschreibt keine neuere Auswahl", async 
     },
   });
   await page.goto("/?collection=team&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
   await page.locator('input[type="file"]').setInputFiles(testImage("erste.png"));
   await expect.poll(() => uploads).toBe(1);
   // A second change event can already be queued before the disabled control is rendered.
@@ -623,7 +815,7 @@ test("Medien behalten die beim Öffnen gelesene Version trotz Hintergrundaktuali
     },
   });
   await page.goto("/?collection=team&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Name", exact: true })).toHaveValue("Maria Monte");
   publishOtherChange = true;
   await expect.poll(() => reads, { timeout: 8000 }).toBe(2);
   await page.locator('input[type="file"]').setInputFiles(testImage("meine-aenderung.png"));
@@ -632,7 +824,9 @@ test("Medien behalten die beim Öffnen gelesene Version trotz Hintergrundaktuali
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
 });
 
-test("Zurücksetzen entfernt auch einen Upload mit unverändertem Dateipfad", async ({ page }) => {
+test("Dateiaustausch zurücknehmen entfernt auch einen Upload mit unverändertem Dateipfad", async ({
+  page,
+}) => {
   const original = "../../assets/images/team/alt.png";
   const person = record("team", { name: "Maria Monte", image: original });
   const requests = await mock(page, [person], {
@@ -645,13 +839,11 @@ test("Zurücksetzen entfernt auch einen Upload mit unverändertem Dateipfad", as
     },
   });
   await page.goto("/?collection=team&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: Porträt", exact: true }).click();
   await page.locator('input[type="file"]').setInputFiles(testImage("ersetzen.png"));
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
-  await page.getByRole("button", { name: "Zurücksetzen", exact: true }).click();
+  await page.getByRole("button", { name: "Dateiaustausch zurücknehmen", exact: true }).click();
   await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
   await expect(page.locator(".person-photo")).toHaveAttribute("src", /\/api\/media\?/);
-  await page.getByRole("button", { name: "Bearbeiten: Name", exact: true }).click();
   await page.getByRole("textbox", { name: "Name", exact: true }).fill("Maria Neu");
   await page.getByRole("button", { name: "Speichern", exact: true }).click();
   await expect.poll(() => requests.length).toBe(1);
@@ -710,7 +902,6 @@ test("PDF erneut auswählen und danach einen anderen Datensatz bearbeiten vermis
     },
   });
   await page.goto("/?collection=downloads&id=test-eintrag");
-  await page.getByRole("button", { name: "Bearbeiten: PDF-Datei", exact: true }).click();
   for (const index of [1, 2]) {
     await page.locator('input[type="file"]').setInputFiles({
       name: `info-${index}.pdf`,
@@ -726,7 +917,6 @@ test("PDF erneut auswählen und danach einen anderen Datensatz bearbeiten vermis
   await expect.poll(() => requests.length).toBe(1);
   await page.locator(".sidebar").getByRole("button", { name: "Downloads", exact: true }).click();
   await page.locator(".record-row").filter({ hasText: "Anmeldung" }).click();
-  await page.getByRole("button", { name: "Bearbeiten: PDF-Datei", exact: true }).click();
   await page.locator('input[type="file"]').setInputFiles({
     name: "anmeldung-neu.pdf",
     mimeType: "application/pdf",
@@ -799,15 +989,12 @@ for (const viewport of [
     await expect(
       page.getByRole("heading", { name: "Unser neuer Kennenlerntag", exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }),
-    ).toBeDisabled();
+    await expect(page.getByRole("textbox", { name: "Titel", exact: true })).toBeDisabled();
     await page.getByRole("button", { name: "Zurück zu Termine →", exact: true }).click();
     await expect(
       page.locator(".record-row").filter({ hasText: "Unser neuer Kennenlerntag" }),
     ).toBeVisible();
     await page.locator(".record-row").filter({ hasText: "Zweiter Termin" }).click();
-    await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
     await page
       .getByRole("textbox", { name: "Titel", exact: true })
       .fill("Noch nicht gespeicherte Eingabe");
@@ -933,11 +1120,9 @@ for (const recovery of ["new", "replacement", "expired"] as const) {
     await page.getByRole("button", { name: "Problem ansehen" }).click();
     await page.getByRole("button", { name: "Gespeicherte Änderung ansehen" }).click();
     await page.getByRole("button", { name: "Eingaben überarbeiten" }).click();
-    await page.getByRole("button", { name: "Bearbeiten: Titel", exact: true }).click();
     await page.getByRole("textbox", { name: "Titel", exact: true }).fill("Korrigierter Titel");
     await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
     await expect(page.getByRole("alert")).toContainText("Datei noch einmal");
-    await page.getByRole("button", { name: "Bearbeiten: PDF-Datei", exact: true }).click();
     await page.locator('input[type="file"]').setInputFiles({
       name: "neu.pdf",
       mimeType: "application/pdf",

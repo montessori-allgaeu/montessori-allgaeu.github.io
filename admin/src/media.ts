@@ -1,4 +1,33 @@
-import type { ContentData, JsonValue, UploadResult } from "../../src/admin/types";
+import type {
+  ContentCollection,
+  ContentData,
+  JsonValue,
+  UploadResult,
+} from "../../src/admin/types";
+import { api } from "./api";
+
+export async function uploadMedia(
+  file: File,
+  collection: ContentCollection,
+  kind: "image" | "pdf",
+  originalValue: JsonValue | undefined,
+  mediaVersions: Record<string, string> = {},
+): Promise<UploadResult> {
+  if (file.size > 10 * 1024 * 1024)
+    throw new Error("Diese Datei ist größer als 10 MB. Bitte verkleinere sie vor dem Hochladen.");
+  const form = new FormData();
+  form.set("file", file);
+  form.set(
+    "kind",
+    kind === "image" ? (collection === "parentCouncil" ? "parentCouncil" : "team") : "downloads",
+  );
+  // Replacement always refers to the committed version, never to a staged upload.
+  if (typeof originalValue === "string" && mediaVersions[originalValue]) {
+    form.set("replace", originalValue);
+    form.set("baseVersion", mediaVersions[originalValue]);
+  }
+  return api.request<UploadResult>("/uploads", { method: "POST", body: form });
+}
 
 export type PendingMedia = Record<string, { path: string[]; upload: UploadResult }>;
 

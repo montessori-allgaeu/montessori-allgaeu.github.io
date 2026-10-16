@@ -7,7 +7,8 @@ import type {
   UploadResult,
 } from "../../src/admin/types";
 import { calculateEffectiveFee, type EditorField } from "../../src/admin/content-model";
-import { api, errorText } from "./api";
+import { errorText } from "./api";
+import { uploadMedia } from "./media";
 
 export function humanValue(value: JsonValue | undefined): string {
   if (value === undefined || value === null || value === "") return "Noch nicht angegeben";
@@ -108,27 +109,18 @@ function MediaInput({
     : "";
   async function upload(file: File | undefined) {
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      setError("Diese Datei ist größer als 10 MB. Bitte verkleinere sie vor dem Hochladen.");
-      return;
-    }
     const request = ++latestRequest.current;
     setBusy(true);
     onUploadBusy?.(true);
     setError("");
     try {
-      const form = new FormData();
-      form.set("file", file);
-      form.set(
-        "kind",
-        isImage ? (collection === "parentCouncil" ? "parentCouncil" : "team") : "downloads",
+      const result = await uploadMedia(
+        file,
+        collection,
+        isImage ? "image" : "pdf",
+        originalValue,
+        mediaVersions,
       );
-      // Use the committed path/version captured when this record was opened, never a staged value.
-      if (typeof originalValue === "string" && mediaVersions?.[originalValue]) {
-        form.set("replace", originalValue);
-        form.set("baseVersion", mediaVersions[originalValue]);
-      }
-      const result = await api.request<UploadResult>("/uploads", { method: "POST", body: form });
       if (!mounted.current || request !== latestRequest.current) return;
       onUpload(result, fieldPath);
       onChange(result.value);
@@ -154,20 +146,6 @@ function MediaInput({
           </a>
         ))}
       <div className="media-actions">
-        <label
-          className={`button secondary${busy || disabled ? " is-disabled" : ""}`}
-          htmlFor={inputId}
-        >
-          {busy
-            ? "Datei wird hochgeladen …"
-            : path
-              ? isImage
-                ? "Foto ersetzen"
-                : "Datei ersetzen"
-              : isImage
-                ? "Foto auswählen"
-                : "PDF auswählen"}
-        </label>
         <input
           id={inputId}
           className="visually-hidden"
@@ -179,8 +157,35 @@ function MediaInput({
             event.currentTarget.value = "";
           }}
         />
+        <label
+          className={`button secondary${busy || disabled ? " is-disabled" : ""}`}
+          htmlFor={inputId}
+        >
+          {busy
+            ? "Datei wird hochgeladen …"
+            : path
+              ? isImage
+                ? "Foto ersetzen"
+                : "PDF ersetzen"
+              : isImage
+                ? "Foto auswählen"
+                : "PDF auswählen"}
+        </label>
         <small>{isImage ? "JPG, PNG oder WebP" : "PDF"} · maximal 10 MB</small>
         {path && <small className="file-name">{path.split("/").at(-1)}</small>}
+        {path && previews[path] && (
+          <button
+            type="button"
+            className="text-button"
+            disabled={busy || disabled}
+            onClick={() => {
+              onDiscardUpload?.(fieldPath);
+              onChange(originalValue);
+            }}
+          >
+            Dateiaustausch zurücknehmen
+          </button>
+        )}
         {field.optional && path && (
           <button
             type="button"
@@ -497,107 +502,44 @@ function ListInput(props: EditorProps) {
   );
 }
 
-export function InlineField({ field, value, onChange, ...props }: EditorProps) {
-  const [editing, setEditing] = useState(false);
-  const [before, setBefore] = useState<JsonValue | undefined>();
-  const locked = field.adminOnly && props.role !== "admin";
-  const reset = () => {
-    props.onDiscardUpload?.(props.fieldPath ?? [field.key]);
-    onChange(field.type === "image" || field.type === "pdf" ? props.originalValue : before);
-    setEditing(false);
-  };
-  const open = () => {
-    setBefore(structuredClone(value));
-    setEditing(true);
-  };
+export function EditableField({ field, ...props }: EditorProps) {
   return (
-    <section className={`inline-field${editing ? " editing" : ""}`}>
-      <div className="inline-field-heading">
-        <h3>{field.label}</h3>
-        {!editing && !locked && (
-          <button
-            type="button"
-            className="text-button"
-            aria-label={`Bearbeiten: ${field.label}`}
-            disabled={props.disabled}
-            onClick={open}
-          >
-            Bearbeiten<span className="visually-hidden">: {field.label}</span>
-          </button>
-        )}
-        {locked && <span className="subtle">Nur Admins</span>}
-      </div>
+    <section className={`editable-field field-${field.key}`}>
+      <h3>{field.label}</h3>
       {field.description && <p className="hint">{field.description}</p>}
-      {editing ? (
-        <div
-          onKeyDown={(event) => {
-            if (event.key === "Escape" && !props.disabled) {
-              event.stopPropagation();
-              reset();
-            }
-          }}
-        >
-          <FieldInput {...props} field={field} value={value} onChange={onChange} />
-          <div className="inline-done">
-            <button
-              type="button"
-              className="text-button"
-              disabled={props.disabled}
-              onClick={() => setEditing(false)}
-            >
-              Fertig
-            </button>
-            <button
-              type="button"
-              className="text-button subtle"
-              disabled={props.disabled}
-              onClick={() => {
-                reset();
-              }}
-            >
-              Zurücksetzen
-            </button>
-            <small>Mit „Speichern“ oben übernehmen.</small>
-          </div>
-        </div>
-      ) : field.type === "pdf" && typeof value === "string" && value ? (
-        <a
-          href={props.previews[value] ?? `https://montessori-allgaeu.de${value}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          PDF ansehen ↗
-        </a>
-      ) : (
-        <button
-          type="button"
-          className="value-button"
-          disabled={props.disabled || locked}
-          onClick={open}
-          aria-label={`${field.label} bearbeiten`}
-        >
-          {field.type === "image" && typeof value === "string" && value ? (
-            <img
-              className="person-photo"
-              alt="Aktuelles Foto"
-              src={
-                props.previews[value] ??
-                `/api/media?path=${encodeURIComponent(value)}&collection=${props.collection}`
-              }
-            />
-          ) : (
-            <span
-              className={
-                value === undefined || value === "" || (Array.isArray(value) && !value.length)
-                  ? "empty-value"
-                  : ""
-              }
-            >
-              {humanValue(value)}
-            </span>
-          )}
-        </button>
-      )}
+      <FieldInput {...props} field={field} />
     </section>
+  );
+}
+
+export function PdfReplaceInput({
+  title,
+  disabled,
+  onSelect,
+}: {
+  title: string;
+  disabled: boolean;
+  onSelect: (file: File) => void;
+}) {
+  const id = useId();
+  return (
+    <div className="pdf-replace">
+      <input
+        id={id}
+        className="visually-hidden"
+        type="file"
+        accept="application/pdf"
+        aria-label={`PDF ersetzen: ${title}`}
+        disabled={disabled}
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          if (file) onSelect(file);
+        }}
+      />
+      <label htmlFor={id} className={`button secondary${disabled ? " is-disabled" : ""}`}>
+        PDF ersetzen
+      </label>
+    </div>
   );
 }

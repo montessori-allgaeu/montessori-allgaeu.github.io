@@ -13,6 +13,9 @@
 * {
   box-sizing: border-box;
 }
+html {
+  scroll-padding: 85px 0 140px;
+}
 body {
   margin: 0;
 }
@@ -312,8 +315,9 @@ strong {
   margin-bottom: 0;
 }
 .app-shell {
+  --sidebar-width: 224px;
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100dvh;
 }
 .sidebar {
@@ -692,8 +696,9 @@ strong {
 .search-result {
   border-bottom: 1px solid var(--line);
 }
-.editor-page {
+.page-content.editor-page {
   max-width: 1080px;
+  padding-bottom: calc(150px + env(safe-area-inset-bottom));
 }
 .back-link {
   margin-bottom: 23px;
@@ -712,17 +717,29 @@ strong {
   font-size: clamp(32px, 3.6vw, 47px);
 }
 .save-controls {
+  position: fixed;
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  z-index: 15;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: 15px;
-  padding-top: 22px;
+  gap: 20px;
+  min-height: 84px;
+  padding: 16px 44px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.save-controls .button {
   flex-shrink: 0;
+  min-width: 135px;
 }
 .save-hint {
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--muted);
   text-align: right;
-  max-width: 145px;
 }
 .used-on {
   font-size: 11px;
@@ -733,73 +750,37 @@ strong {
 .editor-fields {
   border-top: 1px solid var(--line);
 }
-.inline-field {
+.editable-field {
+  min-width: 0;
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
 }
-.inline-field.editing {
-  background: #fbfaf7;
-  margin: 0 -18px;
-  padding-left: 18px;
-  padding-right: 18px;
+.editable-field h3 {
+  margin: 0 0 10px;
 }
-.inline-field-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-}
-.inline-field-heading h3 {
-  margin: 0;
-}
-.inline-field-heading .subtle {
-  font-size: 11px;
-}
-.inline-field-heading .text-button {
-  font-size: 11px;
-  padding: 0;
-}
-.inline-field .hint {
+.editable-field .hint {
   max-width: 700px;
+  margin: 0 0 12px;
 }
-.value-button {
-  border: 0;
-  padding: 8px 0 0;
-  background: transparent;
-  text-align: left;
-  width: 100%;
-  display: block;
-  font-size: 14px;
-  line-height: 1.7;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
+.event-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 24px;
 }
-.value-button > span {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.event-fields > * {
+  grid-column: 1 / -1;
 }
-.value-button:disabled {
-  opacity: 1;
+.event-fields > .field-date,
+.event-fields > .field-time {
+  grid-column: auto;
 }
-.value-button:hover:not(:disabled) {
-  color: var(--terracotta);
+.pdf-replace {
+  flex-shrink: 0;
+  padding: 10px 12px 10px 0;
 }
-.empty-value {
-  color: #777c70;
-  font-style: italic;
-}
-.inline-done {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
-.inline-done small {
-  margin-left: auto;
-  font-size: 10px;
+.pdf-replace .button {
+  font-size: 12px;
+  white-space: nowrap;
 }
 .nested-fields {
   display: grid;
@@ -1102,7 +1083,7 @@ strong {
 }
 @media (max-width: 1180px) {
   .app-shell {
-    grid-template-columns: 200px minmax(0, 1fr);
+    --sidebar-width: 200px;
   }
   .sidebar {
     padding-left: 12px;
@@ -1125,10 +1106,8 @@ strong {
     flex-wrap: wrap;
   }
   .save-controls {
-    padding-top: 0;
-    width: 100%;
-    justify-content: flex-end;
-    margin: 0 0 15px;
+    padding-left: 30px;
+    padding-right: 30px;
   }
   .save-hint {
     max-width: none;
@@ -1152,6 +1131,7 @@ strong {
 }
 @media (max-width: 760px) {
   .app-shell {
+    --sidebar-width: 0px;
     display: block;
   }
   .mobile-header {
@@ -1218,6 +1198,9 @@ strong {
   .topbar {
     padding: 9px 22px;
     min-height: 60px;
+  }
+  .editing-topbar {
+    display: none;
   }
   .search-box {
     width: 100%;
@@ -1317,37 +1300,42 @@ strong {
     font-size: 35px;
   }
   .save-controls {
-    position: sticky;
-    top: 62px;
-    z-index: 10;
-    padding: 12px 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--line);
-    background: var(--paper);
+    gap: 12px;
+    padding: 12px 22px calc(12px + env(safe-area-inset-bottom));
+  }
+  .save-hint {
+    flex: 1;
+    font-size: 11px;
+    text-align: left;
   }
   .save-controls .button {
     min-width: 120px;
   }
   .used-on {
-    margin-bottom: 22px;
+    margin-bottom: 16px;
   }
-  .inline-field {
-    padding: 20px 0;
+  .back-link {
+    margin-bottom: 12px;
   }
-  .inline-field.editing {
-    margin: 0 -10px;
-    padding-left: 10px;
-    padding-right: 10px;
+  .editable-field {
+    padding: 18px 0;
   }
-  .inline-done {
-    gap: 18px;
+  .event-fields {
+    column-gap: 12px;
   }
-  .inline-done small {
-    width: 100%;
-    margin: 0;
+  .event-fields > .field-date,
+  .event-fields > .field-time {
+    grid-column: 1 / -1;
   }
-  .value-button {
-    font-size: 13px;
+  .record-item:has(.pdf-replace) {
+    flex-wrap: wrap;
+  }
+  .record-item:has(.pdf-replace) .record-row {
+    flex-basis: 100%;
+    padding-bottom: 0;
+  }
+  .pdf-replace {
+    margin-right: auto;
   }
   .list-entry {
     padding: 9px 11px 15px;

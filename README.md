@@ -72,6 +72,8 @@ auf Chromium.
 
 Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** bestätigt die dauerhaft angenommene Änderung sofort; Prüfung, Übernahme in Git und Veröffentlichung laufen im Hintergrund. Andere Einträge können währenddessen bearbeitet werden. Der gespeicherte Stand bleibt beim Neuladen sichtbar; „Auf der Website sichtbar“ erscheint erst nach bestätigter Veröffentlichung. Vorhandene Einträge können mit `visible: false` ausgeblendet werden. Kontaktdaten, Menschen und Dokumente werden zentral an allen passenden Stellen verwendet.
 
+Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleiste bleibt am unteren Bildschirmrand erreichbar. Unter **Downloads** öffnet **PDF ersetzen** direkt die Dateiauswahl. Danach kann die neue PDF geprüft und zusammen mit Titel oder weiteren Angaben gespeichert werden. Beim Austausch bleibt der bestehende Dateilink erhalten.
+
 Anmeldung ausschließlich per Passkey, ohne Eingabe einer E-Mail-Adresse, eines Nutzernamens oder Passworts. Admins verwalten Einladungen, Rollen und Bankdaten; Content Manager bearbeiten die übrigen Inhalte einschließlich Gebühren. Private Zugangs- und Sitzungsdaten liegen ausschließlich im Verwaltungsbackend. Die öffentliche Website verwendet kein Webtracking. Der besondere Vorstandskontakt über Formspark bleibt erhalten.
 
 Die Inhaltsanleitung steht in [`docs/inhalte-pflegen.md`](docs/inhalte-pflegen.md). Einrichtung, technische Wiederherstellung, DNS-Umstieg und Rückfall sind in [`docs/verwaltung-betrieb.md`](docs/verwaltung-betrieb.md) beschrieben.
