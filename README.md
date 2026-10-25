@@ -17,6 +17,8 @@ Auf diesem Mac funktioniert auch `dev` aus jedem Unterordner des Repos. Der Star
 
 Mit Ctrl+C werden nur die gestarteten Prozesse beendet. `npm run dev` bleibt verfügbar. `./dev --port 8050` verlangt einen festen öffentlichen Port; bei Belegung bricht der Start ab. Fehlende Verwaltungsassets werden einmal gebaut, Abhängigkeiten nicht erneut installiert. Die lokalen Backenddaten liegen unter `.wrangler/state`; ohne eingerichtete GitHub-App können keine Repository-Inhalte geladen oder veröffentlicht werden.
 
+Die Verwaltung deaktiviert wegen CVE-2026-111497 die automatische HTTP-Brotli-Dekodierung über `no_brotli_content_encoding`. Das gilt auch für lokales Wrangler und die Worker-Tests. Grenzen, Versionsnachweise und die Bedingung zum Entfernen der Maßnahme stehen im [Betriebshandbuch](docs/verwaltung-betrieb.md#brotli-sicherheitsmaßnahme-cve-2026-111497).
+
 Der Dev-Server baut den Astro-Content-Cache bei jedem Start neu auf. Nach Änderungen an der
 Inhaltsstruktur oder an `src/content.config.ts` einen bereits laufenden Dev-Server neu starten.
 Falls eine manuelle Aktualisierung nötig ist, steht zusätzlich `npm run content:refresh` zur
