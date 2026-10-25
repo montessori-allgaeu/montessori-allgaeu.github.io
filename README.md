@@ -158,6 +158,8 @@ versehentliche Klartextausgabe, kein Beweis gegen alle Formen der Adressrekonstr
 
 Ein Push auf `main` startet `.github/workflows/publish.yml`: vollständige Prüfungen, Builds, Prüfung der kostenlosen Asset-Grenzen und Veröffentlichung beider Anwendungen. Bei fehlgeschlagenen Prüfungen bleibt die bisherige Website online. Für redaktionelle Änderungen startet die Verwaltung denselben Ablauf über eine auf dieses Repository beschränkte GitHub App. Es sind keine manuellen Uploads oder weiteren Cloudflare-Aktionen im Alltag nötig.
 
+Beide GitHub-Workflows verwenden Node 22 ab `22.23.4` und prüfen mit `check-latest: true` die aktuelle Patch-Version. Ein älterer Node-Prozess aus dem Runner-Cache darf dadurch den Brotli-Sicherheitsfix nicht umgehen.
+
 Die Verwaltungs-API prüft dabei die exakte GitHub-OIDC-Laufidentität aus `GITHUB_OIDC_SUB` zusätzlich zu Repository-ID, Workflow und Branch. Beim Einrichten die tatsächliche Kennung einschließlich Eigentümer- und Repository-ID aus GitHub übernehmen; siehe [Betriebsanleitung](docs/verwaltung-betrieb.md).
 
 - Öffentliche Website: `wrangler.site.jsonc`, Ausgabe `dist/`; statische Auslieferung ohne Worker-Script.
