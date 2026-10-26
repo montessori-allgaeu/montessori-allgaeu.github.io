@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 16. Oktober 2026
+Stand: 26. Oktober 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -170,7 +170,21 @@ Die Pädagogik soll historische Montessori-Impulse nicht blind reproduzieren. W�
 
 ## Gemeinschaft und Elternrolle
 
-Die Schule wird von einem gemeinnützigen Verein getragen. Eltern sind Mitglieder und wählen den Vorstand. Dadurch haben Familien mehr Verantwortung und Einfluss als in einem großen staatlichen System.
+Kindergarten und Schule wurden von Eltern gegründet und werden von Eltern geführt und getragen.
+Träger ist ein gemeinnütziger Verein. Eltern sind Mitglieder und wählen den Vorstand; die
+Mitgliederversammlung entscheidet grundlegende Vereinsfragen. Dadurch haben Familien mehr
+Verantwortung und Einfluss als in einem großen staatlichen System.
+
+Der gewählte, ehrenamtliche Vorstand besteht aus Eltern und führt die Organisation. Er trifft die
+übergeordneten Entscheidungen und trägt die rechtliche, strategische und wirtschaftliche
+Gesamtverantwortung. Die Leitungen führen den pädagogischen und organisatorischen Alltag innerhalb
+ihres Auftrags. Die Gesamtverantwortung bleibt beim Vorstand, der den Mitgliedern gegenüber
+rechenschaftspflichtig ist.
+
+Auf **Träger & Verein** wird diese Elternverantwortung bereits im Einstieg deutlich. Unmittelbar
+danach stehen der Vorstand und seine Porträts; Aufgabenverteilung, Vereinsstruktur und
+Verbandsmitgliedschaften folgen. Der Vorstand wird als Führung der elterngetragenen Monte
+sichtbar, nicht nur als mitwirkendes Gremium.
 
 Die Monte ist bewusst eine persönliche Gemeinschaft:
 

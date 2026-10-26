@@ -5,7 +5,7 @@ export default {
   path: "/gemeinschaft/traeger-verein/",
   title: "Trägerverein von Kindergarten & Schule",
   description:
-    "Der gemeinnützige Monte e.V. trägt Montessori-Kindergarten und Schule Allgäu. Eltern sind Mitglieder, wählen den Vorstand und gestalten mit.",
+    "Von Eltern gegründet, getragen und geführt: Der Monte e.V. trägt Kindergarten und Schule im Allgäu. Lerne den Vorstand und seine Gesamtverantwortung kennen.",
   breadcrumbLabel: "Träger & Verein",
   cardEyebrow: "TRÄGER & VEREIN",
   cardTitle: "Die Monte sind wir.",
