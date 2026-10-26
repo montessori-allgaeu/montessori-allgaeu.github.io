@@ -181,7 +181,7 @@ Gesamtverantwortung. Die Leitungen führen den pädagogischen und organisatorisc
 ihres Auftrags. Die Gesamtverantwortung bleibt beim Vorstand, der den Mitgliedern gegenüber
 rechenschaftspflichtig ist.
 
-Auf **Träger & Verein** wird diese Elternverantwortung bereits im Einstieg deutlich. Unmittelbar
+Auf **Vorstand & Verein** wird diese Elternverantwortung bereits im Einstieg deutlich. Unmittelbar
 danach stehen der Vorstand und seine Porträts; Aufgabenverteilung, Vereinsstruktur und
 Verbandsmitgliedschaften folgen. Der Vorstand wird als Führung der elterngetragenen Monte
 sichtbar, nicht nur als mitwirkendes Gremium.
@@ -388,7 +388,7 @@ Die Hauptnavigation ist bestätigt:
 | Prinzipien             | `/gemeinschaft/prinzipien/`                 | Entscheidungsprinzipien veröffentlichen und Beta-Status erklären          |
 | Team                   | `/gemeinschaft/team/`                       | Menschen und pädagogische Präsenz sichtbar machen                         |
 | Elternbeirat           | `/gemeinschaft/elternbeirat/`               | Elternvertretung, Mitwirkung und direkte Ansprechpersonen zeigen          |
-| Träger & Verein        | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären               |
+| Vorstand & Verein      | `/gemeinschaft/traeger-verein/`             | Eigentum, Verantwortung und demokratische Struktur erklären               |
 | Unsere Geschichte      | `/gemeinschaft/geschichte/`                 | Gründung und ausgewählte Wegmarken bewahren, ohne sie primär zu gewichten |
 | Arbeiten bei uns       | `/arbeiten-bei-uns/`                        | Arbeitgeberpositionierung und Fit                                         |
 | Offene Stellen         | `/arbeiten-bei-uns/stellen/`                | Primärer Recruiting-Conversion-Pfad                                       |
@@ -523,9 +523,9 @@ Wichtige Pfade:
 - Behörden wurden als eigene Zielgruppe aus dem Website-Fokus entfernt.
 - Spender:innen, Unterstützer:innen und Unternehmen wurden als nachrangige Zielgruppe hinter Familien und potenziellen Mitarbeitenden aufgenommen; die oberste Ebene der Hauptnavigation bleibt unverändert.
 - Die Spendenseite und ihr ruhiger Startseitenhinweis werden über die Monte-Verwaltung gepflegt; Layout, Navigation und feste Zielrouten bleiben im Code.
-- Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Träger & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
+- Die dokumentierte Gründungsgeschichte und ausgewählte Wegmarken von 1999 bis 2018 werden als „Unsere Geschichte“ unter **Gemeinschaft** bewahrt. Die Seite bleibt bewusst verdichtet und wird im Dropdown unter **Gemeinschaft** sowie über den Footer, einen dezenten Hinweis auf **Vorstand & Verein** und die Weiterleitung der früheren Schulgeschichtsadresse erschlossen.
 - Der Elternbeirat erhält unter **Gemeinschaft** eine eigene Seite mit seinen aktuellen Ansprechpersonen für Kindergarten und Schule. Namen, Rollen und Porträts werden unabhängig vom pädagogischen Team über die Monte-Verwaltung gepflegt; die Kontaktadressen liegen zentral unter Kontakt & Zeiten. Die frühere Jimdo-Adresse führt direkt auf diese Seite.
-- Die Mitgliedschaft im Montessori Landesverband Bayern und die damit verbundene Mitgliedschaft bei Montessori Deutschland werden als ruhiger Vertrauensbeweis im Footer genannt und auf **Träger & Verein** inhaltlich eingeordnet. Das Verbandslogo erscheint dort auf hellem Grund, nicht prominent auf der Startseite oder im Hero.
+- Die Mitgliedschaft im Montessori Landesverband Bayern und die damit verbundene Mitgliedschaft bei Montessori Deutschland werden als ruhiger Vertrauensbeweis im Footer genannt und auf **Vorstand & Verein** inhaltlich eingeordnet. Das Verbandslogo erscheint dort auf hellem Grund, nicht prominent auf der Startseite oder im Hero.
 - Termine und Downloads werden im Dropdown und im Footer unter **Kennenlernen** erschlossen; ihre bestehenden Routen `/termine/` und `/downloads/` und die fünf Hauptpunkte der Navigation bleiben unverändert. Mobil öffnen die Hauptbereiche ihre Unterseiten als kompakte Akkordeons. Termine, Downloads und Kontakt bleiben zusätzlich als direkte Schnellzugriffe erreichbar.
 - Quereinstieg wird nicht prominent beworben, aber als offener Weg für freie Plätze in höheren Klassen mit klarer Montessori-Passung erklärt.
 - Offene Stellen sind der zentrale Recruiting-Pfad; Hospitation und Kennenlerngespräch bleiben möglich.

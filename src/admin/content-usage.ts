@@ -5,7 +5,7 @@ type Page = { href: string; label: string };
 const page = (href: string, label: string): Page => ({ href, label });
 const costs = page("/kennenlernen/kosten/", "Kosten & Mitarbeit");
 const afternoon = page("/kindergarten-schule/ganztag-verpflegung/", "Ganztag & Verpflegung");
-const association = page("/gemeinschaft/traeger-verein/", "Träger & Verein");
+const association = page("/gemeinschaft/traeger-verein/", "Vorstand & Verein");
 
 /** Mirrors the public pages' content selection, including conditional and shared references. */
 export function contentUsage(
