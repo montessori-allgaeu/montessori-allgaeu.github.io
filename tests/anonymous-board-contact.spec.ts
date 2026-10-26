@@ -244,6 +244,6 @@ test("the open form is accessible, responsive and linked from the legal pages", 
     }),
   ).toBeVisible();
   await expect(
-    page.getByRole("main").getByRole("link", { name: "Träger & Verein", exact: true }),
+    page.getByRole("main").getByRole("link", { name: "Vorstand & Verein", exact: true }),
   ).toHaveAttribute("href", "/gemeinschaft/traeger-verein/");
 });

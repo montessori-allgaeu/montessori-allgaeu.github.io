@@ -32,10 +32,81 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
 
 <BaseLayout {...getSeoLayoutProps(seoPages.verein)}>
   <PageIntro
-    eyebrow="Träger & Verein"
+    eyebrow="Vorstand & Verein"
     title="Die Monte sind wir."
-    intro="Nicht der Staat, kein Konzern und kein einzelner Eigentümer trägt die Monte. Träger ist ein gemeinnütziger Verein, dessen Mitglieder Verantwortung gemeinsam übernehmen."
+    intro="Von Eltern gegründet, von Eltern geführt und gemeinsam getragen: Die Monte ist eine Elterninitiative. In unserem gemeinnützigen Verein übernehmen Familien Verantwortung für Kindergarten und Schule."
+    compact
   />
+
+  <section class="section section--compact board-section" aria-labelledby="vorstand">
+    <div class="container">
+      <div class="grid-2 board-heading">
+        <div>
+          <p class="eyebrow">Unser Vorstand</p>
+          <h2 id="vorstand">Eltern, die die Monte führen.</h2>
+        </div>
+        <p class="lead">
+          Wir sind selbst Eltern. Als gewählter Vorstand führen wir die Monte ehrenamtlich und
+          tragen die rechtliche, strategische und wirtschaftliche Gesamtverantwortung für
+          Kindergarten und Schule.
+        </p>
+      </div>
+
+      <div class="board-members">
+        {
+          board.map(({ member, assignment }) => (
+            <article class="board-member">
+              <div
+                class={`board-member__image${member.image ? "" : " board-member__image--placeholder"}`}
+              >
+                {member.image ? (
+                  <Image
+                    src={member.image}
+                    alt={`Porträt von ${member.name}`}
+                    widths={[300, 480, 640]}
+                    sizes="(max-width: 620px) 50vw, 25vw"
+                  />
+                ) : (
+                  <span class="board-member__initials" aria-hidden="true">
+                    {getInitials(member.name)}
+                  </span>
+                )}
+              </div>
+              <h3>{member.name}</h3>
+              {assignment.role && <p>{assignment.role}</p>}
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="responsibility-brief">
+        <article>
+          <p class="eyebrow">Der Vorstand</p>
+          <h3>Führt die Organisation.</h3>
+          <p>
+            Der Vorstand trifft die übergeordneten Entscheidungen, setzt die Leitungen ein und klärt
+            ihren Auftrag. Er verantwortet die langfristige Entwicklung der Monte und ist den
+            Mitgliedern gegenüber rechenschaftspflichtig.
+          </p>
+        </article>
+        <article>
+          <p class="eyebrow">Die Leitungen</p>
+          <h3>Führen den Alltag.</h3>
+          <p>
+            Die Leitungen führen Kindergarten und Schule pädagogisch und organisatorisch im Alltag.
+            Sie gestalten ihren Verantwortungsbereich eigenständig innerhalb des gemeinsamen
+            Auftrags. Die Gesamtverantwortung bleibt beim Vorstand.
+          </p>
+        </article>
+      </div>
+
+      <p class="board-contact">
+        Den ehrenamtlichen Vorstand erreicht ihr per E-Mail:{" "}
+        <EmailContact href="mailto:vorstand@montessori-allgaeu.de" />
+      </p>
+      <AnonymousBoardContact />
+    </div>
+  </section>
 
   <section class="section section--compact association-section">
     <div class="container">
@@ -60,7 +131,10 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
         <article class="numbered-point">
           <span class="numbered-point__number">01</span>
           <h3>Gemeinnütziger Träger</h3>
-          <p>Der Verein trägt Kindergarten und Schule – nicht der Staat oder ein Eigentümer.</p>
+          <p>
+            Eltern tragen Kindergarten und Schule in ihrem Verein – nicht der Staat, ein Konzern
+            oder ein einzelner Eigentümer.
+          </p>
         </article>
         <article class="numbered-point">
           <span class="numbered-point__number">02</span>
@@ -69,8 +143,11 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
         </article>
         <article class="numbered-point">
           <span class="numbered-point__number">03</span>
-          <h3>Eltern gestalten mit</h3>
-          <p>Verantwortung bleibt persönlich, nah und in der Gemeinschaft verankert.</p>
+          <h3>Eltern übernehmen Verantwortung</h3>
+          <p>
+            Im Vorstand, im Verein und im Alltag: Eltern führen die Monte und gestalten ihre
+            Zukunft. Die Verantwortung bleibt in der Gemeinschaft.
+          </p>
         </article>
       </div>
 
@@ -105,71 +182,6 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
           </p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="section board-section">
-    <div class="container">
-      <div class="board-heading">
-        <p class="eyebrow">Vorstand</p>
-        <h2>Ehrenamtlich tätig. Am Ende verantwortlich.</h2>
-        <p class="lead">
-          Der Vorstand trägt die rechtliche, strategische und wirtschaftliche Gesamtverantwortung
-          für den Verein – und damit für Kindergarten und Schule.
-        </p>
-      </div>
-
-      <div class="responsibility-brief">
-        <article>
-          <p class="eyebrow">Der Vorstand</p>
-          <h3>Gibt Auftrag und Richtung.</h3>
-          <p>
-            Er setzt die Leitungen ein, klärt ihren Auftrag und entscheidet über grundlegende Fragen
-            der langfristigen Entwicklung.
-          </p>
-        </article>
-        <article>
-          <p class="eyebrow">Die Leitungen</p>
-          <h3>Führen den Alltag.</h3>
-          <p>
-            Sie führen Kindergarten und Schule pädagogisch und organisatorisch. Der Vorstand hält
-            Abstand vom Tagesgeschäft und greift nur ein, wenn Sicherheit, Stabilität oder Zukunft
-            der Monte es erfordern.
-          </p>
-        </article>
-      </div>
-
-      <div class="board-members">
-        {
-          board.map(({ member, assignment }) => (
-            <article class="board-member">
-              <div
-                class={`board-member__image${member.image ? "" : " board-member__image--placeholder"}`}
-              >
-                {member.image ? (
-                  <Image
-                    src={member.image}
-                    alt={`Porträt von ${member.name}`}
-                    widths={[300, 480, 640]}
-                    sizes="(max-width: 620px) 50vw, 25vw"
-                  />
-                ) : (
-                  <span class="board-member__initials" aria-hidden="true">
-                    {getInitials(member.name)}
-                  </span>
-                )}
-              </div>
-              <h3>{member.name}</h3>
-              {assignment.role && <p>{assignment.role}</p>}
-            </article>
-          ))
-        }
-      </div>
-      <p class="board-contact">
-        Den ehrenamtlichen Vorstand erreicht ihr per E-Mail:{" "}
-        <EmailContact href="mailto:vorstand@montessori-allgaeu.de" />
-      </p>
-      <AnonymousBoardContact />
     </div>
   </section>
 
@@ -347,19 +359,23 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
   }
 
   .board-heading {
-    max-width: 56rem;
-    margin-bottom: clamp(3rem, 5vw, 4.5rem);
+    align-items: center;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
   }
 
   .board-heading h2 {
-    max-width: 48rem;
-    font-size: clamp(2.75rem, 5vw, 4.75rem);
+    margin-bottom: 0;
+    font-size: clamp(2.35rem, 4.4vw, 4rem);
+  }
+
+  .board-heading .lead {
+    margin-bottom: 0;
   }
 
   .responsibility-brief {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-bottom: clamp(3.5rem, 6vw, 5.5rem);
+    margin-top: clamp(3.5rem, 6vw, 5.5rem);
     border-top: 1px solid var(--color-line);
     border-bottom: 1px solid var(--color-line);
   }
@@ -665,7 +681,7 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
     }
 
     .responsibility-brief {
-      margin-bottom: 3rem;
+      margin-top: 3rem;
     }
 
     .responsibility-brief article {
