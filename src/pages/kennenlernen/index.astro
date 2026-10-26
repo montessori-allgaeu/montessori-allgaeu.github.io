@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageIntro from "@/components/PageIntro.astro";
 import HubLink from "@/components/HubLink.astro";
 import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
@@ -13,19 +12,26 @@ const events = await getEvents();
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.kennenlernen)}>
-  <PageIntro
-    eyebrow="Monte kennenlernen"
-    title="Findet heraus, ob die Monte zu euch passt."
-    intro="Wir möchten euch kennenlernen – und ihr sollt erleben, wie wir arbeiten. Gemeinsam finden wir heraus, ob euer Kind, eure Familie und die Monte gut zusammenpassen."
-    compact
-  >
-    <nav class="introduction-links" aria-label="Aufnahme und Kosten">
-      <TextLink href="/kennenlernen/aufnahme-kindergarten/" label="Aufnahme Kindergarten" />
-      <TextLink href="/kennenlernen/aufnahme-schule/" label="Aufnahme Schule" />
-      <TextLink href="/kennenlernen/kosten/" label="Kosten & Mitarbeit" />
-    </nav>
-    <NextIntroductionEvent events={events} />
-  </PageIntro>
+  <section class="page-intro introduction">
+    <div class="container">
+      <div class="page-intro__grid">
+        <p class="eyebrow page-intro__eyebrow">Monte kennenlernen</p>
+        <h1>Findet heraus, ob die Monte zu euch passt.</h1>
+        <div class="page-intro__aside">
+          <p class="lead">
+            Wir möchten euch kennenlernen – und ihr sollt erleben, wie wir arbeiten. Gemeinsam
+            finden wir heraus, ob euer Kind, eure Familie und die Monte gut zusammenpassen.
+          </p>
+        </div>
+      </div>
+      <nav class="introduction-links" aria-label="Aufnahme und Kosten">
+        <TextLink href="/kennenlernen/aufnahme-kindergarten/" label="Aufnahme Kindergarten" />
+        <TextLink href="/kennenlernen/aufnahme-schule/" label="Aufnahme Schule" />
+        <TextLink href="/kennenlernen/kosten/" label="Kosten & Mitarbeit" />
+      </nav>
+      <NextIntroductionEvent events={events} />
+    </div>
+  </section>
 
   <section class="section">
     <div class="container grid-2 fit-columns">
@@ -121,15 +127,55 @@ const events = await getEvents();
 </BaseLayout>
 
 <style>
+  .introduction {
+    padding-block: clamp(2rem, 5vw, 4rem);
+  }
+
+  .introduction h1 {
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+  }
+
   .introduction-links {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-block: 0.5rem;
+    border-block: 1px solid var(--color-line);
   }
 
   .introduction-links :global(a) {
+    justify-content: space-between;
     min-height: 44px;
+    padding-block: 0.5rem;
+  }
+
+  .introduction-links :global(svg) {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 840px) {
+    .introduction h1 {
+      margin-bottom: 1rem;
+      font-size: clamp(2.5rem, 10vw, 3.5rem);
+    }
+
+    .introduction .lead {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .introduction-links {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      margin-top: 1.5rem;
+      padding: 0;
+    }
+
+    .introduction-links :global(a + a) {
+      border-top: 1px solid var(--color-line);
+    }
   }
 
   .fit-columns article {

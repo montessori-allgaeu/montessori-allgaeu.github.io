@@ -12,18 +12,24 @@ const { events } = Astro.props;
 
 <div class="next-event" data-next-introduction-event>
   <div data-current-event></div>
-  <TextLink href="/termine/" label="Termine ansehen" />
+  <div class="next-event__link">
+    <TextLink href="/termine/" label="Termine ansehen" />
+  </div>
   {
     events.map((event) => (
       <template data-date={event.date} data-title={event.title} data-category={event.category}>
-        <p class="eyebrow">Nächste Gelegenheit zum Kennenlernen</p>
-        <h2>{event.title}</h2>
-        <p class="next-event__date">
-          <time datetime={event.date}>{formatGermanLongDate(event.date)}</time>
-          {" · "}
-          {event.time}
-        </p>
-        <p>{event.description}</p>
+        <div class="next-event__content">
+          <div>
+            <p class="eyebrow">Nächste Gelegenheit zum Kennenlernen</p>
+            <h2>{event.title}</h2>
+            <p class="next-event__date">
+              <time datetime={event.date}>{formatGermanLongDate(event.date)}</time>
+              {" · "}
+              {event.time}
+            </p>
+          </div>
+          <p class="next-event__description">{event.description}</p>
+        </div>
       </template>
     ))
   }
@@ -52,17 +58,64 @@ const { events } = Astro.props;
 
 <style>
   .next-event {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-line);
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    column-gap: clamp(2rem, 6vw, 6rem);
+    row-gap: 0.75rem;
+    padding-top: 2rem;
+  }
+
+  [data-current-event] {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .next-event__content {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 1rem;
+  }
+
+  .next-event__link {
+    grid-column: 2;
+  }
+
+  [data-current-event]:empty + .next-event__link {
+    grid-column: 1 / -1;
   }
 
   .next-event h2 {
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    font-size: clamp(1.8rem, 2.6vw, 2.25rem);
+    text-wrap: initial;
+  }
+
+  .next-event .eyebrow {
+    margin-bottom: 0.75rem;
+  }
+
+  .next-event p:last-child {
+    margin-bottom: 0;
   }
 
   .next-event__date {
     font-weight: 700;
+  }
+
+  .next-event__link :global(a) {
+    min-height: 44px;
+  }
+
+  @media (max-width: 840px) {
+    .next-event {
+      grid-template-columns: minmax(0, 1fr);
+      padding-top: 1.5rem;
+    }
+
+    .next-event__link {
+      grid-column: 1;
+    }
   }
 </style>
