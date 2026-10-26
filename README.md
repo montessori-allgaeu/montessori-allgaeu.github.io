@@ -170,6 +170,8 @@ Die Verwaltungs-API prüft dabei die exakte GitHub-OIDC-Laufidentität aus `GITH
 
 Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runner verwenden. Backend-Limits unterbrechen Änderungen, nicht die öffentliche statische Website. Keine kostenpflichtigen Erweiterungen oder automatischen Upgrades aktivieren.
 
+Die bestehende Verwaltungs-Domain wird in `wrangler.admin.jsonc` als Custom Domain geführt; Vorschauversionen dürfen sie nicht verwenden. Bei einem Wrangler-Metadatenfehler nach Änderungen im Cloudflare-Dashboard den [beschriebenen Reparaturweg](docs/verwaltung-betrieb.md#wrangler-metadatenfehler-nach-dashboard-änderungen) verwenden. Der CI-Zugang bleibt auf die beiden Worker beschränkt.
+
 ## DNS-Umstieg und Abschaltung des bisherigen Hostings
 
 Die vollständige vorhandene DNS-Zone wurde zu Cloudflare übernommen, einschließlich sämtlicher Mail- und Verifikationseinträge. Domainregistrierung und Mailpostfächer bleiben bei Host Europe. Die Hauptdomain lautet weiterhin `https://montessori-allgaeu.de`; `www` leitet dauerhaft dorthin weiter. Passkeys sind an `verwaltung.montessori-allgaeu.de` gebunden. DNSSEC ist für `.de` seit dem 16. Oktober 2026 vollständig eingerichtet und über drei öffentliche Resolver validiert.

@@ -93,6 +93,21 @@ Beim Speichern in der Verwaltung startet die GitHub App denselben Workflow mit e
 
 Website und Verwaltung können bei einem Teilfehler vorübergehend unterschiedliche Releases haben. Den fehlgeschlagenen Lauf beziehungsweise den angebotenen Änderungsauftrag nach Behebung wiederholen und beide Versionsdateien kontrollieren. Bei Inhaltskonflikten die neue Ausgangsfassung in der Verwaltung laden und die Änderung bewusst erneut anwenden. Keine fremden Änderungen überschreiben und keine bereits gespeicherten Aufträge durch neue Duplikate ersetzen.
 
+## Wrangler-Metadatenfehler nach Dashboard-Änderungen
+
+Wrangler 4.151.0 lädt vor einem Deployment zusätzliche Konfigurationsdaten, wenn Cloudflare `last_deployed_from: dash` meldet. Der auf `monte-website` und `monte-verwaltung` beschränkte Zugang **Monte GitHub Deployment** verwendet **Individual Workers Editor**. Nach der Brotli-Einstellung im Dashboard scheiterte der Verwaltungs-Deploy damit bereits beim Metadatenabgleich. Cloudflare führt einen passenden offenen [Wrangler-Bug für Worker-bezogene Editor-Zugänge](https://github.com/cloudflare/workers-sdk/issues/16390); dort sind insbesondere die zusätzlichen Routen- und Custom-Domain-Lesezugriffe betroffen. Die Sammelfehlermeldung des Monte-CI-Laufs benennt den einzelnen fehlgeschlagenen Abruf nicht.
+
+Am 26. Oktober 2026 wurden mit dem bereits vorhandenen lokalen OAuth-Zugang dieselben sechs Metadatenabrufe lesend geprüft: Bindungen, Routen, Custom Domains, Subdomain, Service-Umgebung und Zeitpläne lieferten jeweils HTTP 200. Der anschließende strenge Deployment-Vorabgleich stoppte vor dem Upload, weil die bestehende Custom Domain nur bei Cloudflare, aber nicht in `wrangler.admin.jsonc` stand. Die Konfiguration führt deshalb nun ausdrücklich `verwaltung.montessori-allgaeu.de` als Custom Domain; `previews_enabled: false` erhält die bestehende Trennung von Produktionsdomain und Vorschauversionen.
+
+Für eine ausdrücklich freigegebene Reparatur einmalig den bestehenden lokalen OAuth-Zugang verwenden, ohne den CI-Zugang auszuweiten:
+
+1. Sauberen Stand von `main` und Übereinstimmung mit `origin/main` prüfen. Die vorgeschriebenen Prüfungen müssen für diesen Stand bestanden sein; beide Anwendungen frisch bauen.
+2. Vor dem Stempeln der Versionsdatei den bereits vorhandenen Helfer `assertCurrentHead` aus `scripts/publish-core.ts` verwenden. `dist-admin/version.json` muss den tatsächlich geprüften Commit enthalten. Keine GitHub-Actions-Umgebung simulieren, um die Schutzprüfungen von `scripts/publish.ts` zu umgehen.
+3. Asset-Grenzen prüfen und die Verwaltung mit `CI=true npx wrangler deploy --config wrangler.admin.jsonc --strict` veröffentlichen. Bei Konfigurationskonflikten abbrechen und die konkrete Abweichung klären; den Konfliktcheck nicht entfernen und keine fremden Bindungen, Variablen oder Domains überschreiben.
+4. Aktive Version, Custom Domain, unveränderte Bindungen, Brotli-Flag, `/api/health` und Versionsdatei prüfen. Danach einen regulären GitHub-Veröffentlichungslauf mit dem unveränderten engen CI-Zugang vollständig durchführen und die Live-Versionen beider Anwendungen vergleichen. Erst dieser Lauf belegt, dass die automatische Veröffentlichung wieder funktioniert.
+
+Die einmalige Veröffentlichung ersetzt keinen behobenen Wrangler-Release. Solange der Herstellerfehler besteht, Konfigurationsänderungen über Git und die geprüfte Veröffentlichung vornehmen. Neue Dashboard-Änderungen können den problematischen Vorabgleich erneut auslösen. Ein bloßes erneutes Setzen oder Löschen eines Secrets ist kein belegter Reparaturweg. Berechtigungen nur nach konkretem Nachweis und innerhalb der geltenden Freigaberegeln erweitern.
+
 ## Zugänge, Einladungen und verlorene Geräte
 
 Admins verwalten Personen unter **Zugänge**. Neue Einladungen gelten einmalig für 14 Tage ab Erstellung; ihre Links werden persönlich weitergegeben. Bereits ausgestellte Links behalten ihr gespeichertes Ablaufdatum. Mehrere Passkeys pro Person sind möglich. Die Rolle Content Manager bearbeitet alle freigegebenen Inhalte außer Spendenempfänger, Bank, IBAN und BIC. Nur Admins verwalten Zugänge und Rollen.

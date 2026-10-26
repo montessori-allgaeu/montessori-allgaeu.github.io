@@ -7,6 +7,13 @@
   // CVE-2026-111497: disable HTTP Brotli decoding until a fixed workerd is verified.
   "compatibility_flags": ["nodejs_compat", "no_brotli_content_encoding"],
   "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "verwaltung.montessori-allgaeu.de",
+      "custom_domain": true,
+      "previews_enabled": false,
+    },
+  ],
   "assets": {
     "directory": "./dist-admin",
     "binding": "ASSETS",
