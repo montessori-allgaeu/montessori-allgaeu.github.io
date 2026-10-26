@@ -110,6 +110,8 @@ Für eine ausdrücklich freigegebene Reparatur einmalig den bestehenden lokalen 
 
 Die einmalige Veröffentlichung ersetzt keinen behobenen Wrangler-Release. Solange der Herstellerfehler besteht, Konfigurationsänderungen über Git und die geprüfte Veröffentlichung vornehmen. Neue Dashboard-Änderungen können den problematischen Vorabgleich erneut auslösen. Ein bloßes erneutes Setzen oder Löschen eines Secrets ist kein belegter Reparaturweg. Berechtigungen nur nach konkretem Nachweis und innerhalb der geltenden Freigaberegeln erweitern.
 
+Die Custom Domain nennt zusätzlich ausdrücklich die vorhandene Zone `montessori-allgaeu.de` über `zone_name`. Ohne diese Angabe lud der enge CI-Zugang den Worker zwar erfolgreich hoch, Cloudflare suchte beim anschließenden Domain-Trigger aber nach einer Zone namens `verwaltung.montessori-allgaeu.de` und antwortete mit Fehler **10084**. Der Zonenname erhält die bestehende Domainzuordnung und vermeidet diese Ableitung aus dem Hostnamen; er erweitert keine Token-Berechtigungen. Ein erfolgreicher Worker-Upload allein genügt weiterhin nicht als Veröffentlichungsnachweis: Auch Domain-Trigger und abschließende Live-Verifikation müssen erfolgreich sein.
+
 ## Zugänge, Einladungen und verlorene Geräte
 
 Admins verwalten Personen unter **Zugänge**. Neue Einladungen gelten einmalig für 14 Tage ab Erstellung; ihre Links werden persönlich weitergegeben. Bereits ausgestellte Links behalten ihr gespeichertes Ablaufdatum. Mehrere Passkeys pro Person sind möglich. Die Rolle Content Manager bearbeitet alle freigegebenen Inhalte außer Spendenempfänger, Bank, IBAN und BIC. Nur Admins verwalten Zugänge und Rollen.
