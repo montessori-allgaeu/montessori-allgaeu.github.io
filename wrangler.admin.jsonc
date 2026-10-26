@@ -8,14 +8,6 @@
   "compatibility_flags": ["nodejs_compat", "no_brotli_content_encoding"],
   "workers_dev": true,
   "preview_urls": true,
-  "routes": [
-    {
-      "pattern": "verwaltung.montessori-allgaeu.de",
-      "zone_name": "montessori-allgaeu.de",
-      "custom_domain": true,
-      "previews_enabled": false,
-    },
-  ],
   "assets": {
     "directory": "./dist-admin",
     "binding": "ASSETS",

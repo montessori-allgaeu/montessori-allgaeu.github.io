@@ -170,7 +170,7 @@ Die Verwaltungs-API prüft dabei die exakte GitHub-OIDC-Laufidentität aus `GITH
 
 Ausschließlich kostenlose Cloudflare-Tarife und kostenlose GitHub-Standard-Runner verwenden. Backend-Limits unterbrechen Änderungen, nicht die öffentliche statische Website. Keine kostenpflichtigen Erweiterungen oder automatischen Upgrades aktivieren.
 
-Die bestehende Verwaltungs-Domain wird in `wrangler.admin.jsonc` als Custom Domain geführt; Vorschauversionen dürfen sie nicht verwenden. Bei einem Wrangler-Metadatenfehler nach Änderungen im Cloudflare-Dashboard den [beschriebenen Reparaturweg](docs/verwaltung-betrieb.md#wrangler-metadatenfehler-nach-dashboard-änderungen) verwenden. Der CI-Zugang bleibt auf die beiden Worker beschränkt.
+Die bestehende Verwaltungs-Domain wird in Cloudflare verwaltet; der normale Veröffentlichungsweg aktualisiert Worker und Assets, ohne die Domainzuordnung neu zu schreiben. Vorschauversionen dürfen die Produktionsdomain nicht verwenden. Bei einem Wrangler-Metadatenfehler nach Änderungen im Cloudflare-Dashboard die [Betriebshinweise](docs/verwaltung-betrieb.md#wrangler-metadatenfehler-nach-dashboard-änderungen) beachten. Der CI-Zugang bleibt auf die beiden Worker beschränkt.
 
 ## DNS-Umstieg und Abschaltung des bisherigen Hostings
 
