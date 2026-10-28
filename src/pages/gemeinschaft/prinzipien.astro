@@ -13,20 +13,29 @@ import { principles } from "@/data/site";
     intro="Unsere Prinzipien gelten für alle Menschen mit Aufgaben und Verantwortung – über alle fünf Säulen hinweg."
   />
 
-  <section class="section section--compact">
-    <div class="container container--reading principles-intro">
-      <p class="lead">
-        <strong>Unsere Prinzipien bestimmen unser Handeln.</strong> Sie sind für alle verbindlich, die
-        Aufgaben und Verantwortung in der Monte übernehmen. Wir entscheiden nach ihnen – auch wenn wir
-        Angst haben, dadurch kurzfristig etwas zu verlieren, das wir uns wünschen. Denn wir sind überzeugt:
-        Wenn wir über viele Entscheidungen hinweg konsequent so handeln, stärken wir die Kinder und unsere
-        Monte langfristig.
-      </p>
-      <p>
-        Zugleich halten unsere Prinzipien fest, wie wir als Monte sein wollen. Eine gute
-        Entscheidung bemisst sich deshalb nicht nur am Ergebnis, sondern daran, ob wir diesem
-        gemeinsamen Anspruch treu bleiben – auch wenn das Ergebnis anders ausfällt als erhofft.
-      </p>
+  <section class="section section--compact" aria-labelledby="principles-intro-title">
+    <div class="container grid-2 principles-intro">
+      <div>
+        <h2 id="principles-intro-title">Unsere Prinzipien bestimmen unser Handeln.</h2>
+        <p class="lead">
+          Sie sind für alle verbindlich, die Aufgaben und Verantwortung in der Monte übernehmen.
+        </p>
+      </div>
+      <div class="principles-intro__body">
+        <p>
+          Wir entscheiden nach ihnen – auch wenn wir Angst haben, dadurch kurzfristig etwas zu
+          verlieren, das wir uns wünschen.
+        </p>
+        <p>
+          Denn wir sind überzeugt: Wenn wir über viele Entscheidungen hinweg konsequent so handeln,
+          stärken wir die Kinder und unsere Monte langfristig.
+        </p>
+        <p>
+          Zugleich halten unsere Prinzipien fest, wie wir als Monte sein wollen. Eine gute
+          Entscheidung bemisst sich deshalb nicht nur am Ergebnis, sondern daran, ob wir diesem
+          gemeinsamen Anspruch treu bleiben – auch wenn das Ergebnis anders ausfällt als erhofft.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -159,8 +168,21 @@ import { principles } from "@/data/site";
     font-size: 0.85rem;
   }
 
-  .principles-intro {
-    text-align: center;
+  .principles-intro h2 {
+    max-width: 17ch;
+    font-size: clamp(2.35rem, 3.8vw, 3.4rem);
+  }
+
+  .principles-intro .lead {
+    max-width: 34ch;
+  }
+
+  .principles-intro__body {
+    font-size: 1.05rem;
+  }
+
+  .principles-intro p:last-child {
+    margin-bottom: 0;
   }
 
   .principle-section {
