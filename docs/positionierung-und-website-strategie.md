@@ -1,6 +1,6 @@
 # Positionierung und Website-Strategie
 
-Stand: 26. Oktober 2026
+Stand: 28. Oktober 2026
 Status: verbindliche strategische Grundlage für die aktuelle Website; inhaltliche Fakten mit Zeitbezug müssen vor Veröffentlichung geprüft werden.
 
 ## Zweck dieses Dokuments
@@ -50,7 +50,7 @@ Die vier aktuell veröffentlichten Prinzipien sind:
 3. Konflikte annehmen
 4. Gemeinsam lernen
 
-Für organisatorische Entscheidungen sind diese Prinzipien die oberste gemeinsame Orientierung. Sie sind dennoch keine unveränderliche Doktrin: Wirkung beobachten, Feedback einholen und nachvollziehbar iterieren gehört ausdrücklich dazu.
+Die Prinzipien bestimmen das Handeln und sind für alle Menschen mit Aufgaben und Verantwortung in der Monte verbindlich, auch wenn eine Entscheidung kurzfristig unbequem ist oder einen persönlichen Verzicht verlangt. Die Präambel begründet dies mit zwei zusammengehörigen Gedanken: Ihre konsequente Anwendung soll über viele Entscheidungen hinweg die Kinder und die Monte langfristig stärken; zugleich halten sie fest, wie die Monte als Gemeinschaft sein will, auch bei einem unerwünschten Ergebnis. Maßstab sind die gemeinsamen Prinzipien, nicht persönliche Vorlieben. Sie sind dennoch keine unveränderliche Doktrin: Wirkung beobachten, Feedback einholen und nachvollziehbar iterieren gehört ausdrücklich dazu.
 
 ## Organisationsziel
 
