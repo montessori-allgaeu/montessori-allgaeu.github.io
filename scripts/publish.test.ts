@@ -45,6 +45,7 @@ function runPublisher(
   runnerDirectory: string,
   command: string,
   preload?: string,
+  env?: NodeJS.ProcessEnv,
 ) {
   return spawnSync(
     process.execPath,
@@ -70,6 +71,7 @@ function runPublisher(
         ADMIN_ORIGIN: "https://admin.example.test",
         ACTIONS_ID_TOKEN_REQUEST_URL: "https://oidc.example.test/token",
         ACTIONS_ID_TOKEN_REQUEST_TOKEN: "fixture-only",
+        ...env,
       },
     },
   );
@@ -310,10 +312,7 @@ describe("integrity and retry safety", () => {
       git(directory, ["push", "--quiet", "origin", "HEAD:refs/heads/main"]);
       git(directory, ["checkout", "--detach", "--quiet", commit]);
       const stateFile = join(runner, "monte-publish-123-1.json");
-      await writeFile(
-        stateFile,
-        JSON.stringify({ base: commit, paths: [], commit, releaseCommit: commit }),
-      );
+      await writeFile(stateFile, JSON.stringify({ base: commit, paths: [], commit }));
       const result = runPublisher(directory, runner, command);
       expect(result.status).toBe(1);
       expect(JSON.parse(await readFile(stateFile, "utf8"))).toMatchObject({
@@ -322,6 +321,106 @@ describe("integrity and retry safety", () => {
       });
     },
   );
+
+  it("reproduces the private candidate and pushes only the exact validated commit", async () => {
+    const validation = await repository();
+    const remote = await temporaryDirectory();
+    const publisher = await temporaryDirectory();
+    const validationRunner = await temporaryDirectory();
+    const publisherRunner = await temporaryDirectory();
+    const base = git(validation, ["rev-parse", "HEAD"]);
+    git(remote, ["init", "--bare", "--quiet"]);
+    git(validation, ["remote", "add", "origin", remote]);
+    git(validation, ["push", "--quiet", "origin", "HEAD:refs/heads/main"]);
+    git(publisher, ["clone", "--quiet", "--branch", "main", remote, "."]);
+
+    for (const [directory, runner] of [
+      [validation, validationRunner],
+      [publisher, publisherRunner],
+    ]) {
+      await writeFile(join(directory, "fixture.txt"), "updated\n");
+      await writeFile(
+        join(runner, "monte-publish-123-1.json"),
+        JSON.stringify({ base, paths: ["fixture.txt"] }),
+      );
+    }
+    const output = join(validationRunner, "output");
+    const candidate = runPublisher(validation, validationRunner, "candidate", undefined, {
+      GITHUB_OUTPUT: output,
+    });
+    expect(candidate.status, candidate.stderr).toBe(0);
+    const release = git(validation, ["rev-parse", "HEAD"]);
+    expect(release).not.toBe(base);
+    expect(git(remote, ["rev-parse", "refs/heads/main"])).toBe(base);
+    const date = (await readFile(output, "utf8")).match(/^date=(.+)$/m)?.[1];
+    expect(date).toBeDefined();
+
+    const preload = `globalThis.fetch = async (input, init) => {
+      const url = new URL(input);
+      if (url.origin === 'https://oidc.example.test') return Response.json({ value: 'fixture-oidc-token' });
+      const status = JSON.parse(init.body);
+      if (url.origin === 'https://admin.example.test' && url.pathname.endsWith('/status') &&
+          status.status === 'committed' && status.commit === '${release}') return Response.json({ ok: true });
+      throw new Error('Unexpected request');
+    };`;
+    const env = { MONTE_CANDIDATE_DATE: date, GITHUB_OUTPUT: join(publisherRunner, "output") };
+    const rejected = runPublisher(publisher, publisherRunner, "commit", preload, {
+      ...env,
+      MONTE_RELEASE_COMMIT: base,
+    });
+    expect(rejected.status).toBe(1);
+    expect(git(remote, ["rev-parse", "refs/heads/main"])).toBe(base);
+
+    // Recreate the replay checkout after the mismatched candidate was rejected.
+    git(publisher, ["reset", "--hard", base]);
+    await writeFile(join(publisher, "fixture.txt"), "updated\n");
+    const accepted = runPublisher(publisher, publisherRunner, "commit", preload, {
+      ...env,
+      MONTE_RELEASE_COMMIT: release,
+    });
+    expect(accepted.status, accepted.stderr).toBe(0);
+    expect(git(remote, ["rev-parse", "refs/heads/main"])).toBe(release);
+  });
+
+  it("requires ownership of the current administration attempt before deploying", async () => {
+    const directory = await repository();
+    const remote = await temporaryDirectory();
+    const runner = await temporaryDirectory();
+    const id = "ab8a168c-97aa-4ee2-b3c4-233611bc940d";
+    const commit = git(directory, ["rev-parse", "HEAD"]);
+    git(remote, ["init", "--bare", "--quiet"]);
+    git(directory, ["remote", "add", "origin", remote]);
+    git(directory, ["push", "--quiet", "origin", "HEAD:refs/heads/main"]);
+    const operation: PublishOperation = {
+      id,
+      requestId: randomUUID(),
+      mutations: [{ collection: "events", id: "fixture", baseVersion: null, data: {} }],
+      uploads: [],
+      commit,
+    };
+    const request = (adminResponse: string) => `globalThis.fetch = async (input) => {
+      const url = new URL(input);
+      if (url.origin === 'https://oidc.example.test') return Response.json({ value: 'fixture-oidc-token' });
+      if (url.href === 'https://admin.example.test/api/publish/${id}') return ${adminResponse};
+      throw new Error('Unexpected request');
+    };`;
+    const env = { MONTE_COMMITTED_CHANGE: commit };
+    for (const response of [
+      `new Response(null, { status: 409 })`,
+      `Response.json(${JSON.stringify({ ...operation, commit: "0".repeat(40) })})`,
+    ]) {
+      const rejected = runPublisher(directory, runner, "check-head", request(response), env);
+      expect(rejected.status).toBe(1);
+    }
+    const accepted = runPublisher(
+      directory,
+      runner,
+      "check-head",
+      request(`Response.json(${JSON.stringify(operation)})`),
+      env,
+    );
+    expect(accepted.status, accepted.stderr).toBe(0);
+  });
 
   it.each([true, false])(
     "prepares an existing change commit without reapplying its stale mutations (backend receipt: %s)",

@@ -70,9 +70,10 @@ export class StaleRelease extends Error {
   }
 }
 
-export function git(root: string, args: string[]): string {
+export function git(root: string, args: string[], env = process.env): string {
   return execFileSync("git", args, {
     cwd: root,
+    env,
     encoding: "utf8",
     maxBuffer: 20 * 1024 * 1024,
   }).trimEnd();
@@ -261,8 +262,10 @@ export function assertOnlyAllowedChanges(root: string, allowed: ReadonlySet<stri
   }
 }
 
-export function assertCurrentHead(root: string): string {
-  const expected = git(root, ["rev-parse", "HEAD"]);
+export function assertCurrentHead(
+  root: string,
+  expected = git(root, ["rev-parse", "HEAD"]),
+): string {
   const current = git(root, ["ls-remote", "origin", "refs/heads/main"]).split(/\s/)[0];
   if (current !== expected) throw new StaleRelease();
   return expected;

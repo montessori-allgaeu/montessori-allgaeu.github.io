@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { appendFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
@@ -30,7 +30,6 @@ const stateSchema = z.strictObject({
   base: commitSchema,
   paths: z.array(z.string()),
   commit: commitSchema.optional(),
-  releaseCommit: commitSchema.optional(),
   failed: z.enum(["failed", "conflict"]).optional(),
 });
 type State = z.infer<typeof stateSchema>;
@@ -196,40 +195,67 @@ async function prepare(): Promise<void> {
   assertOnlyAllowedChanges(root, new Set(state.paths));
 }
 
-async function commit(): Promise<void> {
-  const state = await readState();
+function createCandidate(state: State, date: string): string {
   if (git(root, ["rev-parse", "HEAD"]) !== state.base)
     throw new Error("Der geprüfte Repository-Stand wurde unerwartet geändert.");
   assertOnlyAllowedChanges(root, new Set(state.paths));
   assertCurrentHead(root);
-  if (changeId && !state.commit) {
-    git(root, ["add", "--", ...state.paths]);
-    git(root, [
+  if (!changeId || state.commit) return state.base;
+  git(root, ["add", "--", ...state.paths]);
+  git(
+    root,
+    [
       "-c",
       "user.name=Monte Verwaltung",
       "-c",
       "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+      "-c",
+      "commit.gpgSign=false",
       "commit",
       "--allow-empty",
       "-m",
       "content: update Monte website",
       "-m",
       `Monte-Change: ${changeId}`,
-    ]);
+    ],
+    { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date },
+  );
+  return git(root, ["rev-parse", "HEAD"]);
+}
+
+async function recordCandidate(): Promise<void> {
+  const state = await readState();
+  const date = new Date().toISOString();
+  const release = createCandidate(state, date);
+  const output = process.env.GITHUB_OUTPUT;
+  if (!output) throw new Error("Die Ausgabedatei des Prüflaufs fehlt.");
+  await appendFile(output, `base=${state.base}\nrelease=${release}\ndate=${date}\n`);
+}
+
+async function commit(): Promise<void> {
+  if (!changeId) throw new Error("Die Änderungskennung fehlt.");
+  const state = await readState();
+  const date = z.iso.datetime().parse(process.env.MONTE_CANDIDATE_DATE);
+  const release = commitSchema.parse(process.env.MONTE_RELEASE_COMMIT);
+  // Replay the immutable operation instead of importing Git objects from the build runner.
+  if (createCandidate(state, date) !== release)
+    throw new Error("Die gespeicherte Änderung entspricht nicht dem geprüften Commit.");
+  if (!state.commit) {
+    assertCurrentHead(root, state.base);
     // A non-fast-forward push fails; rebasing a tested artifact would invalidate its checks.
     git(root, ["push", "origin", "HEAD:refs/heads/main"]);
-    state.commit = git(root, ["rev-parse", "HEAD"]);
+    state.commit = release;
     await saveState(state);
   }
-  state.releaseCommit = assertCurrentHead(root);
-  await saveState(state);
-  if (state.commit) await status({ status: "committed", commit: state.commit });
+  assertCurrentHead(root, release);
+  const output = process.env.GITHUB_OUTPUT;
+  if (!output) throw new Error("Die Ausgabedatei der Veröffentlichung fehlt.");
+  await appendFile(output, `commit=${state.commit}\n`);
+  await status({ status: "committed", commit: state.commit });
 }
 
 async function stamp(): Promise<void> {
-  const state = await readState();
-  const release = commitSchema.parse(state.releaseCommit);
-  if (assertCurrentHead(root) !== release) throw new StaleRelease();
+  const release = assertCurrentHead(root);
   for (const directory of ["dist", "dist-admin"])
     await writeFile(
       join(root, directory, "version.json"),
@@ -237,10 +263,22 @@ async function stamp(): Promise<void> {
     );
 }
 
-async function verify(): Promise<void> {
-  const state = await readState();
-  const release = commitSchema.parse(state.releaseCommit);
+async function checkHead(): Promise<void> {
   assertCurrentHead(root);
+  if (!changeId) return;
+  const commit = commitSchema.parse(process.env.MONTE_COMMITTED_CHANGE);
+  // A rerun of only the deploy job must still own the current administration attempt.
+  const response = await api("");
+  if (!response.ok) throw new Error("Der Veröffentlichungsversuch ist nicht mehr gültig.");
+  const operation = publishOperationSchema.parse(await response.json());
+  if (operation.id !== changeId || operation.commit !== commit)
+    throw new Error("Die Änderung gehört nicht zum geprüften Commit.");
+  assertCurrentHead(root);
+}
+
+async function verify(): Promise<void> {
+  const release = assertCurrentHead(root);
+  const commit = process.env.MONTE_COMMITTED_CHANGE;
   for (const name of ["PUBLIC_SITE_URL", "ADMIN_ORIGIN"]) {
     let verified = false;
     for (let index = 0; index < 12; index += 1) {
@@ -263,8 +301,12 @@ async function verify(): Promise<void> {
       throw new Error("Die veröffentlichte Version konnte noch nicht bestätigt werden.");
   }
   assertCurrentHead(root);
-  if (state.commit)
-    await status({ status: "published", commit: state.commit, releaseCommit: release });
+  if (changeId)
+    await status({
+      status: "published",
+      commit: commitSchema.parse(commit),
+      releaseCommit: release,
+    });
   process.stdout.write(`Veröffentlichte Version bestätigt: ${release}\n`);
 }
 
@@ -273,7 +315,7 @@ async function failure(): Promise<void> {
   const state = await readState().catch(() => undefined);
   await status({
     status: state?.failed ?? "failed",
-    commit: state?.commit,
+    commit: state?.commit ?? (process.env.MONTE_COMMITTED_CHANGE || undefined),
     error:
       state?.failed === "conflict"
         ? "Inzwischen wurde ein betroffener Inhalt geändert. Bitte den aktuellen Stand laden und erneut speichern."
@@ -292,9 +334,10 @@ async function main(): Promise<void> {
   }
   const command = process.argv[2];
   if (command === "prepare") await prepare();
+  else if (command === "candidate") await recordCandidate();
   else if (command === "commit") await commit();
   else if (command === "stamp") await stamp();
-  else if (command === "check-head") assertCurrentHead(root);
+  else if (command === "check-head") await checkHead();
   else if (command === "verify") await verify();
   else if (command === "failure") await failure();
   else throw new Error("Unbekannter Veröffentlichungsschritt.");

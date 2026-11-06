@@ -22,26 +22,34 @@ concurrency:
   cancel-in-progress: false
   queue: max
 
+env:
+  ADMIN_ORIGIN: ${{ vars.ADMIN_ORIGIN || 'https://verwaltung.montessori-allgaeu.de' }}
+  PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://montessori-allgaeu.de' }}
+  WRANGLER_SEND_METRICS: "false"
+
 jobs:
-  publish:
-    if: github.ref == 'refs/heads/main'
+  validate-change:
+    if: github.ref == 'refs/heads/main' && inputs.change_id != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
-      contents: write
+      contents: read
       id-token: write
     env:
-      ADMIN_ORIGIN: ${{ vars.ADMIN_ORIGIN || 'https://verwaltung.montessori-allgaeu.de' }}
-      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || 'https://montessori-allgaeu.de' }}
       MONTE_CHANGE_ID: ${{ inputs.change_id }}
       MONTE_PUBLISH_ATTEMPT: ${{ inputs.attempt }}
+    outputs:
+      base: ${{ steps.candidate.outputs.base }}
+      release: ${{ steps.candidate.outputs.release }}
+      date: ${{ steps.candidate.outputs.date }}
     steps:
       - name: Read current main
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: main
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: "^22.23.4"
           check-latest: true
@@ -49,34 +57,177 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Validate and apply content transaction
-        run: npx tsx scripts/publish.ts prepare
-      - name: Complete quality checks and build both sites
+        run: node_modules/.bin/tsx scripts/publish.ts prepare
+      - name: Create local candidate with the final sitemap dates
+        id: candidate
+        run: node_modules/.bin/tsx scripts/publish.ts candidate
+      - name: Check the candidate without publishing pending content
         run: npm run test:ci
-      - name: Commit verified content
-        run: npx tsx scripts/publish.ts commit
-      - name: Refresh commit-based sitemap dates
+      - name: Report failed validation
+        if: failure() || cancelled()
+        run: node_modules/.bin/tsx scripts/publish.ts failure
+
+  commit-change:
+    needs: validate-change
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      MONTE_CHANGE_ID: ${{ inputs.change_id }}
+      MONTE_PUBLISH_ATTEMPT: ${{ inputs.attempt }}
+    outputs:
+      commit: ${{ steps.commit.outputs.commit }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Require the main commit used in validation
+        env:
+          VALIDATED_BASE: ${{ needs.validate-change.outputs.base }}
+        run: test "$(git rev-parse HEAD)" = "$VALIDATED_BASE"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "^22.23.4"
+          check-latest: true
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Replay the immutable content transaction
+        run: node_modules/.bin/tsx scripts/publish.ts prepare
+      - name: Push the reproduced commit
+        id: commit
+        env:
+          MONTE_CANDIDATE_DATE: ${{ needs.validate-change.outputs.date }}
+          MONTE_RELEASE_COMMIT: ${{ needs.validate-change.outputs.release }}
+        run: node_modules/.bin/tsx scripts/publish.ts commit
+      - name: Report failed commit
+        if: failure() || cancelled()
+        run: node_modules/.bin/tsx scripts/publish.ts failure
+
+  build:
+    needs: [validate-change, commit-change]
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && (inputs.change_id == '' || needs.commit-change.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      release: ${{ steps.release.outputs.sha }}
+      artifact: ${{ steps.artifact.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record the checked-out release
+        id: release
+        env:
+          MONTE_CHANGE_ID: ${{ inputs.change_id }}
+          VALIDATED_RELEASE: ${{ needs.validate-change.outputs.release }}
+        run: |
+          release=$(git rev-parse HEAD)
+          if [ -n "$MONTE_CHANGE_ID" ]; then test "$release" = "$VALIDATED_RELEASE"; fi
+          echo "sha=$release" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "^22.23.4"
+          check-latest: true
+          cache: npm
+      - run: npm ci
+      - if: inputs.change_id == ''
+        run: npx playwright install --with-deps chromium
+      - name: Check and build a code-only release
+        if: inputs.change_id == ''
+        run: npm run test:ci
+      - name: Build the verified content commit
         if: inputs.change_id != ''
-        run: npm run build && npm run check:email-exposure
-      - name: Stamp the rebuilt release
-        run: npx tsx scripts/publish.ts stamp
-      - name: Check Cloudflare Free asset limits
-        run: node scripts/check-static-assets.mjs
-      - name: Refuse an outdated release
-        run: npx tsx scripts/publish.ts check-head
+        run: npm run build && npm run build:admin && npm run check:email-exposure
+      - name: Stamp the release and check Cloudflare Free asset limits
+        run: |
+          node_modules/.bin/tsx scripts/publish.ts stamp
+          node scripts/check-static-assets.mjs
+      - name: Bundle the administration Worker without publishing
+        run: |
+          node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config wrangler.admin.jsonc --outdir "$RUNNER_TEMP/monte-worker"
+          mkdir -p "$RUNNER_TEMP/monte-release/worker"
+          cp "$RUNNER_TEMP/monte-worker/index.js" "$RUNNER_TEMP/monte-release/worker/index.js"
+          mv dist dist-admin "$RUNNER_TEMP/monte-release/"
+      - name: Upload the release files
+        id: artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: monte-release-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/monte-release/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 1
+
+  deploy:
+    needs: [validate-change, commit-change, build]
+    if: ${{ always() && (needs.build.result == 'success' || (inputs.change_id != '' && needs.commit-change.result == 'success')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      MONTE_CHANGE_ID: ${{ inputs.change_id }}
+      MONTE_PUBLISH_ATTEMPT: ${{ inputs.attempt }}
+      MONTE_COMMITTED_CHANGE: ${{ needs.commit-change.outputs.commit }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "^22.23.4"
+          check-latest: true
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Require the artifact ID from the build
+        if: needs.build.result == 'success'
+        env:
+          BUILT_ARTIFACT: ${{ needs.build.outputs.artifact }}
+        run: '[[ "$BUILT_ARTIFACT" =~ ^[1-9][0-9]*$ ]]'
+      - name: Download this run's release files
+        if: needs.build.result == 'success'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact }}
+          path: ${{ runner.temp }}/monte-release
+      - name: Check the release files, current main and administration attempt
+        if: needs.build.result == 'success'
+        env:
+          BUILT_RELEASE: ${{ needs.build.outputs.release }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$BUILT_RELEASE"
+          mv "$RUNNER_TEMP/monte-release/dist" "$RUNNER_TEMP/monte-release/dist-admin" .
+          for directory in dist dist-admin; do
+            printf '{"commit":"%s"}\n' "$BUILT_RELEASE" | cmp - "$directory/version.json"
+          done
+          test -s "$RUNNER_TEMP/monte-release/worker/index.js"
+          node scripts/check-static-assets.mjs
+          node_modules/.bin/tsx scripts/publish.ts check-head
       - name: Deploy public assets
-        run: npx wrangler deploy --config wrangler.site.jsonc
+        if: ${{ !cancelled() && success() && needs.build.result == 'success' }}
+        run: node node_modules/wrangler/bin/wrangler.js deploy --config wrangler.site.jsonc
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Check current main before administration deployment
-        run: npx tsx scripts/publish.ts check-head
-      - name: Deploy administration
-        run: npx wrangler deploy --config wrangler.admin.jsonc
+      - name: Recheck main and administration attempt before deployment
+        if: needs.build.result == 'success'
+        run: node_modules/.bin/tsx scripts/publish.ts check-head
+      - name: Deploy the bundled administration Worker and assets
+        if: ${{ !cancelled() && success() && needs.build.result == 'success' }}
+        run: node node_modules/wrangler/bin/wrangler.js deploy "$RUNNER_TEMP/monte-release/worker/index.js" --no-bundle --config wrangler.admin.jsonc
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       - name: Verify live versions and acknowledge publication
-        run: npx tsx scripts/publish.ts verify
+        if: needs.build.result == 'success'
+        run: node_modules/.bin/tsx scripts/publish.ts verify
       - name: Report failed publication
-        if: ${{ (failure() || cancelled()) && inputs.change_id != '' }}
-        run: npx tsx scripts/publish.ts failure
+        if: ${{ (failure() || cancelled() || needs.build.result != 'success') && inputs.change_id != '' }}
+        run: node_modules/.bin/tsx scripts/publish.ts failure
