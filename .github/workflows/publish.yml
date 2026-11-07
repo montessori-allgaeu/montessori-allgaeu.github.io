@@ -44,7 +44,7 @@ jobs:
       date: ${{ steps.candidate.outputs.date }}
     steps:
       - name: Read current main
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
@@ -80,7 +80,7 @@ jobs:
     outputs:
       commit: ${{ steps.commit.outputs.commit }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
@@ -115,7 +115,7 @@ jobs:
       release: ${{ steps.release.outputs.sha }}
       artifact: ${{ steps.artifact.outputs.artifact-id }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           fetch-depth: 0
@@ -176,7 +176,7 @@ jobs:
       MONTE_PUBLISH_ATTEMPT: ${{ inputs.attempt }}
       MONTE_COMMITTED_CHANGE: ${{ needs.commit-change.outputs.commit }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           persist-credentials: false
