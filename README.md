@@ -76,6 +76,8 @@ Die Monte-Verwaltung ersetzt Pages CMS. Es gibt keine Entwürfe: **Speichern** b
 
 Inhalte lassen sich direkt in den geöffneten Feldern ändern; die Speicherleiste bleibt am unteren Bildschirmrand erreichbar. Unter **Downloads** öffnet **PDF ersetzen** direkt die Dateiauswahl. Danach kann die neue PDF geprüft und zusammen mit Titel oder weiteren Angaben gespeichert werden. Beim Austausch bleibt der bestehende Dateilink erhalten.
 
+Fehlgeschlagene Dateiänderungen können nur wiederholt werden, solange die benötigten Uploads verfügbar sind. Nach deren Ablauf führen **Eingaben überarbeiten** und die erneute Dateiauswahl zu einem neuen Auftrag; Texte bleiben erhalten. Bereits in Git übernommene Änderungen lassen sich ohne temporäre Uploads erneut veröffentlichen. Die Zustandsmodelle stehen im [Betriebshandbuch](docs/verwaltung-betrieb.md#zustandsmodelle-der-verwaltung).
+
 Die Übersicht führt direkt zu häufigen Aktionen, den zuletzt gespeicherten Inhalten des Teams und den nächsten Terminen. Neue Termine können Angaben aus vorhandenen Terminen übernehmen; das neue Datum bleibt erhalten. Verknüpfte Website-Seiten sind im Editor direkt erreichbar. Sortierpfeile werden bei Bedarf über **Reihenfolge ändern** eingeblendet.
 
 Stellen und Spendentexte werden im Seitenlayout bearbeitet. Bei Spenden lässt sich zwischen

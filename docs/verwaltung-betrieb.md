@@ -16,7 +16,7 @@ Website und Verwaltung werden getrennt veröffentlicht. Die Website ruft das Bac
 
 Nur Cloudflare Free und kostenlose Standard-Linux-Runner des öffentlichen GitHub-Repositories verwenden. Keine kostenpflichtigen Speichererweiterungen, R2-Abonnements oder automatischen Tarifwechsel einrichten. Vor der ersten Einrichtung den tatsächlichen Workers-Tarif prüfen; das Repository stellt den Kontotarif nicht um. Bestehende Domain- und Mailkosten gehören nicht zu dieser Infrastruktur.
 
-`check-static-assets.mjs` prüft die Free-Grenzen von 20.000 Dateien und 25 MiB je Datei sowie die fehlende Worker-Ausführung vor öffentlichen Assets. Verwaltungsuploads sind auf 10 MiB je Datei und 256 MiB temporären Gesamtspeicher begrenzt. Die Hintergrundbereinigung entfernt unzugeordnete Uploads nach einem Tag, abgeschlossene nach einem Tag und fehlgeschlagene nach sieben Tagen. Länger aufgelaufene Uploads werden vor einer Wiederholung erneut benötigt. Erschöpfte Kontingente werden als Unterbrechung angezeigt; daraus darf keine automatische kostenpflichtige Erweiterung entstehen.
+`check-static-assets.mjs` prüft die Free-Grenzen von 20.000 Dateien und 25 MiB je Datei sowie die fehlende Worker-Ausführung vor öffentlichen Assets. Verwaltungsuploads sind auf 10 MiB je Datei und 256 MiB temporären Gesamtspeicher begrenzt. Die Hintergrundbereinigung entfernt unzugeordnete Uploads nach einem Tag, abgeschlossene nach einem Tag und fehlgeschlagene nach sieben Tagen. Nach Ablauf benötigter Uploads bleibt der fehlgeschlagene Auftrag erhalten, kann aber nicht erneut gestartet werden. Die gespeicherten Eingaben öffnen, **Eingaben überarbeiten** wählen und die Datei erneut auswählen. Die Wiederholung prüft zusätzlich die tatsächlichen Dateibytes. Bereits in Git übernommene Aufträge benötigen für eine erneute Veröffentlichung keine temporären Uploads mehr. Erschöpfte Kontingente werden als Unterbrechung angezeigt; daraus darf keine automatische kostenpflichtige Erweiterung entstehen.
 
 ## Lokale Entwicklung
 
@@ -80,6 +80,14 @@ Stellenangebote werden direkt im Aufbau der öffentlichen Stellenanzeige bearbei
 In der Downloadliste führt **PDF ersetzen** direkt zur Dateiauswahl. Nach der Auswahl öffnet sich der betreffende Eintrag mit der neuen Vorschau. Der bisherige Dateilink bleibt erhalten. Titel und übrige Angaben können bei Bedarf gleichzeitig angepasst werden. **Dateiaustausch zurücknehmen** verwirft die neue Datei vor dem Speichern; andere Änderungen am Eintrag bleiben erhalten. Während des Uploads ist Speichern gesperrt. Ein laufender Veröffentlichungsauftrag sperrt den betroffenen Eintrag bis zum Abschluss.
 
 **Foto ersetzen** akzeptiert JPG, PNG und WebP unabhängig vom bisherigen Fotoformat. Bei einem Formatwechsel erhält die Originaldatei einen neuen Pfad; Speichern übernimmt die neue Bildzuordnung gemeinsam mit dem Eintrag. Die bisherige Datei bleibt für mögliche andere Verwendungen erhalten. Änderungen am bisherigen Foto werden bis zur Veröffentlichung auf Konflikte geprüft. Die öffentliche Website erzeugt aus den Originalen automatisch optimierte WebP-Varianten in passenden Größen.
+
+### Zustandsmodelle der Verwaltung
+
+`admin/src/editor-machine.ts` besitzt die Übergänge des Eintragseditors: geschlossen, bearbeitbar (mit laufenden Uploads), wird gespeichert, dauerhaft angenommen sowie Konfliktvergleich. Angenommene Änderungen verwenden den Veröffentlichungsstatus des Auftrags. Nur zum aktuellen Datensatz und zur aktuellen Anfrage passende Antworten dürfen den Editor ändern. Abgelehnte Speicheranfragen behalten ihre Anfragekennung und lokalen Dateien für eine identische Wiederholung.
+
+`admin/src/media.ts` unterscheidet lokale Uploads, an einen unveränderlichen Auftrag gebundene Dateien und erforderliche Neuauswahl bei einer Korrektur. Gebundene Uploadkennungen werden nie für einen neuen Auftrag wiederverwendet. Ein veröffentlichter Stand übernimmt seine Dateiversionen wieder aus Git.
+
+Die Worker-Zustandsmodelle besitzen Dispatch, Laufübernahme, Statusmeldungen und Uploadzuordnung. Persistierte Aufträge und Uploads bleiben an der Speichergrenze mit dem bisherigen Format kompatibel. Statusänderungen müssen erlaubten Übergängen entsprechen; ein bestätigter Git-Commit bleibt auch bei einer Wiederholung erhalten. Die Annahme eines Auftrags und die bestätigte Veröffentlichung bleiben getrennte Zustände.
 
 ### Prüfung und Auslieferung
 

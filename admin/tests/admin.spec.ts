@@ -2293,3 +2293,110 @@ test("das Löschen des eigenen Zugangs meldet ab, wenn ein weiterer Admin bleibt
   ).toBeVisible();
   expect(deleted).toBe(true);
 });
+
+for (const width of [1440, 390]) {
+  for (const availability of ["known-expired", "expired-at-retry"] as const) {
+    test(`abgelaufene Uploads führen zur erneuten Dateiauswahl (${availability}, ${width}px)`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      const original = record("downloads", { title: "Unterlage", file: "/downloads/info.pdf" });
+      const mutation = {
+        collection: original.collection,
+        id: original.id,
+        baseVersion: original.version,
+        data: { ...original.data, title: "Gespeicherter Titel" },
+      };
+      let retries = 0;
+      let accepted = false;
+      const requests = await mock(page, [original], {
+        route: async (route, path) => {
+          if (path === "/changes" && route.request().method() === "GET") {
+            await route.fulfill({
+              json: {
+                changes: accepted
+                  ? []
+                  : [
+                      {
+                        ...change("failed"),
+                        retry: {
+                          available: availability !== "known-expired",
+                          ...(availability === "known-expired"
+                            ? { reason: "uploads_expired" }
+                            : {}),
+                        },
+                        saved: {
+                          mutations: [mutation],
+                          previews: {},
+                          hasUploads: true,
+                          uploadsExpired: availability === "known-expired",
+                        },
+                      },
+                    ],
+              },
+            });
+            return true;
+          }
+          if (path.endsWith("/retry")) {
+            retries++;
+            await route.fulfill({
+              status: 410,
+              json: {
+                code: "uploads_expired",
+                error: "Die Datei ist abgelaufen. Bitte wähle sie erneut aus.",
+              },
+            });
+            return true;
+          }
+          if (path === "/uploads") {
+            await route.fulfill({
+              json: {
+                id: "reselected",
+                value: original.data.file,
+                previewUrl: "/api/uploads/reselected",
+              },
+            });
+            return true;
+          }
+          if (path === "/changes" && route.request().method() === "POST") accepted = true;
+          return false;
+        },
+      });
+      await page.goto("/");
+      await page.reload();
+      await page.getByRole("button", { name: "Problem ansehen", exact: true }).click();
+      if (availability === "known-expired")
+        await expect(
+          page.getByRole("button", { name: "Erneut versuchen", exact: true }),
+        ).toBeDisabled();
+      await page.getByRole("button", { name: "Gespeicherter Titel ansehen", exact: true }).click();
+      if (availability === "expired-at-retry")
+        await page.getByRole("button", { name: "Erneut versuchen", exact: true }).click();
+      await expect(
+        page.getByRole("button", { name: "Erneut versuchen", exact: true }),
+      ).toBeDisabled();
+      await expect(page.locator(".operation-banner.failed")).toContainText(
+        "Die Datei ist abgelaufen",
+      );
+      await page.screenshot({ path: testInfo.outputPath("expired-upload.png"), fullPage: true });
+      await page.getByRole("button", { name: "Eingaben überarbeiten", exact: true }).click();
+      const title = page.getByRole("textbox", { name: "Titel", exact: true });
+      await expect(title).toHaveValue("Gespeicherter Titel");
+      await title.fill("Erhaltener und korrigierter Titel");
+      await title.press("Tab");
+      await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeDisabled();
+      await page.locator('input[type="file"]').setInputFiles({
+        name: "info.pdf",
+        mimeType: "application/pdf",
+        buffer: Buffer.from("%PDF-1.7\n"),
+      });
+      await expect(page.getByRole("button", { name: "Speichern", exact: true })).toBeEnabled();
+      await page.getByRole("button", { name: "Speichern", exact: true }).click();
+      await expect.poll(() => requests.length).toBe(1);
+      expect(requests[0].uploadIds).toEqual(["reselected"]);
+      expect(requests[0].mutations[0].data.title).toBe("Erhaltener und korrigierter Titel");
+      expect(retries).toBe(availability === "known-expired" ? 0 : 1);
+      await expect(page.getByRole("button", { name: "Gespeichert ✓", exact: true })).toBeDisabled();
+    });
+  }
+}

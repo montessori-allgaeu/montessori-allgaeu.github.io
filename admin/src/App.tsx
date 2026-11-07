@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import type {
   Change,
   ContentCollection,
@@ -14,7 +14,6 @@ import {
   canDeleteContent,
   contentDefinitions,
   getContentDefinition,
-  calculateEffectiveFee,
   type EditorField,
 } from "../../src/admin/content-model";
 import {
@@ -42,15 +41,18 @@ import {
   recentContent,
   eventTemplates,
 } from "./overview";
-import {
-  activeMedia,
-  discardMedia,
-  selectMedia,
-  uploadMedia,
-  mediaValueAt,
-  type PendingMedia,
-} from "./media";
+import { stagedUploads, mediaPreviews, needsReselection, uploadMedia, mediaValueAt } from "./media";
 import { loadProfileThumbnails, ProfileThumbnail } from "./ProfileThumbnail";
+import {
+  closedEditor,
+  editorReducer,
+  editorChange,
+  editorDirty,
+  editorLocked,
+  editorUploads,
+  openEditor,
+  type EditState,
+} from "./editor-machine";
 
 const capturedInvite = new URLSearchParams(location.hash.slice(1)).get("invite");
 if (capturedInvite) history.replaceState(null, "", `${location.pathname}${location.search}`);
@@ -117,15 +119,6 @@ function initialArea() {
     "Übersicht"
   );
 }
-type EditState = ContentMutation & {
-  original: ContentData;
-  pendingMedia: PendingMedia;
-  mediaVersions: Record<string, string>;
-  requestId: string;
-  operationId?: string;
-  savedPreviews: Record<string, string>;
-  savedWithUploads?: boolean;
-};
 type YearPlan = {
   year: string;
   settings: ContentRecord;
@@ -152,26 +145,6 @@ function editorialRecords(records: ContentRecord[], changes: Change[]): ContentR
   }
   return [...result.values()];
 }
-function toEdit(
-  record: ContentRecord,
-  mediaVersions: Record<string, string>,
-  change?: Change,
-): EditState {
-  return {
-    collection: record.collection,
-    id: record.id,
-    baseVersion: record.version || null,
-    data: structuredClone(record.data),
-    original: structuredClone(record.data),
-    pendingMedia: {},
-    mediaVersions: { ...mediaVersions },
-    requestId: crypto.randomUUID(),
-    operationId: change?.id,
-    savedPreviews: change?.saved?.previews ?? {},
-    savedWithUploads: change?.saved?.hasUploads,
-  };
-}
-
 function Login({ invite, onEnrolled }: { invite: string | null; onEnrolled: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -251,6 +224,12 @@ function ChangeList({
               <strong>{change.summary || "Website aktualisieren"}</strong>
               <p className={`change-state ${change.status}`}>{changeStatusLabel(change)}</p>
               {change.error && <p className="error-detail">{change.error}</p>}
+              {change.retry?.reason === "uploads_expired" && (
+                <p className="error-detail">
+                  Die Datei ist abgelaufen. Öffne die gespeicherten Eingaben und wähle die Datei
+                  erneut aus.
+                </p>
+              )}
               {change.saved && (change.status === "failed" || change.status === "conflict") && (
                 <div className="row-actions">
                   {change.saved.mutations.map((mutation) => (
@@ -268,7 +247,11 @@ function ChangeList({
               <small>{new Date(change.updatedAt).toLocaleString("de-DE")}</small>
             </div>
             {change.status === "failed" && (
-              <button className="text-button" onClick={() => onRetry(change)}>
+              <button
+                className="text-button"
+                disabled={change.retry?.available === false}
+                onClick={() => onRetry(change)}
+              >
                 Erneut versuchen
               </button>
             )}
@@ -294,53 +277,35 @@ export function App() {
   const [seenFailures, setSeenFailures] = useState(readSeenFailures);
   const [area, setArea] = useState(initialArea);
   const [query, setQuery] = useState("");
-  const [editor, setEditor] = useState<EditState | null>(null);
+  const [editorState, dispatchEditor] = useReducer(editorReducer, closedEditor);
+  const editor = editorState.status === "open" ? editorState.editor : null;
   const [yearPlan, setYearPlan] = useState<YearPlan | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [past, setPast] = useState(false);
   const [offerYear, setOfferYear] = useState("");
-  const [uploadsInProgress, setUploadsInProgress] = useState(0);
-  const [conflictMediaVersions, setConflictMediaVersions] = useState<Record<string, string>>({});
-  const [conflict, setConflict] = useState<ContentRecord | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ path: string; message: string }[]>([]);
   const [invite, setInvite] = useState<string | null>(capturedInvite);
   const editorRef = useRef(editor);
   editorRef.current = editor;
   const changesRef = useRef(changes);
   changesRef.current = changes;
-  const pendingUploads = editor ? activeMedia(editor.pendingMedia, editor.data) : [];
-  const previews = {
-    ...editor?.savedPreviews,
-    ...Object.fromEntries(pendingUploads.map((upload) => [upload.value, upload.previewUrl])),
-  };
-  const dirty =
-    !!editor &&
-    (pendingUploads.length > 0 || JSON.stringify(editor.data) !== JSON.stringify(editor.original));
-  const currentChange = changes.find((change) => change.id === editor?.operationId);
+  const pendingUploads = editor ? stagedUploads(editor.media, editor.data) : [];
+  const previews = editor ? mediaPreviews(editor.media, editor.data) : {};
+  const dirty = editorDirty(editor);
+  const currentChange = editorChange(editor);
+  const uploadsInProgress = editorUploads(editor);
   const saving = busy || uploadsInProgress > 0 || !!ongoing(currentChange);
-  const editingLocked =
-    saving || currentChange?.status === "failed" || currentChange?.status === "conflict";
-  const needsFileReselection =
-    !!editor &&
-    !editor.operationId &&
-    (editor.savedWithUploads
-      ? [editor.data.file, editor.data.image].filter(
-          (value): value is string => typeof value === "string",
-        )
-      : Object.keys(editor.savedPreviews)
-    ).some(
-      (value) =>
-        (editor.data.file === value || editor.data.image === value) &&
-        !pendingUploads.some((upload) => upload.value === value),
+  const editingLocked = busy || editorLocked(editor);
+  const conflict = editor?.phase.status === "comparing" ? editor.phase.latest : null;
+  const needsFileReselection = !!editor && needsReselection(editor.media, editor.data);
+  const uploadBusy = (uploading: boolean, owner = editor ? recordKey(editor) : "") => {
+    dispatchEditor(
+      uploading
+        ? { type: "uploadStarted", owner, requestId: crypto.randomUUID() }
+        : { type: "uploadFinished", owner },
     );
-  const uploadBusy = (uploading: boolean) => {
-    setUploadsInProgress((count) => Math.max(0, count + (uploading ? 1 : -1)));
-    if (uploading)
-      setEditor((current) =>
-        current ? { ...current, operationId: undefined, requestId: crypto.randomUUID() } : current,
-      );
   };
   api.onSession = setSession;
 
@@ -388,7 +353,14 @@ export function App() {
             record.collection === params.get("collection") && record.id === params.get("id"),
         );
         if (match)
-          setEditor(toEdit(match, content.mediaVersions, pendingChange(match, changesRef.current)));
+          dispatchEditor({
+            type: "open",
+            editor: openEditor(
+              match,
+              content.mediaVersions,
+              pendingChange(match, changesRef.current),
+            ),
+          });
       })
       .catch((cause) => {
         if (current) setError(errorText(cause));
@@ -422,19 +394,7 @@ export function App() {
           if (before !== changesRef.current) return;
           setSnapshot(content);
           setThumbnails(images);
-          const current = editorRef.current;
-          if (
-            current &&
-            result.changes.find((change) => change.id === current.operationId)?.status ===
-              "published"
-          ) {
-            const record = content.records.find((item) => recordKey(item) === recordKey(current));
-            if (record)
-              setEditor({
-                ...toEdit(record, content.mediaVersions),
-                operationId: current.operationId,
-              });
-          }
+          dispatchEditor({ type: "changes", changes: result.changes, content });
           setYearPlan((plan) =>
             plan &&
             result.changes.find((change) => change.id === plan.operationId)?.status === "published"
@@ -442,6 +402,7 @@ export function App() {
               : plan,
           );
         }
+        dispatchEditor({ type: "changes", changes: result.changes });
         setChanges(result.changes);
       } catch (cause) {
         setError(errorText(cause));
@@ -454,12 +415,12 @@ export function App() {
 
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
-      if ((dirty && !editor?.operationId) || (yearPlan && !yearPlan.operationId))
+      if ((dirty && !editorChange(editor)) || (yearPlan && !yearPlan.operationId))
         event.preventDefault();
     };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty, editor?.operationId, yearPlan]);
+  }, [dirty, currentChange?.id, yearPlan]);
 
   useEffect(() => {
     if (area !== "Änderungen") return;
@@ -488,15 +449,14 @@ export function App() {
       return false;
     }
     if (
-      ((dirty && !editor?.operationId) || (yearPlan && !yearPlan.operationId)) &&
+      ((dirty && !editorChange(editor)) || (yearPlan && !yearPlan.operationId)) &&
       !window.confirm(
         "Du hast noch nicht gespeicherte Änderungen. Diesen Bereich trotzdem verlassen?",
       )
     )
       return false;
-    setEditor(null);
+    dispatchEditor({ type: "close" });
     setYearPlan(null);
-    setConflict(null);
     setFieldErrors([]);
     setError("");
     return true;
@@ -514,7 +474,10 @@ export function App() {
   function openRecord(record: ContentRecord) {
     if (!leaveEditor()) return false;
     setArea(getContentDefinition(record.collection).area);
-    setEditor(toEdit(record, snapshot?.mediaVersions ?? {}, pendingChange(record, changes)));
+    dispatchEditor({
+      type: "open",
+      editor: openEditor(record, snapshot?.mediaVersions ?? {}, pendingChange(record, changes)),
+    });
     setQuery("");
     window.scrollTo(0, 0);
     history.replaceState(
@@ -527,7 +490,7 @@ export function App() {
   async function replacePdf(record: ContentRecord, file: File) {
     if (pendingChange(record, changes) || busy || uploadsInProgress || !openRecord(record)) return;
     const owner = recordKey(record);
-    uploadBusy(true);
+    uploadBusy(true, owner);
     try {
       const upload = await uploadMedia(
         file,
@@ -541,7 +504,7 @@ export function App() {
     } catch (cause) {
       setError(errorText(cause));
     } finally {
-      uploadBusy(false);
+      uploadBusy(false, owner);
     }
   }
   async function openSavedChange(change: Change, mutation: ContentMutation) {
@@ -559,14 +522,16 @@ export function App() {
     }
     setArea(getContentDefinition(mutation.collection).area);
     setQuery("");
-    setEditor(
-      toEdit(
+    dispatchEditor({
+      type: "open",
+      editor: openEditor(
         { ...mutation, version: mutation.baseVersion ?? "" },
         snapshot?.mediaVersions ?? {},
         change,
       ),
-    );
+    });
   }
+
   function newRecord(
     collection: ContentCollection,
     source?: ContentRecord,
@@ -594,86 +559,67 @@ export function App() {
     if (newValues) Object.assign(data, newValues);
     const id = makeId(data);
     setArea(definition.area);
-    setEditor({
-      collection,
-      id,
-      baseVersion: null,
-      data,
-      original: source ? {} : structuredClone(data),
-      pendingMedia: {},
-      mediaVersions: {},
-      savedPreviews: {},
-      requestId: crypto.randomUUID(),
-    });
+    const next = openEditor({ collection, id, version: "", data }, {});
+    if (source) next.original = {};
+    dispatchEditor({ type: "open", editor: next });
     setQuery("");
   }
   function updateField(owner: string, key: string, value: JsonValue | undefined) {
-    setEditor((current) => {
-      if (!current || recordKey(current) !== owner) return current;
-      const data = { ...current.data };
-      if (value === undefined) delete data[key];
-      else data[key] = value;
-      if (current.collection === "kindergartenFeeSettings" && Array.isArray(data.rows))
-        data.rows = data.rows.map((row) => {
-          if (!row || typeof row !== "object" || Array.isArray(row)) return row;
-          const calculated = calculateEffectiveFee(
-            String(row.amount ?? ""),
-            String(data.subsidyAmount ?? ""),
-          );
-          return calculated === undefined ? row : { ...row, effectiveAmount: calculated };
-        });
-      return { ...current, data, operationId: undefined, requestId: crypto.randomUUID() };
-    });
+    const current = editorRef.current;
+    if (!current || recordKey(current) !== owner) return;
+    const data = { ...current.data };
+    if (value === undefined) delete data[key];
+    else data[key] = value;
+    dispatchEditor({ type: "edit", owner, data, requestId: crypto.randomUUID() });
     setFieldErrors([]);
   }
   function acceptUpload(owner: string, path: string[], upload: UploadResult) {
-    setEditor((current) =>
-      current && recordKey(current) === owner
-        ? {
-            ...current,
-            pendingMedia: selectMedia(current.pendingMedia, path, upload),
-            operationId: undefined,
-            requestId: crypto.randomUUID(),
-          }
-        : current,
-    );
+    dispatchEditor({ type: "selectMedia", owner, path, upload, requestId: crypto.randomUUID() });
   }
   function discardUpload(owner: string, path: string[]) {
-    setEditor((current) =>
-      current && recordKey(current) === owner
-        ? {
-            ...current,
-            pendingMedia: discardMedia(current.pendingMedia, path),
-            operationId: undefined,
-            requestId: crypto.randomUUID(),
-          }
-        : current,
-    );
+    dispatchEditor({ type: "discardMedia", owner, path, requestId: crypto.randomUUID() });
   }
   async function submit(mutations: ContentMutation[], uploadIds: string[], requestId: string) {
+    dispatchEditor({
+      type: "submit",
+      requestId,
+      intent: mutations.some((mutation) => mutation.delete) ? "delete" : "save",
+    });
     setBusy(true);
     setError("");
     setFieldErrors([]);
     try {
       const accepted = await api.post<Change>("/changes", { requestId, mutations, uploadIds });
-      const change = { ...accepted, saved: accepted.saved ?? { mutations, previews } };
+      const change = {
+        ...accepted,
+        saved: accepted.saved ?? { mutations, previews, hasUploads: uploadIds.length > 0 },
+      };
+      dispatchEditor({ type: "accepted", requestId, change });
       setChanges((current) => [change, ...current.filter((item) => item.id !== change.id)]);
       return change;
     } catch (cause) {
       setError(errorText(cause));
       if (cause instanceof RequestError) {
         setFieldErrors(cause.detail.fields ?? []);
-        if (cause.status === 409 && editorRef.current) {
+        if (cause.status === 409 && editorRef.current?.requestId === requestId) {
           const current = editorRef.current;
           try {
             const latest = await api.request<EditableContentSnapshot>("/content");
             const record = latest.records.find((entry) => recordKey(entry) === recordKey(current));
             if (mutations.some((mutation) => mutation.delete)) {
               setSnapshot(latest);
-              setEditor(record ? toEdit(record, latest.mediaVersions) : null);
+              dispatchEditor(
+                record
+                  ? { type: "open", editor: openEditor(record, latest.mediaVersions) }
+                  : { type: "close" },
+              );
             } else if (record) {
-              setConflict(record);
-              setConflictMediaVersions(latest.mediaVersions);
+              dispatchEditor({
+                type: "compare",
+                owner: recordKey(current),
+                latest: record,
+                mediaVersions: latest.mediaVersions,
+              });
             }
           } catch {
             /* Keep the original conflict and all user input visible. */
@@ -682,6 +628,7 @@ export function App() {
       }
       return null;
     } finally {
+      dispatchEditor({ type: "rejected", requestId });
       setBusy(false);
     }
   }
@@ -707,15 +654,14 @@ export function App() {
       editor.requestId,
     );
     if (change) {
-      setEditor(null);
-      setConflict(null);
+      dispatchEditor({ type: "close" });
       history.replaceState(null, "", location.pathname);
       window.scrollTo(0, 0);
     }
   }
   async function save() {
     if (!editor || needsFileReselection) return;
-    const change = await submit(
+    await submit(
       [
         {
           collection: editor.collection,
@@ -724,30 +670,30 @@ export function App() {
           data: editor.data,
         },
       ],
-      activeMedia(editor.pendingMedia, editor.data).map((upload) => upload.id),
+      stagedUploads(editor.media, editor.data).map((upload) => upload.id),
       editor.requestId,
     );
-    if (change)
-      setEditor((current) =>
-        current && current.requestId === editor.requestId
-          ? {
-              ...current,
-              original: structuredClone(current.data),
-              savedPreviews: change.saved?.previews ?? previews,
-              savedWithUploads: change.saved?.hasUploads ?? pendingUploads.length > 0,
-              operationId: change.id,
-            }
-          : current,
-      );
   }
   async function retry(change: Change) {
+    if (change.retry?.available === false) return;
     setBusy(true);
     setError("");
     try {
-      await api.post(`/changes/${encodeURIComponent(change.id)}/retry`);
-      setChanges((await api.request<{ changes: Change[] }>("/changes")).changes);
+      const accepted = await api.post<Change>(`/changes/${encodeURIComponent(change.id)}/retry`);
+      dispatchEditor({ type: "changes", changes: [accepted] });
+      const result = await api.request<{ changes: Change[] }>("/changes");
+      dispatchEditor({ type: "changes", changes: result.changes });
+      setChanges(result.changes);
     } catch (cause) {
       setError(errorText(cause));
+      if (cause instanceof RequestError && cause.detail.code === "uploads_expired") {
+        const expired: Change = {
+          ...change,
+          retry: { available: false, reason: "uploads_expired" },
+        };
+        setChanges((current) => current.map((item) => (item.id === change.id ? expired : item)));
+        dispatchEditor({ type: "changes", changes: [expired] });
+      }
     } finally {
       setBusy(false);
     }
@@ -764,8 +710,12 @@ export function App() {
         throw new Error(
           "Dieser Eintrag wurde inzwischen entfernt. Deine Eingaben bleiben erhalten. Bitte lege ihn bei Bedarf als neuen Eintrag an.",
         );
-      setConflict(latest);
-      setConflictMediaVersions(content.mediaVersions);
+      dispatchEditor({
+        type: "compare",
+        owner: recordKey(editor),
+        latest,
+        mediaVersions: content.mediaVersions,
+      });
     } catch (cause) {
       setError(errorText(cause));
     } finally {
@@ -973,7 +923,7 @@ export function App() {
         onUpload={(upload, uploadPath) => acceptUpload(owner, uploadPath, upload)}
         onDiscardUpload={(uploadPath) => discardUpload(owner, uploadPath)}
         context={editor.data}
-        onUploadBusy={uploadBusy}
+        onUploadBusy={(uploading) => uploadBusy(uploading, owner)}
         previews={previews}
         disabled={editingLocked || !!conflict}
       />
@@ -1251,7 +1201,7 @@ export function App() {
                   <div className="row-actions">
                     <button
                       className="text-button"
-                      disabled={busy}
+                      disabled={busy || currentChange.retry?.available === false}
                       onClick={() => void retry(currentChange)}
                     >
                       Erneut versuchen
@@ -1259,14 +1209,12 @@ export function App() {
                     <button
                       className="text-button"
                       onClick={() =>
-                        setEditor({
-                          ...editor,
-                          pendingMedia: {},
+                        dispatchEditor({
+                          type: "revise",
                           original:
                             snapshot?.records.find(
                               (record) => recordKey(record) === recordKey(editor),
                             )?.data ?? {},
-                          operationId: undefined,
                           requestId: crypto.randomUUID(),
                         })
                       }
@@ -1274,6 +1222,12 @@ export function App() {
                       Eingaben überarbeiten
                     </button>
                   </div>
+                )}
+                {currentChange.retry?.reason === "uploads_expired" && (
+                  <p>
+                    Die Datei ist abgelaufen. Wähle „Eingaben überarbeiten“ und lade sie erneut
+                    hoch. Deine Texte bleiben erhalten.
+                  </p>
                 )}
                 {currentChange.status === "conflict" && (
                   <button
@@ -1307,20 +1261,10 @@ export function App() {
               <ConflictEditor
                 latest={conflict}
                 local={editor}
-                onCancel={() => setConflict(null)}
-                onResolve={(data) => {
-                  setEditor({
-                    ...editor,
-                    data,
-                    original: conflict.data,
-                    baseVersion: conflict.version,
-                    mediaVersions: conflictMediaVersions,
-                    pendingMedia: editor.operationId ? {} : editor.pendingMedia,
-                    operationId: undefined,
-                    requestId: crypto.randomUUID(),
-                  });
-                  setConflict(null);
-                }}
+                onCancel={() => dispatchEditor({ type: "cancelComparison" })}
+                onResolve={(data) =>
+                  dispatchEditor({ type: "resolve", data, requestId: crypto.randomUUID() })
+                }
               />
             )}
             {templates.length > 0 && (
@@ -1342,22 +1286,20 @@ export function App() {
                       );
                       if (!source) return;
                       const owner = recordKey(editor);
-                      setEditor((current) =>
-                        current && recordKey(current) === owner
-                          ? {
-                              ...current,
-                              data: {
-                                ...current.data,
-                                ...Object.fromEntries(
-                                  ["title", "category", "time", "location", "description"].map(
-                                    (key) => [key, source.data[key]],
-                                  ),
-                                ),
-                              },
-                              requestId: crypto.randomUUID(),
-                            }
-                          : current,
-                      );
+                      dispatchEditor({
+                        type: "edit",
+                        owner,
+                        requestId: crypto.randomUUID(),
+                        data: {
+                          ...editor.data,
+                          ...Object.fromEntries(
+                            ["title", "category", "time", "location", "description"].map((key) => [
+                              key,
+                              source.data[key],
+                            ]),
+                          ),
+                        },
+                      });
                     }}
                   >
                     <option value="">Bitte auswählen …</option>

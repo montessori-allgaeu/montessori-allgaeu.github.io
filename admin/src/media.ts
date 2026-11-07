@@ -1,6 +1,7 @@
 import type {
   ContentCollection,
   ContentData,
+  Change,
   JsonValue,
   UploadResult,
 } from "../../src/admin/types";
@@ -65,4 +66,76 @@ export function activeMedia(pending: PendingMedia, data: ContentData): UploadRes
   return Object.values(pending)
     .filter((item) => mediaValueAt(data, item.path) === item.upload.value)
     .map((item) => item.upload);
+}
+
+// A binary belongs either to this local edit or to an immutable publication job.
+// Job-bound upload IDs must never be submitted as part of a different job.
+export type EditorMedia =
+  | { status: "local"; pending: PendingMedia }
+  | { status: "bound"; changeId: string; previews: Record<string, string>; values: string[] }
+  | {
+      status: "reselection";
+      pending: PendingMedia;
+      previews: Record<string, string>;
+      values: string[];
+    };
+
+export const localMedia = (): EditorMedia => ({ status: "local", pending: {} });
+
+export function stagedUploads(media: EditorMedia, data: ContentData): UploadResult[] {
+  return media.status === "bound" ? [] : activeMedia(media.pending, data);
+}
+
+export function mediaPreviews(media: EditorMedia, data: ContentData): Record<string, string> {
+  return {
+    ...(media.status === "local" ? {} : media.previews),
+    ...Object.fromEntries(
+      stagedUploads(media, data).map((upload) => [upload.value, upload.previewUrl]),
+    ),
+  };
+}
+
+export function bindMedia(change: Change, data: ContentData, media: EditorMedia): EditorMedia {
+  if (change.status === "published") return localMedia();
+  const previews = change.saved?.previews ?? mediaPreviews(media, data);
+  const hasUploads = change.saved?.hasUploads ?? stagedUploads(media, data).length > 0;
+  return {
+    status: "bound",
+    changeId: change.id,
+    previews,
+    // Older servers do not supply hasUploads. Preview values still identify their binaries.
+    values: hasUploads
+      ? [data.file, data.image].filter((value): value is string => typeof value === "string")
+      : Object.keys(previews),
+  };
+}
+
+export function releaseMedia(media: EditorMedia): EditorMedia {
+  if (media.status !== "bound") return media;
+  return media.values.length
+    ? { status: "reselection", pending: {}, previews: media.previews, values: media.values }
+    : localMedia();
+}
+
+export function needsReselection(media: EditorMedia, data: ContentData): boolean {
+  return (
+    media.status === "reselection" &&
+    media.values.some(
+      (value) =>
+        (data.file === value || data.image === value) &&
+        !stagedUploads(media, data).some((upload) => upload.value === value),
+    )
+  );
+}
+
+export function changeMedia(
+  media: EditorMedia,
+  path: string[],
+  upload?: UploadResult,
+): EditorMedia {
+  if (media.status === "bound") return media;
+  return {
+    ...media,
+    pending: upload ? selectMedia(media.pending, path, upload) : discardMedia(media.pending, path),
+  };
 }

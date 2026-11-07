@@ -30,32 +30,34 @@ import {
 } from "./media";
 import { changeSchema, changesBankDetails, requireAdmin, requireFresh } from "./policy";
 import { Store } from "./store";
+import {
+  decodePublication,
+  encodePublication,
+  initialPublication,
+  publicationActive,
+  publicationFinished,
+  transitionPublication,
+  type Publication,
+  type StoredPublication,
+} from "./publication-state";
+import {
+  decodeUpload,
+  encodeUpload,
+  transitionUpload,
+  uploadExpired,
+  type StoredUpload,
+  type Upload,
+} from "./upload-state";
 
-type Upload = {
-  id: string;
-  ownerId: string;
-  path: string;
-  sha256: string;
-  size: number;
-  contentType: string;
-  baseVersion: string | null;
-  replacement?: { path: string; baseVersion: string };
-  createdAt: number;
-  changeId?: string;
-};
-type Operation = Change &
+type OperationData = Omit<Change, "status" | "error" | "commit" | "runUrl" | "saved" | "retry"> &
   ChangeRequest & {
     ownerId: string;
     dispatchUserId: string;
     fingerprint: string;
-    attempt?: string;
-    runId?: string;
-    runAttempt?: string;
-    dispatchedAt?: number;
-    dispatchCount: number;
-    releaseCommit?: string;
     bankChange: boolean;
   };
+type Operation = OperationData & { publication: Publication };
+type StoredOperation = OperationData & StoredPublication;
 const DAY = 86400_000;
 const statuses = z.strictObject({
   status: z.enum(["checking", "committed", "published", "failed", "conflict"]),
@@ -77,24 +79,96 @@ export class Publishing {
     private auth: Auth,
     private storage: DurableObjectStorage,
   ) {}
+  private decodeOperation(row: StoredOperation): Operation {
+    const {
+      status,
+      attempt,
+      runId,
+      runAttempt,
+      dispatchedAt,
+      dispatchCount,
+      commit,
+      releaseCommit,
+      error,
+      runUrl,
+      ...data
+    } = row;
+    return {
+      ...data,
+      publication: decodePublication({
+        status,
+        attempt,
+        runId,
+        runAttempt,
+        dispatchedAt,
+        dispatchCount,
+        commit,
+        releaseCommit,
+        error,
+        runUrl,
+      }),
+    };
+  }
+  private operation(id: string) {
+    const row = this.store.get<StoredOperation>(`change:${id}`);
+    return row ? this.decodeOperation(row) : undefined;
+  }
   private operations() {
-    return this.store.list<Operation>("change:").map(([, o]) => o);
+    return this.store.list<StoredOperation>("change:").map(([, row]) => this.decodeOperation(row));
+  }
+  private uploadRecord(id: string) {
+    const row = this.store.get<StoredUpload>(`upload:${id}`);
+    return row ? decodeUpload(row) : undefined;
+  }
+  private uploads() {
+    return this.store
+      .list<StoredUpload>("upload:")
+      .map(([key, row]) => [key, decodeUpload(row)] as const);
+  }
+  private writeUpload(upload: Upload) {
+    this.store.put(`upload:${upload.id}`, encodeUpload(upload));
   }
   private write(operation: Operation) {
     operation.updatedAt = new Date().toISOString();
-    this.store.put(`change:${operation.id}`, operation);
+    const { publication, ...data } = operation;
+    this.store.put(`change:${operation.id}`, {
+      ...data,
+      ...encodePublication(publication, this.env.GITHUB_REPOSITORY),
+    });
+  }
+  private requiredUploads(operation: Operation): Upload[] | undefined {
+    if (operation.publication.commit) return [];
+    const uploads: Upload[] = [];
+    for (const id of operation.uploadIds) {
+      const upload = this.uploadRecord(id);
+      if (
+        !upload ||
+        upload.ownership.kind !== "bound" ||
+        upload.ownership.changeId !== operation.id ||
+        uploadExpired(upload, operation)
+      )
+        return undefined;
+      uploads.push(upload);
+    }
+    return uploads;
   }
   private publicChange(operation: Operation): Change {
-    const { id, status, createdAt, updatedAt, summary, error, commit, runUrl } = operation;
+    const { id, createdAt, updatedAt, summary } = operation;
+    const { status, error, commit, runUrl } = encodePublication(
+      operation.publication,
+      this.env.GITHUB_REPOSITORY,
+    );
+    const uploadsExpired = !this.requiredUploads(operation);
     const saved =
       status === "published"
         ? undefined
         : {
             mutations: operation.mutations,
             hasUploads: operation.uploadIds.length > 0,
+            uploadsExpired,
             previews: Object.fromEntries(
               operation.uploadIds.flatMap((uploadId) => {
-                const upload = this.store.get<Upload>(`upload:${uploadId}`);
+                const upload = this.uploadRecord(uploadId);
                 if (!upload) return [];
                 const kind = upload.path.startsWith("public/downloads/")
                   ? "downloads"
@@ -116,6 +190,14 @@ export class Publishing {
       error,
       commit,
       runUrl,
+      ...(status === "failed"
+        ? {
+            retry: {
+              available: !uploadsExpired,
+              ...(uploadsExpired ? { reason: "uploads_expired" as const } : {}),
+            },
+          }
+        : {}),
       targets,
       saved,
       deleted,
@@ -157,8 +239,7 @@ export class Publishing {
     }
     this.auth.limit(`changes:${user.id}`, 30, 600_000);
     requireCondition(
-      this.operations().filter((o) => ["queued", "checking", "committed"].includes(o.status))
-        .length < 30,
+      this.operations().filter((o) => !publicationFinished(o.publication)).length < 30,
       429,
       "queue_full",
       "Es sind gerade viele Änderungen in Arbeit. Bitte kurz warten.",
@@ -204,9 +285,11 @@ export class Publishing {
       return parsed;
     });
     const uploads = input.uploadIds.map((id) => {
-      const upload = this.store.get<Upload>(`upload:${id}`);
+      const upload = this.uploadRecord(id);
       requireCondition(
-        upload?.ownerId === user.id && !upload.changeId,
+        upload?.ownerId === user.id &&
+          upload.ownership.kind === "staged" &&
+          !uploadExpired(upload, undefined),
         400,
         "upload_missing",
         "Eine hochgeladene Datei ist nicht mehr verfügbar. Bitte erneut hochladen.",
@@ -272,23 +355,24 @@ export class Publishing {
       id: crypto.randomUUID(),
       ownerId: user.id,
       dispatchUserId: user.id,
-      status: "queued",
+      publication: initialPublication(),
       createdAt: now,
       updatedAt: now,
       summary: `${areas.join(", ")} · ${mutations.length} ${mutations.length === 1 ? "Eintrag" : "Einträge"}${mutations.every((mutation) => mutation.delete) ? " löschen" : ""}`,
       fingerprint,
-      dispatchCount: 0,
       bankChange,
     };
     this.write(operation);
     for (const upload of uploads)
-      this.store.put(`upload:${upload.id}`, { ...upload, changeId: operation.id });
+      this.writeUpload(
+        transitionUpload(upload, { type: "bind", ownerId: user.id, changeId: operation.id }),
+      );
     this.auth.audit(user.id, "content_saved", operation.id);
     await this.storage.setAlarm(Date.now() + 1000);
     return json(this.publicChange(operation), 202);
   }
   async retry(id: string, user: AccessUser, session: Session) {
-    const operation = this.store.get<Operation>(`change:${id}`);
+    const operation = this.operation(id);
     requireCondition(operation, 404, "change_missing", "Änderung nicht gefunden.");
     requireCondition(
       operation.ownerId === user.id || user.role === "admin",
@@ -297,10 +381,10 @@ export class Publishing {
       "Diese Änderung gehört zu einer anderen Person.",
     );
     requireCondition(
-      operation.status === "failed",
+      operation.publication.status === "failed",
       409,
       "retry_state",
-      operation.status === "conflict"
+      operation.publication.status === "conflict"
         ? "Bitte den Inhalt neu laden und den Konflikt auflösen."
         : "Die Veröffentlichung ist bereits in Arbeit oder abgeschlossen.",
     );
@@ -308,15 +392,25 @@ export class Publishing {
       requireAdmin(user);
       requireFresh(session.verifiedAt);
     }
+    const uploads = this.requiredUploads(operation);
+    requireCondition(
+      uploads,
+      410,
+      "uploads_expired",
+      "Die hochgeladenen Dateien sind nicht mehr verfügbar. Bitte den Inhalt erneut öffnen, die Dateien neu auswählen und speichern.",
+    );
+    for (const upload of uploads) {
+      const bytes = await this.env.UPLOADS.get(upload.id, "arrayBuffer");
+      requireCondition(
+        bytes && (await hash(bytes)) === upload.sha256,
+        410,
+        "uploads_expired",
+        "Die hochgeladenen Dateien sind nicht mehr verfügbar. Bitte den Inhalt erneut öffnen, die Dateien neu auswählen und speichern.",
+      );
+    }
     // A retry delegates this already immutable change to the acting user after rechecking access.
     operation.dispatchUserId = user.id;
-    operation.status = "queued";
-    operation.error = undefined;
-    operation.attempt = undefined;
-    operation.runId = undefined;
-    operation.runAttempt = undefined;
-    operation.dispatchedAt = undefined;
-    operation.dispatchCount = 0;
+    operation.publication = transitionPublication(operation.publication, { type: "retry" });
     this.write(operation);
     await this.storage.setAlarm(Date.now() + 1000);
     return json(this.publicChange(operation), 202);
@@ -338,7 +432,7 @@ export class Publishing {
     requireCondition(file instanceof File, 400, "upload_missing", "Bitte eine Datei auswählen.");
     const buffer = await file.arrayBuffer();
     const format = validateUpload(new Uint8Array(buffer), kind);
-    const uploads = this.store.list<Upload>("upload:").map(([, u]) => u);
+    const uploads = this.uploads().map(([, u]) => u);
     requireCondition(
       uploads.reduce((size, u) => size + u.size, buffer.byteLength) <= 256 * 1024 * 1024,
       507,
@@ -385,9 +479,10 @@ export class Publishing {
       baseVersion,
       ...(replacement && path !== originalPath ? { replacement } : {}),
       createdAt: Date.now(),
+      ownership: { kind: "staged" },
     };
     await this.env.UPLOADS.put(id, buffer);
-    this.store.put(`upload:${id}`, upload);
+    this.writeUpload(upload);
     await this.storage.setAlarm(Date.now() + 60_000);
     const result: UploadResult = {
       id,
@@ -397,10 +492,9 @@ export class Publishing {
     return json(result, 201);
   }
   async uploadPreview(id: string, user: AccessUser) {
-    const upload = this.store.get<Upload>(`upload:${id}`);
-    const change = upload?.changeId
-      ? this.store.get<Operation>(`change:${upload.changeId}`)
-      : undefined;
+    const upload = this.uploadRecord(id);
+    const change =
+      upload?.ownership.kind === "bound" ? this.operation(upload.ownership.changeId) : undefined;
     requireCondition(
       upload &&
         (upload.ownerId === user.id || user.role === "admin" || change?.uploadIds.includes(id)),
@@ -459,25 +553,26 @@ export class Publishing {
     );
     requireCondition(match, 404, "not_found", "API-Pfad nicht gefunden.");
     const identity = await verifyRunner(request, this.env);
-    const operation = this.store.get<Operation>(`change:${match[1]}`);
+    const operation = this.operation(match[1]);
     requireCondition(
       operation &&
-        operation.attempt &&
-        request.headers.get("x-publish-attempt") === operation.attempt,
+        operation.publication.attempt.kind !== "waiting" &&
+        request.headers.get("x-publish-attempt") === operation.publication.attempt.token,
       403,
       "publish_attempt",
       "Dieser Veröffentlichungsversuch ist nicht mehr gültig.",
     );
     requireCondition(
-      !operation.runId ||
-        (operation.runId === identity.runId && operation.runAttempt === identity.runAttempt),
+      operation.publication.attempt.kind !== "claimed" ||
+        (operation.publication.attempt.runId === identity.runId &&
+          operation.publication.attempt.runAttempt === identity.runAttempt),
       409,
       "publish_claimed",
       "Die Änderung wird bereits von einem anderen Lauf verarbeitet.",
     );
-    if (!operation.runId) {
+    if (operation.publication.attempt.kind !== "claimed") {
       requireCondition(
-        request.method === "GET" && !match[2] && operation.status === "queued",
+        request.method === "GET" && !match[2] && operation.publication.status === "queued",
         409,
         "publish_state",
         "Die Veröffentlichung kann nicht übernommen werden.",
@@ -489,23 +584,23 @@ export class Publishing {
         "publish_owner",
         "Der Zugang für diese Änderung ist nicht mehr berechtigt.",
       );
-      operation.runId = identity.runId;
-      operation.runAttempt = identity.runAttempt;
-      operation.status = "checking";
-      operation.runUrl = `https://github.com/${this.env.GITHUB_REPOSITORY}/actions/runs/${identity.runId}`;
+      operation.publication = transitionPublication(operation.publication, {
+        type: "claim",
+        ...identity,
+      });
       this.write(operation);
     }
     if (request.method === "GET" && !match[2]) {
       requireCondition(
-        ["checking", "committed"].includes(operation.status),
+        publicationActive(operation.publication),
         409,
         "publish_state",
         "Diese Änderung ist bereits abgeschlossen.",
       );
-      const uploads = operation.uploadIds.map((id) => {
-        const upload = this.store.get<Upload>(`upload:${id}`);
+      const uploads = (operation.publication.commit ? [] : operation.uploadIds).map((id) => {
+        const upload = this.uploadRecord(id);
         requireCondition(
-          upload,
+          upload && upload.ownership.kind === "bound" && upload.ownership.changeId === operation.id,
           410,
           "upload_missing",
           "Eine hochgeladene Datei ist abgelaufen. Bitte neu speichern.",
@@ -518,7 +613,7 @@ export class Publishing {
         requestId: operation.requestId,
         mutations: operation.mutations,
         uploads,
-        commit: operation.commit,
+        commit: operation.publication.commit,
       });
     }
     if (request.method === "GET" && match[3]) {
@@ -528,7 +623,7 @@ export class Publishing {
         "upload_scope",
         "Datei gehört nicht zu dieser Änderung.",
       );
-      const upload = this.store.get<Upload>(`upload:${match[3]}`);
+      const upload = this.uploadRecord(match[3]);
       requireCondition(upload, 410, "upload_missing", "Datei nicht mehr vorhanden.");
       return this.uploadBytes(upload);
     }
@@ -539,30 +634,26 @@ export class Publishing {
       "Methode nicht erlaubt.",
     );
     const input = statuses.parse(body);
-    requireCondition(
-      ["checking", "committed"].includes(operation.status) || operation.status === input.status,
-      409,
-      "publish_state",
-      "Die Veröffentlichung ist bereits abgeschlossen.",
-    );
-    if (input.commit) {
-      requireCondition(
-        !operation.commit || operation.commit === input.commit,
-        409,
-        "commit_mismatch",
-        "Die Änderung gehört zu einem anderen Commit.",
-      );
-      operation.commit = input.commit;
-    }
-    if (input.status === "committed" || input.status === "published")
-      requireCondition(
-        operation.commit,
-        400,
-        "commit_missing",
-        "Die veröffentlichte Version fehlt.",
-      );
+    const next = transitionPublication(operation.publication, {
+      type: "report",
+      report: {
+        ...input,
+        error:
+          input.status === "failed"
+            ? "Die Prüfung oder Veröffentlichung ist fehlgeschlagen. Du kannst es erneut versuchen; Details stehen im verknüpften Prüflauf."
+            : input.status === "conflict"
+              ? "Der Inhalt wurde während der Prüfung geändert. Bitte neu laden und die Änderung erneut speichern."
+              : undefined,
+      },
+    });
     if (input.status === "published") {
-      const release = input.releaseCommit ?? operation.commit;
+      requireCondition(
+        next.status === "published",
+        409,
+        "publish_state",
+        "Die Veröffentlichung ist nicht abgeschlossen.",
+      );
+      const release = next.releaseCommit;
       requireCondition(release, 400, "release_missing", "Die veröffentlichte Version fehlt.");
       const response = await fetch(`${this.env.PUBLIC_SITE_URL}/version.json?verify=${release}`, {
         cache: "no-store",
@@ -577,15 +668,8 @@ export class Publishing {
         "not_live",
         "Die neue Version ist noch nicht auf der Website sichtbar.",
       );
-      operation.releaseCommit = release;
     }
-    operation.status = input.status;
-    operation.error =
-      input.status === "failed"
-        ? "Die Prüfung oder Veröffentlichung ist fehlgeschlagen. Du kannst es erneut versuchen; Details stehen im verknüpften Prüflauf."
-        : input.status === "conflict"
-          ? "Der Inhalt wurde während der Prüfung geändert. Bitte neu laden und die Änderung erneut speichern."
-          : undefined;
+    operation.publication = next;
     this.write(operation);
     await this.storage.setAlarm(Date.now() + 1000);
     return json({ ok: true });
@@ -593,72 +677,78 @@ export class Publishing {
   async tick() {
     this.store.clean();
     const operations = this.operations();
-    const active = operations.find((o) => o.runId && ["checking", "committed"].includes(o.status));
-    if (active && active.runId && Date.now() - Date.parse(active.updatedAt) > 120_000) {
-      const run = await this.github.run(active.runId);
+    const active = operations.find((o) => publicationActive(o.publication));
+    if (
+      active &&
+      active.publication.attempt.kind === "claimed" &&
+      Date.now() - Date.parse(active.updatedAt) > 120_000
+    ) {
+      const run = await this.github.run(active.publication.attempt.runId);
       if (run.status === "completed") {
-        active.status = "failed";
-        active.error =
-          "Der Prüflauf ist beendet, die Veröffentlichung wurde aber nicht bestätigt. Bitte erneut versuchen.";
+        active.publication = transitionPublication(active.publication, {
+          type: "fail",
+          error:
+            "Der Prüflauf ist beendet, die Veröffentlichung wurde aber nicht bestätigt. Bitte erneut versuchen.",
+        });
         this.write(active);
       }
     }
-    const currentlyActive = this.operations().some(
-      (o) => o.runId && ["checking", "committed"].includes(o.status),
-    );
+    const currentlyActive = this.operations().some((o) => publicationActive(o.publication));
     if (!currentlyActive) {
       const pending = this.operations()
-        .filter((o) => o.status === "queued")
+        .filter((o) => o.publication.status === "queued")
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
-      if (pending && (!pending.dispatchedAt || Date.now() - pending.dispatchedAt > 15 * 60_000)) {
-        if (pending.dispatchCount >= 3) {
-          pending.status = "failed";
-          pending.error =
-            "GitHub hat den Prüflauf noch nicht gestartet. Bitte später erneut versuchen.";
+      const attempt = pending?.publication.attempt;
+      if (
+        pending &&
+        attempt &&
+        (attempt.kind === "waiting" || Date.now() - attempt.at > 15 * 60_000)
+      ) {
+        if (attempt.kind !== "waiting" && attempt.count >= 3) {
+          pending.publication = transitionPublication(pending.publication, {
+            type: "fail",
+            error: "GitHub hat den Prüflauf noch nicht gestartet. Bitte später erneut versuchen.",
+          });
           this.write(pending);
         } else {
-          pending.attempt = crypto.randomUUID();
-          pending.dispatchCount++;
-          pending.dispatchedAt = Date.now();
+          const token = crypto.randomUUID();
+          pending.publication = transitionPublication(pending.publication, {
+            type: "dispatch",
+            token,
+            at: Date.now(),
+          });
           this.write(pending);
           try {
-            await this.github.dispatch(pending.id, pending.attempt);
+            await this.github.dispatch(pending.id, token);
           } catch (error) {
-            pending.status = "failed";
-            pending.error =
-              error instanceof HttpError
-                ? error.message
-                : "GitHub ist gerade nicht erreichbar. Bitte erneut versuchen.";
+            pending.publication = transitionPublication(pending.publication, {
+              type: "fail",
+              error:
+                error instanceof HttpError
+                  ? error.message
+                  : "GitHub ist gerade nicht erreichbar. Bitte erneut versuchen.",
+            });
             this.write(pending);
           }
         }
       }
     }
-    for (const [key, upload] of this.store.list<Upload>("upload:")) {
-      const operation = upload.changeId
-        ? this.store.get<Operation>(`change:${upload.changeId}`)
-        : undefined;
-      const finished = operation && ["published", "failed", "conflict"].includes(operation.status);
-      const stale =
-        (!upload.changeId && Date.now() - upload.createdAt > DAY) ||
-        (finished &&
-          Date.now() - Date.parse(operation.updatedAt) >
-            (operation.status === "published" ? DAY : 7 * DAY));
-      if (stale) {
+    for (const [key, upload] of this.uploads()) {
+      const operation =
+        upload.ownership.kind === "bound" ? this.operation(upload.ownership.changeId) : undefined;
+      if (uploadExpired(upload, operation)) {
         await this.env.UPLOADS.delete(upload.id);
         this.store.delete(key);
       }
     }
     for (const operation of this.operations()) {
       if (
-        ["published", "failed", "conflict"].includes(operation.status) &&
+        publicationFinished(operation.publication) &&
         Date.now() - Date.parse(operation.updatedAt) > 90 * DAY
       )
         this.store.delete(`change:${operation.id}`);
     }
-    const pending = this.operations().some((o) =>
-      ["queued", "checking", "committed"].includes(o.status),
-    );
+    const pending = this.operations().some((o) => !publicationFinished(o.publication));
     await this.storage.setAlarm(Date.now() + (pending ? 60_000 : 3600_000));
   }
 }

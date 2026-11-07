@@ -56,8 +56,14 @@ export type Change = {
   error?: string;
   commit?: string;
   runUrl?: string;
+  retry?: { available: boolean; reason?: "uploads_expired" };
   targets?: { collection: ContentCollection; id: string }[];
-  saved?: { mutations: ContentMutation[]; previews: Record<string, string>; hasUploads?: boolean };
+  saved?: {
+    mutations: ContentMutation[];
+    previews: Record<string, string>;
+    hasUploads?: boolean;
+    uploadsExpired?: boolean;
+  };
 };
 export type AccessUser = {
   id: string;

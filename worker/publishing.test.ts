@@ -450,6 +450,7 @@ test("content managers may edit donation copy but cannot change bank data; admin
 test("uploads are private, belong to their uploader and can bind to only one change", async () => {
   await withPublishing(async ({ publishing, store }) => {
     const owner = user();
+    store.put(`user:${owner.id}`, owner);
     const other = user();
     const upload = await (await publishing.upload(pdfRequest(), owner)).json<UploadResult>();
     expect(await env.UPLOADS.get(upload.id)).toContain("%PDF-1.7");
@@ -470,8 +471,12 @@ test("uploads are private, belong to their uploader and can bind to only one cha
     expect(result.saved?.previews[upload.value]).toBe(`/api/uploads/${upload.id}`);
     expect(result.saved?.hasUploads).toBe(true);
     expect((await publishing.uploadPreview(upload.id, other)).status).toBe(200);
-    const operation = store.get<Change>(`change:${result.id}`)!;
-    store.put(`change:${result.id}`, { ...operation, status: "published" });
+    await publishing.tick();
+    const attempt = dispatches.at(-1)!.inputs.attempt;
+    await run(publishing, await runnerRequest(result.id, attempt));
+    const callback = await runnerRequest(result.id, attempt, "456", "1", "/status", "POST");
+    await run(publishing, callback, { status: "committed", commit: publishedCommit });
+    await run(publishing, callback, { status: "published", commit: publishedCommit });
     const published = (await publishing.list().json<{ changes: Change[] }>()).changes[0];
     expect(published.saved).toBeUndefined();
     expect(published.targets).toEqual(
@@ -685,6 +690,123 @@ test("an admin retry preserves the original request identity and invalidates the
       await run(publishing, await runnerRequest(job.id, nextAttempt, "457"))
     ).json<{ commit: string }>();
     expect(retried.commit).toBe("a".repeat(40));
+  });
+});
+
+test("refuses a retry after its required upload has expired instead of queuing doomed work", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const owner = user();
+    store.put(`user:${owner.id}`, owner);
+    const upload = await (await publishing.upload(pdfRequest(), owner)).json<UploadResult>();
+    const input = change(records.find((record) => record.collection === "downloads")!);
+    input.mutations[0].data.file = upload.value;
+    input.uploadIds = [upload.id];
+    const saved = await (await publishing.submit(input, owner, session(owner))).json<Change>();
+    await publishing.tick();
+    const attempt = dispatches.at(-1)!.inputs.attempt;
+    await run(publishing, await runnerRequest(saved.id, attempt));
+    await run(publishing, await runnerRequest(saved.id, attempt, "456", "1", "/status", "POST"), {
+      status: "failed",
+    });
+    const operation = store.get<Change>(`change:${saved.id}`)!;
+    store.put(`change:${saved.id}`, {
+      ...operation,
+      updatedAt: new Date(Date.now() - 8 * 86400_000).toISOString(),
+    });
+    await publishing.tick();
+    expect(store.get(`upload:${upload.id}`)).toBeUndefined();
+    await expect(publishing.retry(saved.id, owner, session(owner))).rejects.toMatchObject({
+      status: 410,
+      code: "uploads_expired",
+    });
+    expect(store.get<Change>(`change:${saved.id}`)?.status).toBe("failed");
+    const listed = (await publishing.list().json<{ changes: Change[] }>()).changes[0];
+    expect(listed.retry).toEqual({ available: false, reason: "uploads_expired" });
+    expect(listed.saved).toMatchObject({ hasUploads: true, uploadsExpired: true });
+  });
+});
+
+test.each(["missing", "corrupt"])(
+  "checks %s upload bytes before retrying without a commit",
+  async (mode) => {
+    await withPublishing(async ({ publishing, store }) => {
+      const owner = user();
+      store.put(`user:${owner.id}`, owner);
+      const upload = await (await publishing.upload(pdfRequest(), owner)).json<UploadResult>();
+      const input = change(records.find((record) => record.collection === "downloads")!);
+      input.mutations[0].data.file = upload.value;
+      input.uploadIds = [upload.id];
+      const saved = await (await publishing.submit(input, owner, session(owner))).json<Change>();
+      await publishing.tick();
+      const attempt = dispatches.at(-1)!.inputs.attempt;
+      await run(publishing, await runnerRequest(saved.id, attempt));
+      await run(publishing, await runnerRequest(saved.id, attempt, "456", "1", "/status", "POST"), {
+        status: "failed",
+      });
+      if (mode === "missing") await env.UPLOADS.delete(upload.id);
+      else await env.UPLOADS.put(upload.id, "corrupt bytes");
+      await expect(publishing.retry(saved.id, owner, session(owner))).rejects.toMatchObject({
+        status: 410,
+        code: "uploads_expired",
+      });
+      expect(store.get<Change>(`change:${saved.id}`)?.status).toBe("failed");
+    });
+  },
+);
+
+test("retries a committed change after temporary uploads expire using only its immutable commit", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const owner = user();
+    store.put(`user:${owner.id}`, owner);
+    const upload = await (await publishing.upload(pdfRequest(), owner)).json<UploadResult>();
+    const input = change(records.find((record) => record.collection === "downloads")!);
+    input.mutations[0].data.file = upload.value;
+    input.uploadIds = [upload.id];
+    const saved = await (await publishing.submit(input, owner, session(owner))).json<Change>();
+    await publishing.tick();
+    const attempt = dispatches.at(-1)!.inputs.attempt;
+    await run(publishing, await runnerRequest(saved.id, attempt));
+    const callback = await runnerRequest(saved.id, attempt, "456", "1", "/status", "POST");
+    await run(publishing, callback, { status: "committed", commit: publishedCommit });
+    await run(publishing, callback, { status: "failed", commit: publishedCommit });
+    const failed = store.get<Change>(`change:${saved.id}`)!;
+    store.put(`change:${saved.id}`, {
+      ...failed,
+      updatedAt: new Date(Date.now() - 8 * 86400_000).toISOString(),
+    });
+    await publishing.tick();
+    expect(store.get(`upload:${upload.id}`)).toBeUndefined();
+    const listed = (await publishing.list().json<{ changes: Change[] }>()).changes[0];
+    expect(listed.retry).toEqual({ available: true });
+    expect((await publishing.retry(saved.id, owner, session(owner))).status).toBe(202);
+    await publishing.tick();
+    const nextAttempt = dispatches.at(-1)!.inputs.attempt;
+    const claimed = await (
+      await run(publishing, await runnerRequest(saved.id, nextAttempt, "457"))
+    ).json<{ commit: string; uploads: unknown[] }>();
+    expect(claimed).toMatchObject({ commit: publishedCommit, uploads: [] });
+    expect(store.get<Change>(`change:${saved.id}`)?.status).toBe("committed");
+    const nextCallback = await runnerRequest(saved.id, nextAttempt, "457", "1", "/status", "POST");
+    await run(publishing, nextCallback, { status: "published", commit: publishedCommit });
+    expect(store.get<Change>(`change:${saved.id}`)?.status).toBe("published");
+  });
+});
+
+test("rejects backwards runner callbacks and publication before the commit receipt", async () => {
+  await withPublishing(async ({ publishing, store }) => {
+    const job = await queued(publishing, store);
+    await run(publishing, await runnerRequest(job.id, job.attempt));
+    const callback = await runnerRequest(job.id, job.attempt, "456", "1", "/status", "POST");
+    await expect(
+      run(publishing, callback, { status: "published", commit: publishedCommit }),
+    ).rejects.toMatchObject({ status: 409, code: "publish_state" });
+    expect(store.get<Change>(`change:${job.id}`)?.commit).toBeUndefined();
+    await run(publishing, callback, { status: "committed", commit: publishedCommit });
+    await expect(run(publishing, callback, { status: "checking" })).rejects.toMatchObject({
+      status: 409,
+      code: "publish_state",
+    });
+    expect(store.get<Change>(`change:${job.id}`)?.status).toBe("committed");
   });
 });
 
