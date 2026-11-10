@@ -1,4 +1,4 @@
-import { defineConfig } from "astro/config";
+import { defineConfig, sharpImageService } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { legacyRedirects } from "./src/data/legacy.ts";
 import { getSitemapLastModified } from "./src/data/sitemap-lastmod.ts";
@@ -14,6 +14,12 @@ export default defineConfig({
   site: siteUrl,
   output: "static",
   trailingSlash: "always",
+  image: {
+    service: sharpImageService({
+      avif: { quality: 60, effort: 6 },
+      webp: { quality: 82, effort: 6 },
+    }),
+  },
   integrations: [
     sitemap({
       filter: (page) => !isHiddenPath(new URL(page).pathname),

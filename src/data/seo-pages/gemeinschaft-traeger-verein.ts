@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/governance.webp";
+import image from "../../assets/images/editorial/gemeinschaft-schulgelaende-0054_d.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "VORSTAND & VEREIN",
   cardTitle: "Die Monte sind wir.",
   image,
-  imageSourceFile: "editorial/governance.webp",
-  imageAlt: "Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/gemeinschaft-schulgelaende-0054_d.jpg",
+  imageAlt: "Kinder und Erwachsene der Montessori Allgäu auf dem Schulgelände",
+  socialImagePosition: "south",
 } satisfies SeoPageDefinition;

@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/home-community-event.webp";
+import image from "../../assets/images/editorial/gemeinschaft-schulgelaende-0054_d.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "TERMINE · OBERSTAUFEN",
   cardTitle: "Die Monte erleben.",
   image,
-  imageSourceFile: "editorial/home-community-event.webp",
-  imageAlt: "Kinder und Erwachsene erleben gemeinsam eine Veranstaltung der Montessori Allgäu",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/gemeinschaft-schulgelaende-0054_d.jpg",
+  imageAlt: "Kinder und Erwachsene der Montessori Allgäu auf dem Schulgelände",
+  socialImagePosition: "south",
 } satisfies SeoPageDefinition;

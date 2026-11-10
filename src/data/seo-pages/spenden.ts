@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/donations-material-work.webp";
+import image from "../../assets/images/editorial/goldenes-perlenmaterial-dsc6757.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "SPENDEN & UNTERSTÜTZEN",
   cardTitle: "Entwicklung braucht Menschen, die sie möglich machen.",
   image,
-  imageSourceFile: "editorial/donations-material-work.webp",
-  imageAlt: "Kinder arbeiten gemeinsam mit Montessori-Material",
+  imageSourceFile: "editorial/goldenes-perlenmaterial-dsc6757.jpg",
+  imageAlt: "Kinder erkunden Stellenwerte mit Zahlenkarten und goldenem Perlenmaterial",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

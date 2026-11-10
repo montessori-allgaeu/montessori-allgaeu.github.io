@@ -7,7 +7,7 @@ import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import { getJobs, getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import communityImage from "@/assets/images/editorial/community.webp";
+import workshopImage from "@/assets/images/editorial/werken-begleitung-dsc7289.jpg";
 
 const jobs = await getJobs();
 const { contact } = await getWebsiteSettings();
@@ -22,11 +22,7 @@ const { contact } = await getWebsiteSettings();
     <a class="button" href="#offene-stellen">Offene Stellen</a>
   </PageIntro>
 
-  <ImageSplit
-    image={seoPages.arbeiten.image}
-    alt="Eine Pädagogin begleitet eine kosmische Erzählung mit Vulkanmodell, während Kinder aufmerksam zuschauen"
-    position="30% 50%"
-  >
+  <ImageSplit image={seoPages.arbeiten.image} alt={seoPages.arbeiten.imageAlt} position="58% 50%">
     <p class="eyebrow">Dein pädagogischer Raum</p>
     <h2>Viel Freiheit. Klare gemeinsame Grundlage.</h2>
     <p>
@@ -93,8 +89,8 @@ const { contact } = await getWebsiteSettings();
   </section>
 
   <ImageSplit
-    image={communityImage}
-    alt="Pädagoginnen und Kinder sitzen in einem gemeinsamen Kreis"
+    image={workshopImage}
+    alt="Eine Pädagogin begleitet Jugendliche bei der Arbeit mit Holz und Werkzeug"
     reverse
     light
     position="center 44%"

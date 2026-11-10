@@ -1,4 +1,4 @@
-import careersImage from "../assets/images/editorial/careers-presentation.webp";
+import careersImage from "../assets/images/editorial/lernbegleitung-schule-dsc7117.jpg";
 import type { Job } from "./content";
 import { createSeoPage, type SeoPage } from "./seo";
 
@@ -25,8 +25,8 @@ export function createJobSeo(job: Job): SeoPage {
     cardEyebrow: `${job.areaLabel.toUpperCase()} · STELLENANGEBOT`,
     cardTitle: seoLabel,
     image: careersImage,
-    imageSourceFile: "editorial/careers-presentation.webp",
-    imageAlt: "Eine Pädagogin erzählt mit einem Vulkanmodell, während Kinder aufmerksam zuschauen",
+    imageSourceFile: "editorial/lernbegleitung-schule-dsc7117.jpg",
+    imageAlt: "Eine Pädagogin begleitet zwei Kinder beim Lernen am Tisch",
     socialImagePosition: "attention",
   });
 }

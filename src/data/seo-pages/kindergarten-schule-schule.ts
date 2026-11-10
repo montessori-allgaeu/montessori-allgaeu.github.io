@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/school-thousand-chain.webp";
+import image from "../../assets/images/editorial/mathematik-lernbegleitung-dsc6771.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-SCHULE · KLASSE 1–10",
   cardTitle: "Den eigenen Weg wirklich gehen.",
   image,
-  imageSourceFile: "editorial/school-thousand-chain.webp",
-  imageAlt: "Zwei Schüler arbeiten gemeinsam mit der Montessori-Tausenderkette",
+  imageSourceFile: "editorial/mathematik-lernbegleitung-dsc6771.jpg",
+  imageAlt: "Ein Kind arbeitet mit einer Pädagogin am Montessori-Rechenmaterial",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

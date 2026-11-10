@@ -6,7 +6,7 @@ import SectionHeading from "@/components/SectionHeading.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import greatWorkImage from "@/assets/images/editorial/montessori-great-work.webp";
+import woodworkImage from "@/assets/images/editorial/werken-holz-dsc7251.jpg";
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.montessori)}>
@@ -20,7 +20,7 @@ import greatWorkImage from "@/assets/images/editorial/montessori-great-work.webp
 
   <ImageSplit
     image={seoPages.montessori.image}
-    alt="Zwei Kinder arbeiten selbstständig auf einem vorbereiteten Teppich mit Schriftzeichen, Bildkarten, Büchern und Pflanzen"
+    alt={seoPages.montessori.imageAlt}
     position="55% 50%"
   >
     <p class="eyebrow">Vorbereitete Umgebung</p>
@@ -82,8 +82,8 @@ import greatWorkImage from "@/assets/images/editorial/montessori-great-work.webp
   </section>
 
   <ImageSplit
-    image={greatWorkImage}
-    alt="Ein Kind präsentiert seine Große Arbeit; daneben sind ein Prozessfoto und das selbst gebaute Spielhaus zu sehen"
+    image={woodworkImage}
+    alt="Zwei Schüler arbeiten gemeinsam an einem Werkstück aus Holz"
     reverse
     light
     position="56% 42%"

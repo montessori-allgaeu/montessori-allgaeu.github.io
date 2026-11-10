@@ -678,7 +678,7 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute(
     "content",
-    "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial. Social Card mit der Überschrift „Dem eigenen inneren Kompass vertrauen.“.",
+    "Zwei Kinder arbeiten konzentriert an ihren Tischen. Social Card mit der Überschrift „Dem eigenen inneren Kompass vertrauen.“.",
   );
   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
     "content",
@@ -704,13 +704,13 @@ test("homepage exposes complete search and social metadata", async ({ page }) =>
     (item: { "@type": string }) => item["@type"] === "ImageObject",
   );
   expect(primaryImage.contentUrl).toMatch(
-    /^https:\/\/montessori-allgaeu\.de\/_astro\/home-hero-focus\.[A-Za-z0-9_-]+\.webp$/,
+    /^https:\/\/montessori-allgaeu\.de\/_astro\/freiarbeit-konzentriert-dsc6783\.[A-Za-z0-9_-]+\.jpg$/,
   );
   expect(primaryImage.contentUrl).not.toBe(socialImage);
   expect(primaryImage).toMatchObject({
-    width: 1448,
-    height: 1086,
-    caption: "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial",
+    width: 2048,
+    height: 1365,
+    caption: "Zwei Kinder arbeiten konzentriert an ihren Tischen",
   });
   await expect(page.getByRole("navigation", { name: "Brotkrümelnavigation" })).toHaveCount(0);
 });

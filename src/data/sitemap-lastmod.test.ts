@@ -53,11 +53,13 @@ describe("sitemap lastmod sources", () => {
     expect(sources).toEqual(
       expect.arrayContaining([
         "src/data/seo-pages/montessori.ts",
-        "src/assets/images/editorial/montessori-material-work.webp",
+        "src/assets/images/editorial/mathematik-freiarbeit-dsc6746.jpg",
       ]),
     );
     expect(sources).not.toContain("src/data/seo-pages/kindergarten-schule-schule.ts");
-    expect(sources).not.toContain("src/assets/images/editorial/school-thousand-chain.webp");
+    expect(sources).not.toContain(
+      "src/assets/images/editorial/mathematik-lernbegleitung-dsc6771.jpg",
+    );
     expect(sources).not.toContain("src/assets/images/editorial");
   });
 

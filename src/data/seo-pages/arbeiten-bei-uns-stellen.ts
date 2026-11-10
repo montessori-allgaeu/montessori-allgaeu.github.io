@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/careers-presentation.webp";
+import image from "../../assets/images/editorial/lernbegleitung-schule-dsc7117.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "OFFENE STELLEN · OBERSTAUFEN",
   cardTitle: "Deine Arbeit soll Kinder stärken.",
   image,
-  imageSourceFile: "editorial/careers-presentation.webp",
-  imageAlt: "Eine Pädagogin erzählt mit einem Vulkanmodell, während Kinder aufmerksam zuschauen",
+  imageSourceFile: "editorial/lernbegleitung-schule-dsc7117.jpg",
+  imageAlt: "Eine Pädagogin begleitet zwei Kinder beim Lernen am Tisch",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

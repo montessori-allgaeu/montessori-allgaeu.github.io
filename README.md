@@ -48,6 +48,18 @@ unabhängig von `--browser chromium` WebKit und kann in einer eingeschränkten m
 beim Start der Browser-App abbrechen. Die E2E-Projekte in `playwright.config.ts` laufen weiterhin
 auf Chromium.
 
+## Redaktionelle Fotos
+
+Die Alltagsfotografie stammt aus Moritz Sonntags Shooting vom 16. Oktober 2026. Auswahl,
+Originaldateien und Bildplätze sind in [der Bildauswahl](docs/bildauswahl-2026-10.md) dokumentiert.
+Die ausgewählten JPEG-Webexporte bleiben unverändert als Master in `src/assets/images/editorial/`.
+`CoverImage` erzeugt beim statischen Build AVIF (Qualität 60) und WebP als Fallback (Qualität 82),
+mit mehreren Breiten bis maximal zur Originalauflösung. Die Encoder-Einstellungen stehen in
+`astro.config.mjs`; Originale werden vor der Ausgabe nicht noch einmal verlustbehaftet komprimiert.
+Der Browser lädt pro Bild nur die passende Variante. Bilder unterhalb des Einstiegs laden verzögert;
+das Startseitenmotiv erhält Ladepriorität. Bildplätze und Fokuspunkte bleiben über Desktop und Mobil
+stabil. Social Cards werden weiterhin separat als kompatible JPEGs mit Inhalts-Hash erzeugt.
+
 ## Inhalte pflegen
 
 - Redaktionsoberfläche: [Monte-Verwaltung](https://verwaltung.montessori-allgaeu.de)

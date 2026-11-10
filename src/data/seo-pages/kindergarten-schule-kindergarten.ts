@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/kindergarten.webp";
+import image from "../../assets/images/editorial/kindergarten-begleitung-dsc6815.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-KINDERGARTEN · OBERSTAUFEN",
   cardTitle: "Geborgen wachsen. Selbst entdecken.",
   image,
-  imageSourceFile: "editorial/kindergarten.webp",
-  imageAlt: "Kindergartenkinder betrachten gemeinsam Obst und Gemüse",
+  imageSourceFile: "editorial/kindergarten-begleitung-dsc6815.jpg",
+  imageAlt: "Eine Pädagogin begleitet Kindergartenkinder bei einer Tätigkeit am Tisch",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

@@ -9,8 +9,8 @@ import TextLink from "@/components/TextLink.astro";
 import VimeoEmbed from "@/components/VimeoEmbed.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import classImage from "@/assets/images/editorial/class.webp";
-import roomImage from "@/assets/images/editorial/room.webp";
+import olderStudentsImage from "@/assets/images/editorial/tertia-gemeinsames-lernen-dsc7388.jpg";
+import morningCircleImage from "@/assets/images/editorial/morgenkreis-mitmachen-dsc6587.jpg";
 import erdkinderplanPoster from "@/assets/images/editorial/erdkinderplan-bauwagen.jpg";
 
 const { openingHours } = await getWebsiteSettings();
@@ -23,11 +23,7 @@ const { openingHours } = await getWebsiteSettings();
     intro="Unsere private Montessori-Schule in Oberstaufen begleitet Kinder und Jugendliche von Klasse 1 bis 10 in jahrgangsgemischten Lerngruppen. Sie übernehmen Verantwortung und entwickeln fachliche Kompetenz in ihrem Tempo."
   />
 
-  <ImageSplit
-    image={seoPages.schule.image}
-    alt="Zwei Schüler arbeiten gemeinsam mit der Tausenderkette"
-    position="center 48%"
-  >
+  <ImageSplit image={seoPages.schule.image} alt={seoPages.schule.imageAlt} position="center 48%">
     <p class="eyebrow">Freiarbeit und Fachlichkeit</p>
     <h2>Selbstbestimmt heißt nicht unbegleitet.</h2>
     <p>
@@ -122,8 +118,8 @@ const { openingHours } = await getWebsiteSettings();
   </section>
 
   <ImageSplit
-    image={classImage}
-    alt="Kinder arbeiten in einer jahrgangsgemischten Lerngruppe"
+    image={olderStudentsImage}
+    alt="Jugendliche lernen gemeinsam an Tischen im Klassenraum"
     reverse
     position="center 40%"
   >
@@ -176,9 +172,9 @@ const { openingHours } = await getWebsiteSettings();
       </div>
       <div class="image-frame image-frame--landscape school-rhythm__image">
         <CoverImage
-          image={roomImage}
-          alt="Vorbereiteter Klassenraum der Montessori-Schule"
-          widths={[480, 720, 960]}
+          image={morningCircleImage}
+          alt="Kinder beteiligen sich mit Handzeichen am gemeinsamen Morgenkreis"
+          widths={[480, 768, 1024, 1440]}
           sizes="(max-width: 840px) calc(100vw - 2rem), 40vw"
         />
       </div>

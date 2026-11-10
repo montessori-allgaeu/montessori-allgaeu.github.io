@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/kennenlernen-arrival.webp";
+import image from "../../assets/images/editorial/kindergarten-rutsche-begleitung-dsc7517.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,8 +10,7 @@ export default {
   cardEyebrow: "AUFNAHME & KENNENLERNEN",
   cardTitle: "Passt die Monte zu unserer Familie?",
   image,
-  imageSourceFile: "editorial/kennenlernen-arrival.webp",
-  imageAlt:
-    "Ein Kind balanciert auf einer Holzbank und wird von einer zugewandten erwachsenen Begleitperson unterstützt",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/kindergarten-rutsche-begleitung-dsc7517.jpg",
+  imageAlt: "Eine Erwachsene begleitet ein Kindergartenkind an der Rutsche",
+  socialImagePosition: "centre",
 } satisfies SeoPageDefinition;

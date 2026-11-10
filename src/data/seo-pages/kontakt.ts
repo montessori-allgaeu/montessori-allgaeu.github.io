@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/building.webp";
+import image from "../../assets/images/editorial/schulgelaende-luftbild-0074_d.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "KONTAKT & ANFAHRT",
   cardTitle: "Wir freuen uns, von euch zu hören.",
   image,
-  imageSourceFile: "editorial/building.webp",
-  imageAlt: "Das Gebäude der Montessori Allgäu in Kalzhofen bei Oberstaufen",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/schulgelaende-luftbild-0074_d.jpg",
+  imageAlt: "Blick auf das Schulgebäude und das Außengelände der Montessori Allgäu",
+  socialImagePosition: "centre",
 } satisfies SeoPageDefinition;
