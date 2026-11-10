@@ -7,7 +7,6 @@ import TextLink from "@/components/TextLink.astro";
 import AfternoonProgram from "@/components/AfternoonProgram.astro";
 import { getAfternoonProgram, getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import lunchImage from "@/assets/images/editorial/ganztag-lunch.webp";
 
 const [{ meals }, afternoonProgram] = await Promise.all([
   getWebsiteSettings(),
@@ -22,11 +21,7 @@ const [{ meals }, afternoonProgram] = await Promise.all([
     intro="Nach dem Lernen am Vormittag braucht es Essen, Bewegung, Ruhe, Beziehung und Raum für eigene Vorhaben. Unsere Ganztagsschule ist deshalb mehr als Betreuung."
   />
 
-  <ImageSplit
-    image={seoPages.ganztag.image}
-    alt="Kinder untersuchen gemeinsam einen Bach"
-    position="center 46%"
-  >
+  <ImageSplit image={seoPages.ganztag.image} alt={seoPages.ganztag.imageAlt} position="center 46%">
     <p class="eyebrow">Offene Ganztagsschule</p>
     <h2>Verlässlicher Rahmen. Freier Nachmittag.</h2>
     <p>
@@ -46,20 +41,18 @@ const [{ meals }, afternoonProgram] = await Promise.all([
 
   <AfternoonProgram program={afternoonProgram} />
 
-  <ImageSplit
-    image={lunchImage}
-    alt="Kinder und Erwachsene essen gemeinsam zu Mittag"
-    reverse
-    light
-    position="center 48%"
-  >
-    <p class="eyebrow">Mittagessen</p>
-    <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
-    <p>
-      {meals.provider} liefert ein frisch zubereitetes Mittagessen. Wo möglich, werden regionale und saisonale
-      Zutaten verwendet.
-    </p>
-  </ImageSplit>
+  <section class="section section--light">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow">Mittagessen</p>
+        <h2>Frisch, gemeinsam und mit Liebe gekocht.</h2>
+      </div>
+      <p class="lead">
+        {meals.provider} liefert ein frisch zubereitetes Mittagessen. Wo möglich, werden regionale und
+        saisonale Zutaten verwendet.
+      </p>
+    </div>
+  </section>
 
   <section class="section">
     <div class="container grid-2">

@@ -357,7 +357,11 @@ Authentische Fotos haben Vorrang vor perfekten generierten Motiven. Gewünscht s
 - vorbereitete Umgebung sichtbar machen
 - keine Allgäu-Tourismusästhetik
 
-Die übernommenen Bilder haben unterschiedliche Auflösung und Lichtstimmung. Ein späteres Fotoshooting ist ausdrücklich sinnvoll, blockiert aber die erste Version nicht.
+Seit dem 10. November 2026 verwenden die allgemeinen Bildplätze eine kuratierte Auswahl aus
+Moritz Sonntags Fotoshooting vom 16. Oktober 2026. Motive zeigen den tatsächlichen Alltag vom
+Kindergarten bis zur Tertia. Porträts, historische Aufnahmen und das Bild zum Bauwagenvideo bleiben
+inhaltlich gebunden erhalten. Die [Bildauswahl](bildauswahl-2026-10.md) dokumentiert die Zuordnung.
+Ohne passendes neues Motiv bleibt ein Abschnitt bei Bedarf textlich, wie beim warmen Mittagessen.
 
 ## Informationsarchitektur
 
@@ -552,7 +556,6 @@ Wichtige Pfade:
 - endgültige Aufnahmefristen und deren Darstellung
 - spätere Messung von Anfrage- und Bewerbungsqualität
 - dauerhaftes Verfahren zur Auswahl, Freigabe und Aktualisierung konkreter Förderschwerpunkte
-- Umfang und Art eines professionellen Fotoshootings
 - endgültige rechtliche Prüfung aller Pflichttexte
 - weitere Iteration und Versionierung der Gemeinschaftsprinzipien
 

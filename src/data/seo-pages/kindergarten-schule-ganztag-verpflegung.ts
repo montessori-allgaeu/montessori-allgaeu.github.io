@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/ganztag-nature-study.webp";
+import image from "../../assets/images/editorial/schulhof-gemeinsames-spiel-dsc7053.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "GANZTAGSSCHULE & VERPFLEGUNG",
   cardTitle: "Ein ganzer Tag darf sich ganz anfühlen.",
   image,
-  imageSourceFile: "editorial/ganztag-nature-study.webp",
-  imageAlt: "Kinder untersuchen gemeinsam einen Bach",
+  imageSourceFile: "editorial/schulhof-gemeinsames-spiel-dsc7053.jpg",
+  imageAlt: "Kinder spielen gemeinsam an der Wasser- und Matschanlage auf dem Schulhof",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

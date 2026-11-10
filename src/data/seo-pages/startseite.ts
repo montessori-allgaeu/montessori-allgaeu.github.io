@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/home-hero-focus.webp";
+import image from "../../assets/images/editorial/freiarbeit-konzentriert-dsc6783.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "KINDERGARTEN & SCHULE · OBERSTAUFEN",
   cardTitle: "Dem eigenen inneren Kompass vertrauen.",
   image,
-  imageSourceFile: "editorial/home-hero-focus.webp",
-  imageAlt: "Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/freiarbeit-konzentriert-dsc6783.jpg",
+  imageAlt: "Zwei Kinder arbeiten konzentriert an ihren Tischen",
+  socialImagePosition: "east",
 } satisfies SeoPageDefinition;

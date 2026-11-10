@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/governance.webp";
+import image from "../../assets/images/editorial/morgenkreis-dsc6578.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "GEMEINSCHAFT · PRINZIPIEN",
   cardTitle: "So treffen wir Entscheidungen.",
   image,
-  imageSourceFile: "editorial/governance.webp",
-  imageAlt: "Die Montessori-Gemeinschaft bei einer gemeinsamen Aktion",
+  imageSourceFile: "editorial/morgenkreis-dsc6578.jpg",
+  imageAlt: "Kinder und eine Pädagogin sitzen gemeinsam im Morgenkreis",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

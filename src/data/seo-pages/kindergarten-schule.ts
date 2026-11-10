@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/continuum.webp";
+import image from "../../assets/images/editorial/gemeinschaft-schulgelaende-0054_d.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "EIN GEMEINSAMER BILDUNGSWEG",
   cardTitle: "Von Anfang an verbunden.",
   image,
-  imageSourceFile: "editorial/continuum.webp",
-  imageAlt: "Kinder arbeiten gemeinsam in einer Montessori-Lernumgebung",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/gemeinschaft-schulgelaende-0054_d.jpg",
+  imageAlt: "Kinder und Erwachsene der Montessori Allgäu auf dem Schulgelände",
+  socialImagePosition: "south",
 } satisfies SeoPageDefinition;

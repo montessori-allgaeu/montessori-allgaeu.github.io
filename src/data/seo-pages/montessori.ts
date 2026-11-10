@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/montessori-material-work.webp";
+import image from "../../assets/images/editorial/mathematik-freiarbeit-dsc6746.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,8 +10,7 @@ export default {
   cardEyebrow: "MONTESSORI-PÄDAGOGIK",
   cardTitle: "Das Kind führt. Wir bereiten den Raum.",
   image,
-  imageSourceFile: "editorial/montessori-material-work.webp",
-  imageAlt:
-    "Zwei Kinder arbeiten selbstständig mit Schriftzeichen, Bildkarten, Büchern und Pflanzen",
+  imageSourceFile: "editorial/mathematik-freiarbeit-dsc6746.jpg",
+  imageAlt: "Kinder arbeiten gemeinsam mit Stellenwertkarten und goldenem Perlenmaterial",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

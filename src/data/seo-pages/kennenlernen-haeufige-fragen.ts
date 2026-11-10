@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/montessori-great-work.webp";
+import image from "../../assets/images/editorial/lernbegleitung-perlenmaterial-dsc6689.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "HÄUFIGE FRAGEN",
   cardTitle: "Klare Antworten vor der Entscheidung.",
   image,
-  imageSourceFile: "editorial/montessori-great-work.webp",
-  imageAlt: "Kinder arbeiten konzentriert gemeinsam mit Montessori-Material",
+  imageSourceFile: "editorial/lernbegleitung-perlenmaterial-dsc6689.jpg",
+  imageAlt: "Eine Pädagogin begleitet ein Kind bei der Arbeit mit dem goldenen Perlenmaterial",
   socialImagePosition: "attention",
 } satisfies SeoPageDefinition;

@@ -6,10 +6,10 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getDonationPage } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import continuumImage from "@/assets/images/editorial/continuum.webp";
-import freedomImage from "@/assets/images/editorial/freedom.webp";
-import homeCommunityImage from "@/assets/images/editorial/home-community-event.webp";
-import careersPresentationImage from "@/assets/images/editorial/careers-presentation.webp";
+import communityOverviewImage from "@/assets/images/editorial/gemeinschaft-schulgelaende-0054_d.jpg";
+import learningSupportImage from "@/assets/images/editorial/lernbegleitung-perlenmaterial-dsc6689.jpg";
+import morningCircleImage from "@/assets/images/editorial/morgenkreis-dsc6578.jpg";
+import learningTogetherImage from "@/assets/images/editorial/lernbegleitung-schule-dsc7117.jpg";
 
 const donations = await getDonationPage();
 ---
@@ -35,12 +35,12 @@ const donations = await getDonationPage();
     <div class="home-hero__media">
       <CoverImage
         image={seoPages.home.image}
-        alt="Drei Kinder arbeiten mit Stellenwertkarten und goldenem Montessori-Perlenmaterial; im Hintergrund liegt eine Tausenderkette"
-        widths={[640, 960, 1280]}
+        alt={seoPages.home.imageAlt}
         sizes="(max-width: 840px) 100vw, 50vw"
         loading="eager"
         fetchpriority="high"
-        position="56% 50%"
+        position="82% 50%"
+        mobilePosition="78% 50%"
       />
     </div>
   </section>
@@ -81,10 +81,10 @@ const donations = await getDonationPage();
   </section>
 
   <ImageSplit
-    image={continuumImage}
-    alt="Kinder lernen gemeinsam mit Montessori-Material"
+    image={communityOverviewImage}
+    alt="Kinder und Erwachsene der Montessori Allgäu auf dem Schulgelände"
     compact
-    position="center 38%"
+    position="center 74%"
   >
     <p class="eyebrow">Ein gemeinsamer Bildungsweg</p>
     <h2>Eine Monte.<br />Ein gemeinsamer Weg.</h2>
@@ -101,12 +101,12 @@ const donations = await getDonationPage();
   </ImageSplit>
 
   <ImageSplit
-    image={freedomImage}
-    alt="Ein Kind lernt gemeinsam mit einer Pädagogin"
+    image={learningSupportImage}
+    alt="Eine Pädagogin begleitet ein Kind bei der Arbeit mit dem goldenen Perlenmaterial"
     reverse
     light
     compact
-    position="center 36%"
+    position="center"
   >
     <p class="eyebrow">Freiheit in klaren Grenzen</p>
     <h2>Freiheit ist nicht Beliebigkeit.</h2>
@@ -159,8 +159,8 @@ const donations = await getDonationPage();
   </section>
 
   <ImageSplit
-    image={homeCommunityImage}
-    alt="Kinder und Erwachsene erleben gemeinsam eine Einschulungsfeier"
+    image={morningCircleImage}
+    alt="Kinder und eine Pädagogin sitzen gemeinsam im Morgenkreis"
     light
     compact
     position="center 45%"
@@ -175,11 +175,11 @@ const donations = await getDonationPage();
   </ImageSplit>
 
   <ImageSplit
-    image={careersPresentationImage}
-    alt="Eine Pädagogin begleitet eine kosmische Erzählung mit Vulkanmodell, während Kinder aufmerksam zuschauen"
+    image={learningTogetherImage}
+    alt="Eine Pädagogin begleitet zwei Kinder beim Lernen am Tisch"
     reverse
     compact
-    position="42% 50%"
+    position="58% 50%"
   >
     <p class="eyebrow">Arbeiten bei uns</p>
     <h2>Pädagogik, die du wirklich vertreten kannst.</h2>

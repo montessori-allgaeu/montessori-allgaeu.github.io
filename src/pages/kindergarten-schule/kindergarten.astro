@@ -8,8 +8,8 @@ import CTASection from "@/components/CTASection.astro";
 import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import kindergartenHolzbauwerkImage from "@/assets/images/editorial/kindergarten-holzbauwerk.webp";
-import natureImage from "@/assets/images/editorial/nature.webp";
+import kindergartenPlayImage from "@/assets/images/editorial/kindergarten-freies-spiel-dsc6811.jpg";
+import natureImage from "@/assets/images/editorial/kindergarten-sandspiel-dsc7548.jpg";
 
 const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 ---
@@ -23,7 +23,7 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 
   <ImageSplit
     image={seoPages.kindergarten.image}
-    alt="Kindergartenkinder betrachten gemeinsam Obst und Gemüse"
+    alt={seoPages.kindergarten.imageAlt}
     compact
     position="center 38%"
   >
@@ -78,9 +78,10 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 
   <ImageSplit
     image={natureImage}
-    alt="Kindergartenkinder erkunden gemeinsam einen Bach mit Keschern"
+    alt="Ein Kindergartenkind erkundet Sand mit den Händen"
     reverse
-    position="center 46%"
+    position="72% 42%"
+    mobilePosition="72% 42%"
   >
     <p class="eyebrow">Naturpädagogik</p>
     <h2>Draußen wird die Welt unmittelbar.</h2>
@@ -95,11 +96,11 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
     <div class="container grid-2 kindergarten-schedule">
       <div class="image-frame image-frame--landscape kindergarten-schedule__image">
         <CoverImage
-          image={kindergartenHolzbauwerkImage}
-          alt="Ein Kindergartenkind hält stolz ein selbst gebautes Holzbauwerk hoch"
-          widths={[480, 720, 960]}
+          image={kindergartenPlayImage}
+          alt="Ein Kindergartenkind spielt mit einem Holzfahrzeug auf dem Teppich"
+          widths={[480, 768, 1024, 1440]}
           sizes="(max-width: 840px) calc(100vw - 2rem), 40vw"
-          position="center 30%"
+          position="48% 40%"
         />
       </div>
       <div>

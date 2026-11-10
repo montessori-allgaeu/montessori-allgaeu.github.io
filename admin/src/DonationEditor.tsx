@@ -2,7 +2,7 @@ import { useState, type ButtonHTMLAttributes } from "react";
 import { InlineText } from "./InlineText";
 import { reorder, useSortable } from "./useSortable";
 import type { ContentData, JsonValue } from "../../src/admin/types";
-import donationImage from "../../src/assets/images/editorial/donations-material-work.webp?url";
+import donationImage from "../../src/assets/images/editorial/goldenes-perlenmaterial-dsc6757.jpg?url";
 import type { ContentEditorProps } from "./content-editor";
 import "./donation-editor.css";
 

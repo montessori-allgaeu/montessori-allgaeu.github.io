@@ -7,7 +7,7 @@ import ImageSplit from "@/components/ImageSplit.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import schoolImage from "@/assets/images/editorial/school.webp";
+import readingImage from "@/assets/images/editorial/primaria-lesen-dsc6620.jpg";
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.kindergartenSchule)}>
@@ -20,10 +20,11 @@ import schoolImage from "@/assets/images/editorial/school.webp";
   <div class="image-frame image-frame--wide hub-image">
     <CoverImage
       image={seoPages.kindergartenSchule.image}
-      alt="Kinder arbeiten gemeinsam in der Montessori-Lernumgebung"
-      widths={[768, 1200, 1600]}
+      alt={seoPages.kindergartenSchule.imageAlt}
+      widths={[480, 768, 1200, 1600, 2048]}
       sizes="100vw"
-      position="center 44%"
+      position="center 76%"
+      mobilePosition="center 68%"
     />
   </div>
 
@@ -85,8 +86,8 @@ import schoolImage from "@/assets/images/editorial/school.webp";
   </section>
 
   <ImageSplit
-    image={schoolImage}
-    alt="Schülerinnen lernen gemeinsam an einem Tisch"
+    image={readingImage}
+    alt="Zwei Kinder betrachten gemeinsam ein Buch in der Leseecke"
     reverse
     light
     position="center 42%"
