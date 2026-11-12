@@ -2,11 +2,11 @@
 
 ## Status und Verwendung
 
-Die Bilder unter `src/assets/images/generated/` wurden am 17. Juli 2026 als zeitlich begrenzte
+Die ehemaligen Bilder unter `src/assets/images/generated/` wurden am 17. Juli 2026 als zeitlich begrenzte
 Zwischenlösung für die redaktionellen Foto-Slots der Website erzeugt und anschließend als WebP
 optimiert. Seit dem 18. Juli 2026 werden sie nicht mehr auf den Inhaltsseiten verwendet; dort sind
-wieder die vorhandenen authentischen Aufnahmen der Monte eingebunden. Die Dateien und diese
-Dokumentation bleiben lediglich als internes Produktionsarchiv erhalten.
+wieder die vorhandenen authentischen Aufnahmen der Monte eingebunden. Die 23 Bilddateien wurden
+am 12. November 2026 aus dem Repository entfernt. Diese Dokumentation hält die frühere Produktion fest.
 
 Alle abgebildeten Personen und Räume sind fiktiv. Die Bilder sind keine dokumentarischen Aufnahmen
 realer Kinder, Mitarbeitender oder Räume der Montessori Allgäu. Die echten Team-Porträts wurden
