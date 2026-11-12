@@ -1,6 +1,6 @@
 # Bildauswahl: Fotoshooting Oktober 2026
 
-Stand: 10. November 2026
+Stand: 12. November 2026
 
 ## Quelle und Umfang
 
@@ -8,6 +8,10 @@ Stand: 10. November 2026
 Quelle: die vom Auftraggeber für die Website bereitgestellten 67 JPEG-Dateien im Ordner
 `WEB Auflösung`. Alle Motive wurden gesichtet. `nicht verwenden.jpg` ist ausgeschlossen.
 Die übrigen Dateien bleiben im Quellordner und werden nicht vorsorglich veröffentlicht.
+
+Am 12. November 2026 wurde DSC7548 auf Wunsch des Auftraggebers aus Datenschutzgründen durch
+das separat bereitgestellte Motiv DSC7081 ersetzt. Die bisherige Bilddatei wurde aus dem
+aktuellen Website-Bestand entfernt.
 
 Die JPEG-Webexporte mit 2048 Pixeln Breite sind unveränderte Master unter
 `src/assets/images/editorial/`. Die Originaldateien beginnen mit
@@ -26,7 +30,7 @@ Die JPEG-Webexporte mit 2048 Pixeln Breite sind unveränderte Master unter
 | DSC6746   | `mathematik-freiarbeit-dsc6746.jpg`           | Montessori: vorbereitete Umgebung                                                                                   | Eigenständiges Arbeiten mehrerer Kinder mit konkretem Montessori-Material.                                                                                 |
 | DSC7251   | `werken-holz-dsc7251.jpg`                     | Montessori: Leistung aus eigenem Antrieb                                                                            | Zusammenarbeit an einer echten handwerklichen Aufgabe.                                                                                                     |
 | DSC6815   | `kindergarten-begleitung-dsc6815.jpg`         | Kindergarten: Wärme und Eigenaktivität; Social Card Aufnahme Kindergarten                                           | Zugewandte Begleitung im hellen Gruppenraum.                                                                                                               |
-| DSC7548   | `kindergarten-sandspiel-dsc7548.jpg`          | Kindergarten: Naturpädagogik                                                                                        | Direkte Sinneserfahrung mit Sand. Wird nicht als Waldtag oder Bachausflug bezeichnet.                                                                      |
+| DSC7081   | `kindergarten-wasserspiel-dsc7081.jpg`        | Kindergarten: Naturpädagogik                                                                                        | Hände beim Wasser- und Sandspiel an einer Handpumpe, ohne erkennbare Gesichter. Wird nicht als Waldtag oder Bachausflug bezeichnet.                        |
 | DSC6811   | `kindergarten-freies-spiel-dsc6811.jpg`       | Kindergarten: Alltag und Öffnungszeiten                                                                             | Eigenständiges Spiel in der vorbereiteten Umgebung.                                                                                                        |
 | DSC6771   | `mathematik-lernbegleitung-dsc6771.jpg`       | Schule: Freiarbeit und Fachlichkeit; Social Card Aufnahme Schule                                                    | Lernbegleitung und mathematisches Material sind gemeinsam sichtbar.                                                                                        |
 | DSC7388   | `tertia-gemeinsames-lernen-dsc7388.jpg`       | Schule: Abschlüsse                                                                                                  | Jugendliche statt Grundschulkinder zum Abschnitt über Schulabschlüsse.                                                                                     |

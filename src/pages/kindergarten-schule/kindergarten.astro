@@ -9,7 +9,7 @@ import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 import kindergartenPlayImage from "@/assets/images/editorial/kindergarten-freies-spiel-dsc6811.jpg";
-import natureImage from "@/assets/images/editorial/kindergarten-sandspiel-dsc7548.jpg";
+import natureImage from "@/assets/images/editorial/kindergarten-wasserspiel-dsc7081.jpg";
 
 const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 ---
@@ -78,10 +78,9 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
 
   <ImageSplit
     image={natureImage}
-    alt="Ein Kindergartenkind erkundet Sand mit den Händen"
+    alt="Kinder spielen mit Wasser an einer grünen Handpumpe im Sandbereich"
     reverse
-    position="72% 42%"
-    mobilePosition="72% 42%"
+    position="center"
   >
     <p class="eyebrow">Naturpädagogik</p>
     <h2>Draußen wird die Welt unmittelbar.</h2>
