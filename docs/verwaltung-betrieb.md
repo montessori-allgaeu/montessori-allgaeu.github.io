@@ -18,6 +18,12 @@ Nur Cloudflare Free und kostenlose Standard-Linux-Runner des öffentlichen GitHu
 
 `check-static-assets.mjs` prüft die Free-Grenzen von 20.000 Dateien und 25 MiB je Datei sowie die fehlende Worker-Ausführung vor öffentlichen Assets. Verwaltungsuploads sind auf 10 MiB je Datei und 256 MiB temporären Gesamtspeicher begrenzt. Die Hintergrundbereinigung entfernt unzugeordnete Uploads nach einem Tag, abgeschlossene nach einem Tag und fehlgeschlagene nach sieben Tagen. Nach Ablauf benötigter Uploads bleibt der fehlgeschlagene Auftrag erhalten, kann aber nicht erneut gestartet werden. Die gespeicherten Eingaben öffnen, **Eingaben überarbeiten** wählen und die Datei erneut auswählen. Die Wiederholung prüft zusätzlich die tatsächlichen Dateibytes. Bereits in Git übernommene Aufträge benötigen für eine erneute Veröffentlichung keine temporären Uploads mehr. Erschöpfte Kontingente werden als Unterbrechung angezeigt; daraus darf keine automatische kostenpflichtige Erweiterung entstehen.
 
+## Suchmaschinen ausschließen
+
+Die Verwaltung soll nicht in Suchergebnissen erscheinen. `admin/public/_headers` liefert für alle statischen Antworten `X-Robots-Tag: noindex, nofollow`; `admin/index.html` enthält dieselbe Anweisung als Robots-Meta-Tag. `admin/public/robots.txt` erlaubt das Crawling ausdrücklich über ein leeres `Disallow`. Keine globale Crawling-Sperre ergänzen: Sie würde verhindern, dass Google die `noindex`-Anweisung liest, und bereits bekannte URLs könnten weiterhin im Index bleiben. Die Anmeldung schützt weiterhin die privaten Daten und Verwaltungsfunktionen.
+
+Bei bereits indexierten Verwaltungs-URLs nach der Veröffentlichung die produktive `robots.txt`, den HTTP-Header und das Meta-Tag prüfen. In der Search Console über die URL-Prüfung einen Live-Test durchführen und kontrollieren, dass das Crawling erlaubt und `noindex` erkannt wird. Google entfernt die URL nach erneutem Crawling; das kann dauern. Für eine schnellere Ausblendung unter **Entfernen → Neuer Antrag** alle URLs mit dem Präfix `https://verwaltung.montessori-allgaeu.de/` vorübergehend entfernen lassen. Die dauerhafte Maßnahme bleibt `noindex`, da die vorübergehende Entfernung allein nicht dauerhaft wirkt. Siehe [Googles Dokumentation zu `noindex`](https://developers.google.com/search/docs/crawling-indexing/block-indexing).
+
 ## Lokale Entwicklung
 
 ```sh

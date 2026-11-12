@@ -62,6 +62,8 @@ stabil. Social Cards werden weiterhin separat als kompatible JPEGs mit Inhalts-H
 
 ## Inhalte pflegen
 
+Die Verwaltung ist über `noindex` von Suchmaschinen ausgeschlossen. Ihre `robots.txt` erlaubt das Crawling, damit Suchmaschinen den vorhandenen `X-Robots-Tag` und das Robots-Meta-Tag lesen können. Vorgehen bei bereits indexierten URLs: [Betriebshandbuch](docs/verwaltung-betrieb.md#suchmaschinen-ausschließen).
+
 - Redaktionsoberfläche: [Monte-Verwaltung](https://verwaltung.montessori-allgaeu.de)
 - Kurzanleitung für das Team: [`docs/redaktions-kurzanleitung.md`](docs/redaktions-kurzanleitung.md)
 - Kontaktdaten, Aufnahme, Öffnungszeiten und Kosten: `src/content/settings/*.yml`
