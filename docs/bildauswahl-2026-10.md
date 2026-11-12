@@ -4,7 +4,7 @@ Stand: 12. November 2026
 
 ## Quelle und Umfang
 
-21 ausgewählte Fotos von Moritz Sonntag aus dem Fotoshooting vom 16. Oktober 2026.
+22 ausgewählte Fotos von Moritz Sonntag aus dem Fotoshooting vom 16. Oktober 2026.
 Quelle: die vom Auftraggeber für die Website bereitgestellten 67 JPEG-Dateien im Ordner
 `WEB Auflösung`. Alle Motive wurden gesichtet. `nicht verwenden.jpg` ist ausgeschlossen.
 Die übrigen Dateien bleiben im Quellordner und werden nicht vorsorglich veröffentlicht.
@@ -26,7 +26,7 @@ Die JPEG-Webexporte mit 2048 Pixeln Breite sind unveränderte Master unter
 | 0054_D    | `gemeinschaft-schulgelaende-0054_d.jpg`       | Startseite: gemeinsamer Weg; Gemeinschaft; Social Cards für Verein, Elternbeirat und Termine | Die tatsächliche Gemeinschaft und der gemeinsame Ort werden sichtbar. Nur dieses Gruppenmotiv wird eingesetzt; die ähnliche Drohnenaufnahme 0056 entfällt. |
 | DSC6689   | `lernbegleitung-perlenmaterial-dsc6689.jpg`   | Startseite: Freiheit und Grenzen; Social Card Häufige Fragen                                 | Individuelle Begleitung auf Augenhöhe, Material und Eigenaktivität im selben Bild.                                                                         |
 | DSC6578   | `morgenkreis-dsc6578.jpg`                     | Startseite: Gemeinschaft; Social Card Prinzipien                                             | Gemeinschaft im gelebten Alltag. Kein Bild eines erfundenen Gremientreffens.                                                                               |
-| DSC7117   | `lernbegleitung-schule-dsc7117.jpg`           | Startseite: Arbeiten bei uns; Arbeitgeberseite; Social Cards Team und Stellen                | Pädagogische Präsenz und gemeinsames Lernen statt gestelltem Teamfoto.                                                                                     |
+| DSC7117   | `lernbegleitung-schule-dsc7117.jpg`           | Startseite: Arbeiten bei uns; Social Cards Team und Stellen                                  | Pädagogische Präsenz und gemeinsames Lernen statt gestelltem Teamfoto.                                                                                     |
 | DSC6746   | `mathematik-freiarbeit-dsc6746.jpg`           | Montessori: vorbereitete Umgebung                                                            | Eigenständiges Arbeiten mehrerer Kinder mit konkretem Montessori-Material.                                                                                 |
 | DSC7251   | `werken-holz-dsc7251.jpg`                     | Montessori: Leistung aus eigenem Antrieb                                                     | Zusammenarbeit an einer echten handwerklichen Aufgabe.                                                                                                     |
 | DSC6815   | `kindergarten-begleitung-dsc6815.jpg`         | Kindergarten: Wärme und Eigenaktivität; Social Card Aufnahme Kindergarten                    | Zugewandte Begleitung im hellen Gruppenraum.                                                                                                               |
@@ -43,6 +43,7 @@ Die JPEG-Webexporte mit 2048 Pixeln Breite sind unveränderte Master unter
 | DSC6757   | `goldenes-perlenmaterial-dsc6757.jpg`         | Spenden: Wirkung                                                                             | Konkretes Lernmaterial in Benutzung macht den Förderzweck nachvollziehbar.                                                                                 |
 | DSC6712   | `vorbereitete-umgebung-dsc6712.jpg`           | Social Card Downloads                                                                        | Die geordnete Lernumgebung als ruhiges Orientierungsmotiv.                                                                                                 |
 | DSC7110   | `schulhof-alltag-dsc7110.jpg`                 | Kindergarten & Schule: Einstieg und Social Card                                              | Alltag auf dem gemeinsamen Gelände statt einer weiteren Wiederholung des Gruppenfotos.                                                                     |
+| DSC7431   | `lernbegleitung-jugendliche-dsc7431.jpg`      | Arbeiten bei uns: pädagogischer Raum und Social Card                                         | Individuelle Lernbegleitung im Schulalltag. Das bisherige Motiv DSC7117 bleibt auf der Startseite erhalten.                                                |
 
 Das Gruppenfoto 0054_D bleibt auf ausdrücklichen Wunsch des Auftraggebers auf der Startseite
 und unter „Gemeinschaft“. „Kindergarten & Schule“ verwendet die Alltagsszene DSC7110 vom

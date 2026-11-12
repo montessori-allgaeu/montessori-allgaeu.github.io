@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/lernbegleitung-schule-dsc7117.jpg";
+import image from "../../assets/images/editorial/lernbegleitung-jugendliche-dsc7431.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "ARBEITEN BEI UNS · OBERSTAUFEN",
   cardTitle: "Pädagogik, die du vertreten kannst.",
   image,
-  imageSourceFile: "editorial/lernbegleitung-schule-dsc7117.jpg",
-  imageAlt: "Eine Pädagogin begleitet zwei Kinder beim Lernen am Tisch",
-  socialImagePosition: "attention",
+  imageSourceFile: "editorial/lernbegleitung-jugendliche-dsc7431.jpg",
+  imageAlt: "Eine Pädagogin begleitet Jugendliche beim Lernen im Klassenraum",
+  socialImagePosition: "west",
 } satisfies SeoPageDefinition;
