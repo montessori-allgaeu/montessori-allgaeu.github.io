@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:ci": "npm run format:check && npm run lint && npm run check && npm run check:admin && npm run test && npm run test:worker && npm run build && npm run build:admin && node scripts/check-static-assets.mjs && npm run check:email-exposure && npm run test:dev && npm run test:admin",
+    "test:ci": "npm run format:check && npm run lint && npm run check && npm run check:admin && npm run test && npm run test:worker && npm run build && npm run test:admin && node scripts/check-static-assets.mjs && npm run check:email-exposure && npm run test:dev",
     "test:e2e": "playwright test",
     "test:all": "npm run test:ci && npm run test:e2e",
     "screenshot:mobile": "playwright screenshot --browser chromium --viewport-size \"390,844\"",
@@ -22,7 +22,7 @@
     "build:admin": "vite build --config admin/vite.config.ts",
     "check:admin": "tsc -p admin/tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit",
     "test:worker": "vitest run --config vitest.worker.config.ts",
-    "test:admin": "playwright test --config admin/playwright.config.ts",
+    "test:admin": "npm run build:admin && playwright test --config admin/playwright.config.ts",
     "test:content": "npm run format:check && npm run lint && npm run check && npm run check:admin && npm run test && npm run build && npm run build:admin && node scripts/check-static-assets.mjs && npm run check:email-exposure",
     "check:scope": "tsx scripts/check-scope.ts"
   },
