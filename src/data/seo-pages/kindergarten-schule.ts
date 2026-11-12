@@ -1,4 +1,4 @@
-import image from "../../assets/images/editorial/gemeinschaft-schulgelaende-0054_d.jpg";
+import image from "../../assets/images/editorial/schulhof-alltag-dsc7110.jpg";
 import type { SeoPageDefinition } from "../seo";
 
 export default {
@@ -10,7 +10,7 @@ export default {
   cardEyebrow: "EIN GEMEINSAMER BILDUNGSWEG",
   cardTitle: "Von Anfang an verbunden.",
   image,
-  imageSourceFile: "editorial/gemeinschaft-schulgelaende-0054_d.jpg",
-  imageAlt: "Kinder und Erwachsene der Montessori Allgäu auf dem Schulgelände",
-  socialImagePosition: "south",
+  imageSourceFile: "editorial/schulhof-alltag-dsc7110.jpg",
+  imageAlt: "Kinder spielen zwischen Bäumen und Klettergeräten auf dem Schulhof",
+  socialImagePosition: "centre",
 } satisfies SeoPageDefinition;
