@@ -22,7 +22,9 @@
     "build:admin": "vite build --config admin/vite.config.ts",
     "check:admin": "tsc -p admin/tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit",
     "test:worker": "vitest run --config vitest.worker.config.ts",
-    "test:admin": "playwright test --config admin/playwright.config.ts"
+    "test:admin": "playwright test --config admin/playwright.config.ts",
+    "test:content": "npm run format:check && npm run lint && npm run check && npm run check:admin && npm run test && npm run build && npm run build:admin && node scripts/check-static-assets.mjs && npm run check:email-exposure",
+    "check:scope": "tsx scripts/check-scope.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@astrojs/compiler": "2.13.1",
     "@axe-core/playwright": "4.12.1",
     "@cloudflare/vitest-plugin": "^1.4.12",
     "@cloudflare/workers-types": "^5.20261019.1",

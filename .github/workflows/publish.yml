@@ -55,14 +55,24 @@ jobs:
           check-latest: true
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
       - name: Validate and apply content transaction
         run: node_modules/.bin/tsx scripts/publish.ts prepare
       - name: Create local candidate with the final sitemap dates
         id: candidate
         run: node_modules/.bin/tsx scripts/publish.ts candidate
+      - name: Select checks against the live release
+        id: checks
+        run: npm run check:scope
+      - uses: ./.github/actions/image-cache
+      - if: steps.checks.outputs.scope == 'full'
+        run: npx playwright install --with-deps chromium
       - name: Check the candidate without publishing pending content
-        run: npm run test:ci
+        env:
+          CHECK_SCOPE: ${{ steps.checks.outputs.scope }}
+        run: |
+          if [ "$CHECK_SCOPE" = content ]; then npm run test:content; else npm run test:ci; fi
+      - name: Remove unused image cache entries
+        run: node scripts/prune-image-cache.mjs
       - name: Report failed validation
         if: failure() || cancelled()
         run: node_modules/.bin/tsx scripts/publish.ts failure
@@ -135,14 +145,24 @@ jobs:
           check-latest: true
           cache: npm
       - run: npm ci
-      - if: inputs.change_id == ''
-        run: npx playwright install --with-deps chromium
-      - name: Check and build a code-only release
+      - name: Select checks against the live release
         if: inputs.change_id == ''
-        run: npm run test:ci
+        id: checks
+        run: npm run check:scope
+      - uses: ./.github/actions/image-cache
+      - if: inputs.change_id == '' && steps.checks.outputs.scope == 'full'
+        run: npx playwright install --with-deps chromium
+      - name: Check and build a Git release
+        if: inputs.change_id == ''
+        env:
+          CHECK_SCOPE: ${{ steps.checks.outputs.scope }}
+        run: |
+          if [ "$CHECK_SCOPE" = content ]; then npm run test:content; else npm run test:ci; fi
       - name: Build the verified content commit
         if: inputs.change_id != ''
         run: npm run build && npm run build:admin && npm run check:email-exposure
+      - name: Remove unused image cache entries
+        run: node scripts/prune-image-cache.mjs
       - name: Stamp the release and check Cloudflare Free asset limits
         run: |
           node_modules/.bin/tsx scripts/publish.ts stamp

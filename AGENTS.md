@@ -75,7 +75,7 @@ Social-Card-Leitbild kommt weiterhin aus `src/data/seo-pages/spenden.ts`.
 - Keine Entwürfe: Speichern startet Prüfung und Veröffentlichung. Einträge werden angelegt, bearbeitet oder gelöscht; einen Sichtbarkeitsstatus gibt es nicht. Admins verwalten Zugänge und Bankdaten; Content Manager bearbeiten übrige Inhalte.
 - Ausschließlich Free-Tarife: statische Auslieferung ohne vorgeschaltete Worker-Ausführung, Verwaltungs-API nur unter `/api/*`, kostenlose GitHub-Standard-Runner. Keine automatischen Tarifwechsel oder kostenpflichtigen Erweiterungen.
 - Canonical Domain: `https://montessori-allgaeu.de`.
-- Pushes auf `main` lösen `.github/workflows/publish.yml` aus: vollständige Prüfungen, Builds und Cloudflare-Deployment. Speichern in der Verwaltung verwendet denselben geprüften Veröffentlichungsweg.
+- Pushes auf `main` lösen `.github/workflows/publish.yml` aus: nach Änderungstyp ausgewählte Prüfungen, Builds und Cloudflare-Deployment. Speichern in der Verwaltung verwendet denselben geprüften Veröffentlichungsweg.
 - GitHub Pages und die ausschließlich für dieses Repository installierte Pages-CMS-App sind seit dem 16. Oktober 2026 extern abgeschaltet. Max hat den produktiven Betrieb akzeptiert und auf die zusätzliche Wartefrist sowie einen gesonderten Content-Manager-Praxistest verzichtet. GitHub-Repository, Actions und die App „Monte Verwaltung Allgaeu“ bleiben für Cloudflare-Veröffentlichungen erforderlich. Rückfall und Abschaltnachweise stehen in `docs/verwaltung-betrieb.md`.
 - Einrichtung, Wiederherstellung und DNS-Rückfall stehen in `docs/verwaltung-betrieb.md`.
 - In der Codex-Sandbox können `git push`-Kommandos wegen DNS/Netzwerk-Auflösung scheitern; falls wiederholt „Could not resolve hostname github.com“ erscheint, im externen/ausgenommenen Kontext erneut ausführen (Retry).
@@ -105,6 +105,7 @@ npm run test:ci
 git diff --check
 ```
 
+- Vor einem Push den vollständigen ausgehenden Stand prüfen. Bei ausschließlich bereits committeten Änderungen kann `npm run check:scope -- <bereits-geprüfter-basis-commit>` den Umfang bestimmen: `content` verlangt `npm run test:content`, `full` verlangt `npm run test:ci`. Die Basis muss den gesamten ungeprüften Bereich einschließen. Nicht auflösbare Basen, ein nicht sauberer Arbeitsstand oder unbekannte Änderungstypen führen zur vollständigen Suite. In der Veröffentlichungs-Pipeline ist die Basis der zuletzt live bestätigte Commit. Der kürzere Pfad behält Formatierung, Linting, Typprüfungen, Unit-Tests, beide Builds, Asset-Grenzen und E-Mail-Prüfung bei; nur Worker-Integrations-, Dev-Starter- und Verwaltungs-Browsertests entfallen.
 - UI-Änderungen: Zusätzlich den betroffenen Kernpfad auf Desktop und Mobil im Browser prüfen, wenn sich Layout, Navigation, responsives Verhalten, Interaktion oder visuelle Hierarchie ändern. Die Prüfung auf die tatsächlich betroffenen Pfade begrenzen.
 - Nicht ausgeführte oder fehlgeschlagene Prüfungen mit Grund und konkreten manuellen Prüfschritten dokumentieren.
 

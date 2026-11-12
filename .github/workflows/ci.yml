@@ -20,5 +20,18 @@ jobs:
           check-latest: true
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:ci
+      - name: Select checks for the complete pull request
+        id: checks
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        run: npm run check:scope -- "$BASE_COMMIT"
+      - uses: ./.github/actions/image-cache
+      - if: steps.checks.outputs.scope == 'full'
+        run: npx playwright install --with-deps chromium
+      - name: Check and build
+        env:
+          CHECK_SCOPE: ${{ steps.checks.outputs.scope }}
+        run: |
+          if [ "$CHECK_SCOPE" = content ]; then npm run test:content; else npm run test:ci; fi
+      - name: Remove unused image cache entries
+        run: node scripts/prune-image-cache.mjs
