@@ -8,7 +8,7 @@ import CTASection from "@/components/CTASection.astro";
 import OpeningHoursList from "@/components/OpeningHoursList.astro";
 import { getWebsiteSettings } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
-import kindergartenPlayImage from "@/assets/images/editorial/kindergarten-freies-spiel-dsc6811.jpg";
+import kindergartenHolzbauwerkImage from "@/assets/images/editorial/kindergarten-holzbauwerk.webp";
 import natureImage from "@/assets/images/editorial/kindergarten-wasserspiel-dsc7081.jpg";
 
 const { openingHours, kindergartenClosures } = await getWebsiteSettings();
@@ -95,11 +95,11 @@ const { openingHours, kindergartenClosures } = await getWebsiteSettings();
     <div class="container grid-2 kindergarten-schedule">
       <div class="image-frame image-frame--landscape kindergarten-schedule__image">
         <CoverImage
-          image={kindergartenPlayImage}
-          alt="Ein Kindergartenkind spielt mit einem Holzfahrzeug auf dem Teppich"
-          widths={[480, 768, 1024, 1440]}
+          image={kindergartenHolzbauwerkImage}
+          alt="Ein Kindergartenkind hält stolz ein selbst gebautes Holzbauwerk hoch"
+          widths={[480, 720, 960]}
           sizes="(max-width: 840px) calc(100vw - 2rem), 40vw"
-          position="48% 40%"
+          position="center 30%"
         />
       </div>
       <div>

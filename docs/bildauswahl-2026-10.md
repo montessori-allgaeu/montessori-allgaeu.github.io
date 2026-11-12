@@ -31,7 +31,7 @@ Die JPEG-Webexporte mit 2048 Pixeln Breite sind unveränderte Master unter
 | DSC7251   | `werken-holz-dsc7251.jpg`                     | Montessori: Leistung aus eigenem Antrieb                                                                            | Zusammenarbeit an einer echten handwerklichen Aufgabe.                                                                                                     |
 | DSC6815   | `kindergarten-begleitung-dsc6815.jpg`         | Kindergarten: Wärme und Eigenaktivität; Social Card Aufnahme Kindergarten                                           | Zugewandte Begleitung im hellen Gruppenraum.                                                                                                               |
 | DSC7081   | `kindergarten-wasserspiel-dsc7081.jpg`        | Kindergarten: Naturpädagogik                                                                                        | Hände beim Wasser- und Sandspiel an einer Handpumpe, ohne erkennbare Gesichter. Wird nicht als Waldtag oder Bachausflug bezeichnet.                        |
-| DSC6811   | `kindergarten-freies-spiel-dsc6811.jpg`       | Kindergarten: Alltag und Öffnungszeiten                                                                             | Eigenständiges Spiel in der vorbereiteten Umgebung.                                                                                                        |
+| DSC6811   | `kindergarten-freies-spiel-dsc6811.jpg`       | Derzeit nicht eingesetzt                                                                                            | Am 12. November 2026 auf Wunsch des Auftraggebers am Bildplatz neben den Öffnungszeiten durch das frühere Holzbauwerk-Motiv ersetzt.                       |
 | DSC6771   | `mathematik-lernbegleitung-dsc6771.jpg`       | Schule: Freiarbeit und Fachlichkeit; Social Card Aufnahme Schule                                                    | Lernbegleitung und mathematisches Material sind gemeinsam sichtbar.                                                                                        |
 | DSC7388   | `tertia-gemeinsames-lernen-dsc7388.jpg`       | Schule: Abschlüsse                                                                                                  | Jugendliche statt Grundschulkinder zum Abschnitt über Schulabschlüsse.                                                                                     |
 | DSC6587   | `morgenkreis-mitmachen-dsc6587.jpg`           | Schule: Rhythmus im Alltag                                                                                          | Der Morgenkreis zeigt Beteiligung und die gemeinsame Tagesstruktur.                                                                                        |
@@ -50,12 +50,16 @@ historische Aufnahmen und das Poster zum Bauwagenvideo bleiben erhalten. Die neu
 dafür keinen zugeordneten Ersatz. Logos, Dokumente und das interne Archiv früherer KI-Motive sind
 keine allgemeinen Website-Fotos und bleiben ebenfalls unberührt.
 
+Am 12. November 2026 wurde auf Wunsch des Auftraggebers zusätzlich das frühere Foto
+`kindergarten-holzbauwerk.webp` aus der Git-Historie wiederhergestellt. Es zeigt ein Kind mit
+einem selbst gebauten Holzbauwerk und steht auf der Kindergartenseite neben den Öffnungszeiten.
+
 Für das warme Mittagessen enthält die neue Serie kein passendes Motiv. Dieser Abschnitt bleibt
 als ruhiger Textblock bestehen. Die Brotzeitaufnahme DSC6826 wird nicht als Mittagessen ausgegeben.
 Auch Waldtage, Einschulungsfeiern und konkrete Große Arbeiten werden den neuen Bildern nicht
 zugeschrieben. Alt-Texte beschreiben die sichtbare Szene.
 
-Alle bisherigen allgemeinen redaktionellen Fotos und die zwei ungenutzten öffentlichen
+Die übrigen bisherigen allgemeinen redaktionellen Fotos und die zwei ungenutzten öffentlichen
 Social-Card-Dateien wurden entfernt. Die historischen Quellen bleiben über Git nachvollziehbar.
 
 ## Technische Auslieferung
