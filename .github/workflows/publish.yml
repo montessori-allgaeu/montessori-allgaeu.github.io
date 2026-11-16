@@ -49,7 +49,7 @@ jobs:
           ref: main
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "^22.23.4"
           check-latest: true
@@ -98,7 +98,7 @@ jobs:
         env:
           VALIDATED_BASE: ${{ needs.validate-change.outputs.base }}
         run: test "$(git rev-parse HEAD)" = "$VALIDATED_BASE"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "^22.23.4"
           check-latest: true
@@ -139,7 +139,7 @@ jobs:
           release=$(git rev-parse HEAD)
           if [ -n "$MONTE_CHANGE_ID" ]; then test "$release" = "$VALIDATED_RELEASE"; fi
           echo "sha=$release" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "^22.23.4"
           check-latest: true
@@ -200,7 +200,7 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "^22.23.4"
           check-latest: true
