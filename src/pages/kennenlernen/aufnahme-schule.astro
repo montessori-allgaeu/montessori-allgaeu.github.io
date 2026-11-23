@@ -4,11 +4,18 @@ import PageIntro from "@/components/PageIntro.astro";
 import CTASection from "@/components/CTASection.astro";
 import TextLink from "@/components/TextLink.astro";
 import AdmissionAddress from "@/components/AdmissionAddress.astro";
-import { getWebsiteSettings, getLinkedDownload } from "@/data/content";
+import { getWebsiteSettings, getLinkedDownload, getEvents } from "@/data/content";
 import { getSeoLayoutProps, seoPages } from "@/data/seo";
 
 const { contact, schoolAdmission } = await getWebsiteSettings();
 const documentHref = await getLinkedDownload("absichtserklaerung-schule");
+const showAdmissionDateNote =
+  schoolAdmission.schoolYear === "2027/28" &&
+  schoolAdmission.applicationDeadline === "2026-11-30" &&
+  (await getEvents()).some(
+    (event) =>
+      event.date === "2026-12-10" && event.title === "Infoabend für interessierte Familien",
+  );
 ---
 
 <BaseLayout {...getSeoLayoutProps(seoPages.aufnahmeSchule)}>
@@ -25,13 +32,23 @@ const documentHref = await getLinkedDownload("absichtserklaerung-schule");
       <div>
         <p class="eyebrow">Schuljahr {schoolAdmission.schoolYear}</p>
         <h2>Jetzt anmelden.</h2>
-        <div class="notice">
+        <div class="notice" id="aufnahmefristen">
           <p>
             Für die Einschulung im Schuljahr {schoolAdmission.schoolYear} könnt ihr die ausgefüllte Absichtserklärung
             bis zum <time datetime={schoolAdmission.applicationDeadline}
               >{schoolAdmission.applicationDeadlineLabel}</time
             > per E-Mail oder Post an das Schulbüro senden.
           </p>
+          {
+            showAdmissionDateNote && (
+              <p>
+                Der verbindliche <a href="/termine/">Infoabend</a> am{" "}
+                <time datetime="2026-12-10">10. Dezember 2026</time> findet nach dieser Frist statt.
+                Wenn ihr Fragen zum Ablauf habt, meldet euch bitte vor Ablauf der Frist beim
+                Schulbüro.
+              </p>
+            )
+          }
         </div>
         <AdmissionAddress recipient="Schulbüro" email={contact.email} address={contact.address} />
       </div>
@@ -61,6 +78,15 @@ const documentHref = await getLinkedDownload("absichtserklaerung-schule");
               Ihr lernt Montessori-Arbeit, Schulalltag, Abschlusswege, Elternrolle und unseren
               Aufnahmeprozess kennen. Zum Tag der offenen Tür sind alle ohne Anmeldung willkommen.
               Der Infoabend ist verbindlicher Teil des Wegs.
+              {
+                showAdmissionDateNote && (
+                  <>
+                    {" "}
+                    Für das Schuljahr 2027/28 findet er nach der{" "}
+                    <a href="#aufnahmefristen">Frist für die Absichtserklärung</a> statt.
+                  </>
+                )
+              }
             </p>
             <TextLink href="/termine/" label="Aktuelle Termine ansehen" />
           </div>

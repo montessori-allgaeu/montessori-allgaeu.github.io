@@ -65,7 +65,7 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
               <tr>
                 <th scope="col">Buchungszeit</th>
                 <th scope="col">Grundbeitrag*</th>
-                <th scope="col">Effektiv mit Zuschuss*</th>
+                <th scope="col">Mit Zuschuss bis 31.12.2026*</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +92,7 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
                   <dd>
                     <span>Grundbeitrag: {row.amount} monatlich</span>
                     <span>
-                      Mit Zuschuss*: <strong>{row.effectiveAmount}</strong> monatlich
+                      Mit Zuschuss bis 31.12.2026*: <strong>{row.effectiveAmount}</strong> monatlich
                     </span>
                   </dd>
                 </div>
@@ -100,9 +100,12 @@ const documentHref = await getLinkedDownload("beitrittserklaerung-verein");
             }
           </dl>
           <p class="small muted">
-            * Die angegebenen Grundbeiträge gelten ab 1. September 2026. Die effektiven Beiträge
-            sind unter Berücksichtigung des oben beschriebenen Beitragszuschusses errechnet.{" "}
-            <a href="https://www.stmas.bayern.de/kinderbetreuung/finanzierung/index.php">
+            * Die angegebenen Grundbeiträge gelten ab 1. September 2026. Die Beiträge mit Zuschuss
+            gelten bis zum 31. Dezember 2026. Ab 1. Januar 2027 fließen die bisherigen Mittel für
+            den Beitragszuschuss in den Qualitätsbonus für die Träger der Einrichtungen.{" "}
+            <a
+              href="https://www.stmas.bayern.de/themen/kindertagesbetreuung/finanzierung/beitragszuschuss.php"
+            >
               Aktuelle Informationen zum Beitragszuschuss beim Freistaat Bayern
             </a>
           </p>
